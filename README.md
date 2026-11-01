@@ -29,7 +29,33 @@ resources/
   [local]/              our own resources (start new ones here)
 ```
 
-## First-time setup
+## Running with Docker + txAdmin
+
+`docker-compose.yml` runs two containers: FXServer with txAdmin, and MariaDB.
+
+1. `cp .env.example .env` and set a database password.
+2. `cp secrets.cfg.example secrets.cfg`, add your [license key](https://portal.cfx.re)
+   and use the same password in `mysql_connection_string` (host `mariadb`).
+3. `./scripts/install-resources.sh`
+4. `docker compose up -d --build`
+5. Get the txAdmin PIN: `docker compose logs fxserver | grep -i pin`
+6. Open <http://localhost:40120>, enter the PIN, link your Cfx.re account, then in the setup wizard
+   choose **Existing Server Data** with path `/server-data` and config `server.cfg`.
+7. Import the Qbox tables once:
+   ```sh
+   docker compose exec -T mariadb sh -c 'mariadb -uroot -p"$MARIADB_ROOT_PASSWORD" "$MARIADB_DATABASE"' \
+     < "resources/[qbx]/qbx_core/qbx_core.sql"
+   ```
+
+Useful commands: `docker compose logs -f fxserver`, `docker compose restart fxserver`,
+`docker compose down` (data is kept in the `txdata` and `dbdata` volumes).
+
+**Apple Silicon Macs:** FXServer is x86_64 only. Under QEMU emulation it crashes with
+`Stack overflow in unmanaged`. Turn on Docker Desktop → Settings → General →
+*Use Rosetta for x86_64/amd64 emulation on Apple Silicon*, restart Docker, and rebuild.
+For a real city, host it on an x86_64 Linux machine.
+
+## First-time setup (without Docker)
 
 1. **Server artifacts** – download the latest recommended FXServer build from
    <https://runtime.fivem.net/artifacts/fivem/> into `artifacts/` (gitignored).
