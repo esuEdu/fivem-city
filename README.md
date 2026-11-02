@@ -60,10 +60,9 @@ docker-compose.yml          FXServer + txAdmin and MariaDB
 Useful commands: `docker compose logs -f fxserver`, `docker compose restart fxserver`,
 `docker compose down` (data is kept in the `txdata` and `dbdata` volumes).
 
-**Apple Silicon Macs:** FXServer is x86_64 only. Under QEMU emulation it crashes with
-`Stack overflow in unmanaged`. Turn on Docker Desktop → Settings → General →
-*Use Rosetta for x86_64/amd64 emulation on Apple Silicon*, restart Docker, and rebuild.
-For a real city, host it on an x86_64 Linux machine.
+**Apple Silicon Macs are not supported.** FXServer is x86_64 only and crashes under both
+Rosetta and QEMU emulation (`Stack overflow in unmanaged`, restart loop). Run the server on a
+Windows PC or an x86_64 Linux machine/VPS; a Mac can still be used to edit `server-data/resources/`.
 
 ## First-time setup (without Docker)
 
