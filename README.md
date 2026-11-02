@@ -33,6 +33,11 @@ resources/
 
 `docker-compose.yml` runs two containers: FXServer with txAdmin, and MariaDB.
 
+1. Download the **Linux** artifact (`fx.tar.xz`) from
+   <https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/> and extract it into the
+   repo root so you have `run.sh` and `alpine/` next to `server.cfg` (both gitignored).
+   On Windows extract it from Git Bash with `tar -xf fx.tar.xz` — 7-Zip/WinRAR break the symlinks.
+   To update FXServer later, replace those two and run `docker compose restart fxserver`.
 1. `cp .env.example .env` and set a database password.
 2. `cp secrets.cfg.example secrets.cfg`, add your [license key](https://portal.cfx.re)
    and use the same password in `mysql_connection_string` (host `mariadb`).
@@ -58,7 +63,7 @@ For a real city, host it on an x86_64 Linux machine.
 ## First-time setup (without Docker)
 
 1. **Server artifacts** – download the latest recommended FXServer build from
-   <https://runtime.fivem.net/artifacts/fivem/> into `artifacts/` (gitignored).
+   <https://runtime.fivem.net/artifacts/fivem/> and extract it into the repo root (gitignored).
 2. **Database** – install MariaDB (or MySQL 8) and create a database, e.g. `fivem_city`.
 3. **Secrets** – `cp secrets.cfg.example secrets.cfg` and fill in your
    [license key](https://portal.cfx.re) and `mysql_connection_string`.
@@ -66,8 +71,8 @@ For a real city, host it on an x86_64 Linux machine.
 5. **SQL** – import `resources/[qbx]/qbx_core/qbx_core.sql` into the database.
 6. **Run** – from the repo root:
    ```sh
-   ./artifacts/run.sh +exec server.cfg      # Linux
-   artifacts\FXServer.exe +exec server.cfg  # Windows
+   ./run.sh +exec server.cfg      # Linux
+   FXServer.exe +exec server.cfg  # Windows
    ```
 7. **Admin** – connect once, grab your `license:` identifier from the console and add it
    at the bottom of `server.cfg`.

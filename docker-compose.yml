@@ -1,9 +1,6 @@
 services:
   fxserver:
-    build:
-      context: docker/fxserver
-      args:
-        FIVEM_ARTIFACT_URL: ${FIVEM_ARTIFACT_URL:-}
+    build: docker/fxserver
     # FXServer only ships x86_64 builds (emulated on Apple Silicon)
     platform: linux/amd64
     restart: unless-stopped
