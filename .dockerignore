@@ -3,6 +3,8 @@
 **/secrets.cfg
 
 .git
+# FXServer is downloaded inside the build
+artifacts/
 .tmp/
 server-data/cache/
 txData/

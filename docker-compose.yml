@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: docker/fxserver/Dockerfile
+      args:
+        FIVEM_ARTIFACT_URL: ${FIVEM_ARTIFACT_URL:-}
     image: ghcr.io/esuedu/fivem-city:latest
     # FXServer only ships x86_64 builds (emulated on Apple Silicon)
     platform: linux/amd64
@@ -25,10 +27,10 @@ services:
       TXHOST_DEFAULT_DBUSER: root
       TXHOST_DEFAULT_DBPASS: ${MYSQL_ROOT_PASSWORD}
       TXHOST_DEFAULT_DBNAME: ${MYSQL_DATABASE}
-    # Local dev: run the files from the repo instead of the ones baked into the image
+    # Local dev: run server-data from the repo instead of the copy baked into the image.
+    # FXServer itself stays inside the image (see Dockerfile).
     volumes:
       - txdata:/txData
-      - ./artifacts:/opt/fxserver
       - ./server-data:/server-data
     stdin_open: true
     tty: true

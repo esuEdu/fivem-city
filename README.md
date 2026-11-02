@@ -38,16 +38,16 @@ docker-compose.yml          FXServer + txAdmin and MariaDB
 
 `docker-compose.yml` runs two containers: FXServer with txAdmin, and MariaDB.
 
-1. Download the **Linux** artifact (`fx.tar.xz`) from
-   <https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/> and extract it into
-   `artifacts/` so you have `artifacts/run.sh` and `artifacts/alpine/`.
-   On Windows extract it from Git Bash with `tar -xf fx.tar.xz` — 7-Zip/WinRAR break the symlinks.
-   To update FXServer later, replace those two and run `docker compose restart fxserver`.
-2. `cp .env.example .env` and set your [license key](https://portal.cfx.re) and a database password.
+FXServer is downloaded inside the image build (the current recommended Linux build, or
+`FIVEM_ARTIFACT_URL` from `.env`), so `artifacts/` is not used here. Don't mount a Linux artifact
+from a Windows drive: NTFS breaks its symlinks (`Error relocating ... symbol not found`).
+To update FXServer, run `docker compose build --no-cache fxserver && docker compose up -d`.
+
+1. `cp .env.example .env` and set your [license key](https://portal.cfx.re) and a database password.
    `server-data/secrets.cfg` is written from it on every start.
-3. `docker compose up -d --build` — the Qbox tables are imported the first time the database is created.
-4. Get the txAdmin PIN: `docker compose logs fxserver | grep -i pin`
-5. Open <http://localhost:40120>, enter the PIN, link your Cfx.re account, then in the setup wizard
+2. `docker compose up -d --build` — the Qbox tables are imported the first time the database is created.
+3. Get the txAdmin PIN: `docker compose logs fxserver | grep -i pin`
+4. Open <http://localhost:40120>, enter the PIN, link your Cfx.re account, then in the setup wizard
    choose **Existing Server Data** with path `/server-data` and config `server.cfg`.
 
 Resources are committed; run `./scripts/install-resources.sh` only to update them.
