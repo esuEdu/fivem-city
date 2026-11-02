@@ -50,6 +50,7 @@ services:
       - initdb:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 120s
       interval: 10s
       timeout: 5s
       retries: 10

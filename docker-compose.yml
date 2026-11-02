@@ -39,14 +39,15 @@ services:
     environment:
       MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MARIADB_DATABASE: ${MYSQL_DATABASE}
-    ports:
-      - "127.0.0.1:3306:3306" # local access only (HeidiSQL, DBeaver, ...)
+    # No host port: avoids clashing with a local MySQL/XAMPP on 3306.
+    # To use HeidiSQL/DBeaver, add  ports: ["127.0.0.1:3307:3306"]  and connect to port 3307.
     volumes:
       - dbdata:/var/lib/mysql
       # Imported automatically the first time the database is created
       - ./server-data/resources/[qbx]/qbx_core/qbx_core.sql:/docker-entrypoint-initdb.d/qbx_core.sql:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 120s
       interval: 10s
       timeout: 5s
       retries: 10
