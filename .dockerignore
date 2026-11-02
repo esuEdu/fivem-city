@@ -1,0 +1,9 @@
+# Never bake secrets into the image
+.env
+**/secrets.cfg
+
+.git
+.tmp/
+**/cache/
+txData/
+**/.DS_Store

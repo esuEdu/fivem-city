@@ -1,6 +1,9 @@
 services:
   fxserver:
-    build: docker/fxserver
+    build:
+      context: .
+      dockerfile: docker/fxserver/Dockerfile
+    image: ghcr.io/esuedu/fivem-city:latest
     # FXServer only ships x86_64 builds (emulated on Apple Silicon)
     platform: linux/amd64
     restart: unless-stopped
@@ -18,6 +21,7 @@ services:
       TXHOST_DEFAULT_DBUSER: root
       TXHOST_DEFAULT_DBPASS: ${MYSQL_ROOT_PASSWORD}
       TXHOST_DEFAULT_DBNAME: ${MYSQL_DATABASE}
+    # Local dev: run the files from the repo instead of the ones baked into the image
     volumes:
       - txdata:/txData
       - ./artifacts:/opt/fxserver

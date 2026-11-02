@@ -64,6 +64,29 @@ Useful commands: `docker compose logs -f fxserver`, `docker compose restart fxse
 Rosetta and QEMU emulation (`Stack overflow in unmanaged`, restart loop). Run the server on a
 Windows PC or an x86_64 Linux machine/VPS; a Mac can still be used to edit `server-data/resources/`.
 
+## Prebuilt image (run on another PC)
+
+The private image `ghcr.io/esuedu/fivem-city` contains FXServer, `server.cfg` and all resources.
+Secrets are never baked in; they come from `.env`.
+
+**Build and push** (from this repo, after `./scripts/install-resources.sh`):
+```sh
+docker login ghcr.io -u esuEdu   # token needs write:packages
+docker buildx build --platform linux/amd64 -f docker/fxserver/Dockerfile \
+  -t ghcr.io/esuedu/fivem-city:latest --push .
+```
+
+**Run on the server PC** (x86_64 Windows/Linux with Docker):
+1. Copy the `deploy/` folder to that PC.
+2. `cp .env.example .env` and set `CFX_LICENSE_KEY` and `MYSQL_ROOT_PASSWORD`.
+3. `docker login ghcr.io -u esuEdu` with a token that has `read:packages`.
+4. `docker compose up -d` — the Qbox tables are imported automatically on first start.
+5. Get the txAdmin PIN with `docker compose logs fxserver | grep -i pin`, open
+   <http://localhost:40120> and pick **Existing Server Data** → `/server-data` → `server.cfg`.
+
+To update: push a new image, then `docker compose pull && docker compose up -d` on the server PC.
+Changes made inside the container to `/server-data` are lost on update; commit them to the repo instead.
+
 ## First-time setup (without Docker)
 
 1. **Server artifacts** – download the latest recommended FXServer build from
