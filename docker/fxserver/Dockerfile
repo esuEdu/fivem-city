@@ -1,6 +1,6 @@
 # Runtime for FXServer + txAdmin.
-# The server artifact itself (run.sh + alpine/) lives in the repo root and is
-# mounted at /server-data, so updating FXServer = replacing those files.
+# The server artifact itself (run.sh + alpine/) lives in artifacts/ and is
+# mounted at /opt/fxserver, so updating FXServer = replacing those files.
 FROM debian:bookworm-slim
 
 RUN apt-get update \
@@ -11,10 +11,10 @@ RUN apt-get update \
 ENV TXHOST_DATA_PATH=/txData
 VOLUME /txData
 
-# The repo is mounted here (see docker-compose.yml)
+# server-data/ is mounted here (see docker-compose.yml)
 WORKDIR /server-data
 
 EXPOSE 30120/tcp 30120/udp 40120/tcp
 
 # No +exec: txAdmin starts and manages the server
-CMD ["bash", "/server-data/run.sh"]
+CMD ["bash", "/opt/fxserver/run.sh"]

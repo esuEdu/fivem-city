@@ -2,19 +2,15 @@
 secrets.cfg
 .env
 
-# FXServer runtime data
+# FXServer binaries (extract the Linux artifact here, see README)
+artifacts/*
+!artifacts/.gitkeep
+
+# FXServer / txAdmin runtime data
 cache/
 txData/
-server-data/cache/
 *.log
 crashes/
-
-# FXServer binaries (download separately, see README)
-artifacts/
-alpine/
-FXServer.exe
-run.sh
-run.cmd
 
 # Temp downloads from scripts/install-resources.sh
 .tmp/

@@ -4,7 +4,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-RES="$ROOT/resources"
+RES="$ROOT/server-data/resources"
 TMP="$ROOT/.tmp"
 
 mkdir -p "$TMP"
@@ -58,4 +58,4 @@ for entry in "${REPOS[@]}"; do
   install_repo "$name" "$group" "$repo"
 done
 
-echo "Done. Import resources/[qbx]/qbx_core/qbx_core.sql into your database if this is a fresh install."
+echo "Done. Import server-data/resources/[qbx]/qbx_core/qbx_core.sql into your database if this is a fresh install."

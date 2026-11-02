@@ -20,7 +20,8 @@ services:
       TXHOST_DEFAULT_DBNAME: ${MYSQL_DATABASE}
     volumes:
       - txdata:/txData
-      - .:/server-data
+      - ./artifacts:/opt/fxserver
+      - ./server-data:/server-data
     stdin_open: true
     tty: true
 
