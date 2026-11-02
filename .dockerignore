@@ -4,6 +4,6 @@
 
 .git
 .tmp/
-**/cache/
+server-data/cache/
 txData/
 **/.DS_Store
