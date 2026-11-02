@@ -1,0 +1,23 @@
+# Secrets (license key, DB password, Steam key)
+secrets.cfg
+.env
+
+# FXServer binaries (extract the Linux artifact here, see README)
+artifacts/*
+!artifacts/.gitkeep
+
+# FXServer / txAdmin runtime data
+cache/
+txData/
+*.log
+crashes/
+
+# Temp downloads from scripts/install-resources.sh
+.tmp/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/

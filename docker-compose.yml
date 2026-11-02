@@ -1,0 +1,46 @@
+services:
+  fxserver:
+    build: docker/fxserver
+    # FXServer only ships x86_64 builds (emulated on Apple Silicon)
+    platform: linux/amd64
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "30120:30120/tcp"
+      - "30120:30120/udp"
+      - "40120:40120/tcp" # txAdmin web panel
+    environment:
+      # Pre-fills the database step of the txAdmin setup wizard
+      TXHOST_DEFAULT_DBHOST: mariadb
+      TXHOST_DEFAULT_DBPORT: 3306
+      TXHOST_DEFAULT_DBUSER: root
+      TXHOST_DEFAULT_DBPASS: ${MYSQL_ROOT_PASSWORD}
+      TXHOST_DEFAULT_DBNAME: ${MYSQL_DATABASE}
+    volumes:
+      - txdata:/txData
+      - ./artifacts:/opt/fxserver
+      - ./server-data:/server-data
+    stdin_open: true
+    tty: true
+
+  mariadb:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "127.0.0.1:3306:3306" # local access only (HeidiSQL, DBeaver, ...)
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  txdata:
+  dbdata:
