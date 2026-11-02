@@ -43,19 +43,14 @@ docker-compose.yml          FXServer + txAdmin and MariaDB
    `artifacts/` so you have `artifacts/run.sh` and `artifacts/alpine/`.
    On Windows extract it from Git Bash with `tar -xf fx.tar.xz` — 7-Zip/WinRAR break the symlinks.
    To update FXServer later, replace those two and run `docker compose restart fxserver`.
-2. `cp .env.example .env` and set a database password.
-3. `cp server-data/secrets.cfg.example server-data/secrets.cfg`, add your [license key](https://portal.cfx.re)
-   and use the same password in `mysql_connection_string` (host `mariadb`).
-4. `./scripts/install-resources.sh`
-5. `docker compose up -d --build`
-6. Get the txAdmin PIN: `docker compose logs fxserver | grep -i pin`
-7. Open <http://localhost:40120>, enter the PIN, link your Cfx.re account, then in the setup wizard
+2. `cp .env.example .env` and set your [license key](https://portal.cfx.re) and a database password.
+   `server-data/secrets.cfg` is written from it on every start.
+3. `docker compose up -d --build` — the Qbox tables are imported the first time the database is created.
+4. Get the txAdmin PIN: `docker compose logs fxserver | grep -i pin`
+5. Open <http://localhost:40120>, enter the PIN, link your Cfx.re account, then in the setup wizard
    choose **Existing Server Data** with path `/server-data` and config `server.cfg`.
-8. Import the Qbox tables once:
-   ```sh
-   docker compose exec -T mariadb sh -c 'mariadb -uroot -p"$MARIADB_ROOT_PASSWORD" "$MARIADB_DATABASE"' \
-     < "server-data/resources/[qbx]/qbx_core/qbx_core.sql"
-   ```
+
+Resources are committed; run `./scripts/install-resources.sh` only to update them.
 
 Useful commands: `docker compose logs -f fxserver`, `docker compose restart fxserver`,
 `docker compose down` (data is kept in the `txdata` and `dbdata` volumes).

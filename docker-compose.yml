@@ -15,6 +15,10 @@ services:
       - "30120:30120/udp"
       - "40120:40120/tcp" # txAdmin web panel
     environment:
+      # Used to write server-data/secrets.cfg; leave CFX_LICENSE_KEY empty to use your own file
+      CFX_LICENSE_KEY: ${CFX_LICENSE_KEY:-}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
       # Pre-fills the database step of the txAdmin setup wizard
       TXHOST_DEFAULT_DBHOST: mariadb
       TXHOST_DEFAULT_DBPORT: 3306
@@ -39,6 +43,8 @@ services:
       - "127.0.0.1:3306:3306" # local access only (HeidiSQL, DBeaver, ...)
     volumes:
       - dbdata:/var/lib/mysql
+      # Imported automatically the first time the database is created
+      - ./server-data/resources/[qbx]/qbx_core/qbx_core.sql:/docker-entrypoint-initdb.d/qbx_core.sql:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
