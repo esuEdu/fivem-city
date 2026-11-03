@@ -222,7 +222,7 @@ if isServer then
     ---@return boolean Returns true if the player has the specified items in the desired quantity, false otherwise
     function HasItem(source, items, amount) -- luacheck: ignore
         amount = amount or 1
-        local count = exports.ox_inventory:Search(source, 'count', items)
+        local count = exports.city_inventory:Search(source, 'count', items)
         if type(items) == 'table' and type(count) == 'table' then
             for _, v in pairs(count) do
                 if v < amount then
@@ -302,7 +302,7 @@ else
     ---@return boolean Returns true if the player has the specified items in the desired quantity, false otherwise
     function HasItem(items, amount) -- luacheck: ignore
         amount = amount or 1
-        local count = exports.ox_inventory:Search('count', items)
+        local count = exports.city_inventory:Search('count', items)
         if type(items) == 'table' and type(count) == 'table' then
             for _, v in pairs(count) do
                 if v < amount then

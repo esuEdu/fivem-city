@@ -1,0 +1,10 @@
+{
+    "command_giveitem": "Give an item to a player",
+    "param_id": "Player ID",
+    "param_item": "Item name",
+    "param_count": "Amount, default 1",
+    "not_on_duty": "You are not opted in for admin duty. (/optin to toggle)",
+    "unknown_item": "Unknown item: %s",
+    "gave_item": "Gave %sx %s to %s",
+    "give_failed": "Could not give %s: %s"
+}

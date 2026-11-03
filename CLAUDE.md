@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A FiveM (GTA V) roleplay server on the **Qbox** framework (`qbx_core`) plus the **ox** stack (oxmysql, ox_lib, ox_target, ox_inventory) and pma-voice. All code is Lua 5.4 resources loaded by FXServer; there is no build step, linter or test suite. Changes are verified by restarting the resource on a running server.
+A FiveM (GTA V) roleplay server on the **Qbox** framework (`qbx_core`) plus the **ox** stack (oxmysql, ox_lib, ox_target), our own inventory `city_inventory` (replaces ox_inventory) and pma-voice. All code is Lua 5.4 resources loaded by FXServer; there is no build step, linter or test suite. Changes are verified by restarting the resource on a running server.
 
 ## Running the server
 
@@ -30,10 +30,11 @@ docker buildx build --platform linux/amd64 -f docker/fxserver/Dockerfile -t ghcr
 
 ## Architecture
 
-- **`server-data/server.cfg`** is the single entry point. It `exec`s `secrets.cfg`, then `ensure`s core resources in a fixed order (`oxmysql` → `ox_lib` → `qbx_core` → `ox_target` → `ox_inventory`), then whole groups: `[qbx]`, `[standalone]`, `[voice]`, `[maps]`, `[local]`. Dropping a resource into one of those group folders is enough to start it. Framework/inventory convars (`qbx:enableBridge`, `inventory:framework "qbx"`, slots/weight) and ACE permissions (`group.admin` > `group.mod` > `group.support`) are also set there.
+- **`server-data/server.cfg`** is the single entry point. It `exec`s `secrets.cfg`, then `ensure`s core resources in a fixed order (`oxmysql` → `ox_lib` → `qbx_core` → `city_inventory` → `ox_target`), then whole groups: `[qbx]`, `[standalone]`, `[voice]`, `[maps]`, `[local]`. Dropping a resource into one of those group folders is enough to start it. Framework/inventory convars (`qbx:enableBridge`, `inventory:framework "qbx"`, `inventory:accounts "[]"` so money stays in qbx_core) and ACE permissions (`group.admin` > `group.mod` > `group.support`) are also set there.
 - **Secrets**: `secrets.cfg` is gitignored. In Docker, `docker/fxserver/entrypoint.sh` regenerates it on every start from env vars (license key, `mysql_connection_string` pointing at host `mariadb`). If `CFX_LICENSE_KEY` is empty, an existing mounted `secrets.cfg` is used instead.
 - **Two compose files**: root `docker-compose.yml` is local dev and bind-mounts `./server-data` into the container (FXServer itself is downloaded inside the image, never from `artifacts/` — Windows filesystems break its symlinks). `deploy/docker-compose.yml` runs the published image with `server-data` baked in; changes made inside that container are lost on update. Both import `qbx_core/qbx_core.sql` into MariaDB only when the DB volume is first created.
-- **Third-party resources are vendored** (committed). `scripts/install-resources.sh` re-downloads the latest releases of the ox stack, qbx_core, pma-voice and `[cfx-default]`, wiping each target folder first — don't hand-edit those resources, or the changes get lost on the next update.
+- **Third-party resources are vendored** (committed). `scripts/install-resources.sh` re-downloads the latest releases of the ox stack, qbx_core, pma-voice and `[cfx-default]`, wiping each target folder first, then applies `scripts/patches/<resource>.patch`. Don't hand-edit those resources: put the change in a patch (edit, then `git diff -- <resource folder> > scripts/patches/<resource>.patch`), or it gets lost on the next update.
+- **`city_inventory`** (`[local]/`) replaces ox_inventory. qbx_core is hard-wired to ox_inventory, so `scripts/patches/qbx_core.patch` points it at `city_inventory`, which provides the same server/client export names and arguments (`AddItem`, `RemoveItem`, `GetItemCount`, `Search`, …) and the same `data/items.lua` / `data/weapons.lua` format (qbx_core loads those files too, so they must stay plain data). Make items usable with `exports.qbx_core:CreateUseableItem`. Inventories are saved in the `city_inventories` table, keyed by citizenid.
 
 ## Writing our own resources
 

@@ -15,7 +15,6 @@ RELEASES=(
   "oxmysql|[ox]|https://github.com/communityox/oxmysql/releases/latest/download/oxmysql.zip"
   "ox_lib|[ox]|https://github.com/communityox/ox_lib/releases/latest/download/ox_lib.zip"
   "ox_target|[ox]|https://github.com/communityox/ox_target/releases/latest/download/ox_target.zip"
-  "ox_inventory|[ox]|https://github.com/communityox/ox_inventory/releases/latest/download/ox_inventory.zip"
   "qbx_core|[qbx]|https://github.com/Qbox-project/qbx_core/releases/latest/download/qbx_core.zip"
 )
 
@@ -56,6 +55,15 @@ done
 for entry in "${REPOS[@]}"; do
   IFS='|' read -r name group repo <<< "$entry"
   install_repo "$name" "$group" "$repo"
+done
+
+# Local changes to third-party resources (e.g. qbx_core uses city_inventory instead of ox_inventory)
+for patch in "$ROOT"/scripts/patches/*.patch; do
+  echo "-> patch $(basename "$patch")"
+  git -C "$ROOT" apply "$patch" || {
+    echo "Could not apply $patch: the resource changed upstream. Update the patch by hand." >&2
+    exit 1
+  }
 done
 
 echo "Done. Import server-data/resources/[qbx]/qbx_core/qbx_core.sql into your database if this is a fresh install."

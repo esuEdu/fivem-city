@@ -2,8 +2,8 @@ lib.versionCheck('Qbox-project/qbx_core')
 local startupErrors, errorMessage
 if not lib.checkDependency('ox_lib', '3.20.0', true) then
     startupErrors, errorMessage = true, 'ox_lib version 3.20.0 or higher is required'
-elseif not lib.checkDependency('ox_inventory', '2.42.1', true) then
-    startupErrors, errorMessage = true, 'ox_inventory version 2.42.1 or higher is required'
+elseif not lib.checkDependency('city_inventory', '0.1.0', true) then
+    startupErrors, errorMessage = true, 'city_inventory version 0.1.0 or higher is required'
 elseif GetConvar('inventory:framework', '') ~= 'qbx' then
     startupErrors, errorMessage = true, 'inventory:framework must be set to "qbx" in order to use qbx_core'
 elseif GetConvarInt('onesync_enableInfinity', 0) ~= 1 then

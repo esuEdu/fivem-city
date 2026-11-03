@@ -29,7 +29,7 @@ local function getItemCount(itemName)
     if type(itemName) ~= 'string' then return 0 end
     itemName = itemName:lower()
     if itemName:sub(1, 7) == 'weapon_' then itemName = itemName:upper() end
-    return exports.ox_inventory:GetItemCount(itemName) or 0
+    return exports.city_inventory:GetItemCount(itemName) or 0
 end
 
 ---@deprecated use https://coxdocs.dev/ox_inventory/Functions/Client#getitemcount

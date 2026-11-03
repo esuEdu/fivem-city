@@ -9,7 +9,7 @@ local function isUseable(data)
 end
 
 qbShared.Items = {}
-local oxItems = require '@ox_inventory.data.items'
+local oxItems = require '@city_inventory.data.items'
 for item, data in pairs(oxItems) do
     qbShared.Items[item] = {
         name = item,
@@ -24,7 +24,7 @@ for item, data in pairs(oxItems) do
         description = data.description or nil
     }
 end
-local oxWeapons = require '@ox_inventory.data.weapons'
+local oxWeapons = require '@city_inventory.data.weapons'
 for name, data in pairs(oxWeapons.Weapons) do
     local weapon = string.lower(name)
     qbShared.Items[weapon] = {
