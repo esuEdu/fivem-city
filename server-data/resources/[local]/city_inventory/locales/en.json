@@ -14,5 +14,9 @@
     "error_not_usable": "You can't use this item",
     "error_busy": "You can't do that right now",
     "error_inventory_full": "Your inventory is full",
-    "error_generic": "That didn't work"
+    "error_generic": "That didn't work",
+    "error_no_ammo": "You have no ammo for this weapon",
+    "keybind_reload": "Reload weapon",
+    "ui_equip": "Equip",
+    "ui_ammo": "Ammo"
 }

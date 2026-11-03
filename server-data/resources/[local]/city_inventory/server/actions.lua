@@ -3,6 +3,7 @@
 local Items = require 'shared.items'
 local Inventory = require 'server.inventory'
 local players = require 'server.players'
+local weapons = require 'server.weapons'
 
 ---@type table<integer, { second: integer, count: integer }>
 local recentActions = {}
@@ -100,6 +101,48 @@ lib.callback.register('city_inventory:use', function(source, slot)
     players.sync(src)
 
     return true, definition.close
+end)
+
+lib.callback.register('city_inventory:equip', function(source, slot)
+    local src = source
+    local inventory, reason = getActor(src)
+    if not inventory then return false, reason end
+
+    return weapons.toggle(inventory, toInteger(slot))
+end)
+
+lib.callback.register('city_inventory:reload', function(source, serial, ammo)
+    local src = source
+    local inventory, reason = getActor(src)
+    if not inventory then return false, reason end
+
+    local success, result = weapons.reload(inventory, serial, ammo)
+    players.sync(src)
+
+    return success, result
+end)
+
+-- Sent while shooting (at most once a second) and when the weapon is put away.
+-- Not rate-limited: ammo can only go down, so a spamming client can at most sync once per round it really had.
+RegisterNetEvent('city_inventory:server:updateAmmo', function(serial, ammo)
+    local src = source
+    local inventory = players.get(src)
+    if not inventory then return end
+
+    if weapons.setAmmo(inventory, serial, ammo) then
+        players.sync(src)
+    end
+end)
+
+-- Put the weapon away when the player goes down or gets cuffed
+AddEventHandler('qbx_core:server:onSetMetaData', function(key, _, value, src)
+    if not value or (key ~= 'isdead' and key ~= 'inlaststand' and key ~= 'ishandcuffed') then return end
+
+    local inventory = players.get(src)
+    if not inventory or not inventory.equipped then return end
+
+    weapons.unequip(inventory)
+    TriggerClientEvent('city_inventory:client:disarm', src)
 end)
 
 AddEventHandler('playerDropped', function()

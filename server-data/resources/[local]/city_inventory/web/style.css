@@ -116,6 +116,11 @@ body {
     border-color: var(--accent);
 }
 
+.slot--equipped {
+    border-color: var(--accent);
+    background: rgba(79, 163, 255, 0.15);
+}
+
 .slot__key {
     position: absolute;
     top: 3px;

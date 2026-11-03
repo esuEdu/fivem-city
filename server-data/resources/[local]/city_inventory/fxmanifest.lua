@@ -31,6 +31,7 @@ ui_page 'web/index.html'
 files {
     'data/*.lua',
     'shared/*.lua',
+    'client/weapons.lua',
     'locales/*.json',
     'web/index.html',
     'web/style.css',

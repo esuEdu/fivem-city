@@ -13,6 +13,8 @@ const state = {
     maxWeight: 0,
     weight: 0,
     openKey: 'TAB',
+    equipped: null,
+    labels: {},
     items: new Map(),
 };
 
@@ -57,6 +59,7 @@ function renderSlot(slotEl) {
 
     slotEl.replaceChildren();
     slotEl.classList.toggle('slot--filled', Boolean(item));
+    slotEl.classList.toggle('slot--equipped', Boolean(item?.metadata?.serial) && item.metadata.serial === state.equipped);
 
     if (slot <= state.hotbar) {
         slotEl.append(createElement('span', 'slot__key', String(slot)));
@@ -90,6 +93,10 @@ function buildGrids() {
 
     for (let slot = 1; slot <= state.slots; slot++) createSlot(slot, el.grid);
     for (let slot = 1; slot <= state.hotbar; slot++) createSlot(slot, el.hotbar);
+}
+
+function renderAllSlots() {
+    for (const slotEl of document.querySelectorAll('.slot')) renderSlot(slotEl);
 }
 
 function renderWeight() {
@@ -141,6 +148,7 @@ function showTooltip(slot, x, y) {
 
     if (item.description) lines.push(createElement('div', 'tooltip__line', item.description));
     lines.push(createElement('div', 'tooltip__line', formatWeight(item.weight)));
+    if (typeof item.metadata?.ammo === 'number') lines.push(createElement('div', 'tooltip__line', `${state.labels.ammo}: ${item.metadata.ammo}`));
     if (item.metadata?.serial) lines.push(createElement('div', 'tooltip__line', `#${item.metadata.serial}`));
 
     el.tooltip.replaceChildren(...lines);
@@ -212,9 +220,11 @@ el.grid.addEventListener('contextmenu', (event) => {
     event.preventDefault();
 
     const slot = slotFromEvent(event);
-    if (!slot || !state.items.has(slot)) return hideMenus();
+    const item = slot && state.items.get(slot);
+    if (!item) return hideMenus();
 
     menuSlot = slot;
+    el.menuUse.textContent = item.weapon ? state.labels.equip : state.labels.use;
     el.tooltip.classList.add('hidden');
     el.menu.style.left = `${event.clientX}px`;
     el.menu.style.top = `${event.clientY}px`;
@@ -248,11 +258,12 @@ window.addEventListener('message', ({ data }) => {
             state.maxWeight = data.maxWeight;
             state.weight = data.weight;
             state.openKey = data.openKey;
+            state.equipped = data.equipped || null;
+            state.labels = data.labels;
             state.items.clear();
             for (const { slot, item } of data.items) if (item) state.items.set(slot, item);
 
             el.title.textContent = data.labels.title;
-            el.menuUse.textContent = data.labels.use;
             buildGrids();
             renderWeight();
             break;
@@ -276,6 +287,11 @@ window.addEventListener('message', ({ data }) => {
 
         case 'hotbar':
             showHotbar(data.slot);
+            break;
+
+        case 'equipped':
+            state.equipped = data.serial || null;
+            renderAllSlots();
             break;
     }
 });

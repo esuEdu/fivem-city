@@ -10,6 +10,7 @@
 ---@field weapon? boolean
 ---@field ammo? boolean
 ---@field ammoname? string
+---@field clip? integer rounds one reload loads
 
 local items = require 'data.items'
 local weapons = require 'data.weapons'
@@ -43,6 +44,7 @@ for name, data in pairs(weapons.Weapons) do
     local item = define(name, data, false)
     item.weapon = true
     item.ammoname = data.ammoname
+    item.clip = data.clip
     definitions[name] = item
 end
 

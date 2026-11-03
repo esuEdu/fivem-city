@@ -12,6 +12,7 @@ local search = require 'shared.search'
 ---@field unknown table[] saved entries that can't be loaded (item no longer defined, bad slot), kept so they aren't lost
 ---@field changed table<integer, true> slots changed since the last takeChanges()
 ---@field dirty boolean changed since the last save
+---@field equipped? string serial of the weapon in the player's hands (see server/weapons.lua)
 local Inventory = {}
 Inventory.__index = Inventory
 

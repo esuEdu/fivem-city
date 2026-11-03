@@ -2,6 +2,7 @@
 
 local Inventory = require 'server.inventory'
 local storage = require 'server.storage'
+local weapons = require 'server.weapons'
 
 local players = {}
 
@@ -51,6 +52,10 @@ function players.sync(src)
 
     if next(changes) then
         TriggerClientEvent('city_inventory:client:updateSlots', src, changes, inventory.weight)
+    end
+
+    if weapons.check(inventory) then
+        TriggerClientEvent('city_inventory:client:disarm', src)
     end
 end
 

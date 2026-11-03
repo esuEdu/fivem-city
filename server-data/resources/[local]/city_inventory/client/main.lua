@@ -1,5 +1,6 @@
 local Items = require 'shared.items'
 local search = require 'shared.search'
+local weapons = require 'client.weapons'
 
 -- Read-only copy of the player's inventory; the server sends every change
 ---@type table<integer, InventoryItem>
@@ -34,6 +35,7 @@ local function toNui(slot, item)
             description = definition.description,
             image = definition.image,
             weight = definition.weight * item.count,
+            weapon = definition.weapon or false,
         },
     }
 end
@@ -56,7 +58,10 @@ local function setupNui()
         labels = {
             title = locale('ui_title'),
             use = locale('ui_use'),
+            equip = locale('ui_equip'),
+            ammo = locale('ui_ammo'),
         },
+        equipped = weapons.getSerial() or false,
     })
 end
 
@@ -97,12 +102,22 @@ local function close()
     SendNUIMessage({ action = 'close' })
 end
 
+---Uses the item in `slot`; weapons are equipped or put away instead.
 ---@param slot integer
 local function useSlot(slot)
-    if isUsing or not items[slot] or not canAct() then return end
+    local item = items[slot]
+    if isUsing or not item or not canAct() then return end
 
     isUsing = true
-    local success, result = lib.callback.await('city_inventory:use', false, slot)
+
+    local success, result
+
+    if Items[item.name].weapon then
+        success, result = weapons.toggle(slot)
+    else
+        success, result = lib.callback.await('city_inventory:use', false, slot)
+    end
+
     isUsing = false
 
     if not success then
@@ -140,6 +155,7 @@ end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     close()
+    weapons.disarm()
     items = {}
     weight = 0
     setupNui()
@@ -189,10 +205,23 @@ for slot = 1, Config.HotbarSlots do
     })
 end
 
+lib.addKeybind({
+    name = 'reload',
+    description = locale('keybind_reload'),
+    defaultKey = 'R',
+    onPressed = function()
+        if canAct() then weapons.reload() end
+    end,
+})
+
 AddEventHandler('onResourceStop', function(resource)
-    if resource == cache.resource and isOpen then
+    if resource ~= cache.resource then return end
+
+    if isOpen then
         SetNuiFocus(false, false)
     end
+
+    weapons.disarm()
 end)
 
 -- Same names and arguments as ox_inventory's client exports
