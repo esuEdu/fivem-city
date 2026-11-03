@@ -15,6 +15,7 @@ const state = {
     openKey: 'TAB',
     equipped: null,
     labels: {},
+    categories: {},
     items: new Map(),
 };
 
@@ -46,6 +47,12 @@ function formatWeight(grams) {
     return grams >= 1000 ? `${(grams / 1000).toFixed(1)} kg` : `${grams} g`;
 }
 
+// '#f5c542' -> 'rgba(245, 197, 66, alpha)'
+function tint(hex, alpha) {
+    const value = parseInt(hex.replace('#', ''), 16);
+    return `rgba(${(value >> 16) & 255}, ${(value >> 8) & 255}, ${value & 255}, ${alpha})`;
+}
+
 function createElement(tag, className, text) {
     const node = document.createElement(tag);
     node.className = className;
@@ -60,6 +67,15 @@ function renderSlot(slotEl) {
     slotEl.replaceChildren();
     slotEl.classList.toggle('slot--filled', Boolean(item));
     slotEl.classList.toggle('slot--equipped', Boolean(item?.metadata?.serial) && item.metadata.serial === state.equipped);
+
+    const category = item && state.categories[item.category];
+    if (category) {
+        slotEl.style.setProperty('--category', category.color);
+        slotEl.style.setProperty('--category-tint', tint(category.color, 0.25));
+    } else {
+        slotEl.style.removeProperty('--category');
+        slotEl.style.removeProperty('--category-tint');
+    }
 
     if (slot <= state.hotbar) {
         slotEl.append(createElement('span', 'slot__key', String(slot)));
@@ -145,6 +161,13 @@ function showTooltip(slot, x, y) {
     if (!item || drag) return el.tooltip.classList.add('hidden');
 
     const lines = [createElement('div', 'tooltip__title', item.label)];
+
+    const category = state.categories[item.category];
+    if (category) {
+        const categoryLine = createElement('div', 'tooltip__category', category.label);
+        categoryLine.style.color = category.color;
+        lines.push(categoryLine);
+    }
 
     if (item.description) lines.push(createElement('div', 'tooltip__line', item.description));
     lines.push(createElement('div', 'tooltip__line', formatWeight(item.weight)));
@@ -260,6 +283,7 @@ window.addEventListener('message', ({ data }) => {
             state.openKey = data.openKey;
             state.equipped = data.equipped || null;
             state.labels = data.labels;
+            state.categories = data.categories || {};
             state.items.clear();
             for (const { slot, item } of data.items) if (item) state.items.set(slot, item);
 

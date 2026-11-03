@@ -104,8 +104,13 @@ body {
     background: var(--slot);
 }
 
+.slot--filled {
+    background: linear-gradient(to top, var(--category-tint, transparent), var(--slot) 70%);
+    box-shadow: inset 0 -3px 0 var(--category, transparent);
+}
+
 .slot--filled:hover {
-    background: var(--slot-hover);
+    background: linear-gradient(to top, var(--category-tint, transparent), var(--slot-hover) 70%);
 }
 
 .slot--hotbar {
@@ -205,6 +210,13 @@ body {
 
 .tooltip__title {
     font-weight: 600;
+}
+
+.tooltip__category {
+    margin-top: 2px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .tooltip__line {

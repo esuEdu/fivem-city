@@ -36,6 +36,7 @@ local function toNui(slot, item)
             image = definition.image,
             weight = definition.weight * item.count,
             weapon = definition.weapon or false,
+            category = definition.category,
         },
     }
 end
@@ -62,6 +63,7 @@ local function setupNui()
             ammo = locale('ui_ammo'),
         },
         equipped = weapons.getSerial() or false,
+        categories = Config.Categories,
     })
 end
 
