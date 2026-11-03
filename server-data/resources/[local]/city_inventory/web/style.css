@@ -295,6 +295,12 @@ svg {
     box-shadow: 0 0 14px var(--accent-glow);
 }
 
+/* Drop target while dragging something that combines with it (ammo or an attachment onto a gun, a recipe) */
+.slot--combine {
+    border: 2px dashed var(--accent);
+    box-shadow: 0 0 18px var(--accent-glow);
+}
+
 .slot--dimmed {
     opacity: 0.25;
     box-shadow: none;

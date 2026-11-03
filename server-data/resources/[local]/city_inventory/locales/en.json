@@ -31,5 +31,19 @@
     "unknown_kit": "Unknown kit: %s",
     "gave_kit": "Gave kit %s to %s",
     "ui_using": "Using %s",
-    "error_unavailable": "That isn't available yet"
+    "error_unavailable": "That isn't available yet",
+    "ui_unload": "Unload",
+    "ui_remove": "Remove %s",
+    "ui_attachments": "Attachments",
+    "ui_attaching": "Attaching %s",
+    "ui_crafting": "Crafting",
+    "error_wrong_ammo": "That ammo doesn't fit this weapon",
+    "error_clip_full": "The weapon is already fully loaded",
+    "error_not_weapon": "That isn't a weapon that takes ammo",
+    "error_not_component": "That isn't an attachment",
+    "error_component_taken": "The weapon already has an attachment of that kind",
+    "error_component_wont_fit": "That attachment doesn't fit this weapon",
+    "error_no_weapon": "Hold a weapon to attach this",
+    "error_no_recipe": "Those items don't combine",
+    "error_missing_ingredients": "You don't have everything you need"
 }

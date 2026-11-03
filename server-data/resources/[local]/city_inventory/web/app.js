@@ -18,6 +18,9 @@ const state = {
     // Metadata fields other scripts asked to show (ox_inventory's displayMetadata), key -> label
     metadataLabels: {},
     categories: new Map(),
+    // 'a|b' item name pairs (lowercase, sorted) that make something together (Config.Recipes)
+    recipes: new Set(),
+    componentLabels: {},
     filter: 'all',
     search: '',
     items: new Map(),
@@ -41,11 +44,11 @@ const el = {
     close: document.getElementById('close'),
     popup: document.getElementById('hotbar-popup'),
     menu: document.getElementById('menu'),
-    menuUse: document.getElementById('menu-use'),
     tooltip: document.getElementById('tooltip'),
 };
 
 let drag = null;
+let combineTarget = null;
 let menuSlot = null;
 let popupTimer = null;
 
@@ -201,6 +204,26 @@ function applyEntries(entries) {
     }
 }
 
+function pairKey(a, b) {
+    [a, b] = [a.toLowerCase(), b.toLowerCase()];
+    return a < b ? `${a}|${b}` : `${b}|${a}`;
+}
+
+// Mirrors the server's rules, only to pick between combine and move; the server decides
+function combines(from, to) {
+    if (!from || !to || from === to) return false;
+    if (to.weapon && from.ammo && to.ammoname?.toLowerCase() === from.name.toLowerCase()) return true;
+    if (to.weapon && from.component) return true;
+    return state.recipes.has(pairKey(from.name, to.name));
+}
+
+function setCombineTarget(slotEl) {
+    if (combineTarget === slotEl) return;
+    combineTarget?.classList.remove('slot--combine');
+    combineTarget = slotEl;
+    combineTarget?.classList.add('slot--combine');
+}
+
 function hideMenus() {
     el.menu.classList.add('hidden');
     el.tooltip.classList.add('hidden');
@@ -208,6 +231,7 @@ function hideMenus() {
 }
 
 function cancelDrag() {
+    setCombineTarget(null);
     if (drag?.ghost) drag.ghost.remove();
     drag = null;
 }
@@ -240,6 +264,9 @@ function showTooltip(slot, x, y) {
     lines.push(createElement('div', 'tooltip__line', formatWeight(item.weight)));
     if (typeof item.metadata?.ammo === 'number') lines.push(createElement('div', 'tooltip__line', `${state.labels.ammo}: ${item.metadata.ammo}`));
     if (item.metadata?.serial) lines.push(createElement('div', 'tooltip__line', `#${item.metadata.serial}`));
+
+    const attachments = (item.metadata?.components || []).map((name) => state.componentLabels[name] || name);
+    if (attachments.length) lines.push(createElement('div', 'tooltip__line', `${state.labels.attachments}: ${attachments.join(', ')}`));
 
     for (const [key, label] of Object.entries(state.metadataLabels)) {
         const value = item.metadata?.[key];
@@ -294,6 +321,10 @@ document.addEventListener('pointermove', (event) => {
     }
 
     drag.ghost.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
+
+    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('.slot');
+    const targetItem = target && el.inventory.contains(target) && state.items.get(Number(target.dataset.slot));
+    setCombineTarget(targetItem && Number(target.dataset.slot) !== drag.slot && combines(drag.item, targetItem) ? target : null);
 });
 
 document.addEventListener('pointerup', (event) => {
@@ -307,7 +338,8 @@ document.addEventListener('pointerup', (event) => {
     const toSlot = target && el.inventory.contains(target) ? Number(target.dataset.slot) : null;
     if (!toSlot || toSlot === slot) return;
 
-    post('move', { from: slot, to: toSlot, count: dragCount(event, item) });
+    const action = combines(item, state.items.get(toSlot)) ? 'combine' : 'move';
+    post(action, { from: slot, to: toSlot, count: dragCount(event, item) });
 });
 
 el.inventory.addEventListener('dblclick', (event) => {
@@ -323,16 +355,36 @@ el.inventory.addEventListener('contextmenu', (event) => {
     if (!item) return hideMenus();
 
     menuSlot = slot;
-    el.menuUse.textContent = item.weapon ? state.labels.equip : state.labels.use;
+    buildMenu(item);
     el.tooltip.classList.add('hidden');
     el.menu.style.left = `${event.clientX}px`;
     el.menu.style.top = `${event.clientY}px`;
     el.menu.classList.remove('hidden');
 });
 
+function menuItem(label, action, name) {
+    const entry = createElement('li', 'menu__item', label);
+    entry.dataset.action = action;
+    if (name) entry.dataset.name = name;
+    return entry;
+}
+
+function buildMenu(item) {
+    const entries = [menuItem(item.weapon ? state.labels.equip : state.labels.use, 'use')];
+
+    if (item.weapon && item.metadata?.ammo > 0) entries.push(menuItem(state.labels.unload, 'unload'));
+
+    for (const name of item.metadata?.components || []) {
+        const label = state.componentLabels[name] || name;
+        entries.push(menuItem(state.labels.remove.replace('%s', label), 'detach', name));
+    }
+
+    el.menu.replaceChildren(...entries);
+}
+
 el.menu.addEventListener('click', (event) => {
-    const action = event.target.dataset.action;
-    if (action && menuSlot) post(action, { slot: menuSlot });
+    const { action, name } = event.target.dataset;
+    if (action && menuSlot) post(action, { slot: menuSlot, name });
     hideMenus();
 });
 
@@ -381,6 +433,8 @@ window.addEventListener('message', ({ data }) => {
             state.metadataLabels = data.metadataLabels || {};
             state.labels = data.labels;
             state.categories = new Map((data.categories || []).map((category) => [category.name, category]));
+            state.recipes = new Set((data.recipes || []).map(([a, b]) => pairKey(a, b)));
+            state.componentLabels = data.componentLabels || {};
             state.items.clear();
             for (const { slot, item } of data.items) if (item) state.items.set(slot, item);
 

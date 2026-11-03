@@ -32,6 +32,13 @@ Config.ActionsPerSecond = 10
 -- The client tells the server the magazine size; this caps it.
 Config.MaxClip = 100
 
+-- Crafting: drop one ingredient onto another in the inventory. Any two ingredients of a recipe start it; the player
+-- needs all of them. duration (ms) shows a progress bar first.
+Config.Recipes = {
+    { ingredients = { { 'rolling_paper', 1 }, { 'weed_skunk', 1 } }, result = { 'joint', 1 }, duration = 3000 },
+    { ingredients = { { 'metalscrap', 5 }, { 'rubber', 2 } }, result = { 'repairkit', 1 }, duration = 5000 },
+}
+
 -- Item sets for the /kit admin command. The first one is given when no name is typed.
 Config.Kits = {
     { name = 'test', items = {
@@ -54,5 +61,15 @@ Config.Kits = {
         { 'weapon_pistol', 1 },
         { 'ammo-9', 96 },
         { 'weapon_knife', 1 },
+        { 'at_flashlight', 1 },
+        { 'at_suppressor_light', 1 },
+        { 'at_clip_extended_pistol', 1 },
+        { 'at_scope_large', 1 },
+    } },
+    { name = 'crafting', items = {
+        { 'rolling_paper', 3 },
+        { 'weed_skunk', 3 },
+        { 'metalscrap', 10 },
+        { 'rubber', 4 },
     } },
 }

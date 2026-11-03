@@ -3,6 +3,7 @@
 
 local Items = require 'shared.items'
 local search = require 'shared.search'
+local weightOf = require 'shared.weight'
 local weapons = require 'client.weapons'
 
 local compat = {}
@@ -35,7 +36,7 @@ local function slotData(slot, item)
         count = item.count,
         metadata = item.metadata,
         label = definition.label,
-        weight = definition.weight * item.count,
+        weight = weightOf(item),
     }
 end
 
@@ -109,6 +110,40 @@ end
 
 -- Scripts like qbx_medical put the weapon away this way
 AddEventHandler('ox_inventory:disarm', weapons.holster)
+
+exports('Items', function(name)
+    if name then
+        return Items[name]
+    end
+
+    return Items
+end)
+
+exports('GetItemCount', function(name, metadata, strict)
+    return search.count(getItems(), name, metadata, strict)
+end)
+
+exports('Search', function(kind, names, metadata)
+    if kind ~= 'count' and kind ~= 'slots' then return end
+
+    local items = getItems()
+
+    return search.run(items, kind, names, metadata, function(slot)
+        local item = items[slot]
+
+        return { slot = slot, name = item.name, count = item.count, metadata = item.metadata, label = Items[item.name].label }
+    end)
+end)
+
+exports('GetPlayerWeight', function()
+    local total = 0
+
+    for _, item in pairs(getItems()) do
+        total = total + weightOf(item)
+    end
+
+    return total
+end)
 
 exports('getCurrentWeapon', currentWeapon)
 

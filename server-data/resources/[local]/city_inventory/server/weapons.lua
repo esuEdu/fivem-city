@@ -2,6 +2,7 @@
 
 local Items = require 'shared.items'
 local search = require 'shared.search'
+local Inventory = require 'server.inventory'
 
 local weapons = {}
 
@@ -29,14 +30,23 @@ local function setSlotAmmo(inventory, slot, ammo)
     inventory:setSlot(slot, { name = item.name, count = item.count, metadata = metadata })
 end
 
+---@param inventory Inventory
+---@param slot unknown
+---@return InventoryItem? item the weapon in `slot`
+function weapons.at(inventory, slot)
+    local item = inventory:isSlot(slot) and inventory.items[slot]
+
+    return item and Items[item.name].weapon and item or nil
+end
+
 ---Equips the weapon in `slot`, or unequips it when it is already equipped.
 ---@param inventory Inventory
 ---@param slot integer
 ---@return boolean success
 ---@return table | string | nil result weapon data when equipped, nil when unequipped, or the failure reason
 function weapons.toggle(inventory, slot)
-    local item = inventory:isSlot(slot) and inventory.items[slot]
-    if not item or not Items[item.name].weapon then return false, 'not_weapon' end
+    local item = weapons.at(inventory, slot)
+    if not item then return false, 'not_weapon' end
 
     if inventory.equipped == item.metadata.serial then
         inventory.equipped = nil
@@ -50,6 +60,7 @@ function weapons.toggle(inventory, slot)
         serial = item.metadata.serial,
         ammo = item.metadata.ammo,
         ammoname = Items[item.name].ammoname,
+        components = item.metadata.components,
     }
 end
 
@@ -126,6 +137,59 @@ function weapons.reload(inventory, serial, ammo, clipHint)
     setSlotAmmo(inventory, slot, current + loaded)
 
     return true, current + loaded
+end
+
+---Loads the weapon in `weaponSlot` with ammo from `ammoSlot`, e.g. when the player drags the ammo onto it.
+---@param inventory Inventory
+---@param weaponSlot integer
+---@param ammoSlot integer
+---@param count unknown most rounds to load, defaults to all in the slot
+---@param clipHint unknown magazine size, used when data/weapons.lua sets no clip
+---@return boolean success
+---@return table | string result { serial, ammo } or the failure reason
+function weapons.load(inventory, weaponSlot, ammoSlot, count, clipHint)
+    local weapon = weapons.at(inventory, weaponSlot)
+    local definition = weapon and Items[weapon.name]
+    if not definition or not definition.ammoname then return false, 'not_weapon' end
+
+    local ammo = inventory:isSlot(ammoSlot) and inventory.items[ammoSlot]
+    if not ammo or ammo.name ~= Items[definition.ammoname].name then return false, 'wrong_ammo' end
+
+    local clip = clipSize(definition, clipHint)
+    if not clip then return false, 'not_weapon' end
+
+    local current = weapon.metadata.ammo or 0
+    local loaded = math.min(Inventory.toCount(count) or ammo.count, ammo.count, clip - current)
+    if loaded <= 0 then return false, 'clip_full' end
+
+    inventory:remove(ammo.name, loaded, nil, ammoSlot)
+    setSlotAmmo(inventory, weaponSlot, current + loaded)
+
+    return true, { serial = weapon.metadata.serial, ammo = current + loaded }
+end
+
+---Takes the rounds out of the weapon in `slot` and puts them back as ammo items.
+---@param inventory Inventory
+---@param slot integer
+---@return boolean success
+---@return table | string result { serial, ammo = 0 } or the failure reason
+function weapons.unload(inventory, slot)
+    local weapon = weapons.at(inventory, slot)
+    local definition = weapon and Items[weapon.name]
+    local rounds = weapon and weapon.metadata.ammo
+    if not definition or not definition.ammoname or not rounds or rounds < 1 then return false, 'no_ammo' end
+
+    -- Empty the gun first: the rounds then weigh nothing extra when they come back as items
+    setSlotAmmo(inventory, slot, 0)
+
+    local success, reason = inventory:add(definition.ammoname, rounds)
+
+    if not success then
+        setSlotAmmo(inventory, slot, rounds)
+        return false, reason
+    end
+
+    return true, { serial = weapon.metadata.serial, ammo = 0 }
 end
 
 return weapons

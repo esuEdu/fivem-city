@@ -1,8 +1,9 @@
 local Items = require 'shared.items'
-local search = require 'shared.search'
+local weightOf = require 'shared.weight'
 local weapons = require 'client.weapons'
 local use = require 'client.use'
 local compat = require 'client.compat'
+local craft = require 'client.craft'
 local theme = require '@city_ui.theme'
 
 -- Read-only copy of the player's inventory; the server sends every change
@@ -37,8 +38,11 @@ local function toNui(slot, item)
             label = definition.label,
             description = definition.description,
             image = definition.image,
-            weight = definition.weight * item.count,
+            weight = weightOf(item),
             weapon = definition.weapon or false,
+            ammoname = definition.ammoname,
+            ammo = definition.ammo or false,
+            component = definition.component or false,
             category = definition.category,
             clip = definition.clip,
         },
@@ -71,7 +75,12 @@ local function setupNui()
             all = locale('ui_all'),
             search = locale('ui_search'),
             qty = locale('ui_qty'),
+            unload = locale('ui_unload'),
+            remove = locale('ui_remove'),
+            attachments = locale('ui_attachments'),
         },
+        recipes = craft.pairs(),
+        componentLabels = craft.componentLabels(),
         equipped = weapons.getSerial() or false,
         metadataLabels = compat.metadataLabels(),
         categories = Config.Categories,
@@ -131,6 +140,8 @@ local function useSlot(slot)
         if definition.close and isOpen then close() end
         return
     end
+
+    if craft.attachToEquipped(slot) then return end
 
     isUsing = true
 
@@ -197,6 +208,7 @@ RegisterNetEvent('city_inventory:client:updateSlots', function(changes, newWeigh
     for slot, item in pairs(changes) do
         items[slot] = item or nil
         entries[#entries + 1] = toNui(slot, item or nil)
+        if item then weapons.refresh(item) end
     end
 
     weight = newWeight
@@ -255,6 +267,13 @@ end)
 
 compat.init(function() return items end, open, close)
 
+craft.init({
+    items = function() return items end,
+    canAct = canAct,
+    close = close,
+    notifyFailure = notifyFailure,
+})
+
 lib.addKeybind({
     name = 'inventory',
     description = locale('keybind_open'),
@@ -293,32 +312,4 @@ AddEventHandler('onResourceStop', function(resource)
     end
 
     weapons.disarm()
-end)
-
--- Same names and arguments as ox_inventory's client exports
-
-exports('Items', function(name)
-    if name then
-        return Items[name]
-    end
-
-    return Items
-end)
-
-exports('GetItemCount', function(name, metadata, strict)
-    return search.count(items, name, metadata, strict)
-end)
-
-exports('Search', function(kind, names, metadata)
-    if kind ~= 'count' and kind ~= 'slots' then return end
-
-    return search.run(items, kind, names, metadata, function(slot)
-        local item = items[slot]
-
-        return { slot = slot, name = item.name, count = item.count, metadata = item.metadata, label = Items[item.name].label }
-    end)
-end)
-
-exports('GetPlayerWeight', function()
-    return weight
 end)

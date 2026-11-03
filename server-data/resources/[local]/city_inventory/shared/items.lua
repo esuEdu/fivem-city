@@ -12,6 +12,9 @@
 ---@field ammo? boolean
 ---@field ammoname? string
 ---@field clip? integer rounds one reload loads
+---@field component? boolean weapon attachment
+---@field componentType? string a gun takes one attachment of each type (sight, muzzle, grip, ...)
+---@field hashes? integer[] game component hashes; the first one the gun accepts is used
 ---@field client? table ox_inventory-style use data: status, anim, prop, usetime, event, notification, add, remove
 ---@field status? table<string, number> statuses changed on use (hunger, thirst, stress)
 ---@field event? string client event fired on use
@@ -83,7 +86,11 @@ for name, data in pairs(weapons.Weapons) do
 end
 
 for name, data in pairs(weapons.Components) do
-    definitions[name] = define(name, data, true, 'weapon')
+    local item = define(name, data, true, 'weapon')
+    item.component = true
+    item.componentType = data.type
+    item.hashes = data.client and data.client.component or {}
+    definitions[name] = item
 end
 
 for name, data in pairs(weapons.Ammo) do

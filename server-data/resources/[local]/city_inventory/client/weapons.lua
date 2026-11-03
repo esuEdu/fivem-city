@@ -1,5 +1,7 @@
 -- The weapon in the player's hands. The ped only ever holds the one weapon equipped from the inventory.
 
+local Items = require 'shared.items'
+
 local AMMO_CHECK_MS = 250
 local AMMO_REPORT_MS = 1000
 
@@ -11,6 +13,8 @@ local weapons = {}
 ---@field hash integer
 ---@field ammoname? string
 ---@field reported integer last ammo count the server knows about
+---@field components integer[] component hashes put on the ped's weapon
+---@field names? string[] attachment items on it, to put them back on a new ped
 
 ---@type EquippedWeapon?
 local current
@@ -54,6 +58,66 @@ local function trackAmmo(weapon)
     end
 end
 
+---The game component that puts this attachment on this gun, if it fits.
+---@param weaponName string
+---@param componentName string
+---@return integer? hash
+function weapons.fits(weaponName, componentName)
+    local definition = Items[componentName]
+    if not definition or not definition.hashes then return end
+
+    local weaponHash = joaat(weaponName)
+
+    for _, hash in ipairs(definition.hashes) do
+        if DoesWeaponTakeWeaponComponent(weaponHash, hash) then return hash end
+    end
+end
+
+---@param weapon EquippedWeapon
+---@param names? string[] attachments from the item's metadata
+local function applyComponents(weapon, names)
+    for _, hash in ipairs(weapon.components) do
+        RemoveWeaponComponentFromPed(cache.ped, weapon.hash, hash)
+    end
+
+    weapon.components = {}
+
+    for _, name in ipairs(names or {}) do
+        local hash = weapons.fits(weapon.name, name)
+
+        if hash then
+            GiveWeaponComponentToPed(cache.ped, weapon.hash, hash)
+            weapon.components[#weapon.components + 1] = hash
+        end
+    end
+end
+
+---Call when a slot changed: if it holds the gun in hand, its attachments are put on again.
+---@param item InventoryItem
+function weapons.refresh(item)
+    local weapon = current
+    if not weapon or item.metadata.serial ~= weapon.serial then return end
+
+    weapon.names = item.metadata.components
+    applyComponents(weapon, weapon.names)
+end
+
+---Tells the server about shots fired, so it has the right count before changing the ammo itself.
+function weapons.report()
+    if current then reportAmmo(current, true) end
+end
+
+---Sets the rounds in the gun in hand after the server loaded or unloaded it.
+---@param serial string
+---@param ammo integer
+function weapons.setAmmo(serial, ammo)
+    local weapon = current
+    if not weapon or weapon.serial ~= serial then return end
+
+    weapon.reported = ammo
+    SetPedAmmo(cache.ped, weapon.hash, ammo)
+end
+
 ---@return string? serial
 function weapons.getSerial()
     return current and current.serial
@@ -82,7 +146,7 @@ function weapons.holster()
     weapons.disarm()
 end
 
----@param data { name: string, serial: string, ammo?: integer, ammoname?: string }
+---@param data { name: string, serial: string, ammo?: integer, ammoname?: string, components?: string[] }
 function weapons.arm(data)
     weapons.disarm()
 
@@ -92,11 +156,14 @@ function weapons.arm(data)
         hash = joaat(data.name),
         ammoname = data.ammoname,
         reported = data.ammo or 0,
+        components = {},
+        names = data.components,
     }
 
     current = weapon
 
     GiveWeaponToPed(cache.ped, weapon.hash, 0, false, true)
+    applyComponents(weapon, data.components)
     SetPedAmmo(cache.ped, weapon.hash, weapon.reported)
     SetCurrentPedWeapon(cache.ped, weapon.hash, true)
     SetPedCanSwitchWeapon(cache.ped, false)
@@ -167,7 +234,7 @@ lib.onCache('ped', function()
     current = nil
 
     SetTimeout(0, function()
-        weapons.arm({ name = weapon.name, serial = weapon.serial, ammo = weapon.reported, ammoname = weapon.ammoname })
+        weapons.arm({ name = weapon.name, serial = weapon.serial, ammo = weapon.reported, ammoname = weapon.ammoname, components = weapon.names })
     end)
 end)
 

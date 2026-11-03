@@ -2,6 +2,7 @@
 
 local Items = require 'shared.items'
 local search = require 'shared.search'
+local weightOf = require 'shared.weight'
 
 ---@class Inventory
 ---@field owner string
@@ -55,7 +56,7 @@ function Inventory.new(owner, slotCount, maxWeight, saved)
 
         if definition and self:isSlot(slot) and count and not self.items[slot] then
             self.items[slot] = { name = definition.name, count = count, metadata = entry.metadata or {} }
-            self.weight = self.weight + self:itemWeight(definition.name, count)
+            self.weight = self.weight + weightOf(self.items[slot])
         else
             self.unknown[#self.unknown + 1] = entry
         end
@@ -74,16 +75,13 @@ function Inventory:isSlot(slot)
     return math.type(slot) == 'integer' and slot >= 1 and slot <= self.slotCount
 end
 
----@param name string
----@param count integer
----@return integer
-function Inventory:itemWeight(name, count)
-    return Items[name].weight * count
-end
-
+---Every change to a slot goes through here, so the weight always matches the contents (metadata included).
 ---@param slot integer
 ---@param item? InventoryItem
 function Inventory:setSlot(slot, item)
+    local old = self.items[slot]
+
+    self.weight = self.weight - (old and weightOf(old) or 0) + (item and weightOf(item) or 0)
     self.items[slot] = item
     self.changed[slot] = true
     self.dirty = true
@@ -128,7 +126,7 @@ function Inventory:canFit(name, count, metadata)
 
     name = definition.name
 
-    if self.weight + self:itemWeight(name, count) > self.maxWeight then return false end
+    if self.weight + weightOf({ name = name, count = count, metadata = metadata }) > self.maxWeight then return false end
 
     if definition.stack then
         return self:findStack(name, metadata or {}) ~= nil or #self:freeSlots(1) == 1
@@ -154,9 +152,9 @@ function Inventory:add(name, count, metadata, slot)
 
     if metadata ~= nil and type(metadata) ~= 'table' then return false, 'invalid_metadata' end
     if slot ~= nil and not self:isSlot(slot) then return false, 'invalid_slot' end
-    if self.weight + self:itemWeight(name, count) > self.maxWeight then return false, 'inventory_full' end
-
     metadata = metadata or {}
+
+    if self.weight + weightOf({ name = name, count = count, metadata = metadata }) > self.maxWeight then return false, 'inventory_full' end
 
     if definition.stack then
         slot = slot or self:findStack(name, metadata) or self:freeSlots(1)[1]
@@ -194,8 +192,6 @@ function Inventory:add(name, count, metadata, slot)
             self:setSlot(slots[i], { name = name, count = 1, metadata = itemMetadata })
         end
     end
-
-    self.weight = self.weight + self:itemWeight(name, count)
 
     return true
 end
@@ -246,8 +242,6 @@ function Inventory:remove(name, count, metadata, slot)
 
         if remaining == 0 then break end
     end
-
-    self.weight = self.weight - self:itemWeight(name, count)
 
     return true
 end
@@ -321,7 +315,6 @@ function Inventory:clear(keep)
 
     for slot, item in pairs(self.items) do
         if not kept[item.name] then
-            self.weight = self.weight - self:itemWeight(item.name, item.count)
             self:setSlot(slot, nil)
         end
     end
@@ -342,7 +335,7 @@ function Inventory:slotData(slot)
         count = item.count,
         metadata = item.metadata,
         label = definition.label,
-        weight = self:itemWeight(item.name, item.count),
+        weight = weightOf(item),
         stack = definition.stack,
         close = definition.close,
     }
