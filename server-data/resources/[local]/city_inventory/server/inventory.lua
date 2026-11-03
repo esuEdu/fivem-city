@@ -51,9 +51,11 @@ function Inventory.new(owner, slotCount, maxWeight, saved)
     for _, entry in ipairs(saved or {}) do
         local slot, count = math.tointeger(entry.slot), toCount(entry.count)
 
-        if Items[entry.name] and self:isSlot(slot) and count and not self.items[slot] then
-            self.items[slot] = { name = entry.name, count = count, metadata = entry.metadata or {} }
-            self.weight = self.weight + self:itemWeight(entry.name, count)
+        local definition = Items[entry.name]
+
+        if definition and self:isSlot(slot) and count and not self.items[slot] then
+            self.items[slot] = { name = definition.name, count = count, metadata = entry.metadata or {} }
+            self.weight = self.weight + self:itemWeight(definition.name, count)
         else
             self.unknown[#self.unknown + 1] = entry
         end
@@ -123,6 +125,9 @@ function Inventory:canFit(name, count, metadata)
     local definition = Items[name]
     count = toCount(count)
     if not definition or not count then return false end
+
+    name = definition.name
+
     if self.weight + self:itemWeight(name, count) > self.maxWeight then return false end
 
     if definition.stack then
@@ -144,6 +149,9 @@ function Inventory:add(name, count, metadata, slot)
 
     if not definition then return false, 'invalid_item' end
     if not count then return false, 'invalid_count' end
+
+    name = definition.name
+
     if metadata ~= nil and type(metadata) ~= 'table' then return false, 'invalid_metadata' end
     if slot ~= nil and not self:isSlot(slot) then return false, 'invalid_slot' end
     if self.weight + self:itemWeight(name, count) > self.maxWeight then return false, 'inventory_full' end
@@ -199,10 +207,13 @@ end
 ---@return boolean success
 ---@return string? reason
 function Inventory:remove(name, count, metadata, slot)
+    local definition = Items[name]
     count = toCount(count)
 
-    if not Items[name] then return false, 'invalid_item' end
+    if not definition then return false, 'invalid_item' end
     if not count then return false, 'invalid_count' end
+
+    name = definition.name
 
     local slots
 
@@ -248,9 +259,12 @@ end
 ---@return boolean success
 ---@return string? reason
 function Inventory:set(name, count, metadata)
+    local definition = Items[name]
     count = tonumber(count)
-    if not Items[name] then return false, 'invalid_item' end
+    if not definition then return false, 'invalid_item' end
     if not count or count < 0 or count ~= math.floor(count) then return false, 'invalid_count' end
+
+    name = definition.name
 
     local current = search.count(self.items, name, metadata)
 
@@ -302,7 +316,7 @@ function Inventory:clear(keep)
     local kept = {}
 
     for _, name in ipairs(type(keep) == 'table' and keep or { keep }) do
-        kept[name] = true
+        kept[Items[name] and Items[name].name or name] = true
     end
 
     for slot, item in pairs(self.items) do

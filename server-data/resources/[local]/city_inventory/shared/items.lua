@@ -12,6 +12,9 @@
 ---@field ammo? boolean
 ---@field ammoname? string
 ---@field clip? integer rounds one reload loads
+---@field client? table ox_inventory-style use data: status, anim, prop, usetime, event, notification, add, remove
+---@field status? table<string, number> statuses changed on use (hunger, thirst, stress)
+---@field event? string client event fired on use
 
 local items = require 'data.items'
 local weapons = require 'data.weapons'
@@ -43,16 +46,27 @@ end
 ---@param category string used when the item doesn't set one
 ---@return ItemDefinition
 local function define(name, data, stack, category)
+    local client = data.client
+
+    -- Like ox_inventory: items used with a status change or a progress bar use up one by default
+    local consume = data.consume
+    if consume == nil and client and (client.status or client.usetime) then
+        consume = 1
+    end
+
     return {
         name = name,
         label = data.label or name,
         weight = data.weight or 0,
         stack = stack,
         close = data.close ~= false,
-        consume = data.consume,
+        consume = consume,
         description = data.description,
-        image = data.client and data.client.image or ('%s.png'):format(name),
+        image = client and client.image or ('%s.png'):format(name:lower()),
         category = checkCategory(name, data.category or category),
+        client = client,
+        status = client and client.status,
+        event = client and client.event,
     }
 end
 
@@ -61,7 +75,6 @@ for name, data in pairs(items) do
 end
 
 for name, data in pairs(weapons.Weapons) do
-    name = name:lower()
     local item = define(name, data, false, 'weapon')
     item.weapon = true
     item.ammoname = data.ammoname
@@ -69,11 +82,28 @@ for name, data in pairs(weapons.Weapons) do
     definitions[name] = item
 end
 
+for name, data in pairs(weapons.Components) do
+    definitions[name] = define(name, data, true, 'weapon')
+end
+
 for name, data in pairs(weapons.Ammo) do
-    name = name:lower()
     local item = define(name, data, true, 'ammo')
     item.ammo = true
     definitions[name] = item
 end
 
-return definitions
+-- Names are stored as written in data/ (WEAPON_PISTOL, ammo-9, water), but looked up in any case:
+-- scripts written for ox_inventory use WEAPON_PISTOL, admins type weapon_pistol.
+---@type table<string, string>
+local byLowerName = {}
+
+for name in pairs(definitions) do
+    byLowerName[name:lower()] = name
+end
+
+return setmetatable(definitions, {
+    __index = function(_, name)
+        local canonical = type(name) == 'string' and byLowerName[name:lower()]
+        return canonical and rawget(definitions, canonical)
+    end,
+})

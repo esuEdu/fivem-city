@@ -5,18 +5,7 @@ local Items = require 'shared.items'
 local search = require 'shared.search'
 local players = require 'server.players'
 
----@param inv integer | table
----@return Inventory? inventory
----@return integer? src
-local function resolve(inv)
-    if type(inv) == 'table' then
-        inv = inv.id
-    end
-
-    local src = math.tointeger(tonumber(inv))
-
-    return src and players.get(src), src
-end
+local resolve = players.resolve
 
 ---ox_inventory accepts a string as shorthand for { type = string }
 ---@param metadata unknown

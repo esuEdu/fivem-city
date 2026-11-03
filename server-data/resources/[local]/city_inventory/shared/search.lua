@@ -5,7 +5,17 @@
 ---@field count integer
 ---@field metadata table
 
+local Items = require 'shared.items'
+
 local search = {}
+
+---Name as stored in inventories, so callers can use any case (WEAPON_PISTOL / weapon_pistol).
+---@param name string
+---@return string
+local function canonical(name)
+    local definition = Items[name]
+    return definition and definition.name or name
+end
 
 ---@param metadata? table
 ---@param filter? table | string
@@ -41,6 +51,7 @@ end
 ---@return integer
 function search.count(slots, name, filter, strict)
     local total = 0
+    name = canonical(name)
 
     for _, item in pairs(slots) do
         if item.name == name and search.matches(item.metadata, filter, strict) then
@@ -58,6 +69,7 @@ end
 ---@return integer[] slot numbers in ascending order
 function search.slots(slots, name, filter, strict)
     local found = {}
+    name = canonical(name)
 
     for slot, item in pairs(slots) do
         if item.name == name and search.matches(item.metadata, filter, strict) then

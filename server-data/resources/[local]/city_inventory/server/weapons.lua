@@ -50,7 +50,6 @@ function weapons.toggle(inventory, slot)
         serial = item.metadata.serial,
         ammo = item.metadata.ammo,
         ammoname = Items[item.name].ammoname,
-        clip = Items[item.name].clip,
     }
 end
 
@@ -88,13 +87,27 @@ function weapons.setAmmo(inventory, serial, ammo)
     return true
 end
 
+---@param definition ItemDefinition
+---@param clipHint unknown magazine size the client's game reports
+---@return integer?
+local function clipSize(definition, clipHint)
+    if definition.clip then return definition.clip end
+
+    -- Loading more rounds than a magazine holds only moves ammo the player already owns, so the hint is safe to use capped
+    clipHint = type(clipHint) == 'number' and math.tointeger(clipHint)
+    if not clipHint or clipHint < 1 then return end
+
+    return math.min(clipHint, Config.MaxClip)
+end
+
 ---Fills the equipped weapon's clip from its ammo items.
 ---@param inventory Inventory
 ---@param serial unknown
 ---@param ammo unknown rounds left in the weapon, as the client sees it
+---@param clipHint unknown magazine size, used when data/weapons.lua sets no clip
 ---@return boolean success
 ---@return integer | string result new ammo count, or the failure reason
-function weapons.reload(inventory, serial, ammo)
+function weapons.reload(inventory, serial, ammo, clipHint)
     if serial ~= inventory.equipped then return false, 'not_weapon' end
 
     weapons.setAmmo(inventory, serial, ammo)
@@ -102,11 +115,12 @@ function weapons.reload(inventory, serial, ammo)
     local slot = findSerial(inventory, serial)
     local item = slot and inventory.items[slot]
     local definition = item and Items[item.name]
-    if not definition or not definition.ammoname or not definition.clip then return false, 'not_weapon' end
+    local clip = definition and clipSize(definition, clipHint)
+    if not definition or not definition.ammoname or not clip then return false, 'not_weapon' end
 
     local current = item.metadata.ammo or 0
-    local loaded = math.min(definition.clip - current, search.count(inventory.items, definition.ammoname))
-    if loaded <= 0 then return false, current >= definition.clip and 'clip_full' or 'no_ammo' end
+    local loaded = math.min(clip - current, search.count(inventory.items, definition.ammoname))
+    if loaded <= 0 then return false, current >= clip and 'clip_full' or 'no_ammo' end
 
     inventory:remove(definition.ammoname, loaded)
     setSlotAmmo(inventory, slot, current + loaded)

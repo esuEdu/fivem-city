@@ -1,6 +1,8 @@
 local Items = require 'shared.items'
 local search = require 'shared.search'
 local weapons = require 'client.weapons'
+local use = require 'client.use'
+local compat = require 'client.compat'
 local theme = require '@city_ui.theme'
 
 -- Read-only copy of the player's inventory; the server sends every change
@@ -71,6 +73,7 @@ local function setupNui()
             qty = locale('ui_qty'),
         },
         equipped = weapons.getSerial() or false,
+        metadataLabels = compat.metadataLabels(),
         categories = Config.Categories,
         theme = theme,
     })
@@ -103,6 +106,8 @@ local function open()
     isOpen = true
     SetNuiFocus(true, true)
     SendNUIMessage({ action = 'open' })
+    -- Lets qbx_hud hide itself (ox_inventory:openedInventory)
+    TriggerServerEvent('city_inventory:server:setOpen', true)
 end
 
 local function close()
@@ -111,6 +116,7 @@ local function close()
     isOpen = false
     SetNuiFocus(false, false)
     SendNUIMessage({ action = 'close' })
+    TriggerServerEvent('city_inventory:server:setOpen', false)
 end
 
 ---Uses the item in `slot`; weapons are equipped or put away instead.
@@ -119,14 +125,29 @@ local function useSlot(slot)
     local item = items[slot]
     if isUsing or not item or not canAct() then return end
 
+    local definition = Items[item.name]
+
+    if use.fireEvent(slot, item) then
+        if definition.close and isOpen then close() end
+        return
+    end
+
     isUsing = true
 
     local success, result
 
-    if Items[item.name].weapon then
+    if definition.weapon then
         success, result = weapons.toggle(slot)
     else
-        success, result = lib.callback.await('city_inventory:use', false, slot)
+        -- The progress bar plays in the world, not behind the inventory
+        if definition.client and definition.client.usetime and isOpen then close() end
+
+        if use.progress(item) then
+            success, result = lib.callback.await('city_inventory:use', false, slot, item.name)
+            if success then use.finish(item) end
+        else
+            success, result = false, 'not_used'
+        end
     end
 
     isUsing = false
@@ -138,13 +159,39 @@ local function useSlot(slot)
     end
 end
 
+---@param slots table<integer, InventoryItem | false>
+---@return table<string, integer> counts of the items in `slots` (and what they replace), before the change
+local function countsBefore(slots)
+    local names = {}
+
+    for slot, item in pairs(slots) do
+        if item then names[item.name] = true end
+        if items[slot] then names[items[slot].name] = true end
+    end
+
+    return compat.counts(names)
+end
+
 RegisterNetEvent('city_inventory:client:setInventory', function(newItems, newWeight)
-    items = newItems
+    local before = countsBefore(newItems)
+
+    for slot in pairs(items) do
+        if not newItems[slot] then newItems[slot] = false end
+    end
+
+    items = {}
+
+    for slot, item in pairs(newItems) do
+        items[slot] = item or nil
+    end
+
     weight = newWeight
     setupNui()
+    compat.changed(before, newItems)
 end)
 
 RegisterNetEvent('city_inventory:client:updateSlots', function(changes, newWeight)
+    local before = countsBefore(changes)
     local entries = {}
 
     for slot, item in pairs(changes) do
@@ -155,6 +202,7 @@ RegisterNetEvent('city_inventory:client:updateSlots', function(changes, newWeigh
     weight = newWeight
 
     SendNUIMessage({ action = 'update', changes = entries, weight = weight })
+    compat.changed(before, changes)
 end)
 
 RegisterNetEvent('city_inventory:client:heal', function(amount)
@@ -167,9 +215,19 @@ end)
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     close()
     weapons.disarm()
+
+    local cleared = {}
+
+    for slot in pairs(items) do
+        cleared[slot] = false
+    end
+
+    local before = countsBefore(cleared)
+
     items = {}
     weight = 0
     setupNui()
+    compat.changed(before, cleared)
 end)
 
 -- The page may load after the inventory arrived (e.g. when the resource restarts)
@@ -194,6 +252,8 @@ RegisterNUICallback('use', function(data, cb)
     local slot = toInteger(data.slot)
     if slot then useSlot(slot) end
 end)
+
+compat.init(function() return items end, open, close)
 
 lib.addKeybind({
     name = 'inventory',

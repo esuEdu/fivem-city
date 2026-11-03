@@ -86,26 +86,6 @@ index c67c7cd..9531681 100644
  for name, data in pairs(oxWeapons.Weapons) do
      local weapon = string.lower(name)
      qbShared.Items[weapon] = {
-diff --git a/server-data/resources/[qbx]/qbx_core/config/shared.lua b/server-data/resources/[qbx]/qbx_core/config/shared.lua
-index 105df36..548ec94 100644
---- a/server-data/resources/[qbx]/qbx_core/config/shared.lua
-+++ b/server-data/resources/[qbx]/qbx_core/config/shared.lua
-@@ -5,15 +5,5 @@ return {
-     ---@type { name: string, amount: integer, metadata: fun(source: number): table }[]
-     starterItems = { -- Character starting items
-         { name = 'phone', amount = 1 },
--        { name = 'id_card', amount = 1, metadata = function(source)
--                assert(GetResourceState('qbx_idcard') == 'started', 'qbx_idcard resource not found. Required to give an id_card as a starting item')
--                return exports.qbx_idcard:GetMetaLicense(source, {'id_card'})
--            end
--        },
--        { name = 'driver_license', amount = 1, metadata = function(source)
--                assert(GetResourceState('qbx_idcard') == 'started', 'qbx_idcard resource not found. Required to give an id_card as a starting item')
--                return exports.qbx_idcard:GetMetaLicense(source, {'driver_license'})
--            end
--        },
-     }
- }
 diff --git a/server-data/resources/[qbx]/qbx_core/modules/utils.lua b/server-data/resources/[qbx]/qbx_core/modules/utils.lua
 index efd66f4..82e350a 100644
 --- a/server-data/resources/[qbx]/qbx_core/modules/utils.lua

@@ -29,5 +29,7 @@
     "param_kit": "Kit name (%s)",
     "param_kit_id": "Player ID, default yourself",
     "unknown_kit": "Unknown kit: %s",
-    "gave_kit": "Gave kit %s to %s"
+    "gave_kit": "Gave kit %s to %s",
+    "ui_using": "Using %s",
+    "error_unavailable": "That isn't available yet"
 }

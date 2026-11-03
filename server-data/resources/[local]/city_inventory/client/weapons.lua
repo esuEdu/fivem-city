@@ -10,11 +10,19 @@ local weapons = {}
 ---@field serial string
 ---@field hash integer
 ---@field ammoname? string
----@field clip? integer
 ---@field reported integer last ammo count the server knows about
 
 ---@type EquippedWeapon?
 local current
+
+---@type fun()?
+local onChange
+
+---Called whenever the weapon in hand changes (ox_inventory's currentWeapon event is fired from it).
+---@param fn fun()
+function weapons.onChange(fn)
+    onChange = fn
+end
 
 ---@param weapon EquippedWeapon
 ---@param force? boolean report even if the last report was under a second ago
@@ -61,9 +69,20 @@ function weapons.disarm()
     SetPedCanSwitchWeapon(cache.ped, true)
     RemoveAllPedWeapons(cache.ped, true)
     SendNUIMessage({ action = 'equipped', serial = false })
+
+    if onChange then onChange() end
 end
 
----@param data { name: string, serial: string, ammo?: integer, ammoname?: string, clip?: integer }
+---Puts the weapon away because something on this client asked for it (e.g. qbx_medical when going down).
+function weapons.holster()
+    if not current then return end
+
+    reportAmmo(current, true)
+    TriggerServerEvent('city_inventory:server:holster')
+    weapons.disarm()
+end
+
+---@param data { name: string, serial: string, ammo?: integer, ammoname?: string }
 function weapons.arm(data)
     weapons.disarm()
 
@@ -72,7 +91,6 @@ function weapons.arm(data)
         serial = data.serial,
         hash = joaat(data.name),
         ammoname = data.ammoname,
-        clip = data.clip,
         reported = data.ammo or 0,
     }
 
@@ -83,6 +101,8 @@ function weapons.arm(data)
     SetCurrentPedWeapon(cache.ped, weapon.hash, true)
     SetPedCanSwitchWeapon(cache.ped, false)
     SendNUIMessage({ action = 'equipped', serial = weapon.serial })
+
+    if onChange then onChange() end
 
     if weapon.ammoname then
         CreateThread(function()
@@ -113,12 +133,13 @@ end
 
 function weapons.reload()
     local weapon = current
-    if not weapon or not weapon.clip then return end
+    if not weapon or not weapon.ammoname then return end
 
     local ammo = GetAmmoInPedWeapon(cache.ped, weapon.hash)
-    if ammo >= weapon.clip then return end
+    local clip = GetMaxAmmoInClip(cache.ped, weapon.hash, true)
+    if ammo >= clip then return end
 
-    local success, result = lib.callback.await('city_inventory:reload', false, weapon.serial, ammo)
+    local success, result = lib.callback.await('city_inventory:reload', false, weapon.serial, ammo, clip)
     if current ~= weapon then return end
 
     if not success then
@@ -146,7 +167,7 @@ lib.onCache('ped', function()
     current = nil
 
     SetTimeout(0, function()
-        weapons.arm({ name = weapon.name, serial = weapon.serial, ammo = weapon.reported, ammoname = weapon.ammoname, clip = weapon.clip })
+        weapons.arm({ name = weapon.name, serial = weapon.serial, ammo = weapon.reported, ammoname = weapon.ammoname })
     end)
 end)
 

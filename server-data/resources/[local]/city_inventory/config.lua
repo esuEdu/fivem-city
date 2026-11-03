@@ -1,7 +1,8 @@
 Config = {}
 
-Config.Slots = 40
-Config.MaxWeight = 30000 -- grams
+-- Same as the Qbox recipe's ox_inventory settings
+Config.Slots = 50
+Config.MaxWeight = 85000 -- grams
 Config.HotbarSlots = 5
 Config.OpenKey = 'TAB'
 
@@ -15,19 +16,21 @@ Config.Categories = {
     { name = 'food', label = 'Food', color = '#f5c542' },
     { name = 'drink', label = 'Drinks', color = '#3ec7e0' },
     { name = 'medical', label = 'Medical', color = '#3ecf72' },
+    { name = 'drug', label = 'Drugs', color = '#e05fd0' },
+    { name = 'tool', label = 'Tools', color = '#5b9cf5' },
     { name = 'electronics', label = 'Electronics', color = '#a371f7' },
+    { name = 'valuable', label = 'Valuables', color = '#38d9a9' },
+    { name = 'material', label = 'Materials', color = '#b08968' },
+    { name = 'document', label = 'Documents', color = '#c9d1d9' },
     { name = 'misc', label = 'Misc', color = '#9aa0a6' },
 }
 
 -- Inventory actions (move, use) a player may send per second before the rest are refused
 Config.ActionsPerSecond = 10
 
--- What the starter consumables do. hunger/thirst add to the 0-100 status, health to the ped's health.
-Config.Consumables = {
-    water = { thirst = 25 },
-    sandwich = { hunger = 30 },
-    bandage = { health = 15 },
-}
+-- Most rounds one reload may load when the weapon has no `clip` in data/weapons.lua.
+-- The client tells the server the magazine size; this caps it.
+Config.MaxClip = 100
 
 -- Item sets for the /kit admin command. The first one is given when no name is typed.
 Config.Kits = {
@@ -35,6 +38,8 @@ Config.Kits = {
         { 'water', 5 },
         { 'sandwich', 5 },
         { 'bandage', 5 },
+        { 'lockpick', 2 },
+        { 'radio', 1 },
         { 'weapon_pistol', 1 },
         { 'ammo-9', 48 },
         { 'weapon_knife', 1 },
@@ -42,6 +47,8 @@ Config.Kits = {
     { name = 'food', items = {
         { 'water', 10 },
         { 'sandwich', 10 },
+        { 'burger', 5 },
+        { 'sprunk', 5 },
     } },
     { name = 'weapons', items = {
         { 'weapon_pistol', 1 },

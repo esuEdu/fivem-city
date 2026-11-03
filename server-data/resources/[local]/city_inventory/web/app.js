@@ -15,6 +15,8 @@ const state = {
     openKey: 'TAB',
     equipped: null,
     labels: {},
+    // Metadata fields other scripts asked to show (ox_inventory's displayMetadata), key -> label
+    metadataLabels: {},
     categories: new Map(),
     filter: 'all',
     search: '',
@@ -224,7 +226,7 @@ function showTooltip(slot, x, y) {
     const item = state.items.get(slot);
     if (!item || drag) return el.tooltip.classList.add('hidden');
 
-    const lines = [createElement('div', 'tooltip__title', item.label)];
+    const lines = [createElement('div', 'tooltip__title', item.metadata?.label || item.label)];
 
     const category = state.categories.get(item.category);
     if (category) {
@@ -233,10 +235,16 @@ function showTooltip(slot, x, y) {
         lines.push(categoryLine);
     }
 
-    if (item.description) lines.push(createElement('div', 'tooltip__line', item.description));
+    const description = item.metadata?.description || item.description;
+    if (description) lines.push(createElement('div', 'tooltip__line', description));
     lines.push(createElement('div', 'tooltip__line', formatWeight(item.weight)));
     if (typeof item.metadata?.ammo === 'number') lines.push(createElement('div', 'tooltip__line', `${state.labels.ammo}: ${item.metadata.ammo}`));
     if (item.metadata?.serial) lines.push(createElement('div', 'tooltip__line', `#${item.metadata.serial}`));
+
+    for (const [key, label] of Object.entries(state.metadataLabels)) {
+        const value = item.metadata?.[key];
+        if (value !== undefined && typeof value !== 'object') lines.push(createElement('div', 'tooltip__line', `${label}: ${value}`));
+    }
 
     el.tooltip.replaceChildren(...lines);
     el.tooltip.style.left = `${x + 14}px`;
@@ -370,6 +378,7 @@ window.addEventListener('message', ({ data }) => {
             state.weight = data.weight;
             state.openKey = data.openKey;
             state.equipped = data.equipped || null;
+            state.metadataLabels = data.metadataLabels || {};
             state.labels = data.labels;
             state.categories = new Map((data.categories || []).map((category) => [category.name, category]));
             state.items.clear();
@@ -414,6 +423,10 @@ window.addEventListener('message', ({ data }) => {
         case 'equipped':
             state.equipped = data.serial || null;
             renderAllSlots();
+            break;
+
+        case 'displayMetadata':
+            state.metadataLabels = data.labels || {};
             break;
     }
 });

@@ -1,8 +1,7 @@
 -- Requests from the player's own UI. The client only names slots; the server decides what happens.
 
-local Items = require 'shared.items'
-local Inventory = require 'server.inventory'
 local players = require 'server.players'
+local use = require 'server.use'
 local weapons = require 'server.weapons'
 
 ---@type table<integer, { second: integer, count: integer }>
@@ -70,37 +69,21 @@ lib.callback.register('city_inventory:move', function(source, fromSlot, toSlot, 
     return success, reason
 end)
 
-lib.callback.register('city_inventory:use', function(source, slot)
+lib.callback.register('city_inventory:use', function(source, slot, name)
     local src = source
     local inventory, reason = getActor(src)
     if not inventory then return false, reason end
 
     slot = toInteger(slot)
     local item = inventory:isSlot(slot) and inventory.items[slot]
-    if not item then return false, 'invalid_slot' end
 
-    -- Usable items are registered the Qbox way: exports.qbx_core:CreateUseableItem(name, fn)
-    local onUse = exports.qbx_core:CanUseItem(item.name)
-    if not onUse then return false, 'not_usable' end
+    -- The item may have moved while the client played its progress bar
+    if not item or (name ~= nil and item.name ~= name) then return false, 'invalid_slot' end
 
-    local definition = Items[item.name]
-
-    -- The use function can return false to say the item was not used (and must not be consumed)
-    if onUse(src, inventory:slotData(slot)) == false then
-        return false, 'not_used'
-    end
-
-    local consume = Inventory.toCount(definition.consume)
-    local current = inventory.items[slot]
-
-    -- The use function may have moved or removed the item itself
-    if consume and current and current.name == item.name then
-        inventory:remove(item.name, math.min(consume, current.count), nil, slot)
-    end
-
+    local success, result = use.run(src, inventory, slot)
     players.sync(src)
 
-    return true, definition.close
+    return success, result
 end)
 
 lib.callback.register('city_inventory:equip', function(source, slot)
@@ -111,12 +94,12 @@ lib.callback.register('city_inventory:equip', function(source, slot)
     return weapons.toggle(inventory, toInteger(slot))
 end)
 
-lib.callback.register('city_inventory:reload', function(source, serial, ammo)
+lib.callback.register('city_inventory:reload', function(source, serial, ammo, clipHint)
     local src = source
     local inventory, reason = getActor(src)
     if not inventory then return false, reason end
 
-    local success, result = weapons.reload(inventory, serial, ammo)
+    local success, result = weapons.reload(inventory, serial, ammo, clipHint)
     players.sync(src)
 
     return success, result
@@ -132,6 +115,23 @@ RegisterNetEvent('city_inventory:server:updateAmmo', function(serial, ammo)
     if weapons.setAmmo(inventory, serial, ammo) then
         players.sync(src)
     end
+end)
+
+-- ox_inventory's opened/closedInventory events, which qbx_hud uses to hide while the inventory is open.
+-- Only the player's own HUD reacts, so a client sending this is harmless.
+RegisterNetEvent('city_inventory:server:setOpen', function(isOpen)
+    local src = source
+    if not players.get(src) then return end
+
+    TriggerEvent(isOpen == true and 'ox_inventory:openedInventory' or 'ox_inventory:closedInventory', src)
+end)
+
+-- The client put the weapon away itself; unequipping only ever takes something away, so no other checks are needed
+RegisterNetEvent('city_inventory:server:holster', function()
+    local inventory = players.get(source)
+    if not inventory then return end
+
+    weapons.unequip(inventory)
 end)
 
 -- Put the weapon away when the player goes down or gets cuffed

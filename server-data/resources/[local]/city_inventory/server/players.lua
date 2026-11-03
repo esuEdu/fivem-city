@@ -15,6 +15,20 @@ function players.get(src)
     return inventories[src]
 end
 
+---An ox_inventory `inv` argument: a player's server id, or the table GetInventory returned.
+---@param inv unknown
+---@return Inventory? inventory
+---@return integer? src
+function players.resolve(inv)
+    if type(inv) == 'table' then
+        inv = inv.id
+    end
+
+    local src = math.tointeger(tonumber(inv))
+
+    return src and inventories[src], src
+end
+
 ---@param src integer
 ---@param citizenid string
 function players.load(src, citizenid)
