@@ -28,3 +28,24 @@ Config.Consumables = {
     sandwich = { hunger = 30 },
     bandage = { health = 15 },
 }
+
+-- Item sets for the /kit admin command. The first one is given when no name is typed.
+Config.Kits = {
+    { name = 'test', items = {
+        { 'water', 5 },
+        { 'sandwich', 5 },
+        { 'bandage', 5 },
+        { 'weapon_pistol', 1 },
+        { 'ammo-9', 48 },
+        { 'weapon_knife', 1 },
+    } },
+    { name = 'food', items = {
+        { 'water', 10 },
+        { 'sandwich', 10 },
+    } },
+    { name = 'weapons', items = {
+        { 'weapon_pistol', 1 },
+        { 'ammo-9', 96 },
+        { 'weapon_knife', 1 },
+    } },
+}
