@@ -110,7 +110,7 @@ mv "$MUGSHOT/MugShotBase64" "$TMP/MugShotBase64"
 mv "$MUGSHOT/README.md" "$MUGSHOT/LICENSE.md" "$TMP/MugShotBase64/"
 rm -rf "$MUGSHOT"
 mv "$TMP/MugShotBase64" "$MUGSHOT"
-mv"$RES/[npwd]/qbx_npwd/config.json" "$RES/[npwd]/npwd/config.json"
+mv "$RES/[npwd]/qbx_npwd/config.json" "$RES/[npwd]/npwd/config.json"
 cp "$ROOT/server-data/logo.png" "$RES/[standalone]/loadscreen/html/assets/logo.png"
 
 # Item images from Qbox, added next to city_inventory's own (ours win on a name clash)
