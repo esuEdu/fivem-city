@@ -17,6 +17,7 @@ return {
         label = 'Sandwich',
         weight = 300,
         consume = 1,
+        client = { image = 'burger.png' },
     },
 
     bandage = {
