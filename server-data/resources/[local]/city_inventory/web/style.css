@@ -46,6 +46,12 @@ svg {
     backdrop-filter: blur(var(--blur));
 }
 
+/* The stash next to the inventory, on the right, leaving room for the close button */
+.panel--right {
+    left: auto;
+    right: calc(2vw + 56px);
+}
+
 .panel__header {
     display: flex;
     align-items: center;

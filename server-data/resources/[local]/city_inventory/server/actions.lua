@@ -1,7 +1,9 @@
 -- Requests from the player's own UI. The client only names slots; the server decides what happens.
 
 local Items = require 'shared.items'
+local Inventory = require 'server.inventory'
 local players = require 'server.players'
+local stashes = require 'server.stashes'
 local use = require 'server.use'
 local weapons = require 'server.weapons'
 local components = require 'server.components'
@@ -220,6 +222,57 @@ lib.callback.register('city_inventory:detach', function(source, slot, name)
     players.sync(src)
 
     return success, reason
+end)
+
+-- Opening a stash from the client (ox_inventory's openInventory('stash', id)); the server checks job, distance and hooks
+lib.callback.register('city_inventory:openStash', function(source, id)
+    local src = source
+    local inventory, reason = getActor(src)
+    if not inventory then return false, reason end
+    if type(id) ~= 'string' then return false, 'no_stash' end
+
+    return stashes.open(src, id)
+end)
+
+---@param src integer
+---@param side unknown 'player' or 'other' (the stash the player has open)
+---@return Inventory?
+---@return string? reason
+local function sideInventory(src, side)
+    if side == 'player' then return players.get(src) end
+    if side == 'other' then return stashes.session(src) end
+
+    return nil, 'invalid_slot'
+end
+
+-- Moving items between the player's inventory and the open stash, or inside the stash
+lib.callback.register('city_inventory:transfer', function(source, fromSide, fromSlot, toSide, toSlot, count)
+    local src = source
+    local actor, reason = getActor(src)
+    if not actor then return false, reason end
+
+    local from, fromReason = sideInventory(src, fromSide)
+    local to, toReason = sideInventory(src, toSide)
+    if not from or not to then return false, fromReason or toReason end
+
+    local success
+    success, reason = Inventory.transfer(from, toInteger(fromSlot), to, toInteger(toSlot), count)
+
+    if success then
+        for _, inventory in ipairs(from == to and { from } or { from, to }) do
+            if inventory.type == 'stash' then stashes.sync(inventory) end
+        end
+
+        players.sync(src)
+    elseif reason == 'invalid_slot' or reason == 'invalid_count' then
+        lib.print.warn(('Player %s sent an invalid transfer: %s %s -> %s %s x%s (%s)'):format(src, fromSide, fromSlot, toSide, toSlot, count, reason))
+    end
+
+    return success, reason
+end)
+
+RegisterNetEvent('city_inventory:server:closeOther', function()
+    stashes.close(source)
 end)
 
 -- Sent while shooting (at most once a second) and when the weapon is put away.

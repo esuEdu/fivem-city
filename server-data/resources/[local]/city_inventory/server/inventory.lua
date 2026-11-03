@@ -5,7 +5,9 @@ local search = require 'shared.search'
 local weightOf = require 'shared.weight'
 
 ---@class Inventory
----@field owner string
+---@field owner string database key: a citizenid, or stash:<id> (see server/stashes.lua)
+---@field type 'player' | 'stash'
+---@field id integer | string the player's server id, or the stash's ox_inventory id
 ---@field slotCount integer
 ---@field maxWeight integer
 ---@field weight integer
@@ -40,6 +42,7 @@ end
 function Inventory.new(owner, slotCount, maxWeight, saved)
     local self = setmetatable({
         owner = owner,
+        type = 'player',
         slotCount = slotCount,
         maxWeight = maxWeight,
         weight = 0,
@@ -298,6 +301,53 @@ function Inventory:move(fromSlot, toSlot, count)
     elseif not rest then
         self:setSlot(toSlot, from)
         self:setSlot(fromSlot, to)
+    else
+        return false, 'slot_occupied'
+    end
+
+    return true
+end
+
+---Moves `count` items from a slot in one inventory to a slot in another, with the same rules as move.
+---@param from Inventory
+---@param fromSlot integer
+---@param to Inventory
+---@param toSlot integer
+---@param count? integer defaults to the whole stack
+---@return boolean success
+---@return string? reason
+function Inventory.transfer(from, fromSlot, to, toSlot, count)
+    if from == to then return from:move(fromSlot, toSlot, count) end
+    if not from:isSlot(fromSlot) or not to:isSlot(toSlot) then return false, 'invalid_slot' end
+
+    local item = from.items[fromSlot]
+    if not item then return false, 'invalid_slot' end
+
+    count = count == nil and item.count or toCount(count)
+    if not count or count > item.count then return false, 'invalid_count' end
+
+    local rest = count < item.count and { name = item.name, count = item.count - count, metadata = item.metadata } or nil
+    local moving = { name = item.name, count = count, metadata = rest and lib.table.deepclone(item.metadata) or item.metadata }
+    local movingWeight = weightOf(moving)
+    local target = to.items[toSlot]
+
+    if not target or (target.name == item.name and Items[item.name].stack and lib.table.matches(target.metadata, item.metadata)) then
+        if to.weight + movingWeight > to.maxWeight then return false, 'inventory_full' end
+
+        if target then
+            moving = { name = target.name, count = target.count + count, metadata = target.metadata }
+        end
+
+        from:setSlot(fromSlot, rest)
+        to:setSlot(toSlot, moving)
+    elseif not rest then
+        local targetWeight = weightOf(target)
+
+        if to.weight - targetWeight + movingWeight > to.maxWeight then return false, 'inventory_full' end
+        if from.weight - movingWeight + targetWeight > from.maxWeight then return false, 'inventory_full' end
+
+        from:setSlot(fromSlot, target)
+        to:setSlot(toSlot, item)
     else
         return false, 'slot_occupied'
     end

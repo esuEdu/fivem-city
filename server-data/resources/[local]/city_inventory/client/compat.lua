@@ -5,6 +5,7 @@ local Items = require 'shared.items'
 local search = require 'shared.search'
 local weightOf = require 'shared.weight'
 local weapons = require 'client.weapons'
+local other = require 'client.other'
 
 local compat = {}
 
@@ -160,6 +161,10 @@ end)
 exports('openInventory', function(invType, data)
     if invType == 'player' and (data == nil or data == cache.serverId) then
         return openOwn()
+    end
+
+    if invType == 'stash' then
+        return other.openStash(type(data) == 'table' and data.id or data)
     end
 
     unsupported(('openInventory(%s)'):format(invType))

@@ -53,6 +53,26 @@
         </section>
     </main>
 
+    <main id="other" class="panel panel--right hidden">
+        <header class="panel__header">
+            <div class="badge">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a1 1 0 0 1 1 1v4H3V5a1 1 0 0 1 1-1Zm-1 7h18v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8Zm6 2a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2H9Z"/></svg>
+            </div>
+            <h1 id="other-title" class="panel__title"></h1>
+        </header>
+
+        <div class="capacity">
+            <svg class="capacity__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 0-2.83 4H7.5a2 2 0 0 0-1.96 1.6l-1.9 10A2 2 0 0 0 5.6 21h12.8a2 2 0 0 0 1.96-2.4l-1.9-10A2 2 0 0 0 16.5 7h-1.67A3 3 0 0 0 12 3Zm0 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg>
+            <div class="capacity__bar"><div id="other-weight-fill" class="capacity__fill"></div></div>
+            <span id="other-weight-text" class="capacity__weight"></span>
+            <span id="other-slots-text" class="capacity__slots"></span>
+        </div>
+
+        <section class="section section--fill">
+            <div id="other-grid" class="grid grid--scroll"></div>
+        </section>
+    </main>
+
     <button id="close" class="close hidden" type="button" aria-label="Close">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.7 5.3 12 10.6l5.3-5.3 1.4 1.4-5.3 5.3 5.3 5.3-1.4 1.4-5.3-5.3-5.3 5.3-1.4-1.4 5.3-5.3-5.3-5.3 1.4-1.4Z"/></svg>
     </button>
@@ -63,6 +83,6 @@
 
     <div id="tooltip" class="tooltip hidden"></div>
 
-    <script src="app.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

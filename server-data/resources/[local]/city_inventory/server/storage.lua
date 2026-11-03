@@ -7,12 +7,15 @@ local SAVE_QUERY = 'INSERT INTO `city_inventories` (`owner`, `data`) VALUES (?, 
 function storage.init()
     MySQL.query.await([[
         CREATE TABLE IF NOT EXISTS `city_inventories` (
-            `owner` VARCHAR(64) NOT NULL,
+            `owner` VARCHAR(100) NOT NULL,
             `data` LONGTEXT NOT NULL,
             `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`owner`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ]])
+
+    -- Stash keys (stash:<id>:<citizenid>) can be longer than the 64 characters the first version allowed
+    MySQL.query.await('ALTER TABLE `city_inventories` MODIFY `owner` VARCHAR(100) NOT NULL')
 
     ready:resolve()
 end

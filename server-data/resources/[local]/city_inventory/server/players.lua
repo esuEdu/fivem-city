@@ -35,6 +35,7 @@ function players.load(src, citizenid)
     if inventories[src] then return end
 
     local inventory = Inventory.new(citizenid, Config.Slots, Config.MaxWeight, storage.load(citizenid))
+    inventory.id = src
 
     -- The player may have left while the database was loading
     if not GetPlayerName(src) then return end

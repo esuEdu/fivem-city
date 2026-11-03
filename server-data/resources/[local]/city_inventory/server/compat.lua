@@ -1,13 +1,12 @@
 -- More of ox_inventory's server exports, for the Qbox scripts that use them (ox_fuel, qbx_police, mm_radio, xt-prison, ...).
--- Stashes, shops and drops don't exist yet: the ox_inventory resource answers those calls with a warning.
+-- Shops and drops don't exist yet: the ox_inventory resource answers those calls with a warning.
 
 local Items = require 'shared.items'
 local search = require 'shared.search'
-local players = require 'server.players'
+local inventories = require 'server.inventories'
 local storage = require 'server.storage'
-local weapons = require 'server.weapons'
 
-local resolve = players.resolve
+local resolve = inventories.resolve
 
 ---@param inventory Inventory
 ---@return string
@@ -16,7 +15,7 @@ local function confiscatedKey(inventory)
 end
 
 exports('SetMetadata', function(inv, slot, metadata)
-    local inventory, src = resolve(inv)
+    local inventory = resolve(inv)
     slot = math.tointeger(slot)
     local item = inventory and inventory:isSlot(slot) and inventory.items[slot]
     if not item or type(metadata) ~= 'table' then return end
@@ -27,7 +26,7 @@ exports('SetMetadata', function(inv, slot, metadata)
     end
 
     inventory:setSlot(slot, { name = item.name, count = item.count, metadata = metadata })
-    players.sync(src)
+    inventories.sync(inventory)
 end)
 
 exports('GetCurrentWeapon', function(inv)
@@ -76,7 +75,7 @@ end)
 
 -- Takes everything the player carries and keeps it until ReturnInventory (e.g. while in jail)
 exports('ConfiscateInventory', function(inv)
-    local inventory, src = resolve(inv)
+    local inventory = resolve(inv)
     if not inventory or not next(inventory.items) then return end
 
     local entries = {}
@@ -88,12 +87,11 @@ exports('ConfiscateInventory', function(inv)
     storage.save({ { owner = confiscatedKey(inventory), entries = entries } })
 
     inventory:clear()
-    weapons.check(inventory)
-    players.sync(src)
+    inventories.sync(inventory)
 end)
 
 exports('ReturnInventory', function(inv)
-    local inventory, src = resolve(inv)
+    local inventory = resolve(inv)
     if not inventory then return end
 
     local key = confiscatedKey(inventory)
@@ -104,10 +102,10 @@ exports('ReturnInventory', function(inv)
         local success, reason = inventory:add(entry.name, entry.count, entry.metadata)
 
         if not success then
-            lib.print.warn(('Could not return %sx %s to player %s (%s)'):format(entry.count, entry.name, src, reason))
+            lib.print.warn(('Could not return %sx %s to %s (%s)'):format(entry.count, entry.name, inventory.id, reason))
         end
     end
 
     storage.save({ { owner = key, entries = {} } })
-    players.sync(src)
+    inventories.sync(inventory)
 end)

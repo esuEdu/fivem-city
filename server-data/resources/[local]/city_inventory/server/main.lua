@@ -1,4 +1,5 @@
 local players = require 'server.players'
+local stashes = require 'server.stashes'
 local storage = require 'server.storage'
 
 ---@param src integer
@@ -31,10 +32,12 @@ AddStateBagChangeHandler('loadInventory', nil, function(bagName, _, value)
 end)
 
 AddEventHandler('qbx_core:server:playerLoggedOut', function(src)
+    stashes.close(src)
     players.unload(src)
 end)
 
 AddEventHandler('playerDropped', function()
+    stashes.close(source)
     players.unload(source)
 end)
 
@@ -42,15 +45,18 @@ CreateThread(function()
     while true do
         Wait(Config.AutosaveMinutes * 60000)
         players.saveAll()
+        stashes.saveAll()
     end
 end)
 
 AddEventHandler('txAdmin:events:serverShuttingDown', function()
     players.saveAll(false)
+    stashes.saveAll(false)
 end)
 
 AddEventHandler('onResourceStop', function(resource)
     if resource ~= cache.resource then return end
 
     players.saveAll(false)
+    stashes.saveAll(false)
 end)

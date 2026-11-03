@@ -4,6 +4,7 @@ local weapons = require 'client.weapons'
 local use = require 'client.use'
 local compat = require 'client.compat'
 local craft = require 'client.craft'
+local other = require 'client.other'
 local theme = require '@city_ui.theme'
 
 -- Read-only copy of the player's inventory; the server sends every change
@@ -109,14 +110,18 @@ local function notifyFailure(reason)
     })
 end
 
+---@return boolean isOpen
 local function open()
-    if isOpen or not canAct() then return end
+    if isOpen then return true end
+    if not canAct() then return false end
 
     isOpen = true
     SetNuiFocus(true, true)
     SendNUIMessage({ action = 'open' })
     -- Lets qbx_hud hide itself (ox_inventory:openedInventory)
     TriggerServerEvent('city_inventory:server:setOpen', true)
+
+    return true
 end
 
 local function close()
@@ -125,6 +130,7 @@ local function close()
     isOpen = false
     SetNuiFocus(false, false)
     SendNUIMessage({ action = 'close' })
+    other.close()
     TriggerServerEvent('city_inventory:server:setOpen', false)
 end
 
@@ -266,6 +272,12 @@ RegisterNUICallback('use', function(data, cb)
 end)
 
 compat.init(function() return items end, open, close)
+
+other.init({
+    toNui = toNui,
+    open = open,
+    notifyFailure = notifyFailure,
+})
 
 craft.init({
     items = function() return items end,

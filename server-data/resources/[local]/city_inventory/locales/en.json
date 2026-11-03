@@ -45,5 +45,10 @@
     "error_component_wont_fit": "That attachment doesn't fit this weapon",
     "error_no_weapon": "Hold a weapon to attach this",
     "error_no_recipe": "Those items don't combine",
-    "error_missing_ingredients": "You don't have everything you need"
+    "error_missing_ingredients": "You don't have everything you need",
+    "error_no_stash": "That storage doesn't exist",
+    "error_no_access": "You don't have access to this",
+    "error_too_far": "You're too far away",
+    "error_stash_closed": "The storage was closed",
+    "error_slot_occupied": "That slot is taken"
 }
