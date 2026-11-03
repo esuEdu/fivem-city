@@ -20,14 +20,22 @@ client_scripts {
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/main.lua',
+    'server/actions.lua',
+    'server/consumables.lua',
     'server/exports.lua',
     'server/commands.lua',
 }
+
+ui_page 'web/index.html'
 
 files {
     'data/*.lua',
     'shared/*.lua',
     'locales/*.json',
+    'web/index.html',
+    'web/style.css',
+    'web/app.js',
+    'web/images/*.png',
 }
 
 dependencies {

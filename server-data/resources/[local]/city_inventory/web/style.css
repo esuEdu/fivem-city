@@ -1,0 +1,208 @@
+:root {
+    --panel: rgba(16, 18, 22, 0.92);
+    --slot: rgba(255, 255, 255, 0.06);
+    --slot-hover: rgba(255, 255, 255, 0.12);
+    --border: rgba(255, 255, 255, 0.1);
+    --accent: #4fa3ff;
+    --danger: #e5484d;
+    --text: #e8eaed;
+    --muted: #9aa0a6;
+    --slot-size: 84px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    color: var(--text);
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 13px;
+    user-select: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.inventory {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel);
+}
+
+.inventory__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+
+.inventory__title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.inventory__weight {
+    color: var(--muted);
+}
+
+.weight-bar {
+    height: 4px;
+    margin-bottom: 12px;
+    border-radius: 2px;
+    background: var(--slot);
+    overflow: hidden;
+}
+
+.weight-bar__fill {
+    width: 0;
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.15s;
+}
+
+.weight-bar__fill--full {
+    background: var(--danger);
+}
+
+.grid,
+.hotbar {
+    display: grid;
+    grid-template-columns: repeat(8, var(--slot-size));
+    gap: 6px;
+}
+
+.hotbar {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    grid-template-columns: repeat(5, var(--slot-size));
+    padding: 8px;
+    border-radius: 10px;
+    background: var(--panel);
+}
+
+.slot {
+    position: relative;
+    width: var(--slot-size);
+    height: var(--slot-size);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--slot);
+}
+
+.slot--filled:hover {
+    background: var(--slot-hover);
+}
+
+.slot--hotbar {
+    border-color: rgba(79, 163, 255, 0.35);
+}
+
+.slot--active {
+    border-color: var(--accent);
+}
+
+.slot__key {
+    position: absolute;
+    top: 3px;
+    left: 5px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.slot__count {
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    font-size: 11px;
+}
+
+.slot__image {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    width: 48px;
+    height: 48px;
+    transform: translateX(-50%);
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.slot__label {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 2px 4px;
+    overflow: hidden;
+    border-radius: 0 0 6px 6px;
+    background: rgba(0, 0, 0, 0.35);
+    font-size: 11px;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ghost {
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: calc(var(--slot-size) / -2) 0 0 calc(var(--slot-size) / -2);
+    opacity: 0.85;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.menu {
+    position: fixed;
+    margin: 0;
+    padding: 4px 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--panel);
+    list-style: none;
+    z-index: 20;
+}
+
+.menu__item {
+    padding: 6px 16px;
+    cursor: pointer;
+}
+
+.menu__item:hover {
+    background: var(--slot-hover);
+}
+
+.tooltip {
+    position: fixed;
+    max-width: 240px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--panel);
+    pointer-events: none;
+    z-index: 30;
+}
+
+.tooltip__title {
+    font-weight: 600;
+}
+
+.tooltip__line {
+    margin-top: 3px;
+    color: var(--muted);
+}

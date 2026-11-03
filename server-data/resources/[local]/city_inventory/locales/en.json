@@ -6,5 +6,13 @@
     "not_on_duty": "You are not opted in for admin duty. (/optin to toggle)",
     "unknown_item": "Unknown item: %s",
     "gave_item": "Gave %sx %s to %s",
-    "give_failed": "Could not give %s: %s"
+    "give_failed": "Could not give %s: %s",
+    "keybind_open": "Open inventory",
+    "keybind_hotbar": "Use hotbar slot %s",
+    "ui_title": "Inventory",
+    "ui_use": "Use",
+    "error_not_usable": "You can't use this item",
+    "error_busy": "You can't do that right now",
+    "error_inventory_full": "Your inventory is full",
+    "error_generic": "That didn't work"
 }

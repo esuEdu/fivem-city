@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main id="inventory" class="inventory hidden">
+        <header class="inventory__header">
+            <h1 id="title" class="inventory__title"></h1>
+            <span id="weight-text" class="inventory__weight"></span>
+        </header>
+        <div class="weight-bar"><div id="weight-fill" class="weight-bar__fill"></div></div>
+        <div id="grid" class="grid"></div>
+    </main>
+
+    <div id="hotbar" class="hotbar hidden"></div>
+
+    <ul id="menu" class="menu hidden">
+        <li id="menu-use" class="menu__item" data-action="use"></li>
+    </ul>
+
+    <div id="tooltip" class="tooltip hidden"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
