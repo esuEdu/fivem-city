@@ -1,0 +1,54 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What this is
+
+A FiveM (GTA V) roleplay server on the **Qbox** framework (`qbx_core`) plus the **ox** stack (oxmysql, ox_lib, ox_target, ox_inventory) and pma-voice. All code is Lua 5.4 resources loaded by FXServer; there is no build step, linter or test suite. Changes are verified by restarting the resource on a running server.
+
+## Running the server
+
+FXServer is x86_64 only and **does not run on Apple Silicon** (crashes under Rosetta and QEMU). On a Mac, edit resources here and run the server on an x86_64 Windows/Linux machine.
+
+```sh
+cp .env.example .env                 # set CFX_LICENSE_KEY and MYSQL_ROOT_PASSWORD (alphanumeric only)
+docker compose up -d --build         # FXServer + txAdmin, and MariaDB
+docker compose logs fxserver | grep -i pin   # txAdmin PIN, then http://localhost:40120
+docker compose logs -f fxserver
+docker compose restart fxserver
+docker compose build --no-cache fxserver && docker compose up -d   # update FXServer build
+```
+
+In the txAdmin wizard choose **Existing Server Data** → `/server-data`, config `server.cfg`. txAdmin starts the server (the image entrypoint has no `+exec`).
+
+After editing a resource, reload it from the txAdmin console or in-game: `ensure <resource_name>` (or `restart`).
+
+Build/push the prebuilt image (used by `deploy/` on another PC):
+```sh
+docker buildx build --platform linux/amd64 -f docker/fxserver/Dockerfile -t ghcr.io/esuedu/fivem-city:latest --push .
+```
+
+## Architecture
+
+- **`server-data/server.cfg`** is the single entry point. It `exec`s `secrets.cfg`, then `ensure`s core resources in a fixed order (`oxmysql` → `ox_lib` → `qbx_core` → `ox_target` → `ox_inventory`), then whole groups: `[qbx]`, `[standalone]`, `[voice]`, `[maps]`, `[local]`. Dropping a resource into one of those group folders is enough to start it. Framework/inventory convars (`qbx:enableBridge`, `inventory:framework "qbx"`, slots/weight) and ACE permissions (`group.admin` > `group.mod` > `group.support`) are also set there.
+- **Secrets**: `secrets.cfg` is gitignored. In Docker, `docker/fxserver/entrypoint.sh` regenerates it on every start from env vars (license key, `mysql_connection_string` pointing at host `mariadb`). If `CFX_LICENSE_KEY` is empty, an existing mounted `secrets.cfg` is used instead.
+- **Two compose files**: root `docker-compose.yml` is local dev and bind-mounts `./server-data` into the container (FXServer itself is downloaded inside the image, never from `artifacts/` — Windows filesystems break its symlinks). `deploy/docker-compose.yml` runs the published image with `server-data` baked in; changes made inside that container are lost on update. Both import `qbx_core/qbx_core.sql` into MariaDB only when the DB volume is first created.
+- **Third-party resources are vendored** (committed). `scripts/install-resources.sh` re-downloads the latest releases of the ox stack, qbx_core, pma-voice and `[cfx-default]`, wiping each target folder first — don't hand-edit those resources, or the changes get lost on the next update.
+
+## Writing our own resources
+
+Custom code lives in `server-data/resources/[local]/` (`city_base` is the starter template, `city_troll` an example admin command). Conventions used there:
+
+- `fxmanifest.lua` with `fx_version 'cerulean'`, `game 'gta5'`, `lua54 'yes'`, `@ox_lib/init.lua` as a shared script, and `dependencies { 'ox_lib', 'qbx_core' }`. Layout: `config.lua`, `client/main.lua`, `server/main.lua`.
+- Use ox_lib helpers (`lib.addCommand`, `lib.notify`, `lib.print`, `cache.ped` / `cache.vehicle`) and Qbox exports (`exports.qbx_core:Notify`, `IsOptin`, …).
+- Admin commands use `restricted = 'group.admin'` and also require Qbox admin duty (`exports.qbx_core:IsOptin(source)`), with `source == 0` allowed for the server console.
+- Net events are namespaced `<resource>:client:<name>` / `<resource>:server:<name>`. The player-loaded hook is `QBCore:Client:OnPlayerLoaded` (via the Qbox bridge).
+- Qbox scripts (`qbx_*`) go in `[qbx]/`, framework-independent third-party scripts in `[standalone]/`, MLOs/map edits in `[maps]/`.
+
+## Standards
+
+All code in `[local]/` must follow these. Run through each checklist before calling the work done.
+
+@docs/standards/security.md
+@docs/standards/performance.md
+@docs/standards/code-style.md
