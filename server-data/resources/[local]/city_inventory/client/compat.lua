@@ -167,6 +167,10 @@ exports('openInventory', function(invType, data)
         return other.openStash(type(data) == 'table' and data.id or data)
     end
 
+    if invType == 'shop' and type(data) == 'table' then
+        return other.openShop(data.type, data.id)
+    end
+
     unsupported(('openInventory(%s)'):format(invType))
 end)
 

@@ -1,5 +1,5 @@
 import { state, el, ui, itemAt } from './state.js';
-import { createElement, formatWeight, post } from './util.js';
+import { createElement, formatPrice, formatWeight, post } from './util.js';
 
 const HOTBAR_VISIBLE_MS = 1500;
 
@@ -33,6 +33,8 @@ export function showTooltip(inv, slot, x, y) {
         categoryLine.style.color = category.color;
         lines.push(categoryLine);
     }
+
+    if (item.price !== undefined) lines.push(createElement('div', 'tooltip__line', formatPrice(item, state.labels)));
 
     const description = item.metadata?.description || item.description;
     if (description) lines.push(createElement('div', 'tooltip__line', description));

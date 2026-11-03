@@ -1,4 +1,4 @@
-import { state, el, ui, itemAt } from './state.js';
+import { state, el, ui, itemAt, isShop } from './state.js';
 import { renderSlot, slotOf } from './slots.js';
 import { hideMenus, showMenu, showTooltip } from './menu.js';
 import { createElement, post } from './util.js';
@@ -46,6 +46,11 @@ function dragCount(event, item) {
 
     const qty = Number.parseInt(el.qty.value, 10);
     return qty > 0 ? Math.min(qty, item.count) : item.count;
+}
+
+function shopCount(event) {
+    const qty = Number.parseInt(el.qty.value, 10);
+    return event.ctrlKey || !(qty > 0) ? 1 : qty;
 }
 
 // Combining only works inside the player's own inventory
@@ -113,7 +118,10 @@ document.addEventListener('pointerup', (event) => {
     const { inv, slot } = slotOf(target);
     if (inv === drag.inv && slot === drag.slot) return;
 
-    const count = dragCount(event, drag.item);
+    // Shops only sell: items come out of the shop panel, one or the Qty amount at a time
+    if (isShop() && (drag.inv !== 'other' || inv !== 'player')) return;
+
+    const count = isShop() ? shopCount(event) : dragCount(event, drag.item);
 
     if (drag.inv === 'player' && inv === 'player') {
         post(combine ? 'combine' : 'move', { from: drag.slot, to: slot, count });

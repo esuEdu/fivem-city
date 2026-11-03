@@ -26,6 +26,12 @@ export function applyTheme(theme) {
     }
 }
 
+// A shop item's price: 'Free', '$25', or '50000 Black Money' when paid with an item
+export function formatPrice(item, labels) {
+    if (item.price === 0) return labels.free;
+    return item.currency ? `${item.price} ${item.currency}` : `$${item.price}`;
+}
+
 export function createElement(tag, className, text) {
     const node = document.createElement(tag);
     node.className = className;

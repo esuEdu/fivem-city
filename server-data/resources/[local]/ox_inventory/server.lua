@@ -5,11 +5,12 @@ local FORWARDED = {
     'Items', 'GetInventory', 'GetInventoryItems', 'AddItem', 'RemoveItem', 'SetItem', 'ClearInventory', 'CanCarryItem',
     'GetItem', 'GetItemCount', 'Search', 'GetSlot', 'GetSlotWithItem', 'GetSlotsWithItem', 'GetSlotIdWithItem',
     'SetMetadata', 'GetCurrentWeapon', 'ConfiscateInventory', 'ReturnInventory', 'RegisterStash', 'forceOpenInventory',
+    'RegisterShop',
 }
 
 -- ox_inventory server exports for features city_inventory doesn't have yet
 local UNSUPPORTED = {
-    'RegisterShop', 'CustomDrop', 'CreateDropFromPlayer',
+    'CustomDrop', 'CreateDropFromPlayer',
 }
 
 for _, name in ipairs(FORWARDED) do
@@ -29,6 +30,6 @@ end)
 
 for _, name in ipairs(UNSUPPORTED) do
     exports(name, function()
-        lib.print.warn(('%s called %s, which city_inventory does not have yet (shops and drops)'):format(GetInvokingResource() or 'a script', name))
+        lib.print.warn(('%s called %s, which city_inventory does not have yet (drops)'):format(GetInvokingResource() or 'a script', name))
     end)
 end

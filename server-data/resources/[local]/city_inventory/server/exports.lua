@@ -5,6 +5,7 @@ local Items = require 'shared.items'
 local search = require 'shared.search'
 local inventories = require 'server.inventories'
 local stashes = require 'server.stashes'
+local shops = require 'server.shops'
 local hooks = require 'server.hooks'
 
 local resolve = inventories.resolve
@@ -149,6 +150,8 @@ end)
 
 exports('RegisterStash', stashes.register)
 
+exports('RegisterShop', shops.register)
+
 -- For scripts that already checked the player may open it (qbx_properties), so groups, distance and hooks are skipped
 exports('forceOpenInventory', function(playerId, invType, data)
     local src = math.tointeger(tonumber(playerId))
@@ -159,6 +162,7 @@ exports('forceOpenInventory', function(playerId, invType, data)
     end
 
     local id = type(data) == 'table' and data.id or data
+    shops.close(src)
     local success, reason = stashes.open(src, id, true)
 
     if not success then

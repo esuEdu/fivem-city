@@ -11,6 +11,10 @@ Config.AutosaveMinutes = 5
 -- How close (meters) a player has to be to a stash's coords to open it, and how far they can walk while it's open
 Config.StashDistance = 5.0
 
+-- Shops (data/shops.lua): how close the player has to be, and the qbx money accounts tried in order to pay
+Config.ShopDistance = 5.0
+Config.ShopAccounts = { 'cash', 'bank' }
+
 -- Item categories, set with `category` in data/items.lua. Weapons and ammo get theirs automatically;
 -- items without one are 'misc'. The color tints the item's slot in the UI; the order is the order of the filter tabs.
 Config.Categories = {

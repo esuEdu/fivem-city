@@ -50,5 +50,12 @@
     "error_no_access": "You don't have access to this",
     "error_too_far": "You're too far away",
     "error_stash_closed": "The storage was closed",
-    "error_slot_occupied": "That slot is taken"
+    "error_slot_occupied": "That slot is taken",
+    "target_shop": "Open %s",
+    "error_no_shop": "That shop doesn't exist",
+    "error_cannot_afford": "You can't afford that",
+    "error_cannot_sell": "This shop doesn't buy items",
+    "error_out_of_stock": "That's sold out",
+    "error_no_license": "You need a license to buy this",
+    "ui_price_free": "Free"
 }

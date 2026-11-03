@@ -19,7 +19,7 @@ export const state = {
     search: '',
     // The player's inventory and the stash open next to it, keyed like the slots' data-inv
     player: inventory(),
-    other: { ...inventory(), open: false, label: '' },
+    other: { ...inventory(), open: false, label: '', kind: 'stash' },
 };
 
 // Drag in progress and the slot the right-click menu is for
@@ -35,6 +35,7 @@ export const el = {
     other: byId('other'),
     title: byId('title'),
     otherTitle: byId('other-title'),
+    otherCapacity: byId('other-capacity'),
     search: byId('search'),
     qty: byId('qty'),
     tabs: byId('tabs'),
@@ -53,6 +54,10 @@ export const el = {
         other: { weight: byId('other-weight-text'), fill: byId('other-weight-fill'), slots: byId('other-slots-text') },
     },
 };
+
+export function isShop() {
+    return state.other.open && state.other.kind === 'shop';
+}
 
 export function itemAt(inv, slot) {
     return state[inv]?.items.get(slot);

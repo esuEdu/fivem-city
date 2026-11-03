@@ -5,6 +5,7 @@ local use = require 'client.use'
 local compat = require 'client.compat'
 local craft = require 'client.craft'
 local other = require 'client.other'
+require 'client.shops'
 local theme = require '@city_ui.theme'
 
 -- Read-only copy of the player's inventory; the server sends every change
@@ -79,6 +80,7 @@ local function setupNui()
             unload = locale('ui_unload'),
             remove = locale('ui_remove'),
             attachments = locale('ui_attachments'),
+            free = locale('ui_price_free'),
         },
         recipes = craft.pairs(),
         componentLabels = craft.componentLabels(),

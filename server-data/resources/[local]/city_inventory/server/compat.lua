@@ -1,5 +1,5 @@
 -- More of ox_inventory's server exports, for the Qbox scripts that use them (ox_fuel, qbx_police, mm_radio, xt-prison, ...).
--- Shops and drops don't exist yet: the ox_inventory resource answers those calls with a warning.
+-- Drops don't exist yet: the ox_inventory resource answers those calls with a warning.
 
 local Items = require 'shared.items'
 local search = require 'shared.search'

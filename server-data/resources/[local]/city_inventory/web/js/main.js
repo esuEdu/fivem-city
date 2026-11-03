@@ -90,17 +90,20 @@ const handlers = {
     },
 
     setOther(data) {
-        Object.assign(state.other, { open: true, label: data.label, slots: data.slots, maxWeight: data.maxWeight, weight: data.weight });
+        Object.assign(state.other, {
+            open: true, kind: data.kind, label: data.label, slots: data.slots, maxWeight: data.maxWeight, weight: data.weight,
+        });
         setItems('other', data.items);
 
         el.otherTitle.textContent = data.label;
+        el.otherCapacity.classList.toggle('hidden', data.kind === 'shop');
         buildOtherGrid();
         renderCapacity('other');
         showOther();
     },
 
     updateOther(data) {
-        state.other.weight = data.weight;
+        if (data.weight !== undefined) state.other.weight = data.weight;
         applyEntries('other', data.changes);
         renderCapacity('other');
     },

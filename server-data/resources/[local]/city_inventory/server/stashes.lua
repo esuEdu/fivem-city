@@ -5,6 +5,7 @@
 local Inventory = require 'server.inventory'
 local storage = require 'server.storage'
 local hooks = require 'server.hooks'
+local access = require 'server.access'
 
 local stashes = {}
 
@@ -37,44 +38,6 @@ local viewers = {}
 ---@type table<integer, StashSession>
 local sessions = {}
 
----ox_inventory accepts a group name, a list of names, or name -> grade.
----@param groups unknown
----@return table<string, integer>?
-local function toGroups(groups)
-    if type(groups) == 'string' then return { [groups] = 0 } end
-    if type(groups) ~= 'table' then return end
-
-    local result = {}
-
-    for key, value in pairs(groups) do
-        if type(key) == 'number' then
-            result[value] = 0
-        else
-            result[key] = tonumber(value) or 0
-        end
-    end
-
-    return next(result) and result or nil
-end
-
----@param coords unknown a vector, or a list of them
----@return vector3[]?
-local function toCoords(coords)
-    local kind = type(coords)
-
-    if kind == 'vector3' or kind == 'vector4' then
-        return { vec3(coords.x, coords.y, coords.z) }
-    elseif kind == 'table' and coords[1] then
-        local list = {}
-
-        for i, point in ipairs(coords) do
-            list[i] = vec3(point.x, point.y, point.z)
-        end
-
-        return list
-    end
-end
-
 function stashes.register(id, label, slots, maxWeight, owner, groups, coords)
     slots, maxWeight = math.tointeger(tonumber(slots)), math.tointeger(tonumber(maxWeight))
 
@@ -88,8 +51,8 @@ function stashes.register(id, label, slots, maxWeight, owner, groups, coords)
         slots = slots,
         maxWeight = maxWeight,
         owner = (owner == true or type(owner) == 'string') and owner or nil,
-        groups = toGroups(groups),
-        coords = toCoords(coords),
+        groups = access.toGroups(groups),
+        coords = access.toCoords(coords),
     }
 end
 
@@ -157,41 +120,6 @@ function stashes.get(id, owner)
 end
 
 ---@param src integer
----@param groups? table<string, integer>
----@return boolean
-local function inGroup(src, groups)
-    if not groups then return true end
-
-    local player = exports.qbx_core:GetPlayer(src)
-    if not player then return false end
-
-    for _, group in ipairs({ player.PlayerData.job, player.PlayerData.gang }) do
-        local minGrade = group and groups[group.name]
-
-        if minGrade and (group.grade and group.grade.level or 0) >= minGrade then
-            return true
-        end
-    end
-
-    return false
-end
-
----@param src integer
----@param coords? vector3[]
----@return boolean
-local function isNear(src, coords)
-    if not coords then return true end
-
-    local position = GetEntityCoords(GetPlayerPed(src))
-
-    for _, point in ipairs(coords) do
-        if #(position - point) <= Config.StashDistance then return true end
-    end
-
-    return false
-end
-
----@param src integer
 ---@param id unknown
 ---@param force? boolean the calling script already decided the player may open it (forceOpenInventory)
 ---@return boolean success
@@ -204,8 +132,8 @@ function stashes.open(src, id, force)
     if not definition then return false, 'no_stash' end
 
     if not force then
-        if not inGroup(src, definition.groups) then return false, 'no_access' end
-        if not isNear(src, definition.coords) then return false, 'too_far' end
+        if not access.inGroup(src, definition.groups) then return false, 'no_access' end
+        if not access.isNear(src, definition.coords, Config.StashDistance) then return false, 'too_far' end
     end
 
     -- Stashes with one per character always open the player's own
@@ -243,7 +171,7 @@ function stashes.session(src)
 
     local position = GetEntityCoords(GetPlayerPed(src))
 
-    if #(position - session.coords) > Config.StashDistance or not inGroup(src, session.definition.groups) then
+    if #(position - session.coords) > Config.StashDistance or not access.inGroup(src, session.definition.groups) then
         stashes.close(src)
         TriggerClientEvent('city_inventory:client:closeOther', src)
         return nil, 'stash_closed'

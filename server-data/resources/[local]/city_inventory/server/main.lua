@@ -1,5 +1,6 @@
 local players = require 'server.players'
 local stashes = require 'server.stashes'
+local shops = require 'server.shops'
 local storage = require 'server.storage'
 
 ---@param src integer
@@ -33,11 +34,13 @@ end)
 
 AddEventHandler('qbx_core:server:playerLoggedOut', function(src)
     stashes.close(src)
+    shops.close(src)
     players.unload(src)
 end)
 
 AddEventHandler('playerDropped', function()
     stashes.close(source)
+    shops.close(source)
     players.unload(source)
 end)
 

@@ -4,6 +4,7 @@ local Items = require 'shared.items'
 local Inventory = require 'server.inventory'
 local players = require 'server.players'
 local stashes = require 'server.stashes'
+local shops = require 'server.shops'
 local use = require 'server.use'
 local weapons = require 'server.weapons'
 local components = require 'server.components'
@@ -231,7 +232,18 @@ lib.callback.register('city_inventory:openStash', function(source, id)
     if not inventory then return false, reason end
     if type(id) ~= 'string' then return false, 'no_stash' end
 
+    shops.close(src)
     return stashes.open(src, id)
+end)
+
+-- ox_inventory's openInventory('shop', { type, id }); the server checks job, licence, distance and price
+lib.callback.register('city_inventory:openShop', function(source, shopType, id)
+    local src = source
+    local inventory, reason = getActor(src)
+    if not inventory then return false, reason end
+
+    stashes.close(src)
+    return shops.open(src, shopType, id)
 end)
 
 ---@param src integer
@@ -250,6 +262,17 @@ lib.callback.register('city_inventory:transfer', function(source, fromSide, from
     local src = source
     local actor, reason = getActor(src)
     if not actor then return false, reason end
+
+    -- With a shop open, the other side is the shop: items only come out of it, and are paid for
+    if shops.session(src) then
+        if fromSide ~= 'other' or toSide ~= 'player' then return false, 'cannot_sell' end
+
+        local success
+        success, reason = shops.buy(src, actor, toInteger(fromSlot), toInteger(toSlot), count)
+        if success then players.sync(src) end
+
+        return success, reason
+    end
 
     local from, fromReason = sideInventory(src, fromSide)
     local to, toReason = sideInventory(src, toSide)
@@ -273,6 +296,7 @@ end)
 
 RegisterNetEvent('city_inventory:server:closeOther', function()
     stashes.close(source)
+    shops.close(source)
 end)
 
 -- Sent while shooting (at most once a second) and when the weapon is put away.

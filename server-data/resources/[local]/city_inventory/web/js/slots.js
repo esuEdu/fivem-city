@@ -1,5 +1,5 @@
 import { state, el, itemAt } from './state.js';
-import { createElement, formatWeight, tint } from './util.js';
+import { createElement, formatPrice, formatWeight, tint } from './util.js';
 
 function matchesFilter(item) {
     if (state.filter !== 'all' && item.category !== state.filter) return false;
@@ -21,6 +21,7 @@ export function renderSlot(slotEl) {
     slotEl.classList.toggle('slot--filled', Boolean(item));
     slotEl.classList.toggle('slot--equipped', inv === 'player' && Boolean(item?.metadata?.serial) && item.metadata.serial === state.equipped);
     slotEl.classList.toggle('slot--dimmed', Boolean(item) && inPanel && !matchesFilter(item));
+    slotEl.classList.toggle('slot--sold-out', item?.stock === 0);
 
     const category = item && state.categories.get(item.category);
     for (const [name, value] of [
@@ -39,7 +40,13 @@ export function renderSlot(slotEl) {
     }
 
     if (isHotbar) slotEl.append(createElement('span', 'slot__key', String(slot)));
-    if (item.count > 1) slotEl.append(createElement('span', 'slot__count', `${item.count}x`));
+
+    if (item.price !== undefined) {
+        slotEl.append(createElement('span', 'slot__price', formatPrice(item, state.labels)));
+        if (typeof item.stock === 'number') slotEl.append(createElement('span', 'slot__count', `${item.stock}x`));
+    } else if (item.count > 1) {
+        slotEl.append(createElement('span', 'slot__count', `${item.count}x`));
+    }
 
     const ammo = item.metadata?.ammo;
     if (typeof ammo === 'number') slotEl.append(createElement('span', 'slot__ammo', String(ammo)));
@@ -92,6 +99,8 @@ export function buildOtherGrid() {
 }
 
 export function renderCapacity(inv) {
+    if (inv === 'other' && state.other.kind === 'shop') return;
+
     const { weight, maxWeight, items, slots } = state[inv];
     const target = el.capacity[inv];
     const ratio = maxWeight > 0 ? Math.min(1, weight / maxWeight) : 0;

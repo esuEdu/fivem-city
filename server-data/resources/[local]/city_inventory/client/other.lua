@@ -1,4 +1,6 @@
--- The second panel: a stash the server let the player open. The page shows it; the server sends every change.
+-- The second panel: a stash or shop the server let the player open. The page shows it; the server sends every change.
+
+local Items = require 'shared.items'
 
 local other = {}
 
@@ -10,7 +12,7 @@ local other = {}
 ---@type OtherHooks
 local hooks
 
----@type string? id of the open stash
+---@type string? id of the open stash or shop
 local current
 
 ---@param value unknown
@@ -32,6 +34,15 @@ function other.openStash(id)
     if not success then hooks.notifyFailure(reason) end
 end
 
+---@param shopType string
+---@param id? integer which of the shop's locations
+function other.openShop(shopType, id)
+    if type(shopType) ~= 'string' then return end
+
+    local success, reason = lib.callback.await('city_inventory:openShop', false, shopType, id)
+    if not success then hooks.notifyFailure(reason) end
+end
+
 ---Closes the panel; the server forgets the player has it open.
 function other.close()
     if not current then return end
@@ -47,7 +58,16 @@ local function toEntries(slots)
     local entries = {}
 
     for slot, item in pairs(slots) do
-        entries[#entries + 1] = hooks.toNui(slot, item or nil)
+        local entry = hooks.toNui(slot, item or nil)
+
+        -- Shop items: what one costs, in money or in another item (black money), and how many are left
+        if item and item.price then
+            entry.item.price = item.price
+            entry.item.currency = item.currency and Items[item.currency].label or false
+            entry.item.stock = item.stock
+        end
+
+        entries[#entries + 1] = entry
     end
 
     return entries
@@ -58,6 +78,7 @@ RegisterNetEvent('city_inventory:client:openOther', function(data)
 
     SendNUIMessage({
         action = 'setOther',
+        kind = data.kind or 'stash',
         label = data.label,
         slots = data.slots,
         maxWeight = data.maxWeight,
