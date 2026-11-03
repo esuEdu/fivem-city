@@ -15,17 +15,29 @@ const state = {
     openKey: 'TAB',
     equipped: null,
     labels: {},
-    categories: {},
+    categories: new Map(),
+    filter: 'all',
+    search: '',
     items: new Map(),
 };
 
 const el = {
     inventory: document.getElementById('inventory'),
     title: document.getElementById('title'),
+    search: document.getElementById('search'),
+    qty: document.getElementById('qty'),
     weightText: document.getElementById('weight-text'),
     weightFill: document.getElementById('weight-fill'),
+    slotsText: document.getElementById('slots-text'),
+    tabs: document.getElementById('tabs'),
+    hotbarTitle: document.getElementById('hotbar-title'),
+    hotbarHint: document.getElementById('hotbar-hint'),
+    hotbarGrid: document.getElementById('hotbar-grid'),
+    inventoryTitle: document.getElementById('inventory-title'),
+    inventoryHint: document.getElementById('inventory-hint'),
     grid: document.getElementById('grid'),
-    hotbar: document.getElementById('hotbar'),
+    close: document.getElementById('close'),
+    popup: document.getElementById('hotbar-popup'),
     menu: document.getElementById('menu'),
     menuUse: document.getElementById('menu-use'),
     tooltip: document.getElementById('tooltip'),
@@ -33,7 +45,7 @@ const el = {
 
 let drag = null;
 let menuSlot = null;
-let hotbarTimer = null;
+let popupTimer = null;
 
 function post(name, data = {}) {
     return fetch(`https://${resource}/${name}`, {
@@ -44,7 +56,7 @@ function post(name, data = {}) {
 }
 
 function formatWeight(grams) {
-    return grams >= 1000 ? `${(grams / 1000).toFixed(1)} kg` : `${grams} g`;
+    return grams >= 1000 ? `${(grams / 1000).toFixed(2)} kg` : `${grams} g`;
 }
 
 // '#f5c542' -> 'rgba(245, 197, 66, alpha)'
@@ -60,28 +72,46 @@ function createElement(tag, className, text) {
     return node;
 }
 
+function slotElements(slot) {
+    return document.querySelectorAll(`.slot[data-slot="${slot}"]`);
+}
+
+function matchesFilter(item) {
+    if (state.filter !== 'all' && item.category !== state.filter) return false;
+    return !state.search || item.label.toLowerCase().includes(state.search);
+}
+
 function renderSlot(slotEl) {
     const slot = Number(slotEl.dataset.slot);
     const item = state.items.get(slot);
+    const isHotbar = slot <= state.hotbar;
+    const inPanel = el.inventory.contains(slotEl);
 
     slotEl.replaceChildren();
     slotEl.classList.toggle('slot--filled', Boolean(item));
     slotEl.classList.toggle('slot--equipped', Boolean(item?.metadata?.serial) && item.metadata.serial === state.equipped);
+    slotEl.classList.toggle('slot--dimmed', Boolean(item) && inPanel && !matchesFilter(item));
 
-    const category = item && state.categories[item.category];
-    if (category) {
-        slotEl.style.setProperty('--category', category.color);
-        slotEl.style.setProperty('--category-tint', tint(category.color, 0.25));
-    } else {
-        slotEl.style.removeProperty('--category');
-        slotEl.style.removeProperty('--category-tint');
+    const category = item && state.categories.get(item.category);
+    for (const [name, value] of [
+        ['--category', category?.color],
+        ['--category-tint', category && tint(category.color, 0.22)],
+        ['--category-strong', category && tint(category.color, 0.5)],
+    ]) {
+        if (value) slotEl.style.setProperty(name, value);
+        else slotEl.style.removeProperty(name);
     }
 
-    if (slot <= state.hotbar) {
-        slotEl.append(createElement('span', 'slot__key', String(slot)));
+    if (!item) {
+        if (isHotbar) slotEl.append(createElement('span', 'slot__watermark', String(slot)));
+        return;
     }
 
-    if (!item) return;
+    if (isHotbar) slotEl.append(createElement('span', 'slot__key', String(slot)));
+    if (item.count > 1) slotEl.append(createElement('span', 'slot__count', `${item.count}x`));
+
+    const ammo = item.metadata?.ammo;
+    if (typeof ammo === 'number') slotEl.append(createElement('span', 'slot__ammo', String(ammo)));
 
     const image = createElement('img', 'slot__image');
     image.src = `images/${item.image}`;
@@ -90,37 +120,63 @@ function renderSlot(slotEl) {
 
     slotEl.append(image, createElement('span', 'slot__label', item.label));
 
-    if (item.count > 1) {
-        slotEl.append(createElement('span', 'slot__count', `${item.count}x`));
+    if (typeof ammo === 'number' && item.clip) {
+        const bar = createElement('div', 'slot__bar');
+        const fill = createElement('div', 'slot__bar-fill');
+        fill.style.width = `${Math.min(100, (ammo / item.clip) * 100)}%`;
+        if (category) fill.style.background = category.color;
+        bar.append(fill);
+        slotEl.append(bar);
     }
-}
-
-function createSlot(slot, container) {
-    const slotEl = createElement('div', 'slot');
-    slotEl.dataset.slot = slot;
-    slotEl.classList.toggle('slot--hotbar', slot <= state.hotbar);
-    container.append(slotEl);
-    renderSlot(slotEl);
-}
-
-function buildGrids() {
-    el.grid.replaceChildren();
-    el.hotbar.replaceChildren();
-
-    for (let slot = 1; slot <= state.slots; slot++) createSlot(slot, el.grid);
-    for (let slot = 1; slot <= state.hotbar; slot++) createSlot(slot, el.hotbar);
 }
 
 function renderAllSlots() {
     for (const slotEl of document.querySelectorAll('.slot')) renderSlot(slotEl);
 }
 
-function renderWeight() {
+function createSlot(slot, container) {
+    const slotEl = createElement('div', 'slot');
+    slotEl.dataset.slot = slot;
+    container.append(slotEl);
+    renderSlot(slotEl);
+}
+
+function buildGrids() {
+    el.hotbarGrid.replaceChildren();
+    el.grid.replaceChildren();
+    el.popup.replaceChildren();
+
+    for (let slot = 1; slot <= state.hotbar; slot++) {
+        createSlot(slot, el.hotbarGrid);
+        createSlot(slot, el.popup);
+    }
+
+    for (let slot = state.hotbar + 1; slot <= state.slots; slot++) createSlot(slot, el.grid);
+}
+
+function buildTabs() {
+    el.tabs.replaceChildren();
+
+    const tabs = [['all', state.labels.all], ...[...state.categories].map(([name, category]) => [name, category.label])];
+
+    for (const [name, label] of tabs) {
+        const tab = createElement('button', 'tab', label);
+        tab.type = 'button';
+        tab.dataset.filter = name;
+        tab.classList.toggle('tab--active', name === state.filter);
+        el.tabs.append(tab);
+    }
+}
+
+function renderCapacity() {
     const ratio = state.maxWeight > 0 ? Math.min(1, state.weight / state.maxWeight) : 0;
+    const slotsText = `${state.items.size} / ${state.slots} ${state.labels.slots}`;
 
     el.weightText.textContent = `${formatWeight(state.weight)} / ${formatWeight(state.maxWeight)}`;
     el.weightFill.style.width = `${ratio * 100}%`;
-    el.weightFill.classList.toggle('weight-bar__fill--full', ratio >= 1);
+    el.weightFill.classList.toggle('capacity__fill--full', ratio >= 1);
+    el.slotsText.textContent = slotsText;
+    el.inventoryHint.textContent = slotsText;
 }
 
 function applyEntries(entries) {
@@ -131,7 +187,7 @@ function applyEntries(entries) {
             state.items.delete(slot);
         }
 
-        for (const slotEl of document.querySelectorAll(`.slot[data-slot="${slot}"]`)) renderSlot(slotEl);
+        for (const slotEl of slotElements(slot)) renderSlot(slotEl);
     }
 }
 
@@ -146,14 +202,14 @@ function cancelDrag() {
     drag = null;
 }
 
-function showHotbar(activeSlot) {
-    for (const slotEl of el.hotbar.children) {
+function showPopup(activeSlot) {
+    for (const slotEl of el.popup.children) {
         slotEl.classList.toggle('slot--active', Number(slotEl.dataset.slot) === activeSlot);
     }
 
-    el.hotbar.classList.remove('hidden');
-    clearTimeout(hotbarTimer);
-    hotbarTimer = setTimeout(() => el.hotbar.classList.add('hidden'), HOTBAR_VISIBLE_MS);
+    el.popup.classList.remove('hidden');
+    clearTimeout(popupTimer);
+    popupTimer = setTimeout(() => el.popup.classList.add('hidden'), HOTBAR_VISIBLE_MS);
 }
 
 function showTooltip(slot, x, y) {
@@ -162,7 +218,7 @@ function showTooltip(slot, x, y) {
 
     const lines = [createElement('div', 'tooltip__title', item.label)];
 
-    const category = state.categories[item.category];
+    const category = state.categories.get(item.category);
     if (category) {
         const categoryLine = createElement('div', 'tooltip__category', category.label);
         categoryLine.style.color = category.color;
@@ -182,10 +238,19 @@ function showTooltip(slot, x, y) {
 
 function slotFromEvent(event) {
     const slotEl = event.target.closest?.('.slot');
-    return slotEl && el.grid.contains(slotEl) ? Number(slotEl.dataset.slot) : null;
+    return slotEl && el.inventory.contains(slotEl) ? Number(slotEl.dataset.slot) : null;
 }
 
-el.grid.addEventListener('pointerdown', (event) => {
+// Shift moves half the stack, ctrl moves one, otherwise the Qty field or the whole stack
+function dragCount(event, item) {
+    if (event.shiftKey) return Math.max(1, Math.floor(item.count / 2));
+    if (event.ctrlKey) return 1;
+
+    const qty = Number.parseInt(el.qty.value, 10);
+    return qty > 0 ? Math.min(qty, item.count) : item.count;
+}
+
+el.inventory.addEventListener('pointerdown', (event) => {
     if (event.button !== 0) return;
 
     const slot = slotFromEvent(event);
@@ -205,10 +270,10 @@ document.addEventListener('pointermove', (event) => {
     if (!drag.ghost) {
         if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < DRAG_THRESHOLD_PX) return;
 
-        drag.ghost = createElement('div', 'slot slot--filled ghost');
+        drag.ghost = createElement('div', 'slot ghost');
         drag.ghost.dataset.slot = drag.slot;
-        renderSlot(drag.ghost);
         document.body.append(drag.ghost);
+        renderSlot(drag.ghost);
         el.tooltip.classList.add('hidden');
     }
 
@@ -223,23 +288,18 @@ document.addEventListener('pointerup', (event) => {
     if (!ghost) return;
 
     const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('.slot');
-    const toSlot = target && el.grid.contains(target) ? Number(target.dataset.slot) : null;
+    const toSlot = target && el.inventory.contains(target) ? Number(target.dataset.slot) : null;
     if (!toSlot || toSlot === slot) return;
 
-    // Shift moves half the stack, ctrl moves one, otherwise the whole stack
-    let count = item.count;
-    if (event.shiftKey) count = Math.max(1, Math.floor(item.count / 2));
-    else if (event.ctrlKey) count = 1;
-
-    post('move', { from: slot, to: toSlot, count });
+    post('move', { from: slot, to: toSlot, count: dragCount(event, item) });
 });
 
-el.grid.addEventListener('dblclick', (event) => {
+el.inventory.addEventListener('dblclick', (event) => {
     const slot = slotFromEvent(event);
     if (slot && state.items.has(slot)) post('use', { slot });
 });
 
-el.grid.addEventListener('contextmenu', (event) => {
+el.inventory.addEventListener('contextmenu', (event) => {
     event.preventDefault();
 
     const slot = slotFromEvent(event);
@@ -260,6 +320,22 @@ el.menu.addEventListener('click', (event) => {
     hideMenus();
 });
 
+el.tabs.addEventListener('click', (event) => {
+    const filter = event.target.dataset?.filter;
+    if (!filter) return;
+
+    state.filter = filter;
+    for (const tab of el.tabs.children) tab.classList.toggle('tab--active', tab.dataset.filter === filter);
+    renderAllSlots();
+});
+
+el.search.addEventListener('input', () => {
+    state.search = el.search.value.trim().toLowerCase();
+    renderAllSlots();
+});
+
+el.close.addEventListener('click', () => post('close'));
+
 document.addEventListener('click', (event) => {
     if (!el.menu.contains(event.target)) el.menu.classList.add('hidden');
 });
@@ -267,7 +343,10 @@ document.addEventListener('click', (event) => {
 document.addEventListener('keydown', (event) => {
     if (el.inventory.classList.contains('hidden')) return;
 
-    if (event.key === 'Escape' || event.key.toUpperCase() === state.openKey.toUpperCase()) {
+    // While typing in search or Qty, only Escape closes
+    const typing = event.target instanceof HTMLInputElement;
+
+    if (event.key === 'Escape' || (!typing && event.key.toUpperCase() === state.openKey.toUpperCase())) {
         event.preventDefault();
         post('close');
     }
@@ -283,34 +362,44 @@ window.addEventListener('message', ({ data }) => {
             state.openKey = data.openKey;
             state.equipped = data.equipped || null;
             state.labels = data.labels;
-            state.categories = data.categories || {};
+            state.categories = new Map((data.categories || []).map((category) => [category.name, category]));
             state.items.clear();
             for (const { slot, item } of data.items) if (item) state.items.set(slot, item);
 
             el.title.textContent = data.labels.title;
+            el.hotbarTitle.textContent = data.labels.hotbar;
+            el.hotbarHint.textContent = data.labels.hotbarHint;
+            el.inventoryTitle.textContent = data.labels.title;
+            el.search.placeholder = data.labels.search;
+            el.qty.placeholder = data.labels.qty;
+            buildTabs();
             buildGrids();
-            renderWeight();
+            renderCapacity();
             break;
 
         case 'update':
             state.weight = data.weight;
             applyEntries(data.changes);
-            renderWeight();
+            renderCapacity();
             break;
 
         case 'open':
-            el.hotbar.classList.add('hidden');
+            el.popup.classList.add('hidden');
             el.inventory.classList.remove('hidden');
+            el.close.classList.remove('hidden');
             break;
 
         case 'close':
             cancelDrag();
             hideMenus();
+            el.search.blur();
+            el.qty.blur();
             el.inventory.classList.add('hidden');
+            el.close.classList.add('hidden');
             break;
 
         case 'hotbar':
-            showHotbar(data.slot);
+            showPopup(data.slot);
             break;
 
         case 'equipped':

@@ -1,13 +1,16 @@
 :root {
-    --panel: rgba(16, 18, 22, 0.92);
-    --slot: rgba(255, 255, 255, 0.06);
-    --slot-hover: rgba(255, 255, 255, 0.12);
-    --border: rgba(255, 255, 255, 0.1);
-    --accent: #4fa3ff;
+    --accent: #f5c542;
+    --accent-text: #15181d;
+    --panel: rgba(17, 22, 30, 0.88);
+    --section: rgba(255, 255, 255, 0.04);
+    --slot: rgba(10, 14, 20, 0.55);
+    --slot-hover: rgba(255, 255, 255, 0.07);
+    --border: rgba(255, 255, 255, 0.07);
     --danger: #e5484d;
-    --text: #e8eaed;
-    --muted: #9aa0a6;
-    --slot-size: 84px;
+    --text: #eef0f3;
+    --muted: #8a93a0;
+    --slot-size: 128px;
+    --gap: 6px;
 }
 
 * {
@@ -26,73 +29,234 @@ body {
     user-select: none;
 }
 
+svg {
+    fill: currentColor;
+}
+
 .hidden {
     display: none !important;
 }
 
-.inventory {
+/* Panel */
+
+.panel {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 16px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--panel);
-}
-
-.inventory__header {
+    top: 5vh;
+    bottom: 5vh;
+    left: 2vw;
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 8px;
+    flex-direction: column;
+    width: calc(var(--slot-size) * 5 + var(--gap) * 4 + 32px);
+    padding: 14px 16px 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--panel);
+    backdrop-filter: blur(12px);
 }
 
-.inventory__title {
+.panel__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: 4px;
+    background: var(--section);
+}
+
+.panel__title,
+.section__title {
     margin: 0;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
-.inventory__weight {
-    color: var(--muted);
+.panel__tools {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
 }
 
-.weight-bar {
-    height: 4px;
-    margin-bottom: 12px;
-    border-radius: 2px;
+.badge {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border-radius: 4px;
+    background: var(--accent);
+    color: var(--accent-text);
+}
+
+.badge svg {
+    width: 22px;
+    height: 22px;
+}
+
+.input {
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    outline: none;
     background: var(--slot);
+    color: var(--text);
+    font: inherit;
+}
+
+.input:focus {
+    border-color: var(--accent);
+}
+
+.input--search {
+    width: 140px;
+}
+
+.input--qty {
+    width: 64px;
+    text-align: center;
+}
+
+.input--qty::-webkit-inner-spin-button {
+    appearance: none;
+}
+
+/* Weight and slots */
+
+.capacity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 4px 10px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.capacity__icon {
+    width: 14px;
+    height: 14px;
+}
+
+.capacity__bar {
+    flex: 1;
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.08);
     overflow: hidden;
 }
 
-.weight-bar__fill {
+.capacity__fill {
     width: 0;
     height: 100%;
     background: var(--accent);
     transition: width 0.15s;
 }
 
-.weight-bar__fill--full {
+.capacity__fill--full {
     background: var(--danger);
 }
 
-.grid,
-.hotbar {
-    display: grid;
-    grid-template-columns: repeat(8, var(--slot-size));
-    gap: 6px;
+.capacity__weight {
+    color: var(--text);
+    font-weight: 600;
 }
 
-.hotbar {
-    position: absolute;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%);
+/* Category tabs */
+
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.tab {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--section);
+    color: var(--text);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.tab:hover {
+    background: var(--slot-hover);
+}
+
+.tab--active {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-text);
+}
+
+/* Sections */
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.section--fill {
+    flex: 1;
+    min-height: 0;
+    margin-bottom: 0;
+}
+
+.section__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    background: var(--section);
+}
+
+.badge--small {
+    width: 36px;
+    height: 36px;
+}
+
+.badge--small svg {
+    width: 18px;
+    height: 18px;
+}
+
+.section__hint {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* Slots */
+
+.grid,
+.hotbar-popup {
+    display: grid;
     grid-template-columns: repeat(5, var(--slot-size));
-    padding: 8px;
-    border-radius: 10px;
-    background: var(--panel);
+    grid-auto-rows: var(--slot-size);
+    gap: var(--gap);
+}
+
+.grid--scroll {
+    flex: 1;
+    min-height: 0;
+    padding-right: 2px;
+    overflow-y: auto;
+}
+
+.grid--scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.grid--scroll::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .slot {
@@ -100,53 +264,80 @@ body {
     width: var(--slot-size);
     height: var(--slot-size);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 3px;
     background: var(--slot);
+    transition: opacity 0.15s;
 }
 
 .slot--filled {
-    background: linear-gradient(to top, var(--category-tint, transparent), var(--slot) 70%);
-    box-shadow: inset 0 -3px 0 var(--category, transparent);
+    background: linear-gradient(to top, var(--category-tint, transparent), var(--slot) 75%);
 }
 
 .slot--filled:hover {
-    background: linear-gradient(to top, var(--category-tint, transparent), var(--slot-hover) 70%);
+    background: linear-gradient(to top, var(--category-tint, transparent), var(--slot-hover) 75%);
 }
 
-.slot--hotbar {
-    border-color: rgba(79, 163, 255, 0.35);
+/* The equipped weapon takes its category color (red for weapons) */
+.slot--equipped,
+.slot--equipped:hover {
+    border: 2px solid var(--category, var(--accent));
+    background: linear-gradient(to top, var(--category-strong, transparent), var(--category-tint, transparent));
 }
 
 .slot--active {
     border-color: var(--accent);
 }
 
-.slot--equipped {
-    border-color: var(--accent);
-    background: rgba(79, 163, 255, 0.15);
+.slot--dimmed {
+    opacity: 0.25;
+}
+
+.slot__watermark {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.06);
+    font-size: 44px;
+    font-weight: 700;
+}
+
+.slot__key,
+.slot__count {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    font-size: 12px;
+    font-weight: 700;
 }
 
 .slot__key {
-    position: absolute;
-    top: 3px;
-    left: 5px;
     color: var(--muted);
-    font-size: 11px;
 }
 
-.slot__count {
+.slot__key + .slot__count {
+    left: auto;
+    right: 8px;
+}
+
+.slot__ammo {
     position: absolute;
-    top: 3px;
-    right: 5px;
+    top: 5px;
+    right: 6px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.45);
+    color: var(--category, var(--text));
     font-size: 11px;
+    font-weight: 700;
 }
 
 .slot__image {
     position: absolute;
-    top: 16px;
+    top: 18px;
     left: 50%;
-    width: 48px;
-    height: 48px;
+    width: 72px;
+    height: 72px;
     transform: translateX(-50%);
     object-fit: contain;
     pointer-events: none;
@@ -154,17 +345,31 @@ body {
 
 .slot__label {
     position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    padding: 2px 4px;
+    right: 4px;
+    bottom: 12px;
+    left: 4px;
     overflow: hidden;
-    border-radius: 0 0 6px 6px;
-    background: rgba(0, 0, 0, 0.35);
-    font-size: 11px;
+    font-size: 12px;
+    font-weight: 600;
     text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.slot__bar {
+    position: absolute;
+    right: 10px;
+    bottom: 4px;
+    left: 10px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.slot__bar-fill {
+    height: 100%;
+    background: var(--accent);
 }
 
 .ghost {
@@ -177,24 +382,73 @@ body {
     z-index: 10;
 }
 
+/* Close button, hotbar popup, menu, tooltip */
+
+.close {
+    position: absolute;
+    top: 5vh;
+    right: 2vw;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--panel);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.close:hover {
+    background: var(--danger);
+}
+
+.close svg {
+    width: 18px;
+    height: 18px;
+}
+
+.hotbar-popup {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    padding: 8px;
+    border-radius: 4px;
+    background: var(--panel);
+    transform: translateX(-50%);
+    --slot-size: 96px;
+}
+
+.hotbar-popup .slot__image {
+    top: 12px;
+    width: 52px;
+    height: 52px;
+}
+
+.hotbar-popup .slot__label {
+    bottom: 10px;
+}
+
 .menu {
     position: fixed;
     margin: 0;
     padding: 4px 0;
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 4px;
     background: var(--panel);
     list-style: none;
     z-index: 20;
 }
 
 .menu__item {
-    padding: 6px 16px;
+    padding: 7px 18px;
+    font-weight: 600;
     cursor: pointer;
 }
 
 .menu__item:hover {
-    background: var(--slot-hover);
+    background: var(--accent);
+    color: var(--accent-text);
 }
 
 .tooltip {
@@ -202,21 +456,22 @@ body {
     max-width: 240px;
     padding: 8px 10px;
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 4px;
     background: var(--panel);
     pointer-events: none;
     z-index: 30;
 }
 
 .tooltip__title {
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .tooltip__category {
     margin-top: 2px;
     font-size: 11px;
-    text-transform: uppercase;
+    font-weight: 600;
     letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .tooltip__line {

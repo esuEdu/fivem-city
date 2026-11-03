@@ -19,11 +19,18 @@ local weapons = require 'data.weapons'
 ---@type table<string, ItemDefinition>
 local definitions = {}
 
+---@type table<string, true>
+local categoryNames = {}
+
+for _, category in ipairs(Config.Categories) do
+    categoryNames[category.name] = true
+end
+
 ---@param name string
 ---@param category string
 ---@return string
 local function checkCategory(name, category)
-    if Config.Categories[category] then return category end
+    if categoryNames[category] then return category end
 
     lib.print.warn(('Item %s has unknown category %s (not in Config.Categories), using misc'):format(name, category))
 

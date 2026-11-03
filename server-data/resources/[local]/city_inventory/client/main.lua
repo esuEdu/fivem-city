@@ -37,6 +37,7 @@ local function toNui(slot, item)
             weight = definition.weight * item.count,
             weapon = definition.weapon or false,
             category = definition.category,
+            clip = definition.clip,
         },
     }
 end
@@ -61,6 +62,12 @@ local function setupNui()
             use = locale('ui_use'),
             equip = locale('ui_equip'),
             ammo = locale('ui_ammo'),
+            hotbar = locale('ui_hotbar'),
+            hotbarHint = locale('ui_hotbar_hint'),
+            slots = locale('ui_slots'),
+            all = locale('ui_all'),
+            search = locale('ui_search'),
+            qty = locale('ui_qty'),
         },
         equipped = weapons.getSerial() or false,
         categories = Config.Categories,

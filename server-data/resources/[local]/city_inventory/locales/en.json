@@ -18,5 +18,11 @@
     "error_no_ammo": "You have no ammo for this weapon",
     "keybind_reload": "Reload weapon",
     "ui_equip": "Equip",
-    "ui_ammo": "Ammo"
+    "ui_ammo": "Ammo",
+    "ui_hotbar": "Hotbar",
+    "ui_hotbar_hint": "Quickly equip your items",
+    "ui_slots": "slots",
+    "ui_all": "All",
+    "ui_search": "Search",
+    "ui_qty": "Qty"
 }
