@@ -4,15 +4,16 @@
 return {
     accent = '#f5c542', -- buttons, badges, active tabs, bars
     accentText = '#15181d', -- text and icons drawn on the accent color
+    accentGlow = 'rgba(245, 197, 66, 0.7)', -- neon glow around accent elements
     danger = '#e5484d',
     text = '#eef0f3',
     muted = '#8a93a0',
 
-    panel = 'rgba(17, 22, 30, 0.72)',
-    section = 'rgba(255, 255, 255, 0.05)',
-    slot = 'rgba(10, 14, 20, 0.45)',
-    slotHover = 'rgba(255, 255, 255, 0.08)',
-    border = 'rgba(255, 255, 255, 0.08)',
+    panel = 'rgba(8, 10, 18, 0.78)',
+    section = 'rgba(255, 255, 255, 0.04)',
+    slot = 'rgba(6, 8, 14, 0.55)',
+    slotHover = 'rgba(255, 255, 255, 0.06)',
+    border = 'rgba(255, 255, 255, 0.07)',
 
     blur = '16px', -- backdrop blur behind panels
     radius = '4px',

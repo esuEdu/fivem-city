@@ -105,6 +105,7 @@ function renderSlot(slotEl) {
         ['--category', category?.color],
         ['--category-tint', category && tint(category.color, 0.22)],
         ['--category-strong', category && tint(category.color, 0.5)],
+        ['--category-glow', category && tint(category.color, 0.7)],
     ]) {
         if (value) slotEl.style.setProperty(name, value);
         else slotEl.style.removeProperty(name);
@@ -132,7 +133,6 @@ function renderSlot(slotEl) {
         const bar = createElement('div', 'slot__bar');
         const fill = createElement('div', 'slot__bar-fill');
         fill.style.width = `${Math.min(100, (ammo / item.clip) * 100)}%`;
-        if (category) fill.style.background = category.color;
         bar.append(fill);
         slotEl.append(bar);
     }
