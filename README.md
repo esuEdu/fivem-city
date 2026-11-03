@@ -59,33 +59,6 @@ Useful commands: `docker compose logs -f fxserver`, `docker compose restart fxse
 Rosetta and QEMU emulation (`Stack overflow in unmanaged`, restart loop). Run the server on a
 Windows PC or an x86_64 Linux machine/VPS; a Mac can still be used to edit `server-data/resources/`.
 
-## Letting friends join through Cloudflare
-
-FiveM players connect over UDP, which a public Cloudflare Tunnel hostname can't carry. Instead the
-tunnel exposes the server as a *private network* and friends reach it with the free Cloudflare WARP app.
-The server always has the address `172.30.50.10` inside Docker.
-
-**Cloudflare dashboard (once)** — <https://one.dash.cloudflare.com>, free Zero Trust plan:
-1. **Networks → Tunnels → Create a tunnel → Cloudflared**, name it `fivem-city`. Copy the token from the
-   install command (the long `eyJ...` value) into `.env`:
-   ```
-   COMPOSE_PROFILES=tunnel
-   CLOUDFLARE_TUNNEL_TOKEN=eyJ...
-   ```
-   then `docker compose up -d`. The tunnel should show **Healthy** in the dashboard.
-2. In the tunnel, **CIDR / Private networks → Add** `172.30.50.10/32`.
-3. **Settings → Network → Firewall/Proxy**: enable the proxy with **TCP** and **UDP**.
-4. **Settings → WARP Client → Device enrollment permissions → Manage**: add a rule allowing your
-   friend's email (login method: One-time PIN).
-5. **Settings → WARP Client → Device settings → Default profile → Split Tunnels**: remove
-   `172.16.0.0/12` from the Exclude list, otherwise WARP skips the server's address.
-
-**Your friend:**
-1. Install the Cloudflare WARP / Cloudflare One app from <https://1.1.1.1>.
-2. Preferences → Account → **Login to Cloudflare Zero Trust**, enter your team name, then the
-   PIN emailed to them. Turn WARP on.
-3. In FiveM press F8 and run `connect 172.30.50.10:30120`.
-
 ## Prebuilt image (run on another PC)
 
 The private image `ghcr.io/esuedu/fivem-city` contains FXServer, `server.cfg` and all resources.
