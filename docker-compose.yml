@@ -34,6 +34,22 @@ services:
       - ./server-data:/server-data
     stdin_open: true
     tty: true
+    networks:
+      city:
+        # Fixed address so Cloudflare WARP users can `connect 172.30.50.10:30120`
+        ipv4_address: 172.30.50.10
+
+  # Cloudflare Tunnel for friends connecting through the WARP app (see README).
+  # Only starts when .env has COMPOSE_PROFILES=tunnel and CLOUDFLARE_TUNNEL_TOKEN.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    profiles: ["tunnel"]
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    networks:
+      - city
 
   mariadb:
     image: mariadb:11.4
@@ -53,6 +69,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    networks:
+      - city
+
+networks:
+  city:
+    ipam:
+      config:
+        - subnet: 172.30.50.0/24
 
 volumes:
   txdata:
