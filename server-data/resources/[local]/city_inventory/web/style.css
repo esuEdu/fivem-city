@@ -40,11 +40,10 @@ svg {
     /* 5 slots + gaps + padding + room for the inventory grid's scrollbar */
     width: calc(var(--slot-size) * 5 + var(--gap) * 4 + 32px + 10px);
     padding: 14px 16px 16px;
-    border: 1px solid var(--accent-glow);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--panel);
     backdrop-filter: blur(var(--blur));
-    box-shadow: 0 0 6px var(--accent-glow), 0 0 36px var(--accent-glow), inset 0 0 32px rgba(0, 0, 0, 0.5);
 }
 
 .panel__header {
@@ -63,7 +62,6 @@ svg {
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    text-shadow: 0 0 6px var(--accent-glow), 0 0 16px var(--accent-glow);
 }
 
 .panel__tools {
