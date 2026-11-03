@@ -1,6 +1,11 @@
 services:
   fxserver:
-    build: docker/fxserver
+    build:
+      context: .
+      dockerfile: docker/fxserver/Dockerfile
+      args:
+        FIVEM_ARTIFACT_URL: ${FIVEM_ARTIFACT_URL:-}
+    image: ghcr.io/esuedu/fivem-city:latest
     # FXServer only ships x86_64 builds (emulated on Apple Silicon)
     platform: linux/amd64
     restart: unless-stopped
@@ -12,15 +17,20 @@ services:
       - "30120:30120/udp"
       - "40120:40120/tcp" # txAdmin web panel
     environment:
+      # Used to write server-data/secrets.cfg; leave CFX_LICENSE_KEY empty to use your own file
+      CFX_LICENSE_KEY: ${CFX_LICENSE_KEY:-}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
       # Pre-fills the database step of the txAdmin setup wizard
       TXHOST_DEFAULT_DBHOST: mariadb
       TXHOST_DEFAULT_DBPORT: 3306
       TXHOST_DEFAULT_DBUSER: root
       TXHOST_DEFAULT_DBPASS: ${MYSQL_ROOT_PASSWORD}
       TXHOST_DEFAULT_DBNAME: ${MYSQL_DATABASE}
+    # Local dev: run server-data from the repo instead of the copy baked into the image.
+    # FXServer itself stays inside the image (see Dockerfile).
     volumes:
       - txdata:/txData
-      - ./artifacts:/opt/fxserver
       - ./server-data:/server-data
     stdin_open: true
     tty: true
@@ -31,12 +41,15 @@ services:
     environment:
       MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MARIADB_DATABASE: ${MYSQL_DATABASE}
-    ports:
-      - "127.0.0.1:3306:3306" # local access only (HeidiSQL, DBeaver, ...)
+    # No host port: avoids clashing with a local MySQL/XAMPP on 3306.
+    # To use HeidiSQL/DBeaver, add  ports: ["127.0.0.1:3307:3306"]  and connect to port 3307.
     volumes:
       - dbdata:/var/lib/mysql
+      # Imported automatically the first time the database is created
+      - ./server-data/resources/[qbx]/qbx_core/qbx_core.sql:/docker-entrypoint-initdb.d/qbx_core.sql:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 120s
       interval: 10s
       timeout: 5s
       retries: 10

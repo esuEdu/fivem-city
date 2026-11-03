@@ -7,7 +7,7 @@ artifacts/*
 !artifacts/.gitkeep
 
 # FXServer / txAdmin runtime data
-cache/
+/server-data/cache/
 txData/
 *.log
 crashes/

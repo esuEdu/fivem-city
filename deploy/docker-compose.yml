@@ -1,0 +1,61 @@
+# Runs the prebuilt private image on any x86_64 machine.
+# Copy this folder to the server PC, create .env from .env.example, then:
+#   docker login ghcr.io
+#   docker compose up -d
+services:
+  fxserver:
+    image: ghcr.io/esuedu/fivem-city:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "30120:30120/tcp"
+      - "30120:30120/udp"
+      - "40120:40120/tcp" # txAdmin web panel
+    environment:
+      CFX_LICENSE_KEY: ${CFX_LICENSE_KEY}
+      STEAM_WEBAPIKEY: ${STEAM_WEBAPIKEY:-none}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-fivem_city}
+      # Pre-fills the database step of the txAdmin setup wizard
+      TXHOST_DEFAULT_DBHOST: mariadb
+      TXHOST_DEFAULT_DBPORT: 3306
+      TXHOST_DEFAULT_DBUSER: root
+      TXHOST_DEFAULT_DBPASS: ${MYSQL_ROOT_PASSWORD}
+      TXHOST_DEFAULT_DBNAME: ${MYSQL_DATABASE:-fivem_city}
+    volumes:
+      - txdata:/txData
+    stdin_open: true
+    tty: true
+
+  # Copies the Qbox SQL out of the image so MariaDB imports it on first start
+  sql-init:
+    image: ghcr.io/esuedu/fivem-city:${IMAGE_TAG:-latest}
+    entrypoint: ["cp", "/server-data/resources/[qbx]/qbx_core/qbx_core.sql", "/initdb/"]
+    volumes:
+      - initdb:/initdb
+
+  mariadb:
+    image: mariadb:11.4
+    restart: unless-stopped
+    depends_on:
+      sql-init:
+        condition: service_completed_successfully
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MYSQL_DATABASE:-fivem_city}
+    volumes:
+      - dbdata:/var/lib/mysql
+      - initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 120s
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  txdata:
+  dbdata:
+  initdb:
