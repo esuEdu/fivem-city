@@ -1,6 +1,7 @@
 local Items = require 'shared.items'
 local search = require 'shared.search'
 local weapons = require 'client.weapons'
+local theme = require '@city_ui.theme'
 
 -- Read-only copy of the player's inventory; the server sends every change
 ---@type table<integer, InventoryItem>
@@ -71,6 +72,7 @@ local function setupNui()
         },
         equipped = weapons.getSerial() or false,
         categories = Config.Categories,
+        theme = theme,
     })
 end
 

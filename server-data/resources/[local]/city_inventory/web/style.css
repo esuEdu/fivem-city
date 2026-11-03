@@ -1,14 +1,5 @@
+/* Colors, blur, radius and font come from city_ui/theme.lua (set by app.js on setup) */
 :root {
-    --accent: #f5c542;
-    --accent-text: #15181d;
-    --panel: rgba(17, 22, 30, 0.88);
-    --section: rgba(255, 255, 255, 0.04);
-    --slot: rgba(10, 14, 20, 0.55);
-    --slot-hover: rgba(255, 255, 255, 0.07);
-    --border: rgba(255, 255, 255, 0.07);
-    --danger: #e5484d;
-    --text: #eef0f3;
-    --muted: #8a93a0;
     --slot-size: 128px;
     --gap: 6px;
 }
@@ -24,7 +15,7 @@ body {
     overflow: hidden;
     background: transparent;
     color: var(--text);
-    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    font-family: var(--font);
     font-size: 13px;
     user-select: none;
 }
@@ -46,12 +37,13 @@ svg {
     left: 2vw;
     display: flex;
     flex-direction: column;
-    width: calc(var(--slot-size) * 5 + var(--gap) * 4 + 32px);
+    /* 5 slots + gaps + padding + room for the inventory grid's scrollbar */
+    width: calc(var(--slot-size) * 5 + var(--gap) * 4 + 32px + 10px);
     padding: 14px 16px 16px;
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: var(--panel);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(var(--blur));
 }
 
 .panel__header {
@@ -59,7 +51,7 @@ svg {
     align-items: center;
     gap: 12px;
     padding: 8px;
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: var(--section);
 }
 
@@ -84,7 +76,7 @@ svg {
     width: 40px;
     height: 40px;
     flex: none;
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: var(--accent);
     color: var(--accent-text);
 }
@@ -98,7 +90,7 @@ svg {
     height: 32px;
     padding: 0 10px;
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: var(--radius);
     outline: none;
     background: var(--slot);
     color: var(--text);
@@ -141,7 +133,7 @@ svg {
 .capacity__bar {
     flex: 1;
     height: 5px;
-    border-radius: 3px;
+    border-radius: var(--radius);
     background: rgba(255, 255, 255, 0.08);
     overflow: hidden;
 }
@@ -174,7 +166,7 @@ svg {
 .tab {
     padding: 6px 12px;
     border: 1px solid var(--border);
-    border-radius: 3px;
+    border-radius: var(--radius);
     background: var(--section);
     color: var(--text);
     font: inherit;
@@ -213,7 +205,7 @@ svg {
     align-items: center;
     gap: 12px;
     padding: 10px 12px;
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: var(--section);
 }
 
@@ -246,7 +238,8 @@ svg {
 .grid--scroll {
     flex: 1;
     min-height: 0;
-    padding-right: 2px;
+    padding-right: 6px;
+    overflow-x: hidden;
     overflow-y: auto;
 }
 
@@ -264,7 +257,7 @@ svg {
     width: var(--slot-size);
     height: var(--slot-size);
     border: 1px solid var(--border);
-    border-radius: 3px;
+    border-radius: var(--radius);
     background: var(--slot);
     transition: opacity 0.15s;
 }
@@ -325,7 +318,7 @@ svg {
     top: 5px;
     right: 6px;
     padding: 1px 5px;
-    border-radius: 3px;
+    border-radius: var(--radius);
     background: rgba(0, 0, 0, 0.45);
     color: var(--category, var(--text));
     font-size: 11px;
@@ -393,7 +386,7 @@ svg {
     width: 44px;
     height: 44px;
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: var(--panel);
     color: var(--text);
     cursor: pointer;
@@ -413,7 +406,7 @@ svg {
     bottom: 32px;
     left: 50%;
     padding: 8px;
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: var(--panel);
     transform: translateX(-50%);
     --slot-size: 96px;
@@ -434,7 +427,7 @@ svg {
     margin: 0;
     padding: 4px 0;
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: var(--panel);
     list-style: none;
     z-index: 20;
@@ -456,7 +449,7 @@ svg {
     max-width: 240px;
     padding: 8px 10px;
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: var(--radius);
     background: var(--panel);
     pointer-events: none;
     z-index: 30;

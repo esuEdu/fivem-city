@@ -40,6 +40,7 @@ files {
 }
 
 dependencies {
+    'city_ui',
     'oxmysql',
     'ox_lib',
     'qbx_core',

@@ -65,6 +65,14 @@ function tint(hex, alpha) {
     return `rgba(${(value >> 16) & 255}, ${(value >> 8) & 255}, ${value & 255}, ${alpha})`;
 }
 
+// city_ui's theme.lua: { accentText = '#15181d' } -> --accent-text: #15181d
+function applyTheme(theme) {
+    for (const [key, value] of Object.entries(theme || {})) {
+        const name = key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+        document.documentElement.style.setProperty(`--${name}`, value);
+    }
+}
+
 function createElement(tag, className, text) {
     const node = document.createElement(tag);
     node.className = className;
@@ -355,6 +363,7 @@ document.addEventListener('keydown', (event) => {
 window.addEventListener('message', ({ data }) => {
     switch (data.action) {
         case 'setup':
+            applyTheme(data.theme);
             state.slots = data.slots;
             state.hotbar = data.hotbar;
             state.maxWeight = data.maxWeight;
