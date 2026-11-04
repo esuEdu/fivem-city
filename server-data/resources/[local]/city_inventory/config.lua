@@ -59,6 +59,17 @@ Config.TradeMaxWeight = 1000000
 Config.ShopDistance = 5.0
 Config.ShopAccounts = { 'cash', 'bank' }
 
+-- Scripts written for ox_inventory (ox_fuel) pay with this item. Money lives in qbx_core, so for a player the item's
+-- count, add and remove are their qbx cash instead.
+Config.CashItem = 'money'
+
+-- Searching players (police Search, Rob, the admin menu's Open inventory): how close (meters) they have to stand, the
+-- job types that may search anyone while on duty, and the ACE that lets staff on admin duty search anyone from anywhere.
+-- Anyone may search a player who is cuffed, down or has their hands up.
+Config.SearchDistance = 3.0
+Config.SearchJobTypes = { leo = true }
+Config.SearchStaffAce = 'admin'
+
 -- Item categories, set with `category` in data/items.lua. Weapons and ammo get theirs automatically;
 -- items without one are 'misc'. The color tints the item's slot in the UI; the order is the order of the filter tabs.
 Config.Categories = {

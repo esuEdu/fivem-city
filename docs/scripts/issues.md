@@ -6,16 +6,17 @@ Scripts that need changes because the server uses `city_inventory` instead of ox
 
 ### Broken or partly broken
 
-| Script | Problem | What to do |
-|---|---|---|
-| **ox_fuel** | Pays for fuel and jerry cans by taking a **"money" item** from the inventory (`server.lua` `defaultPaymentMethod`, `client/utils.lua`). The Qbox recipe kept that item synced with cash (`inventory:accounts ["money"]`); we keep money only in qbx_core, so the pump likely says "not enough money". | In `city_inventory`, treat the `money` item as the player's qbx cash (count, remove, add). Also covers any other script using it. |
-| **qbx_police** | The radial menu's **Search** (police) and **Rob** (citizen) call `openNearbyInventory`, which isn't built: nothing happens. | Build player search. |
-| **qbx_adminmenu** | **Open inventory** on a player calls `openInventory('player', id)` for someone else, which isn't built: nothing happens. | Comes with player search. |
+None known.
+
+### Fixed in `city_inventory`
+
+- **ox_fuel:** pays with a **"money" item**; `city_inventory` treats that item as the player's qbx cash (`server/cash.lua`, `Config.CashItem`).
+- **qbx_police** (radial **Search** and **Rob**, via `openNearbyInventory`) and **qbx_adminmenu** (**Open inventory**, via `openInventory('player', id)`): player search (`server/searches.lua`).
 
 ### Already patched
 
 - **qbx_core:** uses `city_inventory` (`scripts/patches/qbx_core.patch`).
-- **qbx_police:** registers its locker and trash stashes on start (`scripts/patches/qbx_police.patch`).
+- **qbx_police:** registers its locker and trash stashes on start, and **Rob** accepts the hands-up key's animation (scully_emotemenu's `random@mugging3`), not only the emote's (`scripts/patches/qbx_police.patch`).
 
 ### Working through the `ox_inventory` stand-in (nothing to do)
 

@@ -120,7 +120,16 @@ exports('Items', function(name)
     return Items
 end)
 
+-- Config.CashItem is the player's qbx cash, as on the server (server/cash.lua)
+local CASH_ITEM = Config.CashItem:lower()
+
 exports('GetItemCount', function(name, metadata, strict)
+    if type(name) == 'string' and name:lower() == CASH_ITEM then
+        local playerData = exports.qbx_core:GetPlayerData()
+
+        return playerData and playerData.money and playerData.money.cash or 0
+    end
+
     return search.count(getItems(), name, metadata, strict)
 end)
 
@@ -159,8 +168,11 @@ exports('GetPlayerItems', function()
 end)
 
 exports('openInventory', function(invType, data)
-    if invType == 'player' and (data == nil or data == cache.serverId) then
-        return openOwn()
+    if invType == 'player' then
+        local target = type(data) == 'table' and data.id or data
+        if target == nil or target == cache.serverId then return openOwn() end
+
+        return other.openPlayer(target)
     end
 
     if invType == 'stash' then
@@ -178,8 +190,15 @@ exports('closeInventory', function()
     closeOwn()
 end)
 
+-- The closest player; the server decides whether this player may search them (police, robbing, staff)
 exports('openNearbyInventory', function()
-    unsupported('openNearbyInventory')
+    local player = lib.getClosestPlayer(GetEntityCoords(cache.ped), Config.SearchDistance)
+
+    if not player then
+        return lib.notify({ description = locale('error_no_player'), type = 'error' })
+    end
+
+    other.openPlayer(GetPlayerServerId(player))
 end)
 
 ---@type table<string, string>

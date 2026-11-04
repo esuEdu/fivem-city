@@ -9,6 +9,18 @@ local players = {}
 ---@type table<integer, Inventory>
 local inventories = {}
 
+---@type table<integer, table<integer, true>> server ids searching each player's inventory (server/searches.lua)
+local viewers = {}
+
+---Who has this player's inventory open next to their own; add and remove ids in the returned table.
+---@param src integer
+---@return table<integer, true>
+function players.viewers(src)
+    viewers[src] = viewers[src] or {}
+
+    return viewers[src]
+end
+
 ---@param src integer
 ---@return Inventory?
 function players.get(src)
@@ -52,6 +64,12 @@ function players.unload(src)
 
     inventories[src] = nil
 
+    for viewer in pairs(viewers[src] or {}) do
+        TriggerClientEvent('city_inventory:client:closeOther', viewer, 'search_closed')
+    end
+
+    viewers[src] = nil
+
     if inventory.dirty then
         storage.save({ { owner = inventory.owner, entries = inventory:serialize() } })
     end
@@ -67,6 +85,10 @@ function players.sync(src)
 
     if next(changes) then
         TriggerClientEvent('city_inventory:client:updateSlots', src, changes, inventory.weight)
+
+        for viewer in pairs(viewers[src] or {}) do
+            TriggerClientEvent('city_inventory:client:updateOther', viewer, changes, inventory.weight)
+        end
     end
 
     if weapons.check(inventory) then

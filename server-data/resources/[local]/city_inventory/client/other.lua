@@ -44,6 +44,12 @@ function other.openShop(shopType, id)
     if not success then hooks.notifyFailure(reason) end
 end
 
+---@param target integer server id of the player to search
+function other.openPlayer(target)
+    local success, reason = lib.callback.await('city_inventory:openPlayer', false, target)
+    if not success then hooks.notifyFailure(reason) end
+end
+
 -- Opening the inventory with nothing else open shows the ground next to it
 function other.openGround()
     local success, reason = lib.callback.await('city_inventory:openGround', false)
@@ -114,12 +120,12 @@ RegisterNetEvent('city_inventory:client:updateOther', function(changes, weight)
 end)
 
 -- The server closed it: the player walked away or lost the job
-RegisterNetEvent('city_inventory:client:closeOther', function()
+RegisterNetEvent('city_inventory:client:closeOther', function(reason)
     if not current then return end
 
     current = nil
     SendNUIMessage({ action = 'clearOther' })
-    hooks.notifyFailure('stash_closed')
+    hooks.notifyFailure(reason == 'search_closed' and reason or 'stash_closed')
 end)
 
 RegisterNUICallback('transfer', function(data, cb)

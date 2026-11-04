@@ -6,8 +6,8 @@ Tick items off as they're done. Order: Phase 0 → Phase 1a (City OS) → Phase 
 
 ## Phase 0: Clean base
 
-- [ ] Fix fuel payment (ox_fuel pays with the `money` item; map it to qbx cash in `city_inventory`)
-- [ ] Player search: police **Search** / citizen **Rob** (`openNearbyInventory`) and the admin menu's **Open inventory**
+- [x] Fix fuel payment (ox_fuel pays with the `money` item; map it to qbx cash in `city_inventory`)
+- [x] Player search: police **Search** / citizen **Rob** (`openNearbyInventory`) and the admin menu's **Open inventory**
 - [ ] Remove duplicates from [scripts/issues.md](scripts/issues.md): food/drink effects defined twice, the second EMS shop, the dead **Give Contact Details** button
 - [ ] Find what the **F6 trade** is
 - [x] Commit the project skills (`.claude/skills/`), `scripts/check.sh`, `scripts/make-patch.sh` and `tests/`
