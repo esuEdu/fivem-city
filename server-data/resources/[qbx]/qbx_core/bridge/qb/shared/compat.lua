@@ -134,7 +134,7 @@ local function getQbItems()
 end
 
 local function getOxItemNames()
-    local items = loadFile('ox_inventory', 'data/items.lua')
+    local items = loadFile('city_inventory', 'data/items.lua')
 
     if type(items) ~= 'table' then
         error('ox_inventory/data/items.lua could not be read', 0)
@@ -146,7 +146,7 @@ local function getOxItemNames()
         names[tostring(name):lower()] = true
     end
 
-    for _, category in pairs(loadFile('ox_inventory', 'data/weapons.lua') or {}) do
+    for _, category in pairs(loadFile('city_inventory', 'data/weapons.lua') or {}) do
         for name in pairs(type(category) == 'table' and category or {}) do
             names[tostring(name):lower()] = true
         end

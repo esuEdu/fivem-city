@@ -910,7 +910,7 @@ function CreatePlayer(playerData, Offline)
     ---@return boolean success
     function self.Functions.AddItem(item, amount, slot, metadata)
         assert(not self.Offline, 'unsupported for offline players')
-        return exports.ox_inventory:AddItem(self.PlayerData.source, oxItemCompat(item), amount, metadata, slot)
+        return exports.city_inventory:AddItem(self.PlayerData.source, oxItemCompat(item), amount, metadata, slot)
     end
 
     ---@deprecated use ox_inventory exports directly
@@ -920,7 +920,7 @@ function CreatePlayer(playerData, Offline)
     ---@return boolean success
     function self.Functions.RemoveItem(item, amount, slot)
         assert(not self.Offline, 'unsupported for offline players')
-        return exports.ox_inventory:RemoveItem(self.PlayerData.source, oxItemCompat(item), amount, nil, slot)
+        return exports.city_inventory:RemoveItem(self.PlayerData.source, oxItemCompat(item), amount, nil, slot)
     end
 
     ---@deprecated use ox_inventory exports directly
@@ -928,7 +928,7 @@ function CreatePlayer(playerData, Offline)
     ---@return any table
     function self.Functions.GetItemBySlot(slot)
         assert(not self.Offline, 'unsupported for offline players')
-        return qbItemCompat(exports.ox_inventory:GetSlot(self.PlayerData.source, slot))
+        return qbItemCompat(exports.city_inventory:GetSlot(self.PlayerData.source, slot))
     end
 
     ---@deprecated use ox_inventory exports directly
@@ -936,7 +936,7 @@ function CreatePlayer(playerData, Offline)
     ---@return any table
     function self.Functions.GetItemByName(itemName)
         assert(not self.Offline, 'unsupported for offline players')
-        return qbItemCompat(exports.ox_inventory:GetSlotWithItem(self.PlayerData.source, oxItemCompat(itemName)))
+        return qbItemCompat(exports.city_inventory:GetSlotWithItem(self.PlayerData.source, oxItemCompat(itemName)))
     end
 
     ---@deprecated use ox_inventory exports directly
@@ -944,13 +944,13 @@ function CreatePlayer(playerData, Offline)
     ---@return any table
     function self.Functions.GetItemsByName(itemName)
         assert(not self.Offline, 'unsupported for offline players')
-        return qbItemCompat(exports.ox_inventory:GetSlotsWithItem(self.PlayerData.source, oxItemCompat(itemName)))
+        return qbItemCompat(exports.city_inventory:GetSlotsWithItem(self.PlayerData.source, oxItemCompat(itemName)))
     end
 
     ---@deprecated use ox_inventory exports directly
     function self.Functions.ClearInventory()
         assert(not self.Offline, 'unsupported for offline players')
-        return exports.ox_inventory:ClearInventory(self.PlayerData.source)
+        return exports.city_inventory:ClearInventory(self.PlayerData.source)
     end
 
     ---@deprecated use ox_inventory exports directly
@@ -1000,7 +1000,7 @@ function CreatePlayer(playerData, Offline)
         local source = self.PlayerData.source
 
         if type(items) ~= 'table' then
-            return exports.ox_inventory:GetItemCount(source, oxItemCompat(items)) >= (amount or 1)
+            return exports.city_inventory:GetItemCount(source, oxItemCompat(items)) >= (amount or 1)
         end
 
         if not next(items) then return false end
@@ -1009,7 +1009,7 @@ function CreatePlayer(playerData, Offline)
         for key, value in pairs(items) do
             local itemName = isArray and value or key
             local required = tonumber(amount) or (isArray and 1 or tonumber(value) or 1)
-            if exports.ox_inventory:GetItemCount(source, oxItemCompat(itemName)) < required then
+            if exports.city_inventory:GetItemCount(source, oxItemCompat(itemName)) < required then
                 return false
             end
         end
@@ -1408,7 +1408,7 @@ local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionTyp
     local oxMoneyType = toOxAccountName(moneyType)
 
     if accountsAsItems[oxMoneyType] then
-        exports.ox_inventory:SetItem(source, oxMoneyType, playerMoney[moneyType])
+        exports.city_inventory:SetItem(source, oxMoneyType, playerMoney[moneyType])
     end
 end
 

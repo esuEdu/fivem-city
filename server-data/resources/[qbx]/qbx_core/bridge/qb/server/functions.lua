@@ -214,7 +214,7 @@ end
 
 -- Utility functions
 
----@deprecated use exports.ox_inventory:GetItemCount or Search
+---@deprecated use exports.city_inventory:GetItemCount or Search
 ---@param source Source
 ---@param items string | string[] | table<string, number>
 ---@param amount? number
@@ -249,7 +249,7 @@ end
 ---@param itemName string
 ---@param item table
 local function warnItemNotInInventory(action, itemName, item)
-    if exports.ox_inventory:Items(itemName) then return end
+    if exports.city_inventory:Items(itemName) then return end
     lib.print.warn(("%s used deprecated %s for '%s'. Only QBCore.Shared.Items was changed: ox_inventory cannot register items at runtime, so the item cannot be given or used until it is defined in ox_inventory/data/items.lua, e.g.\n%s"):format(
         GetInvokingResource() or 'unknown resource', action, itemName, toOxItemDefinition(itemName, item)))
 end
@@ -368,7 +368,7 @@ function functions.RemoveItem(itemName)
 
     qbCoreCompat.Shared.Items[itemName] = nil
     runtimeItems[itemName] = nil
-    if exports.ox_inventory:Items(itemName) then
+    if exports.city_inventory:Items(itemName) then
         lib.print.warn(("%s used deprecated RemoveItem for '%s'. Only QBCore.Shared.Items was changed; ox_inventory still defines the item."):format(GetInvokingResource() or 'unknown resource', itemName))
     end
 

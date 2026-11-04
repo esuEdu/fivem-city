@@ -1,0 +1,233 @@
+diff --git a/server-data/resources/[qbx]/qbx_core/bridge/qb/client/functions.lua b/server-data/resources/[qbx]/qbx_core/bridge/qb/client/functions.lua
+index 8ac4261..268b034 100644
+--- a/server-data/resources/[qbx]/qbx_core/bridge/qb/client/functions.lua
++++ b/server-data/resources/[qbx]/qbx_core/bridge/qb/client/functions.lua
+@@ -29,7 +29,7 @@ local function getItemCount(itemName)
+     if type(itemName) ~= 'string' then return 0 end
+     itemName = itemName:lower()
+     if itemName:sub(1, 7) == 'weapon_' then itemName = itemName:upper() end
+-    return exports.ox_inventory:GetItemCount(itemName) or 0
++    return exports.city_inventory:GetItemCount(itemName) or 0
+ end
+ 
+ ---@deprecated use https://coxdocs.dev/ox_inventory/Functions/Client#getitemcount
+diff --git a/server-data/resources/[qbx]/qbx_core/bridge/qb/server/functions.lua b/server-data/resources/[qbx]/qbx_core/bridge/qb/server/functions.lua
+index 130375a..826e005 100644
+--- a/server-data/resources/[qbx]/qbx_core/bridge/qb/server/functions.lua
++++ b/server-data/resources/[qbx]/qbx_core/bridge/qb/server/functions.lua
+@@ -214,7 +214,7 @@ end
+ 
+ -- Utility functions
+ 
+----@deprecated use exports.ox_inventory:GetItemCount or Search
++---@deprecated use exports.city_inventory:GetItemCount or Search
+ ---@param source Source
+ ---@param items string | string[] | table<string, number>
+ ---@param amount? number
+@@ -249,7 +249,7 @@ end
+ ---@param itemName string
+ ---@param item table
+ local function warnItemNotInInventory(action, itemName, item)
+-    if exports.ox_inventory:Items(itemName) then return end
++    if exports.city_inventory:Items(itemName) then return end
+     lib.print.warn(("%s used deprecated %s for '%s'. Only QBCore.Shared.Items was changed: ox_inventory cannot register items at runtime, so the item cannot be given or used until it is defined in ox_inventory/data/items.lua, e.g.\n%s"):format(
+         GetInvokingResource() or 'unknown resource', action, itemName, toOxItemDefinition(itemName, item)))
+ end
+@@ -368,7 +368,7 @@ function functions.RemoveItem(itemName)
+ 
+     qbCoreCompat.Shared.Items[itemName] = nil
+     runtimeItems[itemName] = nil
+-    if exports.ox_inventory:Items(itemName) then
++    if exports.city_inventory:Items(itemName) then
+         lib.print.warn(("%s used deprecated RemoveItem for '%s'. Only QBCore.Shared.Items was changed; ox_inventory still defines the item."):format(GetInvokingResource() or 'unknown resource', itemName))
+     end
+ 
+diff --git a/server-data/resources/[qbx]/qbx_core/bridge/qb/shared/compat.lua b/server-data/resources/[qbx]/qbx_core/bridge/qb/shared/compat.lua
+index a51eb0d..18ac3a2 100644
+--- a/server-data/resources/[qbx]/qbx_core/bridge/qb/shared/compat.lua
++++ b/server-data/resources/[qbx]/qbx_core/bridge/qb/shared/compat.lua
+@@ -134,7 +134,7 @@ local function getQbItems()
+ end
+ 
+ local function getOxItemNames()
+-    local items = loadFile('ox_inventory', 'data/items.lua')
++    local items = loadFile('city_inventory', 'data/items.lua')
+ 
+     if type(items) ~= 'table' then
+         error('ox_inventory/data/items.lua could not be read', 0)
+@@ -146,7 +146,7 @@ local function getOxItemNames()
+         names[tostring(name):lower()] = true
+     end
+ 
+-    for _, category in pairs(loadFile('ox_inventory', 'data/weapons.lua') or {}) do
++    for _, category in pairs(loadFile('city_inventory', 'data/weapons.lua') or {}) do
+         for name in pairs(type(category) == 'table' and category or {}) do
+             names[tostring(name):lower()] = true
+         end
+diff --git a/server-data/resources/[qbx]/qbx_core/bridge/qb/shared/main.lua b/server-data/resources/[qbx]/qbx_core/bridge/qb/shared/main.lua
+index c67c7cd..9531681 100644
+--- a/server-data/resources/[qbx]/qbx_core/bridge/qb/shared/main.lua
++++ b/server-data/resources/[qbx]/qbx_core/bridge/qb/shared/main.lua
+@@ -9,7 +9,7 @@ local function isUseable(data)
+ end
+ 
+ qbShared.Items = {}
+-local oxItems = require '@ox_inventory.data.items'
++local oxItems = require '@city_inventory.data.items'
+ for item, data in pairs(oxItems) do
+     qbShared.Items[item] = {
+         name = item,
+@@ -24,7 +24,7 @@ for item, data in pairs(oxItems) do
+         description = data.description or nil
+     }
+ end
+-local oxWeapons = require '@ox_inventory.data.weapons'
++local oxWeapons = require '@city_inventory.data.weapons'
+ for name, data in pairs(oxWeapons.Weapons) do
+     local weapon = string.lower(name)
+     qbShared.Items[weapon] = {
+diff --git a/server-data/resources/[qbx]/qbx_core/modules/utils.lua b/server-data/resources/[qbx]/qbx_core/modules/utils.lua
+index efd66f4..82e350a 100644
+--- a/server-data/resources/[qbx]/qbx_core/modules/utils.lua
++++ b/server-data/resources/[qbx]/qbx_core/modules/utils.lua
+@@ -222,7 +222,7 @@ if isServer then
+     ---@return boolean Returns true if the player has the specified items in the desired quantity, false otherwise
+     function HasItem(source, items, amount) -- luacheck: ignore
+         amount = amount or 1
+-        local count = exports.ox_inventory:Search(source, 'count', items)
++        local count = exports.city_inventory:Search(source, 'count', items)
+         if type(items) == 'table' and type(count) == 'table' then
+             for _, v in pairs(count) do
+                 if v < amount then
+@@ -302,7 +302,7 @@ else
+     ---@return boolean Returns true if the player has the specified items in the desired quantity, false otherwise
+     function HasItem(items, amount) -- luacheck: ignore
+         amount = amount or 1
+-        local count = exports.ox_inventory:Search('count', items)
++        local count = exports.city_inventory:Search('count', items)
+         if type(items) == 'table' and type(count) == 'table' then
+             for _, v in pairs(count) do
+                 if v < amount then
+diff --git a/server-data/resources/[qbx]/qbx_core/server/character.lua b/server-data/resources/[qbx]/qbx_core/server/character.lua
+index d743264..ba226c2 100644
+--- a/server-data/resources/[qbx]/qbx_core/server/character.lua
++++ b/server-data/resources/[qbx]/qbx_core/server/character.lua
+@@ -11,16 +11,16 @@ end
+ 
+ ---@param source Source
+ local function giveStarterItems(source)
+-    if GetResourceState('ox_inventory') == 'missing' then return end
+-    while not exports.ox_inventory:GetInventory(source) do
++    if GetResourceState('city_inventory') == 'missing' then return end
++    while not exports.city_inventory:GetInventory(source) do
+         Wait(100)
+     end
+     for i = 1, #starterItems do
+         local item = starterItems[i]
+         if item.metadata and type(item.metadata) == 'function' then
+-            exports.ox_inventory:AddItem(source, item.name, item.amount, item.metadata(source))
++            exports.city_inventory:AddItem(source, item.name, item.amount, item.metadata(source))
+         else
+-            exports.ox_inventory:AddItem(source, item.name, item.amount, item.metadata)
++            exports.city_inventory:AddItem(source, item.name, item.amount, item.metadata)
+         end
+     end
+ end
+diff --git a/server-data/resources/[qbx]/qbx_core/server/main.lua b/server-data/resources/[qbx]/qbx_core/server/main.lua
+index 37bf435..bc4bd08 100644
+--- a/server-data/resources/[qbx]/qbx_core/server/main.lua
++++ b/server-data/resources/[qbx]/qbx_core/server/main.lua
+@@ -2,8 +2,8 @@ lib.versionCheck('Qbox-project/qbx_core')
+ local startupErrors, errorMessage
+ if not lib.checkDependency('ox_lib', '3.20.0', true) then
+     startupErrors, errorMessage = true, 'ox_lib version 3.20.0 or higher is required'
+-elseif not lib.checkDependency('ox_inventory', '2.42.1', true) then
+-    startupErrors, errorMessage = true, 'ox_inventory version 2.42.1 or higher is required'
++elseif not lib.checkDependency('city_inventory', '0.1.0', true) then
++    startupErrors, errorMessage = true, 'city_inventory version 0.1.0 or higher is required'
+ elseif GetConvar('inventory:framework', '') ~= 'qbx' then
+     startupErrors, errorMessage = true, 'inventory:framework must be set to "qbx" in order to use qbx_core'
+ elseif GetConvarInt('onesync_enableInfinity', 0) ~= 1 then
+diff --git a/server-data/resources/[qbx]/qbx_core/server/player.lua b/server-data/resources/[qbx]/qbx_core/server/player.lua
+index 9fb3dbc..05d30df 100644
+--- a/server-data/resources/[qbx]/qbx_core/server/player.lua
++++ b/server-data/resources/[qbx]/qbx_core/server/player.lua
+@@ -910,7 +910,7 @@ function CreatePlayer(playerData, Offline)
+     ---@return boolean success
+     function self.Functions.AddItem(item, amount, slot, metadata)
+         assert(not self.Offline, 'unsupported for offline players')
+-        return exports.ox_inventory:AddItem(self.PlayerData.source, oxItemCompat(item), amount, metadata, slot)
++        return exports.city_inventory:AddItem(self.PlayerData.source, oxItemCompat(item), amount, metadata, slot)
+     end
+ 
+     ---@deprecated use ox_inventory exports directly
+@@ -920,7 +920,7 @@ function CreatePlayer(playerData, Offline)
+     ---@return boolean success
+     function self.Functions.RemoveItem(item, amount, slot)
+         assert(not self.Offline, 'unsupported for offline players')
+-        return exports.ox_inventory:RemoveItem(self.PlayerData.source, oxItemCompat(item), amount, nil, slot)
++        return exports.city_inventory:RemoveItem(self.PlayerData.source, oxItemCompat(item), amount, nil, slot)
+     end
+ 
+     ---@deprecated use ox_inventory exports directly
+@@ -928,7 +928,7 @@ function CreatePlayer(playerData, Offline)
+     ---@return any table
+     function self.Functions.GetItemBySlot(slot)
+         assert(not self.Offline, 'unsupported for offline players')
+-        return qbItemCompat(exports.ox_inventory:GetSlot(self.PlayerData.source, slot))
++        return qbItemCompat(exports.city_inventory:GetSlot(self.PlayerData.source, slot))
+     end
+ 
+     ---@deprecated use ox_inventory exports directly
+@@ -936,7 +936,7 @@ function CreatePlayer(playerData, Offline)
+     ---@return any table
+     function self.Functions.GetItemByName(itemName)
+         assert(not self.Offline, 'unsupported for offline players')
+-        return qbItemCompat(exports.ox_inventory:GetSlotWithItem(self.PlayerData.source, oxItemCompat(itemName)))
++        return qbItemCompat(exports.city_inventory:GetSlotWithItem(self.PlayerData.source, oxItemCompat(itemName)))
+     end
+ 
+     ---@deprecated use ox_inventory exports directly
+@@ -944,13 +944,13 @@ function CreatePlayer(playerData, Offline)
+     ---@return any table
+     function self.Functions.GetItemsByName(itemName)
+         assert(not self.Offline, 'unsupported for offline players')
+-        return qbItemCompat(exports.ox_inventory:GetSlotsWithItem(self.PlayerData.source, oxItemCompat(itemName)))
++        return qbItemCompat(exports.city_inventory:GetSlotsWithItem(self.PlayerData.source, oxItemCompat(itemName)))
+     end
+ 
+     ---@deprecated use ox_inventory exports directly
+     function self.Functions.ClearInventory()
+         assert(not self.Offline, 'unsupported for offline players')
+-        return exports.ox_inventory:ClearInventory(self.PlayerData.source)
++        return exports.city_inventory:ClearInventory(self.PlayerData.source)
+     end
+ 
+     ---@deprecated use ox_inventory exports directly
+@@ -1000,7 +1000,7 @@ function CreatePlayer(playerData, Offline)
+         local source = self.PlayerData.source
+ 
+         if type(items) ~= 'table' then
+-            return exports.ox_inventory:GetItemCount(source, oxItemCompat(items)) >= (amount or 1)
++            return exports.city_inventory:GetItemCount(source, oxItemCompat(items)) >= (amount or 1)
+         end
+ 
+         if not next(items) then return false end
+@@ -1009,7 +1009,7 @@ function CreatePlayer(playerData, Offline)
+         for key, value in pairs(items) do
+             local itemName = isArray and value or key
+             local required = tonumber(amount) or (isArray and 1 or tonumber(value) or 1)
+-            if exports.ox_inventory:GetItemCount(source, oxItemCompat(itemName)) < required then
++            if exports.city_inventory:GetItemCount(source, oxItemCompat(itemName)) < required then
+                 return false
+             end
+         end
+@@ -1408,7 +1408,7 @@ local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionTyp
+     local oxMoneyType = toOxAccountName(moneyType)
+ 
+     if accountsAsItems[oxMoneyType] then
+-        exports.ox_inventory:SetItem(source, oxMoneyType, playerMoney[moneyType])
++        exports.city_inventory:SetItem(source, oxMoneyType, playerMoney[moneyType])
+     end
+ end
+ 

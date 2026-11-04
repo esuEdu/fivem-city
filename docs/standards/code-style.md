@@ -53,6 +53,11 @@ city_<feature>/
 - Everything a server owner might tune (coords, prices, cooldowns, item names, job names) goes in `config.lua`, not inline.
 - Player-facing text is English and short. Once a resource has more than a handful of strings, move them to `locales/en.json` and use `locale('key')` from ox_lib (`lib.locale()` at the top of the shared script).
 
+## UI
+
+- NUI pages take their colors, radius and fonts from `city_ui/theme.lua` (`require '@city_ui.theme'`, sent to the page and applied as CSS variables), so every screen looks like part of one set. Only page-specific values (sizes, layout) live in the page's own CSS.
+- Plain HTML/CSS/JS, no build step. Set text with `textContent`, never `innerHTML` with game data.
+
 ## Comments
 
 - Comment *why*, not *what*. One short line above the code it explains, as in `city_troll` (`-- source 0 = server console`).

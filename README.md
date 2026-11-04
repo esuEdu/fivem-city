@@ -10,7 +10,7 @@ FiveM roleplay server built on [Qbox](https://github.com/Qbox-project) + the [ox
 | ox_lib | Shared UI + utility library |
 | qbx_core | Qbox framework core |
 | ox_target | Third-eye interaction |
-| ox_inventory | Inventory |
+| city_inventory | Inventory (our own, in `[local]/`; replaces ox_inventory) |
 | pma-voice | Proximity voice |
 
 ## Layout

@@ -1,0 +1,917 @@
+/* Colors, radius and fonts come from city_ui/theme.lua (applied by js/main.js on setup) */
+:root {
+    /* Scales with the screen height so the panels fit from 720p up */
+    --slot-size: clamp(84px, 11.2vh, 124px);
+    --gap: clamp(5px, 0.75vh, 8px);
+    --columns: 5;
+    --panel-width: calc(var(--slot-size) * var(--columns) + var(--gap) * (var(--columns) - 1) + 48px);
+    --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes panel-in-left {
+    from { opacity: 0; transform: translateX(-28px); }
+}
+
+@keyframes panel-in-right {
+    from { opacity: 0; transform: translateX(28px); }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+}
+
+@keyframes card-in {
+    from { opacity: 0; transform: translate(-50%, -46%) scale(0.96); }
+}
+
+@keyframes rise-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.97); }
+}
+
+@keyframes slot-pop {
+    40% { transform: scale(0.92); }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    user-select: none;
+}
+
+svg {
+    fill: currentColor;
+}
+
+button {
+    font: inherit;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Panels */
+
+.panel {
+    position: absolute;
+    top: 8vh;
+    bottom: 4vh;
+    left: 2vw;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: var(--panel-width);
+    padding: 22px 20px 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-large);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 140px), var(--panel);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    animation: panel-in-left 0.28s var(--ease);
+}
+
+.panel--right {
+    left: auto;
+    right: 2vw;
+    animation-name: panel-in-right;
+}
+
+.panel__header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.panel__title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.panel__tools {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.badge {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 14px;
+    background: var(--accent);
+    color: var(--accent-text);
+    box-shadow: 0 0 18px var(--accent-glow);
+}
+
+.badge svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* Inputs and buttons */
+
+.input,
+.search {
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--slot);
+    color: var(--text);
+    font: inherit;
+}
+
+.input {
+    padding: 0 10px;
+    outline: none;
+}
+
+.input:focus,
+.search:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.input--qty {
+    width: 64px;
+    font-family: var(--mono);
+    text-align: center;
+}
+
+.input::-webkit-inner-spin-button {
+    appearance: none;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+    color: var(--muted);
+    cursor: text;
+}
+
+.search svg {
+    width: 15px;
+    height: 15px;
+    flex: none;
+}
+
+.search__input {
+    width: 110px;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+}
+
+.button {
+    height: 34px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--section);
+    color: var(--text);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.button:hover {
+    background: var(--slot-hover);
+}
+
+.button--accent,
+.button--accent:hover {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-text);
+    box-shadow: 0 0 14px var(--accent-glow);
+}
+
+/* Weight and slots */
+
+.capacity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.capacity__icon {
+    width: 14px;
+    height: 14px;
+}
+
+.capacity__bar {
+    flex: 1;
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+}
+
+.capacity__fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+    transition: width 0.2s;
+}
+
+.capacity__fill--full {
+    background: var(--danger);
+}
+
+.capacity__weight {
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.capacity__slots {
+    font-family: var(--mono);
+    font-size: 11px;
+}
+
+/* Category tabs */
+
+.tabs {
+    display: flex;
+    flex: none;
+    gap: 4px;
+    overflow-x: auto;
+}
+
+/* One row of tabs that scrolls sideways on small screens */
+.tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.tab {
+    flex: none;
+    padding: 6px 12px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.tab:hover {
+    background: var(--slot);
+    color: var(--text);
+}
+
+.tab--active,
+.tab--active:hover {
+    background: var(--accent);
+    color: var(--accent-text);
+    font-weight: 600;
+}
+
+/* Slot grids */
+
+.grid,
+.hotbar-popup {
+    display: grid;
+    grid-template-columns: repeat(var(--columns), var(--slot-size));
+    grid-auto-rows: var(--slot-size);
+    gap: var(--gap);
+}
+
+.grid {
+    flex: 1;
+    min-height: 0;
+    /* Room inside the scroll area for the hover lift and the selected outline, so the edge rows aren't cut */
+    margin: -6px -14px -6px -6px;
+    padding: 6px 14px 6px 6px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    align-content: start;
+}
+
+/* The hotbar row doesn't scroll; a thin line splits it from the rest */
+.grid--hotbar {
+    flex: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+}
+
+.divider {
+    flex: none;
+    height: 1px;
+    margin: 0 4px;
+    background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+}
+
+.grid::-webkit-scrollbar {
+    width: 4px;
+}
+
+.grid::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.slot {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    background: var(--slot);
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.15s var(--ease);
+}
+
+/* An item arrived, left or changed in this slot */
+.slot--changed {
+    animation: slot-pop 0.3s var(--ease);
+}
+
+/* The item's category color rises from the bottom of the slot (from under the border, or it repeats along the top edge) */
+.slot--filled {
+    background: linear-gradient(to top, var(--category-strong, transparent), var(--category-tint, transparent) 30%, transparent 80%) border-box, var(--slot);
+    cursor: grab;
+}
+
+.slot--filled:hover {
+    background: linear-gradient(to top, var(--category-strong, transparent), var(--category-tint, transparent) 40%, transparent 95%) border-box, var(--slot-hover);
+    border-color: var(--category-strong, var(--border));
+    transform: translateY(-2px);
+}
+
+.slot--filled:hover .slot__image {
+    transform: scale(1.06);
+}
+
+/* The item whose card is open */
+.slot--selected,
+.slot--selected:hover {
+    border: 2px solid var(--category, var(--accent));
+    box-shadow: 0 0 16px var(--category-glow, var(--accent-glow)), inset 0 0 18px var(--category-tint, var(--accent-soft));
+}
+
+/* The weapon in the player's hands: a glowing dot in the corner, so it isn't mistaken for the selected item */
+.slot__equipped {
+    position: absolute;
+    top: 11px;
+    left: 11px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--category, var(--accent));
+    box-shadow: 0 0 8px var(--category, var(--accent));
+}
+
+.slot--active {
+    border-color: var(--accent);
+    box-shadow: 0 0 14px var(--accent-glow);
+}
+
+/* Drop target while dragging something that combines with it (ammo or an attachment onto a gun, a recipe) */
+.slot--combine {
+    border: 2px dashed var(--accent);
+    box-shadow: 0 0 18px var(--accent-glow);
+}
+
+.slot--dimmed {
+    opacity: 0.2;
+}
+
+.slot--sold-out {
+    opacity: 0.35;
+}
+
+.slot__count {
+    position: absolute;
+    top: 8px;
+    left: 11px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Top right: hotbar key, ammo, shop price */
+.slot__corner {
+    position: absolute;
+    top: 8px;
+    right: 9px;
+    max-width: calc(100% - 34px);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.slot__key {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.slot__ammo {
+    color: var(--category, var(--text));
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.slot__price {
+    max-width: 92px;
+    overflow: hidden;
+    padding: 1px 6px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-size: clamp(9px, 1vh, 11px);
+    font-weight: 700;
+}
+
+/* Hotbar number shown in an empty hotbar slot */
+.slot__watermark {
+    color: rgba(255, 255, 255, 0.08);
+    font-family: var(--mono);
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.slot__image {
+    width: 58%;
+    height: 50%;
+    margin: 6px 0 14px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+    pointer-events: none;
+    transition: transform 0.2s var(--ease);
+}
+
+.slot__label {
+    position: absolute;
+    bottom: 14px;
+    left: 8px;
+    right: 8px;
+    overflow: hidden;
+    font-size: clamp(10px, 1.1vh, 12px);
+    font-weight: 500;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Ammo left in a gun's clip */
+.slot__bar {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 6px;
+    height: 3px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+}
+
+.slot__bar-fill {
+    height: 100%;
+    background: var(--category, var(--accent));
+}
+
+.ghost {
+    position: fixed;
+    top: calc(var(--slot-size) / -2);
+    left: calc(var(--slot-size) / -2);
+    width: var(--slot-size);
+    height: var(--slot-size);
+    border-color: var(--accent);
+    opacity: 0.9;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5), 0 0 18px var(--accent-glow);
+    pointer-events: none;
+    z-index: 50;
+}
+
+/* The slot follows the pointer with a slight tilt while dragging */
+.ghost .slot__image {
+    transform: rotate(-6deg) scale(1.08);
+}
+
+/* Trade panel: your offer above, theirs below */
+
+.panel__subtitle {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.trade__side {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.trade__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.trade__title {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.grid--trade {
+    flex: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+}
+
+.trade__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.status {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--slot);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status--done,
+.button--done,
+.button--done:hover {
+    border-color: var(--success);
+    background: var(--success);
+    color: var(--accent-text);
+    box-shadow: 0 0 14px var(--success-glow);
+}
+
+.cash {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--slot);
+    font-family: var(--mono);
+    font-weight: 700;
+}
+
+.cash:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.cash__sign {
+    color: var(--success);
+}
+
+.cash__input {
+    width: 120px;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+}
+
+.cash__input::-webkit-inner-spin-button {
+    appearance: none;
+}
+
+/* Close button and hotbar popup */
+
+.close {
+    position: absolute;
+    top: 2.5vh;
+    right: 2vw;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--panel);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.close:hover {
+    border-color: var(--danger);
+    background: var(--danger);
+    box-shadow: 0 0 16px var(--danger);
+}
+
+.close svg {
+    width: 18px;
+    height: 18px;
+}
+
+.hotbar-popup {
+    position: absolute;
+    bottom: 4vh;
+    left: 50%;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-large);
+    background: var(--panel);
+    transform: translateX(-50%);
+    animation: fade-in 0.15s;
+}
+
+/* Item card, between the two panels */
+
+.card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Fits in the gap between the two panels, keeping clear of their edges */
+    width: clamp(260px, calc(96vw - 2 * var(--panel-width) - 72px), 420px);
+    padding: 18px;
+    border: 1px solid var(--accent-glow);
+    border-radius: var(--radius-large);
+    background: linear-gradient(160deg, var(--accent-soft), transparent 55%), var(--panel);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55), 0 0 30px var(--accent-soft);
+    transform: translate(-50%, -50%);
+    z-index: 30;
+    animation: card-in 0.22s var(--ease);
+}
+
+.card__close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.card__close:hover {
+    background: var(--slot-hover);
+    color: var(--text);
+}
+
+.card__close svg {
+    width: 14px;
+    height: 14px;
+}
+
+.card__head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.card__image {
+    display: grid;
+    place-items: center;
+    width: clamp(76px, 9vh, 104px);
+    height: clamp(76px, 9vh, 104px);
+    flex: none;
+    border-radius: 16px;
+    background: linear-gradient(to top, var(--category-strong, transparent), var(--category-tint, transparent) 30%, transparent 80%) border-box, var(--slot);
+}
+
+.card__image img {
+    width: 76%;
+    height: 76%;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+}
+
+.card__title {
+    margin: 0 30px 10px 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.card__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chip {
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.chip--mono {
+    color: var(--muted);
+    font-family: var(--mono);
+}
+
+.card__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.card__rows:empty {
+    display: none;
+}
+
+.card__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.card__row-label {
+    color: var(--muted);
+}
+
+.card__row-value {
+    font-family: var(--mono);
+    font-weight: 700;
+    text-align: right;
+}
+
+.card__text {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.card__meter {
+    height: 4px;
+    margin-top: -6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+}
+
+.card__meter-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 16px;
+}
+
+.card__actions:empty {
+    display: none;
+}
+
+/* The amount window would show the card through it; the card comes back when the window closes */
+.dialog-open .card {
+    display: none;
+}
+
+/* Right-click menu */
+
+.menu {
+    position: fixed;
+    min-width: 150px;
+    margin: 0;
+    padding: 5px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--panel);
+    list-style: none;
+    z-index: 35;
+    animation: fade-in 0.12s;
+}
+
+.menu__item {
+    padding: 7px 12px;
+    border-radius: 7px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.menu__item:hover {
+    background: var(--accent);
+    color: var(--accent-text);
+}
+
+/* "How many?" window for buying and splitting */
+
+.dialog {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 40;
+    animation: fade-in 0.15s;
+}
+
+.dialog__box {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 340px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-large);
+    background: var(--panel);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+    animation: rise-in 0.2s var(--ease);
+}
+
+.dialog__title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.dialog__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: var(--radius);
+    background: var(--slot);
+}
+
+.dialog__image {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.dialog__label {
+    font-weight: 600;
+}
+
+.dialog__amount {
+    display: flex;
+    gap: 6px;
+}
+
+.dialog__step {
+    width: 36px;
+    padding: 0;
+    font-size: 16px;
+}
+
+.dialog__input {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--mono);
+    text-align: center;
+}
+
+.dialog__total {
+    margin: 0;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-weight: 700;
+}
+
+.dialog__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}

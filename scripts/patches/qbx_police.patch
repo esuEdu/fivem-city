@@ -1,0 +1,34 @@
+diff --git a/server-data/resources/[qbx]/qbx_police/server/main.lua b/server-data/resources/[qbx]/qbx_police/server/main.lua
+index d29ec4a..07c060e 100644
+--- a/server-data/resources/[qbx]/qbx_police/server/main.lua
++++ b/server-data/resources/[qbx]/qbx_police/server/main.lua
+@@ -657,9 +657,7 @@ RegisterNetEvent('police:server:IssueFine', function(targetSrc, lawViolated, fin
+ end)
+ 
+ 
+-AddEventHandler('onServerResourceStart', function(resource)
+-    if resource ~= 'ox_inventory' then return end
+-
++local function registerStashes()
+     local jobs = {}
+     for k, v in pairs(exports.qbx_core:GetJobs()) do
+         if v.type == 'leo' then
+@@ -672,8 +670,18 @@ AddEventHandler('onServerResourceStart', function(resource)
+             sharedConfig.locations.trash[i])
+     end
+     exports.ox_inventory:RegisterStash('policelocker', 'Police Locker', 30, 100000, true)
++end
++
++AddEventHandler('onServerResourceStart', function(resource)
++    if resource ~= 'ox_inventory' then return end
++    registerStashes()
+ end)
+ 
++-- ox_inventory starts before qbx_police, so the event above never fires on server start
++if GetResourceState('ox_inventory') == 'started' then
++    registerStashes()
++end
++
+ -- Threads
+ CreateThread(function()
+     Wait(1000)
