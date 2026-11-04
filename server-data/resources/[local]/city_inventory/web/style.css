@@ -562,8 +562,8 @@ button {
     position: absolute;
     top: 50%;
     left: 50%;
-    /* Fits in the gap between the two panels */
-    width: clamp(280px, calc(96vw - 2 * var(--panel-width) - 32px), 440px);
+    /* Fits in the gap between the two panels, keeping clear of their edges */
+    width: clamp(260px, calc(96vw - 2 * var(--panel-width) - 72px), 420px);
     padding: 18px;
     border: 1px solid var(--accent-glow);
     border-radius: var(--radius-large);
