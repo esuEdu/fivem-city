@@ -22,10 +22,11 @@ export const state = {
     other: { ...inventory(), open: false, label: '', kind: 'stash' },
 };
 
-// Drag in progress and the slot the right-click menu is for ({ inv, slot })
+// Drag in progress, the slot the right-click menu is for and the slot whose card is open ({ inv, slot })
 export const ui = {
     drag: null,
     menuSlot: null,
+    selected: null,
 };
 
 const byId = (id) => document.getElementById(id);
@@ -39,15 +40,20 @@ export const el = {
     search: byId('search'),
     qty: byId('qty'),
     tabs: byId('tabs'),
-    hotbarTitle: byId('hotbar-title'),
-    hotbarHint: byId('hotbar-hint'),
-    hotbarGrid: byId('hotbar-grid'),
-    inventoryTitle: byId('inventory-title'),
     grid: byId('grid'),
     otherGrid: byId('other-grid'),
     close: byId('close'),
     popup: byId('hotbar-popup'),
     menu: byId('menu'),
+    card: {
+        root: byId('card'),
+        close: byId('card-close'),
+        image: byId('card-image'),
+        title: byId('card-title'),
+        chips: byId('card-chips'),
+        rows: byId('card-rows'),
+        actions: byId('card-actions'),
+    },
     dialog: {
         root: byId('dialog'),
         title: byId('dialog-title'),
@@ -61,9 +67,8 @@ export const el = {
         cancel: byId('dialog-cancel'),
         confirm: byId('dialog-confirm'),
     },
-    tooltip: byId('tooltip'),
     capacity: {
-        player: { weight: byId('weight-text'), fill: byId('weight-fill'), slots: byId('slots-text'), hint: byId('inventory-hint') },
+        player: { weight: byId('weight-text'), fill: byId('weight-fill'), slots: byId('slots-text') },
         other: { weight: byId('other-weight-text'), fill: byId('other-weight-fill'), slots: byId('other-slots-text') },
     },
 };

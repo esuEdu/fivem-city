@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Poppins:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,7 +14,10 @@
             </div>
             <h1 id="title" class="panel__title"></h1>
             <div class="panel__tools">
-                <input id="search" class="input input--search" type="text" autocomplete="off" spellcheck="false">
+                <label class="search">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 0 1 5.96 12.05l4.25 4.24-1.42 1.42-4.24-4.25A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/></svg>
+                    <input id="search" class="search__input" type="text" autocomplete="off" spellcheck="false">
+                </label>
                 <input id="qty" class="input input--qty" type="number" min="1" step="1">
             </div>
         </header>
@@ -26,31 +31,7 @@
 
         <nav id="tabs" class="tabs"></nav>
 
-        <section class="section">
-            <div class="section__header">
-                <div class="badge badge--small">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
-                </div>
-                <div>
-                    <h2 id="hotbar-title" class="section__title"></h2>
-                    <p id="hotbar-hint" class="section__hint"></p>
-                </div>
-            </div>
-            <div id="hotbar-grid" class="grid"></div>
-        </section>
-
-        <section class="section section--fill">
-            <div class="section__header">
-                <div class="badge badge--small">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a3 3 0 0 1 6 0v1h1a4 4 0 0 1 4 4v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V9a4 4 0 0 1 4-4h1V4Zm2 1h2V4a1 1 0 0 0-2 0v1Z"/></svg>
-                </div>
-                <div>
-                    <h2 id="inventory-title" class="section__title"></h2>
-                    <p id="inventory-hint" class="section__hint"></p>
-                </div>
-            </div>
-            <div id="grid" class="grid grid--scroll"></div>
-        </section>
+        <div id="grid" class="grid"></div>
     </main>
 
     <main id="other" class="panel panel--right hidden">
@@ -68,9 +49,7 @@
             <span id="other-slots-text" class="capacity__slots"></span>
         </div>
 
-        <section class="section section--fill">
-            <div id="other-grid" class="grid grid--scroll"></div>
-        </section>
+        <div id="other-grid" class="grid"></div>
     </main>
 
     <button id="close" class="close hidden" type="button" aria-label="Close">
@@ -81,7 +60,20 @@
 
     <ul id="menu" class="menu hidden"></ul>
 
-    <div id="tooltip" class="tooltip hidden"></div>
+    <section id="card" class="card hidden">
+        <button id="card-close" class="card__close" type="button" aria-label="Close">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.7 5.3 12 10.6l5.3-5.3 1.4 1.4-5.3 5.3 5.3 5.3-1.4 1.4-5.3-5.3-5.3 5.3-1.4-1.4 5.3-5.3-5.3-5.3 1.4-1.4Z"/></svg>
+        </button>
+        <div class="card__head">
+            <div class="card__image"><img id="card-image" alt=""></div>
+            <div class="card__info">
+                <h2 id="card-title" class="card__title"></h2>
+                <div id="card-chips" class="card__chips"></div>
+            </div>
+        </div>
+        <div id="card-rows" class="card__rows"></div>
+        <div id="card-actions" class="card__actions"></div>
+    </section>
 
     <div id="dialog" class="dialog hidden">
         <div class="dialog__box">
@@ -91,15 +83,15 @@
                 <span id="dialog-label" class="dialog__label"></span>
             </div>
             <div class="dialog__amount">
-                <button id="dialog-minus" class="tab dialog__step" type="button">-</button>
+                <button id="dialog-minus" class="button dialog__step" type="button">-</button>
                 <input id="dialog-input" class="input dialog__input" type="number" min="1" step="1">
-                <button id="dialog-plus" class="tab dialog__step" type="button">+</button>
-                <button id="dialog-max" class="tab" type="button"></button>
+                <button id="dialog-plus" class="button dialog__step" type="button">+</button>
+                <button id="dialog-max" class="button" type="button"></button>
             </div>
             <p id="dialog-total" class="dialog__total"></p>
             <div class="dialog__actions">
-                <button id="dialog-cancel" class="tab" type="button"></button>
-                <button id="dialog-confirm" class="tab tab--active" type="button"></button>
+                <button id="dialog-cancel" class="button" type="button"></button>
+                <button id="dialog-confirm" class="button button--accent" type="button"></button>
             </div>
         </div>
     </div>

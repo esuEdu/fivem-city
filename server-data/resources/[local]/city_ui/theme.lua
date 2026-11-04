@@ -4,18 +4,21 @@
 return {
     accent = '#f5c542', -- buttons, badges, active tabs, bars
     accentText = '#15181d', -- text and icons drawn on the accent color
-    accentGlow = 'rgba(245, 197, 66, 0.7)', -- neon glow around accent elements
+    accentGlow = 'rgba(245, 197, 66, 0.45)', -- soft glow around accent elements
+    accentSoft = 'rgba(245, 197, 66, 0.1)', -- faint accent tint (card background, selected slot)
     danger = '#e5484d',
     text = '#eef0f3',
-    muted = '#8a93a0',
+    muted = '#7d8590',
 
-    panel = 'rgba(8, 10, 18, 0.78)',
-    section = 'rgba(255, 255, 255, 0.04)',
-    slot = 'rgba(6, 8, 14, 0.55)',
-    slotHover = 'rgba(255, 255, 255, 0.06)',
-    border = 'rgba(255, 255, 255, 0.07)',
+    panel = 'rgba(12, 13, 18, 0.82)',
+    section = 'rgba(255, 255, 255, 0.035)',
+    slot = 'rgba(255, 255, 255, 0.03)',
+    slotHover = 'rgba(255, 255, 255, 0.07)',
+    border = 'rgba(255, 255, 255, 0.06)',
 
-    blur = '16px', -- backdrop blur behind panels
-    radius = '4px',
-    font = "'Segoe UI', Roboto, Arial, sans-serif",
+    blur = '18px', -- backdrop blur behind panels
+    radius = '10px', -- buttons, slots, inputs
+    radiusLarge = '22px', -- panels and cards
+    font = "'Poppins', 'Segoe UI', Roboto, Arial, sans-serif",
+    mono = "'JetBrains Mono', Consolas, monospace", -- weights and counts
 }

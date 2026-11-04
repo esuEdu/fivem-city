@@ -63,5 +63,8 @@
     "ui_cancel": "Cancel",
     "ui_max": "Max",
     "ui_total": "Total",
-    "error_invalid_count": "That amount doesn't work"
+    "error_invalid_count": "That amount doesn't work",
+    "ui_price": "Price",
+    "ui_stock": "In stock",
+    "ui_serial": "Serial"
 }

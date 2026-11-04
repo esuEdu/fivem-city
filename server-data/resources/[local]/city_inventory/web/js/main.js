@@ -1,10 +1,11 @@
 // Renders what the client sends and forwards clicks. Every change is decided by the server.
 
-import { state, el } from './state.js';
+import { state, el, ui } from './state.js';
 import { applyEntries, buildOtherGrid, buildPlayerGrids, renderAllSlots, renderCapacity, setItems } from './slots.js';
 import { hideMenus, showPopup } from './menu.js';
 import { cancelDrag } from './drag.js';
 import { closeDialog, isDialogOpen } from './dialog.js';
+import { hideCard, refreshCard } from './card.js';
 import { applyTheme, createElement, post } from './util.js';
 
 function buildTabs() {
@@ -54,6 +55,11 @@ document.addEventListener('keydown', (event) => {
         return;
     }
 
+    if (event.key === 'Escape' && ui.selected) {
+        event.preventDefault();
+        return hideCard();
+    }
+
     // While typing in search or Qty, only Escape closes
     const typing = event.target instanceof HTMLInputElement;
 
@@ -80,9 +86,7 @@ const handlers = {
         setItems('player', data.items);
 
         el.title.textContent = data.labels.title;
-        el.hotbarTitle.textContent = data.labels.hotbar;
-        el.hotbarHint.textContent = data.labels.hotbarHint;
-        el.inventoryTitle.textContent = data.labels.title;
+        hideCard();
         el.search.placeholder = data.labels.search;
         el.qty.placeholder = data.labels.qty;
         buildTabs();
@@ -94,6 +98,7 @@ const handlers = {
         state.player.weight = data.weight;
         applyEntries('player', data.changes);
         renderCapacity('player');
+        refreshCard('player');
     },
 
     setOther(data) {
@@ -101,6 +106,7 @@ const handlers = {
             open: true, kind: data.kind, label: data.label, slots: data.slots, maxWeight: data.maxWeight, weight: data.weight,
         });
         setItems('other', data.items);
+        if (ui.selected?.inv === 'other') hideCard();
 
         el.otherTitle.textContent = data.label;
         el.otherCapacity.classList.toggle('hidden', data.kind === 'shop');
@@ -113,11 +119,13 @@ const handlers = {
         if (data.weight !== undefined) state.other.weight = data.weight;
         applyEntries('other', data.changes);
         renderCapacity('other');
+        refreshCard('other');
     },
 
     clearOther() {
         if (state.other.open) cancelDrag();
         closeDialog();
+        if (ui.selected?.inv === 'other') hideCard();
         state.other.open = false;
         state.other.items.clear();
         el.otherGrid.replaceChildren();
@@ -134,6 +142,7 @@ const handlers = {
     close() {
         cancelDrag();
         closeDialog();
+        hideCard();
         hideMenus();
         el.search.blur();
         el.qty.blur();

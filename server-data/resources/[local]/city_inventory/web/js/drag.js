@@ -1,6 +1,7 @@
 import { state, el, ui, itemAt, isShop } from './state.js';
 import { renderSlot, slotOf } from './slots.js';
-import { askBuy, hideMenus, showMenu, showShopMenu, showTooltip } from './menu.js';
+import { askBuy, hideMenus, showMenu } from './menu.js';
+import { hideCard, showCard } from './card.js';
 import { isDialogOpen } from './dialog.js';
 import { createElement, post } from './util.js';
 
@@ -63,11 +64,11 @@ function onPointerDown(event) {
     if (event.button !== 0 || isDialogOpen()) return;
 
     const slotEl = slotAt(event.target);
-    if (!slotEl) return;
+    const { inv, slot } = slotEl ? slotOf(slotEl) : {};
+    const item = slotEl && itemAt(inv, slot);
 
-    const { inv, slot } = slotOf(slotEl);
-    const item = itemAt(inv, slot);
-    if (!item) return;
+    // Clicking an empty spot in a panel closes the item card
+    if (!item) return hideCard();
 
     hideMenus();
     ui.drag = { inv, slot, item, x: event.clientX, y: event.clientY, ghost: null };
@@ -78,14 +79,7 @@ el.other.addEventListener('pointerdown', onPointerDown);
 
 document.addEventListener('pointermove', (event) => {
     const drag = ui.drag;
-
-    if (!drag) {
-        const slotEl = slotAt(event.target);
-        if (!slotEl) return el.tooltip.classList.add('hidden');
-
-        const { inv, slot } = slotOf(slotEl);
-        return showTooltip(inv, slot, event.clientX, event.clientY);
-    }
+    if (!drag) return;
 
     if (!drag.ghost) {
         if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < DRAG_THRESHOLD_PX) return;
@@ -95,7 +89,6 @@ document.addEventListener('pointermove', (event) => {
         drag.ghost.dataset.slot = drag.slot;
         document.body.append(drag.ghost);
         renderSlot(drag.ghost);
-        el.tooltip.classList.add('hidden');
     }
 
     drag.ghost.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
@@ -109,7 +102,10 @@ document.addEventListener('pointerup', (event) => {
     const target = slotAt(document.elementFromPoint(event.clientX, event.clientY));
     const combine = drag.ghost && combineSlot(target);
     cancelDrag();
-    if (!drag.ghost || !target) return;
+
+    // A click without dragging opens the item's card
+    if (!drag.ghost) return showCard(drag.inv, drag.slot);
+    if (!target) return;
 
     const { inv, slot } = slotOf(target);
     if (inv === drag.inv && slot === drag.slot) return;
@@ -141,23 +137,18 @@ el.inventory.addEventListener('dblclick', (event) => {
     if (itemAt('player', slot)) post('use', { slot });
 });
 
-el.inventory.addEventListener('contextmenu', (event) => {
+function onContextMenu(event) {
     event.preventDefault();
 
     const slotEl = slotAt(event.target);
     if (!slotEl) return hideMenus();
 
-    showMenu(slotOf(slotEl).slot, event.clientX, event.clientY);
-});
+    const { inv, slot } = slotOf(slotEl);
+    showMenu(inv, slot, event.clientX, event.clientY);
+}
 
-el.other.addEventListener('contextmenu', (event) => {
-    event.preventDefault();
-
-    const slotEl = slotAt(event.target);
-    if (!slotEl || !isShop()) return hideMenus();
-
-    showShopMenu(slotOf(slotEl).slot, event.clientX, event.clientY);
-});
+el.inventory.addEventListener('contextmenu', onContextMenu);
+el.other.addEventListener('contextmenu', onContextMenu);
 
 // Double-clicking a shop item buys it too
 el.other.addEventListener('dblclick', (event) => {

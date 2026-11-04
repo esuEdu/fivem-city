@@ -1,4 +1,4 @@
-import { state, el, itemAt } from './state.js';
+import { state, el, ui, itemAt } from './state.js';
 import { createElement, formatPrice, formatWeight, tint } from './util.js';
 
 function matchesFilter(item) {
@@ -22,6 +22,7 @@ export function renderSlot(slotEl) {
     slotEl.classList.toggle('slot--equipped', inv === 'player' && Boolean(item?.metadata?.serial) && item.metadata.serial === state.equipped);
     slotEl.classList.toggle('slot--dimmed', Boolean(item) && inPanel && !matchesFilter(item));
     slotEl.classList.toggle('slot--sold-out', item?.stock === 0);
+    slotEl.classList.toggle('slot--selected', Boolean(item) && ui.selected?.inv === inv && ui.selected?.slot === slot && inPanel);
 
     const category = item && state.categories.get(item.category);
     for (const [name, value] of [
@@ -39,17 +40,16 @@ export function renderSlot(slotEl) {
         return;
     }
 
-    if (isHotbar) slotEl.append(createElement('span', 'slot__key', String(slot)));
+    // Top left: how many (or the stock left in a shop). Top right: ammo, shop price, hotbar key
+    const count = item.price !== undefined ? item.stock : item.count;
+    if (typeof count === 'number' && (count > 1 || item.price !== undefined)) slotEl.append(createElement('span', 'slot__count', String(count)));
 
-    if (item.price !== undefined) {
-        slotEl.append(createElement('span', 'slot__price', formatPrice(item, state.labels)));
-        if (typeof item.stock === 'number') slotEl.append(createElement('span', 'slot__count', `${item.stock}x`));
-    } else if (item.count > 1) {
-        slotEl.append(createElement('span', 'slot__count', `${item.count}x`));
-    }
-
+    const corner = createElement('div', 'slot__corner');
     const ammo = item.metadata?.ammo;
-    if (typeof ammo === 'number') slotEl.append(createElement('span', 'slot__ammo', String(ammo)));
+    if (typeof ammo === 'number') corner.append(createElement('span', 'slot__ammo', String(ammo)));
+    if (item.price !== undefined) corner.append(createElement('span', 'slot__price', formatPrice(item, state.labels)));
+    if (isHotbar) corner.append(createElement('span', 'slot__key', String(slot)));
+    if (corner.childElementCount) slotEl.append(corner);
 
     const image = createElement('img', 'slot__image');
     image.src = `images/${item.image}`;
@@ -79,17 +79,13 @@ function createSlot(inv, slot, container) {
     renderSlot(slotEl);
 }
 
+// One grid; its first slots are the hotbar (keys 1-5), also shown in the popup when a key is pressed
 export function buildPlayerGrids() {
-    el.hotbarGrid.replaceChildren();
     el.grid.replaceChildren();
     el.popup.replaceChildren();
 
-    for (let slot = 1; slot <= state.hotbar; slot++) {
-        createSlot('player', slot, el.hotbarGrid);
-        createSlot('player', slot, el.popup);
-    }
-
-    for (let slot = state.hotbar + 1; slot <= state.player.slots; slot++) createSlot('player', slot, el.grid);
+    for (let slot = 1; slot <= state.hotbar; slot++) createSlot('player', slot, el.popup);
+    for (let slot = 1; slot <= state.player.slots; slot++) createSlot('player', slot, el.grid);
 }
 
 export function buildOtherGrid() {
@@ -110,7 +106,6 @@ export function renderCapacity(inv) {
     target.fill.style.width = `${ratio * 100}%`;
     target.fill.classList.toggle('capacity__fill--full', ratio >= 1);
     target.slots.textContent = slotsText;
-    if (target.hint) target.hint.textContent = slotsText;
 }
 
 // Replaces whole inventory contents from a list of { slot, item }

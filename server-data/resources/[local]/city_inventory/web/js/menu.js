@@ -1,5 +1,5 @@
 import { state, el, ui, itemAt } from './state.js';
-import { createElement, formatPrice, formatWeight, post } from './util.js';
+import { createElement, post } from './util.js';
 import { openDialog } from './dialog.js';
 
 // Most of one item bought at once when the shop has no stock limit
@@ -11,7 +11,6 @@ let popupTimer = null;
 
 export function hideMenus() {
     el.menu.classList.add('hidden');
-    el.tooltip.classList.add('hidden');
     ui.menuSlot = null;
 }
 
@@ -23,48 +22,6 @@ export function showPopup(activeSlot) {
     el.popup.classList.remove('hidden');
     clearTimeout(popupTimer);
     popupTimer = setTimeout(() => el.popup.classList.add('hidden'), HOTBAR_VISIBLE_MS);
-}
-
-export function showTooltip(inv, slot, x, y) {
-    const item = itemAt(inv, slot);
-    if (!item || ui.drag) return el.tooltip.classList.add('hidden');
-
-    const lines = [createElement('div', 'tooltip__title', item.metadata?.label || item.label)];
-
-    const category = state.categories.get(item.category);
-    if (category) {
-        const categoryLine = createElement('div', 'tooltip__category', category.label);
-        categoryLine.style.color = category.color;
-        lines.push(categoryLine);
-    }
-
-    if (item.price !== undefined) lines.push(createElement('div', 'tooltip__line', formatPrice(item, state.labels)));
-
-    const description = item.metadata?.description || item.description;
-    if (description) lines.push(createElement('div', 'tooltip__line', description));
-    lines.push(createElement('div', 'tooltip__line', formatWeight(item.weight)));
-    if (typeof item.metadata?.ammo === 'number') lines.push(createElement('div', 'tooltip__line', `${state.labels.ammo}: ${item.metadata.ammo}`));
-    if (item.metadata?.serial) lines.push(createElement('div', 'tooltip__line', `#${item.metadata.serial}`));
-
-    const attachments = (item.metadata?.components || []).map((name) => state.componentLabels[name] || name);
-    if (attachments.length) lines.push(createElement('div', 'tooltip__line', `${state.labels.attachments}: ${attachments.join(', ')}`));
-
-    for (const [key, label] of Object.entries(state.metadataLabels)) {
-        const value = item.metadata?.[key];
-        if (value !== undefined && typeof value !== 'object') lines.push(createElement('div', 'tooltip__line', `${label}: ${value}`));
-    }
-
-    el.tooltip.replaceChildren(...lines);
-    el.tooltip.style.left = `${x + 14}px`;
-    el.tooltip.style.top = `${y + 14}px`;
-    el.tooltip.classList.remove('hidden');
-}
-
-function menuItem(label, action, name) {
-    const entry = createElement('li', 'menu__item', label);
-    entry.dataset.action = action;
-    if (name) entry.dataset.name = name;
-    return entry;
 }
 
 // Buys from the shop slot into the player's inventory (toSlot, or wherever it fits), asking how many first
@@ -94,52 +51,56 @@ export function askSplit(slot) {
     });
 }
 
-function placeMenu(entries, x, y) {
-    el.menu.replaceChildren(...entries);
-    el.tooltip.classList.add('hidden');
-    el.menu.style.left = `${x}px`;
-    el.menu.style.top = `${y}px`;
-    el.menu.classList.remove('hidden');
-}
+// What can be done with the item in a slot: { label, action, name? }. Used by the right-click menu and the item card.
+export function actionsFor(inv, slot) {
+    const item = itemAt(inv, slot);
+    if (!item) return [];
 
-export function showShopMenu(slot, x, y) {
-    const item = itemAt('other', slot);
-    if (!item || item.stock === 0) return hideMenus();
+    if (inv === 'other') {
+        return item.price !== undefined && item.stock !== 0 ? [{ label: state.labels.buy, action: 'buy' }] : [];
+    }
 
-    ui.menuSlot = { inv: 'other', slot };
-    placeMenu([menuItem(state.labels.buy, 'buy')], x, y);
-}
+    const actions = [{ label: item.weapon ? state.labels.equip : state.labels.use, action: 'use' }];
 
-// For the player's own items: stash items have to be taken out first
-export function showMenu(slot, x, y) {
-    const item = itemAt('player', slot);
-    if (!item) return hideMenus();
-
-    const entries = [menuItem(item.weapon ? state.labels.equip : state.labels.use, 'use')];
-
-    if (item.count > 1) entries.push(menuItem(state.labels.split, 'split'));
-
-    if (item.weapon && item.metadata?.ammo > 0) entries.push(menuItem(state.labels.unload, 'unload'));
+    if (item.count > 1) actions.push({ label: state.labels.split, action: 'split' });
+    if (item.weapon && item.metadata?.ammo > 0) actions.push({ label: state.labels.unload, action: 'unload' });
 
     for (const name of item.metadata?.components || []) {
         const label = state.componentLabels[name] || name;
-        entries.push(menuItem(state.labels.remove.replace('%s', label), 'detach', name));
+        actions.push({ label: state.labels.remove.replace('%s', label), action: 'detach', name });
     }
 
-    ui.menuSlot = { inv: 'player', slot };
-    placeMenu(entries, x, y);
+    return actions;
+}
+
+export function runAction({ inv, slot }, action, name) {
+    if (action === 'buy') return askBuy(slot, null);
+    if (action === 'split') return askSplit(slot);
+    if (inv === 'player') post(action, { slot, name });
+}
+
+export function showMenu(inv, slot, x, y) {
+    const actions = actionsFor(inv, slot);
+    if (!actions.length) return hideMenus();
+
+    el.menu.replaceChildren(...actions.map(({ label, action, name }) => {
+        const entry = createElement('li', 'menu__item', label);
+        entry.dataset.action = action;
+        if (name) entry.dataset.name = name;
+        return entry;
+    }));
+
+    ui.menuSlot = { inv, slot };
+    el.menu.style.left = `${x}px`;
+    el.menu.style.top = `${y}px`;
+    el.menu.classList.remove('hidden');
 }
 
 el.menu.addEventListener('click', (event) => {
     const { action, name } = event.target.dataset;
     const target = ui.menuSlot;
     hideMenus();
-    if (!action || !target) return;
-
-    if (action === 'buy') return askBuy(target.slot, null);
-    if (action === 'split') return askSplit(target.slot);
-
-    post(action, { slot: target.slot, name });
+    if (action && target) runAction(target, action, name);
 });
 
 document.addEventListener('click', (event) => {
