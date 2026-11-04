@@ -1,4 +1,4 @@
-import { state, el, ui, itemAt } from './state.js';
+import { state, el, ui, itemAt, gunAmmo } from './state.js';
 import { createElement, formatPrice, formatWeight, tint } from './util.js';
 import { actionsFor, runAction } from './menu.js';
 
@@ -55,10 +55,10 @@ function render() {
         if (typeof item.stock === 'number') rows.push(row(state.labels.stock, String(item.stock)));
     }
 
-    const ammo = item.metadata?.ammo;
-    if (typeof ammo === 'number') {
-        rows.push(row(state.labels.ammo, item.clip ? `${ammo} / ${item.clip}` : String(ammo)));
-        if (item.clip) rows.push(meter(ammo / item.clip));
+    const ammo = gunAmmo(item);
+    if (ammo) {
+        rows.push(row(state.labels.ammo, `${ammo.inClip} / ${ammo.spare}`));
+        if (item.clip) rows.push(meter(ammo.inClip / item.clip));
     }
 
     if (item.metadata?.serial) rows.push(row(state.labels.serial, item.metadata.serial));

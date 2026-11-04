@@ -139,7 +139,8 @@ function weapons.reload(inventory, serial, ammo, clipHint)
     return true, current + loaded
 end
 
----Loads the weapon in `weaponSlot` with ammo from `ammoSlot`, e.g. when the player drags the ammo onto it.
+---Loads the weapon in `weaponSlot` with ammo from `ammoSlot`, e.g. when the player drags the ammo onto it. It fills the
+---magazine and the spare rounds the gun carries (Config.ReserveMagazines more magazines).
 ---@param inventory Inventory
 ---@param weaponSlot integer
 ---@param ammoSlot integer
@@ -158,8 +159,9 @@ function weapons.load(inventory, weaponSlot, ammoSlot, count, clipHint)
     local clip = clipSize(definition, clipHint)
     if not clip then return false, 'not_weapon' end
 
+    local capacity = math.min(clip * (1 + Config.ReserveMagazines), Config.MaxGunAmmo)
     local current = weapon.metadata.ammo or 0
-    local loaded = math.min(Inventory.toCount(count) or ammo.count, ammo.count, clip - current)
+    local loaded = math.min(Inventory.toCount(count) or ammo.count, ammo.count, capacity - current)
     if loaded <= 0 then return false, 'clip_full' end
 
     inventory:remove(ammo.name, loaded, nil, ammoSlot)

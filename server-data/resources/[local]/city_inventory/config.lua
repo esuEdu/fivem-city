@@ -79,6 +79,11 @@ Config.Categories = {
 -- Inventory actions (move, use) a player may send per second before the rest are refused
 Config.ActionsPerSecond = 10
 
+-- A gun holds a full magazine plus this many spare magazines (16/128 for a 16-round pistol); R reloads from the spare
+-- rounds, and only takes ammo items from the inventory once they're gone. MaxGunAmmo caps the total (the game's limit).
+Config.ReserveMagazines = 8
+Config.MaxGunAmmo = 250
+
 -- Most rounds one reload may load when the weapon has no `clip` in data/weapons.lua.
 -- The client tells the server the magazine size; this caps it.
 Config.MaxClip = 100

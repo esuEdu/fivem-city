@@ -49,7 +49,8 @@ local function toNui(slot, item)
             ammo = definition.ammo or false,
             component = definition.component or false,
             category = definition.category,
-            clip = definition.clip,
+            -- Magazine size for the page's 16/128 display
+            clip = definition.ammoname and (definition.clip or GetWeaponClipSize(joaat(item.name))) or nil,
         },
     }
 end

@@ -1,7 +1,7 @@
 // Renders what the client sends and forwards clicks. Every change is decided by the server.
 
 import { state, el, ui } from './state.js';
-import { applyEntries, buildOtherGrid, buildPlayerGrids, renderAllSlots, renderCapacity, setItems } from './slots.js';
+import { applyEntries, buildOtherGrid, buildPlayerGrids, renderAllSlots, renderCapacity, renderSlot, setItems } from './slots.js';
 import { hideMenus, showPopup } from './menu.js';
 import { cancelDrag } from './drag.js';
 import { closeDialog, isDialogOpen } from './dialog.js';
@@ -178,7 +178,21 @@ const handlers = {
 
     equipped(data) {
         state.equipped = data.serial || null;
+        state.liveClip = null;
         renderAllSlots();
+    },
+
+    // Rounds left in the magazine of the gun in hand, for its 16/128 display
+    clip(data) {
+        state.liveClip = { serial: data.serial, clip: data.clip };
+
+        for (const [slot, item] of state.player.items) {
+            if (item.metadata?.serial !== data.serial) continue;
+
+            for (const slotEl of document.querySelectorAll(`.slot[data-inv="player"][data-slot="${slot}"]`)) renderSlot(slotEl);
+        }
+
+        refreshCard('player');
     },
 
     displayMetadata(data) {

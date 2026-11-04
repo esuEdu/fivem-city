@@ -1,4 +1,4 @@
-import { state, el, ui, itemAt } from './state.js';
+import { state, el, ui, itemAt, gunAmmo } from './state.js';
 import { createElement, formatPrice, formatWeight, tint } from './util.js';
 
 function matchesFilter(item) {
@@ -51,8 +51,8 @@ export function renderSlot(slotEl) {
     }
 
     const corner = createElement('div', 'slot__corner');
-    const ammo = item.metadata?.ammo;
-    if (typeof ammo === 'number') corner.append(createElement('span', 'slot__ammo', String(ammo)));
+    const ammo = gunAmmo(item);
+    if (ammo) corner.append(createElement('span', 'slot__ammo', `${ammo.inClip}/${ammo.spare}`));
     if (item.price !== undefined) corner.append(createElement('span', 'slot__price', formatPrice(item, state.labels)));
     if (isHotbar) corner.append(createElement('span', 'slot__key', String(slot)));
     if (corner.childElementCount) slotEl.append(corner);
@@ -64,10 +64,10 @@ export function renderSlot(slotEl) {
 
     slotEl.append(image, createElement('span', 'slot__label', item.label));
 
-    if (typeof ammo === 'number' && item.clip) {
+    if (ammo && item.clip) {
         const bar = createElement('div', 'slot__bar');
         const fill = createElement('div', 'slot__bar-fill');
-        fill.style.width = `${Math.min(100, (ammo / item.clip) * 100)}%`;
+        fill.style.width = `${Math.min(100, (ammo.inClip / item.clip) * 100)}%`;
         bar.append(fill);
         slotEl.append(bar);
     }

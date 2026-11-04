@@ -23,6 +23,8 @@ export const state = {
     offer: inventory(),
     their: inventory(),
     trade: { open: false, accepted: false, theirAccepted: false },
+    // Rounds in the magazine of the gun in hand ({ serial, clip }), sent by the client while it's equipped
+    liveClip: null,
 };
 
 // Drag in progress, the slot the right-click menu is for and the slot whose card is open ({ inv, slot })
@@ -94,6 +96,19 @@ export const el = {
 
 export function isShop() {
     return state.other.open && state.other.kind === 'shop';
+}
+
+// A gun's rounds split into the magazine and the spare rounds it carries (16/128). A holstered gun's magazine is full
+// when it's drawn, so only the gun in hand needs the live count.
+export function gunAmmo(item) {
+    const total = item.metadata?.ammo;
+    if (typeof total !== 'number') return null;
+    if (!item.clip) return { inClip: total, spare: 0 };
+
+    const live = state.liveClip;
+    const inClip = live && live.serial === item.metadata.serial ? Math.min(live.clip, total) : Math.min(total, item.clip);
+
+    return { inClip, spare: total - inClip };
 }
 
 export function itemAt(inv, slot) {

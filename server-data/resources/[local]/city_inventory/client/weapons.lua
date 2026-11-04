@@ -50,10 +50,19 @@ end
 ---Polls ammo only while a weapon that uses ammo is equipped.
 ---@param weapon EquippedWeapon
 local function trackAmmo(weapon)
-    local lastReport
+    local lastReport, lastClip
 
     while current == weapon do
         lastReport = reportAmmo(weapon, false, lastReport) or lastReport
+
+        -- The page shows magazine/spare rounds; only this client knows what's in the magazine right now
+        local _, inClip = GetAmmoInClip(cache.ped, weapon.hash)
+
+        if inClip ~= lastClip then
+            lastClip = inClip
+            SendNUIMessage({ action = 'clip', serial = weapon.serial, clip = inClip })
+        end
+
         Wait(AMMO_CHECK_MS)
     end
 end
@@ -204,7 +213,10 @@ function weapons.reload()
 
     local ammo = GetAmmoInPedWeapon(cache.ped, weapon.hash)
     local clip = GetMaxAmmoInClip(cache.ped, weapon.hash, true)
-    if ammo >= clip then return end
+    local _, inClip = GetAmmoInClip(cache.ped, weapon.hash)
+
+    -- Spare rounds in the gun: the game reloads from those itself. Ammo items are only used once they're gone.
+    if ammo > inClip or ammo >= clip then return end
 
     local success, result = lib.callback.await('city_inventory:reload', false, weapon.serial, ammo, clip)
     if current ~= weapon then return end
