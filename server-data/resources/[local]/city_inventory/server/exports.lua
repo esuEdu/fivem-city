@@ -6,6 +6,9 @@ local search = require 'shared.search'
 local inventories = require 'server.inventories'
 local stashes = require 'server.stashes'
 local shops = require 'server.shops'
+local drops = require 'server.drops'
+local other = require 'server.other'
+local players = require 'server.players'
 local hooks = require 'server.hooks'
 
 local resolve = inventories.resolve
@@ -152,6 +155,33 @@ exports('RegisterStash', stashes.register)
 
 exports('RegisterShop', shops.register)
 
+-- ox_inventory's CustomDrop(prefix, items, coords, slots, maxWeight, instance, model): items left on the ground, e.g.
+-- robbery loot that didn't fit. Returns the drop id.
+exports('CustomDrop', function(_, items, coords, slots, maxWeight)
+    return drops.custom(items, coords, math.tointeger(tonumber(slots)), math.tointeger(tonumber(maxWeight)))
+end)
+
+-- Everything the player carries goes on the ground where they stand
+exports('CreateDropFromPlayer', function(playerId)
+    local src = math.tointeger(tonumber(playerId))
+    local inventory = src and players.get(src)
+    if not inventory or not next(inventory.items) then return end
+
+    local items = {}
+
+    for _, item in pairs(inventory.items) do
+        items[#items + 1] = { name = item.name, count = item.count, metadata = item.metadata }
+    end
+
+    -- Sized to hold all of it, whatever it weighs
+    local id = drops.custom(items, GetEntityCoords(GetPlayerPed(src)), #items, inventory.weight)
+
+    inventory:clear()
+    players.sync(src)
+
+    return id
+end)
+
 -- For scripts that already checked the player may open it (qbx_properties), so groups, distance and hooks are skipped
 exports('forceOpenInventory', function(playerId, invType, data)
     local src = math.tointeger(tonumber(playerId))
@@ -162,7 +192,7 @@ exports('forceOpenInventory', function(playerId, invType, data)
     end
 
     local id = type(data) == 'table' and data.id or data
-    shops.close(src)
+    other.closeAll(src)
     local success, reason = stashes.open(src, id, true)
 
     if not success then

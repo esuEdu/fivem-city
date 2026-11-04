@@ -17,9 +17,12 @@ export const state = {
     componentLabels: {},
     filter: 'all',
     search: '',
-    // The player's inventory and the stash open next to it, keyed like the slots' data-inv
+    // The player's inventory, the stash/shop/ground open next to it and both sides of a trade, keyed like the slots' data-inv
     player: inventory(),
     other: { ...inventory(), open: false, label: '', kind: 'stash' },
+    offer: inventory(),
+    their: inventory(),
+    trade: { open: false, accepted: false, theirAccepted: false },
 };
 
 // Drag in progress, the slot the right-click menu is for and the slot whose card is open ({ inv, slot })
@@ -37,6 +40,21 @@ export const el = {
     title: byId('title'),
     otherTitle: byId('other-title'),
     otherCapacity: byId('other-capacity'),
+    trade: {
+        root: byId('trade'),
+        title: byId('trade-title'),
+        partner: byId('trade-partner'),
+        cancel: byId('trade-cancel'),
+        offerTitle: byId('offer-title'),
+        offerStatus: byId('offer-status'),
+        offerGrid: byId('offer-grid'),
+        cash: byId('trade-cash'),
+        accept: byId('trade-accept'),
+        theirTitle: byId('their-title'),
+        theirStatus: byId('their-status'),
+        theirGrid: byId('their-grid'),
+        theirCash: byId('their-cash'),
+    },
     search: byId('search'),
     qty: byId('qty'),
     tabs: byId('tabs'),

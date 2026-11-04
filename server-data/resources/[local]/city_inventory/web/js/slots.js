@@ -99,10 +99,14 @@ export function buildPlayerGrids() {
     for (let slot = state.hotbar + 1; slot <= state.player.slots; slot++) createSlot('player', slot, el.grid);
 }
 
-export function buildOtherGrid() {
-    el.otherGrid.replaceChildren();
+export function buildGrid(inv, container) {
+    container.replaceChildren();
 
-    for (let slot = 1; slot <= state.other.slots; slot++) createSlot('other', slot, el.otherGrid);
+    for (let slot = 1; slot <= state[inv].slots; slot++) createSlot(inv, slot, container);
+}
+
+export function buildOtherGrid() {
+    buildGrid('other', el.otherGrid);
 }
 
 export function renderCapacity(inv) {

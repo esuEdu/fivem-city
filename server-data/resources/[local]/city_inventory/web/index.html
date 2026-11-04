@@ -54,6 +54,49 @@
         <div id="other-grid" class="grid"></div>
     </main>
 
+    <main id="trade" class="panel panel--right hidden">
+        <header class="panel__header">
+            <div class="badge">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4 2 9l5 5 1.4-1.4L5.8 10H14V8H5.8l2.6-2.6L7 4Zm10 6-1.4 1.4 2.6 2.6H10v2h8.2l-2.6 2.6L17 20l5-5-5-5Z"/></svg>
+            </div>
+            <div>
+                <h1 id="trade-title" class="panel__title"></h1>
+                <p id="trade-partner" class="panel__subtitle"></p>
+            </div>
+            <div class="panel__tools">
+                <button id="trade-cancel" class="button" type="button"></button>
+            </div>
+        </header>
+
+        <section class="trade__side">
+            <div class="trade__head">
+                <h2 id="offer-title" class="trade__title"></h2>
+                <span id="offer-status" class="status"></span>
+            </div>
+            <div id="offer-grid" class="grid grid--trade"></div>
+            <div class="trade__footer">
+                <label class="cash">
+                    <span class="cash__sign">$</span>
+                    <input id="trade-cash" class="cash__input" type="number" min="0" step="1">
+                </label>
+                <button id="trade-accept" class="button button--accent" type="button"></button>
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section class="trade__side">
+            <div class="trade__head">
+                <h2 id="their-title" class="trade__title"></h2>
+                <span id="their-status" class="status"></span>
+            </div>
+            <div id="their-grid" class="grid grid--trade"></div>
+            <div class="trade__footer">
+                <span class="cash cash--readonly"><span class="cash__sign">$</span><span id="their-cash" class="cash__value"></span></span>
+            </div>
+        </section>
+    </main>
+
     <button id="close" class="close hidden" type="button" aria-label="Close">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.7 5.3 12 10.6l5.3-5.3 1.4 1.4-5.3 5.3 5.3 5.3-1.4 1.4-5.3-5.3-5.3 5.3-1.4-1.4 5.3-5.3-5.3-5.3 1.4-1.4Z"/></svg>
     </button>

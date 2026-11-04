@@ -6,6 +6,7 @@ import { hideMenus, showPopup } from './menu.js';
 import { cancelDrag } from './drag.js';
 import { closeDialog, isDialogOpen } from './dialog.js';
 import { hideCard, refreshCard } from './card.js';
+import { clearTrade, setTrade } from './trade.js';
 import { applyTheme, createElement, post } from './util.js';
 
 function buildTabs() {
@@ -26,8 +27,10 @@ function isOpen() {
     return !el.inventory.classList.contains('hidden');
 }
 
+// The right side shows the trade when there is one, otherwise the stash, shop or ground
 function showOther() {
-    el.other.classList.toggle('hidden', !(state.other.open && isOpen()));
+    el.trade.root.classList.toggle('hidden', !(state.trade.open && isOpen()));
+    el.other.classList.toggle('hidden', !(state.other.open && !state.trade.open && isOpen()));
 }
 
 el.tabs.addEventListener('click', (event) => {
@@ -120,6 +123,24 @@ const handlers = {
         applyEntries('other', data.changes);
         renderCapacity('other');
         refreshCard('other');
+    },
+
+    setTrade(data) {
+        // A trade replaces whatever was open next to the inventory
+        if (state.other.open) handlers.clearOther();
+
+        setTrade(data);
+        refreshCard('offer');
+        refreshCard('their');
+        showOther();
+    },
+
+    clearTrade() {
+        cancelDrag();
+        closeDialog();
+        if (ui.selected?.inv === 'offer' || ui.selected?.inv === 'their') hideCard();
+        clearTrade();
+        showOther();
     },
 
     clearOther() {

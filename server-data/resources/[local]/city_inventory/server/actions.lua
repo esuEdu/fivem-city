@@ -1,65 +1,17 @@
 -- Requests from the player's own UI. The client only names slots; the server decides what happens.
 
 local Items = require 'shared.items'
-local Inventory = require 'server.inventory'
+local actor = require 'server.actor'
 local players = require 'server.players'
-local stashes = require 'server.stashes'
-local shops = require 'server.shops'
 local use = require 'server.use'
 local weapons = require 'server.weapons'
 local components = require 'server.components'
 local crafting = require 'server.crafting'
 
+local getActor, toInteger = actor.getActor, actor.toInteger
+
 -- The client's progress bar and the server's clock don't start at the same moment
 local CRAFT_TOLERANCE_MS = 300
-
----@type table<integer, { second: integer, count: integer }>
-local recentActions = {}
-
----@param src integer
----@return boolean
-local function isRateLimited(src)
-    local now = os.time()
-    local entry = recentActions[src]
-
-    if not entry or entry.second ~= now then
-        entry = { second = now, count = 0 }
-        recentActions[src] = entry
-    end
-
-    entry.count = entry.count + 1
-
-    return entry.count > Config.ActionsPerSecond
-end
-
----@param value unknown
----@return integer?
-local function toInteger(value)
-    return type(value) == 'number' and math.tointeger(value) or nil
-end
-
----Inventory of a player who is allowed to act on it right now.
----@param src integer
----@return Inventory? inventory
----@return string? reason
-local function getActor(src)
-    local inventory = players.get(src)
-    if not inventory then return nil, 'busy' end
-
-    if isRateLimited(src) then
-        lib.print.warn(('Player %s sent more than %d inventory actions in a second'):format(src, Config.ActionsPerSecond))
-        return nil, 'busy'
-    end
-
-    local player = exports.qbx_core:GetPlayer(src)
-    local metadata = player and player.PlayerData.metadata
-
-    if not metadata or metadata.isdead or metadata.inlaststand or metadata.ishandcuffed or Player(src).state.invBusy then
-        return nil, 'busy'
-    end
-
-    return inventory
-end
 
 lib.callback.register('city_inventory:move', function(source, fromSlot, toSlot, count)
     local src = source
@@ -249,80 +201,6 @@ lib.callback.register('city_inventory:detach', function(source, slot, name)
     return success, reason
 end)
 
--- Opening a stash from the client (ox_inventory's openInventory('stash', id)); the server checks job, distance and hooks
-lib.callback.register('city_inventory:openStash', function(source, id)
-    local src = source
-    local inventory, reason = getActor(src)
-    if not inventory then return false, reason end
-    if type(id) ~= 'string' then return false, 'no_stash' end
-
-    shops.close(src)
-    return stashes.open(src, id)
-end)
-
--- ox_inventory's openInventory('shop', { type, id }); the server checks job, licence, distance and price
-lib.callback.register('city_inventory:openShop', function(source, shopType, id)
-    local src = source
-    local inventory, reason = getActor(src)
-    if not inventory then return false, reason end
-
-    stashes.close(src)
-    return shops.open(src, shopType, id)
-end)
-
----@param src integer
----@param side unknown 'player' or 'other' (the stash the player has open)
----@return Inventory?
----@return string? reason
-local function sideInventory(src, side)
-    if side == 'player' then return players.get(src) end
-    if side == 'other' then return stashes.session(src) end
-
-    return nil, 'invalid_slot'
-end
-
--- Moving items between the player's inventory and the open stash, or inside the stash
-lib.callback.register('city_inventory:transfer', function(source, fromSide, fromSlot, toSide, toSlot, count)
-    local src = source
-    local actor, reason = getActor(src)
-    if not actor then return false, reason end
-
-    -- With a shop open, the other side is the shop: items only come out of it, and are paid for
-    if shops.session(src) then
-        if fromSide ~= 'other' or toSide ~= 'player' then return false, 'cannot_sell' end
-
-        local success
-        success, reason = shops.buy(src, actor, toInteger(fromSlot), toInteger(toSlot), count)
-        if success then players.sync(src) end
-
-        return success, reason
-    end
-
-    local from, fromReason = sideInventory(src, fromSide)
-    local to, toReason = sideInventory(src, toSide)
-    if not from or not to then return false, fromReason or toReason end
-
-    local success
-    success, reason = Inventory.transfer(from, toInteger(fromSlot), to, toInteger(toSlot), count)
-
-    if success then
-        for _, inventory in ipairs(from == to and { from } or { from, to }) do
-            if inventory.type == 'stash' then stashes.sync(inventory) end
-        end
-
-        players.sync(src)
-    elseif reason == 'invalid_slot' or reason == 'invalid_count' then
-        lib.print.warn(('Player %s sent an invalid transfer: %s %s -> %s %s x%s (%s)'):format(src, fromSide, fromSlot, toSide, toSlot, count, reason))
-    end
-
-    return success, reason
-end)
-
-RegisterNetEvent('city_inventory:server:closeOther', function()
-    stashes.close(source)
-    shops.close(source)
-end)
-
 -- Sent while shooting (at most once a second) and when the weapon is put away.
 -- Not rate-limited: ammo can only go down, so a spamming client can at most sync once per round it really had.
 RegisterNetEvent('city_inventory:server:updateAmmo', function(serial, ammo)
@@ -364,6 +242,5 @@ AddEventHandler('qbx_core:server:onSetMetaData', function(key, _, value, src)
 end)
 
 AddEventHandler('playerDropped', function()
-    recentActions[source] = nil
     crafts[source] = nil
 end)

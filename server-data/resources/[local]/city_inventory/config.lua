@@ -11,6 +11,18 @@ Config.AutosaveMinutes = 5
 -- How close (meters) a player has to be to a stash's coords to open it, and how far they can walk while it's open
 Config.StashDistance = 5.0
 
+-- Items on the ground: size of a drop, how close the player has to be, and how long an unattended drop stays
+Config.DropSlots = 30
+Config.DropMaxWeight = 100000
+Config.DropDistance = 3.0
+Config.DropMinutes = 10
+Config.DropModel = `prop_med_bag_01b`
+
+-- Trading between players: how close they have to stay, and how many item slots each side can offer
+Config.TradeDistance = 3.0
+Config.TradeSlots = 10
+Config.TradeMaxWeight = 1000000
+
 -- Shops (data/shops.lua): how close the player has to be, and the qbx money accounts tried in order to pay
 Config.ShopDistance = 5.0
 Config.ShopAccounts = { 'cash', 'bank' }

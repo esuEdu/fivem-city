@@ -118,6 +118,21 @@ function Inventory:findStack(name, metadata)
     end
 end
 
+---Where `name` would go: its stack, for items that stack, or else the first free slot.
+---@param name string
+---@param metadata? table
+---@return integer?
+function Inventory:slotFor(name, metadata)
+    local definition = Items[name]
+
+    if definition and definition.stack then
+        local slot = self:findStack(definition.name, metadata or {})
+        if slot then return slot end
+    end
+
+    return self:freeSlots(1)[1]
+end
+
 ---@param name string
 ---@param count integer
 ---@param metadata? table

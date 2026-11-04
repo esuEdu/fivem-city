@@ -1,4 +1,5 @@
--- The second panel: a stash or shop the server let the player open. The page shows it; the server sends every change.
+-- The second panel: a stash, shop, the ground or a trade the server let the player open. The page shows it; the server
+-- sends every change.
 
 local Items = require 'shared.items'
 
@@ -12,7 +13,7 @@ local other = {}
 ---@type OtherHooks
 local hooks
 
----@type string? id of the open stash or shop
+---@type string? id of the open stash, shop, drop, or 'trade'
 local current
 
 ---@param value unknown
@@ -43,6 +44,23 @@ function other.openShop(shopType, id)
     if not success then hooks.notifyFailure(reason) end
 end
 
+-- Opening the inventory with nothing else open shows the ground next to it
+function other.openGround()
+    local success, reason = lib.callback.await('city_inventory:openGround', false)
+    if not success then hooks.notifyFailure(reason) end
+end
+
+---@return boolean
+function other.isOpen()
+    return current ~= nil
+end
+
+---For client/trade.lua: the trade is what's open next to the inventory now (or nothing, when `id` is nil).
+---@param id? string
+function other.setCurrent(id)
+    current = id
+end
+
 ---Closes the panel; the server forgets the player has it open.
 function other.close()
     if not current then return end
@@ -54,7 +72,7 @@ end
 
 ---@param slots table<integer, InventoryItem | false>
 ---@return table[]
-local function toEntries(slots)
+function other.toEntries(slots)
     local entries = {}
 
     for slot, item in pairs(slots) do
@@ -83,7 +101,7 @@ RegisterNetEvent('city_inventory:client:openOther', function(data)
         slots = data.slots,
         maxWeight = data.maxWeight,
         weight = data.weight,
-        items = toEntries(data.items),
+        items = other.toEntries(data.items),
     })
 
     if not hooks.open() then other.close() end
@@ -92,7 +110,7 @@ end)
 RegisterNetEvent('city_inventory:client:updateOther', function(changes, weight)
     if not current then return end
 
-    SendNUIMessage({ action = 'updateOther', changes = toEntries(changes), weight = weight })
+    SendNUIMessage({ action = 'updateOther', changes = other.toEntries(changes), weight = weight })
 end)
 
 -- The server closed it: the player walked away or lost the job
@@ -107,8 +125,9 @@ end)
 RegisterNUICallback('transfer', function(data, cb)
     cb(1)
 
+    local sides = { player = true, other = true, offer = true }
     local fromSide, toSide = data.fromInv, data.toInv
-    if (fromSide ~= 'player' and fromSide ~= 'other') or (toSide ~= 'player' and toSide ~= 'other') then return end
+    if not sides[fromSide] or not sides[toSide] then return end
 
     local success, reason = lib.callback.await('city_inventory:transfer', false, fromSide, toInteger(data.from), toSide, toInteger(data.to), toInteger(data.count))
     if not success then hooks.notifyFailure(reason) end

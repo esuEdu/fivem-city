@@ -6,6 +6,8 @@ local compat = require 'client.compat'
 local craft = require 'client.craft'
 local other = require 'client.other'
 require 'client.shops'
+require 'client.drops'
+local trade = require 'client.trade'
 local theme = require '@city_ui.theme'
 
 -- Read-only copy of the player's inventory; the server sends every change
@@ -90,6 +92,12 @@ local function setupNui()
             stock = locale('ui_stock'),
             serial = locale('ui_serial'),
             equipped = locale('ui_equipped'),
+            trade = locale('ui_trade'),
+            yourOffer = locale('ui_your_offer'),
+            theirOffer = locale('ui_their_offer'),
+            accept = locale('ui_accept'),
+            accepted = locale('ui_accepted'),
+            waiting = locale('ui_waiting'),
         },
         recipes = craft.pairs(),
         componentLabels = craft.componentLabels(),
@@ -133,6 +141,13 @@ local function open()
     TriggerServerEvent('city_inventory:server:setOpen', true)
 
     return true
+end
+
+---Opens the inventory with the ground next to it, unless a stash, shop or trade is already open there.
+local function openWithGround()
+    if open() and not other.isOpen() then
+        CreateThread(other.openGround)
+    end
 end
 
 local function close()
@@ -290,10 +305,15 @@ RegisterNUICallback('use', function(data, cb)
     if slot then useSlot(slot) end
 end)
 
-compat.init(function() return items end, open, close)
+compat.init(function() return items end, openWithGround, close)
 
 other.init({
     toNui = toNui,
+    open = open,
+    notifyFailure = notifyFailure,
+})
+
+trade.init({
     open = open,
     notifyFailure = notifyFailure,
 })
@@ -309,7 +329,7 @@ lib.addKeybind({
     name = 'inventory',
     description = locale('keybind_open'),
     defaultKey = Config.OpenKey,
-    onPressed = open,
+    onPressed = openWithGround,
 })
 
 for slot = 1, Config.HotbarSlots do

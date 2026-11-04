@@ -7,6 +7,8 @@ return {
     accentGlow = 'rgba(245, 197, 66, 0.45)', -- soft glow around accent elements
     accentSoft = 'rgba(245, 197, 66, 0.1)', -- faint accent tint (card background, selected slot)
     danger = '#e5484d',
+    success = '#3ecf72', -- accepted / done
+    successGlow = 'rgba(62, 207, 114, 0.45)',
     text = '#eef0f3',
     muted = '#7d8590',
 

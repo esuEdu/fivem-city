@@ -76,6 +76,7 @@ function onPointerDown(event) {
 
 el.inventory.addEventListener('pointerdown', onPointerDown);
 el.other.addEventListener('pointerdown', onPointerDown);
+el.trade.root.addEventListener('pointerdown', onPointerDown);
 
 document.addEventListener('pointermove', (event) => {
     const drag = ui.drag;
@@ -105,10 +106,20 @@ document.addEventListener('pointerup', (event) => {
 
     // A click without dragging opens the item's card
     if (!drag.ghost) return showCard(drag.inv, drag.slot);
-    if (!target) return;
+
+    // Dropped outside the panels with the Ground panel open: put it on the ground
+    if (!target) {
+        if (drag.inv === 'player' && state.other.open && state.other.kind === 'drop' && !state.trade.open) {
+            post('transfer', { fromInv: 'player', from: drag.slot, toInv: 'other', to: null, count: dragCount(event, drag.item) });
+        }
+        return;
+    }
 
     const { inv, slot } = slotOf(target);
     if (inv === drag.inv && slot === drag.slot) return;
+
+    // The other player's offer is only to look at
+    if (drag.inv === 'their' || inv === 'their') return;
 
     // Shops only sell: items come out of the shop panel. Ctrl buys one and the Qty field buys that many; otherwise ask
     if (isShop()) {
@@ -149,6 +160,7 @@ function onContextMenu(event) {
 
 el.inventory.addEventListener('contextmenu', onContextMenu);
 el.other.addEventListener('contextmenu', onContextMenu);
+el.trade.root.addEventListener('contextmenu', onContextMenu);
 
 // Double-clicking a shop item buys it too
 el.other.addEventListener('dblclick', (event) => {

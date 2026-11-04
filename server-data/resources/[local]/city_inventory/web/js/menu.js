@@ -56,8 +56,9 @@ export function actionsFor(inv, slot) {
     const item = itemAt(inv, slot);
     if (!item) return [];
 
-    if (inv === 'other') {
-        return item.price !== undefined && item.stock !== 0 ? [{ label: state.labels.buy, action: 'buy' }] : [];
+    // Only the player's own items and shop items have actions; stash, ground and trade items have to be moved first
+    if (inv !== 'player') {
+        return inv === 'other' && item.price !== undefined && item.stock !== 0 ? [{ label: state.labels.buy, action: 'buy' }] : [];
     }
 
     const actions = [{ label: item.weapon ? state.labels.equip : state.labels.use, action: 'use' }];

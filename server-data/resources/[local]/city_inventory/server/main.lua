@@ -1,6 +1,7 @@
 local players = require 'server.players'
 local stashes = require 'server.stashes'
-local shops = require 'server.shops'
+local trades = require 'server.trades'
+local other = require 'server.other'
 local storage = require 'server.storage'
 
 ---@param src integer
@@ -32,15 +33,14 @@ AddStateBagChangeHandler('loadInventory', nil, function(bagName, _, value)
     end)
 end)
 
+-- Close whatever is open next to the inventory first: a trade gives offered items back before the inventory is saved
 AddEventHandler('qbx_core:server:playerLoggedOut', function(src)
-    stashes.close(src)
-    shops.close(src)
+    other.closeAll(src)
     players.unload(src)
 end)
 
 AddEventHandler('playerDropped', function()
-    stashes.close(source)
-    shops.close(source)
+    other.closeAll(source)
     players.unload(source)
 end)
 
@@ -53,6 +53,7 @@ CreateThread(function()
 end)
 
 AddEventHandler('txAdmin:events:serverShuttingDown', function()
+    trades.cancelAll()
     players.saveAll(false)
     stashes.saveAll(false)
 end)
@@ -60,6 +61,7 @@ end)
 AddEventHandler('onResourceStop', function(resource)
     if resource ~= cache.resource then return end
 
+    trades.cancelAll()
     players.saveAll(false)
     stashes.saveAll(false)
 end)

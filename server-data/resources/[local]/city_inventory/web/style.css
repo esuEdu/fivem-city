@@ -516,6 +516,101 @@ button {
     transform: rotate(-6deg) scale(1.08);
 }
 
+/* Trade panel: your offer above, theirs below */
+
+.panel__subtitle {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.trade__side {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.trade__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.trade__title {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.grid--trade {
+    flex: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+}
+
+.trade__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.status {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--slot);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status--done,
+.button--done,
+.button--done:hover {
+    border-color: var(--success);
+    background: var(--success);
+    color: var(--accent-text);
+    box-shadow: 0 0 14px var(--success-glow);
+}
+
+.cash {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--slot);
+    font-family: var(--mono);
+    font-weight: 700;
+}
+
+.cash:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.cash__sign {
+    color: var(--success);
+}
+
+.cash__input {
+    width: 120px;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+}
+
+.cash__input::-webkit-inner-spin-button {
+    appearance: none;
+}
+
 /* Close button and hotbar popup */
 
 .close {
