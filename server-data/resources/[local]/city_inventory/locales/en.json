@@ -66,5 +66,6 @@
     "error_invalid_count": "That amount doesn't work",
     "ui_price": "Price",
     "ui_stock": "In stock",
-    "ui_serial": "Serial"
+    "ui_serial": "Serial",
+    "ui_equipped": "In hand"
 }

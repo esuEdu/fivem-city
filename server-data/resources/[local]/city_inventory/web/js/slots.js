@@ -19,7 +19,6 @@ export function renderSlot(slotEl) {
 
     slotEl.replaceChildren();
     slotEl.classList.toggle('slot--filled', Boolean(item));
-    slotEl.classList.toggle('slot--equipped', inv === 'player' && Boolean(item?.metadata?.serial) && item.metadata.serial === state.equipped);
     slotEl.classList.toggle('slot--dimmed', Boolean(item) && inPanel && !matchesFilter(item));
     slotEl.classList.toggle('slot--sold-out', item?.stock === 0);
     slotEl.classList.toggle('slot--selected', Boolean(item) && ui.selected?.inv === inv && ui.selected?.slot === slot && inPanel);
@@ -43,6 +42,9 @@ export function renderSlot(slotEl) {
     // Top left: how many (or the stock left in a shop). Top right: ammo, shop price, hotbar key
     const count = item.price !== undefined ? item.stock : item.count;
     if (typeof count === 'number' && (count > 1 || item.price !== undefined)) slotEl.append(createElement('span', 'slot__count', String(count)));
+
+    const equipped = inv === 'player' && Boolean(item.metadata?.serial) && item.metadata.serial === state.equipped;
+    if (equipped) slotEl.append(createElement('span', 'slot__equipped', state.labels.equipped));
 
     const corner = createElement('div', 'slot__corner');
     const ammo = item.metadata?.ammo;

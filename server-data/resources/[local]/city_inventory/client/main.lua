@@ -89,6 +89,7 @@ local function setupNui()
             price = locale('ui_price'),
             stock = locale('ui_stock'),
             serial = locale('ui_serial'),
+            equipped = locale('ui_equipped'),
         },
         recipes = craft.pairs(),
         componentLabels = craft.componentLabels(),
