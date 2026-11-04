@@ -10,7 +10,7 @@ Tick items off as they're done. Order: Phase 0 → Phase 1a (City OS) → Phase 
 - [ ] Player search: police **Search** / citizen **Rob** (`openNearbyInventory`) and the admin menu's **Open inventory**
 - [ ] Remove duplicates from [scripts/issues.md](scripts/issues.md): food/drink effects defined twice, the second EMS shop, the dead **Give Contact Details** button
 - [ ] Find what the **F6 trade** is
-- [ ] Commit the project skills (`.claude/skills/`), `scripts/check.sh`, `scripts/make-patch.sh` and `tests/`
+- [x] Commit the project skills (`.claude/skills/`), `scripts/check.sh`, `scripts/make-patch.sh` and `tests/`
 
 ## Phase 1a: City OS (`city_os`): the central control system
 
@@ -24,7 +24,8 @@ Everything players control (races, garage, tuning, leaderboards, events, profile
 
 - [ ] Design pass: home screen, app layout, which apps show on which screen, keys
 - [ ] Platform: screens, home screen, notifications, and an API for other resources to register apps (`exports.city_os:RegisterApp`)
-- [ ] Tablet item and animation; in-car dashboard; hub menu
+- [ ] Tablet item and animation (hold-tablet anim, `prop_cs_tablet`); in-car dashboard; hub menu
+- [ ] Tablet look: **iPad-style**: thin rounded bezel, app grid on a wallpaper, a dock, status bar (time, battery), the swipe-up home bar, smooth open/close animations. Branded with GTA's own **iFruit** (the in-game Apple parody) or our City OS name; no Apple names or logos
 - [ ] Profile app (character, rank, money) as the first app
 
 **What goes where:**
