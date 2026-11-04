@@ -39,7 +39,7 @@ The full run guide (setup, updates, backups, troubleshooting) is `docs/docker.md
 
 ## Writing our own resources
 
-Custom code lives in `server-data/resources/[local]/` (`city_base` is the starter template, `city_troll` an example admin command). Conventions used there:
+Custom code lives in `server-data/resources/[local]/` (`city_base` is the starter template; `city_inventory/server/commands.lua` has example admin commands). Conventions used there:
 
 - `fxmanifest.lua` with `fx_version 'cerulean'`, `game 'gta5'`, `lua54 'yes'`, `@ox_lib/init.lua` as a shared script, and `dependencies { 'ox_lib', 'qbx_core' }`. Layout: `config.lua`, `client/main.lua`, `server/main.lua`.
 - Use ox_lib helpers (`lib.addCommand`, `lib.notify`, `lib.print`, `cache.ped` / `cache.vehicle`) and Qbox exports (`exports.qbx_core:Notify`, `IsOptin`, …).

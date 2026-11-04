@@ -1,6 +1,6 @@
 # Code style standards
 
-Rules for code in `server-data/resources/[local]/`. When in doubt, match `city_base` and `city_troll`.
+Rules for code in `server-data/resources/[local]/`. When in doubt, match `city_base` (and `city_inventory` for a bigger resource).
 
 ## Resource layout
 
@@ -33,10 +33,10 @@ city_<feature>/
 | Local variables, functions | camelCase | `local playerCoords`, `local function getShop(id)` |
 | Constants | UPPER_SNAKE_CASE | `local MAX_FORCE = 200` |
 | Config table | `Config` with PascalCase keys | `Config.CityName`, `Config.Shops` |
-| Net events | `<resource>:<client\|server>:<action>` | `city_troll:client:launch` |
+| Net events | `<resource>:<client\|server>:<action>` | `city_inventory:client:openOther` |
 | Callbacks | `<resource>:<action>` | `city_fishing:getCatch` |
 | Exports | PascalCase | `exports.city_fishing:GetRodLevel(src)` |
-| Commands | lowercase, short | `/launch` |
+| Commands | lowercase, short | `/kit` |
 
 ## Lua
 
@@ -60,7 +60,7 @@ city_<feature>/
 
 ## Comments
 
-- Comment *why*, not *what*. One short line above the code it explains, as in `city_troll` (`-- source 0 = server console`).
+- Comment *why*, not *what*. One short line above the code it explains (e.g. `-- source 0 = server console`).
 - No commented-out code and no banner comments. Put a one-line `description` in `fxmanifest.lua` instead of a header comment.
 
 ## Review checklist

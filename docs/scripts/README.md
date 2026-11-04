@@ -123,5 +123,4 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | Script | What it does |
 |---|---|
 | **city_base** | Starter template for new scripts. |
-| **city_troll** | `/launch` admin troll command. |
 | **city_inventory**, **city_ui**, **ox_inventory** | See Core above. |
