@@ -372,30 +372,16 @@ button {
     box-shadow: 0 0 16px var(--category-glow, var(--accent-glow)), inset 0 0 18px var(--category-tint, var(--accent-soft));
 }
 
-/* The weapon in the player's hands: a tag in the corner, so it isn't mistaken for the selected item */
+/* The weapon in the player's hands: a glowing dot in the corner, so it isn't mistaken for the selected item */
 .slot__equipped {
     position: absolute;
-    top: 7px;
-    left: 8px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 1px 7px 1px 5px;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.5);
-    color: var(--category, var(--accent));
-    font-size: clamp(9px, 1vh, 10px);
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.slot__equipped::before {
-    content: '';
-    width: 6px;
-    height: 6px;
+    top: 11px;
+    left: 11px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: currentColor;
-    box-shadow: 0 0 6px currentColor;
+    background: var(--category, var(--accent));
+    box-shadow: 0 0 8px var(--category, var(--accent));
 }
 
 .slot--active {

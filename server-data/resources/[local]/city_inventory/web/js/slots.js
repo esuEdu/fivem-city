@@ -44,7 +44,11 @@ export function renderSlot(slotEl) {
     if (typeof count === 'number' && (count > 1 || item.price !== undefined)) slotEl.append(createElement('span', 'slot__count', String(count)));
 
     const equipped = inv === 'player' && Boolean(item.metadata?.serial) && item.metadata.serial === state.equipped;
-    if (equipped) slotEl.append(createElement('span', 'slot__equipped', state.labels.equipped));
+    if (equipped) {
+        const dot = createElement('span', 'slot__equipped');
+        dot.title = state.labels.equipped;
+        slotEl.append(dot);
+    }
 
     const corner = createElement('div', 'slot__corner');
     const ammo = item.metadata?.ammo;
