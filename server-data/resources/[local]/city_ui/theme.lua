@@ -10,13 +10,12 @@ return {
     text = '#eef0f3',
     muted = '#7d8590',
 
-    panel = 'rgba(12, 13, 18, 0.82)',
+    panel = 'rgba(12, 13, 18, 0.9)',
     section = 'rgba(255, 255, 255, 0.035)',
     slot = 'rgba(255, 255, 255, 0.03)',
     slotHover = 'rgba(255, 255, 255, 0.07)',
     border = 'rgba(255, 255, 255, 0.06)',
 
-    blur = '18px', -- backdrop blur behind panels
     radius = '10px', -- buttons, slots, inputs
     radiusLarge = '22px', -- panels and cards
     font = "'Poppins', 'Segoe UI', Roboto, Arial, sans-serif",

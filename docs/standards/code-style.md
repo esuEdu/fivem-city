@@ -55,7 +55,7 @@ city_<feature>/
 
 ## UI
 
-- NUI pages take their colors, blur, radius and font from `city_ui/theme.lua` (`require '@city_ui.theme'`, sent to the page and applied as CSS variables), so every screen looks like part of one set. Only page-specific values (sizes, layout) live in the page's own CSS.
+- NUI pages take their colors, radius and fonts from `city_ui/theme.lua` (`require '@city_ui.theme'`, sent to the page and applied as CSS variables), so every screen looks like part of one set. Only page-specific values (sizes, layout) live in the page's own CSS.
 - Plain HTML/CSS/JS, no build step. Set text with `textContent`, never `innerHTML` with game data.
 
 ## Comments

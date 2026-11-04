@@ -114,6 +114,13 @@ export function setItems(inv, entries) {
     for (const { slot, item } of entries) if (item) state[inv].items.set(slot, item);
 }
 
+// Restarts the small pop animation on a slot that just changed
+function pop(slotEl) {
+    slotEl.classList.remove('slot--changed');
+    void slotEl.offsetWidth;
+    slotEl.classList.add('slot--changed');
+}
+
 export function applyEntries(inv, entries) {
     for (const { slot, item } of entries) {
         if (item) {
@@ -122,6 +129,9 @@ export function applyEntries(inv, entries) {
             state[inv].items.delete(slot);
         }
 
-        for (const slotEl of document.querySelectorAll(`.slot[data-inv="${inv}"][data-slot="${slot}"]`)) renderSlot(slotEl);
+        for (const slotEl of document.querySelectorAll(`.slot[data-inv="${inv}"][data-slot="${slot}"]`)) {
+            renderSlot(slotEl);
+            pop(slotEl);
+        }
     }
 }
