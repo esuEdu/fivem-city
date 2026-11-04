@@ -26,13 +26,19 @@ Everything players control (races, garage, tuning, leaderboards, events, profile
 - [ ] Platform: screens, home screen, notifications, and an API for other resources to register apps (`exports.city_os:RegisterApp`)
 - [ ] Tablet item and animation (hold-tablet anim, `prop_cs_tablet`); in-car dashboard; hub menu
 - [ ] Tablet look: **iPad-style**: thin rounded bezel, app grid on a wallpaper, a dock, status bar (time, battery), the swipe-up home bar, smooth open/close animations. Branded with GTA's own **iFruit** (the in-game Apple parody) or our City OS name; no Apple names or logos
-- [ ] Profile app (character, rank, money) as the first app
+- [ ] First apps:
+  - [ ] **Profile**: character, rank, money
+  - [ ] **Jobs (legal)**: one app per job (police, EMS, mechanic, taxi, …), shown only to players with that job: clock in/out, tasks, job tools; the boss also gets hire, fire, grades and the society account (today's qbx_management boss menu)
+  - [ ] **Jobs (illegal)**: drugs, robberies, chop shop, …; hidden from the home screen until unlocked (an item, a contact or reputation), so a police search of the tablet doesn't show it; contacts, jobs on offer, reputation
+  - [ ] **Staff**: only for staff (`group.support`/`mod`/`admin`, on admin duty): player list, spectate, teleport to/bring, heal/revive, freeze, open a player's inventory, warn/kick/ban, and reports from players
+- [ ] Every app action is checked again on the server (job, grade, illegal unlock, staff group + `IsOptin`): hiding an app is only UX
 
 **What goes where:**
 
 | City OS (tablet / car / hub) | Phone (npwd) |
 |---|---|
-| Jobs (clock in, tasks, job tools) | Calls and messages |
+| Jobs, legal and illegal (clock in, tasks, job tools, boss tools) | Calls and messages |
+| Staff tools (admins only) | |
 | Races and events: join, **create races**, leaderboards | Social apps: dating ("Tinder"-style), photos ("Instagram"-style), Twitter |
 | Garage, tuning, car rating | Contacts, camera, email |
 | Profile, rank, money, city events | Everything about talking to other people |

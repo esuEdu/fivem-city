@@ -41,13 +41,11 @@ FXServer is x86_64 only: run this on a Windows PC or an x86_64 Linux machine. **
    bash scripts/import-sql.sh
    ```
    Safe to run again at any time; it never deletes data.
-5. **Set up txAdmin**
+5. **Set up txAdmin** (only the first time; see [First-time txAdmin setup](#first-time-txadmin-setup) below for every screen)
    1. Get the PIN: `docker compose logs fxserver | grep -i pin`
-   2. Open <http://localhost:40120>, enter the PIN and link your Cfx.re account.
-   3. In the setup wizard choose **Existing Server Data**, path **`/server-data`**, config **`server.cfg`**.
-
-      ⚠️ Don't pick a recipe (like "Qbox"): it installs its own copy of the server under `/txData`, which ignores this repo. If you did, go to txAdmin → Settings → FXServer and set the Server Data Folder to `/server-data`.
-   4. Start the server from txAdmin.
+   2. Open <http://localhost:40120>, enter the PIN, log in with your Cfx.re account and create the master admin password.
+   3. In the setup wizard choose **Existing Server Data**, folder **`/server-data`**, config **`server.cfg`**. ⚠️ Not a recipe.
+   4. Save and start the server.
 6. **Make yourself admin**: join the server once, find your `license:` identifier in txAdmin (Players → you), add this line at the bottom of `server-data/server.cfg`, and restart:
    ```
    add_principal identifier.license:YOUR_LICENSE_HERE group.admin
@@ -55,6 +53,31 @@ FXServer is x86_64 only: run this on a Windows PC or an x86_64 Linux machine. **
    In game, `/optin` turns admin duty on (needed for admin commands like `/kit` and `/giveitem`).
 
 Players connect to your PC's IP on port **30120** (open/forward 30120 TCP+UDP on your router to play from outside).
+
+## First-time txAdmin setup
+
+The first time you open <http://localhost:40120> (and again if the `txdata` volume is deleted), txAdmin walks you through these screens. Names can change a little between txAdmin versions; the choices are what matter.
+
+| Screen | What to do |
+|---|---|
+| **PIN** | Enter the 4-digit PIN from `docker compose logs fxserver \| grep -i pin`. It changes every time the container starts until setup is done. |
+| **Cfx.re login** | "Link Account" and log in with your Cfx.re (FiveM forum) account. That account becomes the master admin, and lets the in-game `/tx` menu recognise you. |
+| **Master account password** | Pick a password for logging into txAdmin with a username (backup login). Keep it somewhere safe. |
+| **Server name** | Anything (e.g. `fivem-city`). Only shown inside txAdmin; the name players see is `sv_hostname` in `server.cfg`. |
+| **Deployment type** | **Existing Server Data**. Don't pick *Popular Recipes* (e.g. Qbox) or *Remote URL*: those download their own copy of a server under `/txData` and ignore this repo. |
+| **Server Data Folder** | `/server-data` (the repo's `server-data/`, mounted into the container). txAdmin checks it finds a `resources` folder there. |
+| **CFG File** | `server.cfg`. txAdmin reads it to check it's valid. |
+| **Finish** | "Save & Run Server". The server starts; the **Live Console** shows it loading. |
+
+You don't need the database step: the database connection comes from `.env` (the container writes it into `server-data/secrets.cfg`). The `TXHOST_DEFAULT_DB*` settings in `docker-compose.yml` only pre-fill that step for recipes.
+
+**After the wizard, check these in txAdmin:**
+
+- **Settings → FXServer**: Server Data Folder = `/server-data`, CFG File Path = `server.cfg`, and **Autostart** on, so the server starts with the container.
+- **Settings → Restarter** (optional): scheduled restarts, e.g. once a day at a quiet hour; txAdmin warns players before and the inventory saves on shutdown.
+- **Admin Manager**: add your friends who help run the server as admins, with their Cfx.re or Discord identifiers, so they can use the txAdmin web panel and the in-game `/tx` menu. (In-game admin commands like `/kit` use the `group.admin` lines in `server.cfg` instead; see step 6.)
+
+If the server ever runs the wrong files (old inventory, *Couldn't find resource city_inventory*), it's almost always **Settings → FXServer → Server Data Folder** pointing at a recipe folder under `/txData` instead of `/server-data`.
 
 ## Everyday use
 
