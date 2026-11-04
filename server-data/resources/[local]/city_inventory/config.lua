@@ -6,6 +6,10 @@ Config.MaxWeight = 85000 -- grams
 Config.HotbarSlots = 5
 Config.OpenKey = 'TAB'
 
+-- Blur the game behind the inventory while it's open, fading in and out over this many ms
+Config.ScreenBlur = true
+Config.ScreenBlurFadeMs = 250
+
 Config.AutosaveMinutes = 5
 
 -- How close (meters) a player has to be to a stash's coords to open it, and how far they can walk while it's open

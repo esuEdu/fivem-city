@@ -137,6 +137,9 @@ local function open()
     isOpen = true
     SetNuiFocus(true, true)
     SendNUIMessage({ action = 'open' })
+
+    -- The game's own blur behind the see-through panels (CSS backdrop-filter can't see the game)
+    if Config.ScreenBlur then TriggerScreenblurFadeIn(Config.ScreenBlurFadeMs) end
     -- Lets qbx_hud hide itself (ox_inventory:openedInventory)
     TriggerServerEvent('city_inventory:server:setOpen', true)
 
@@ -156,6 +159,7 @@ local function close()
     isOpen = false
     SetNuiFocus(false, false)
     SendNUIMessage({ action = 'close' })
+    if Config.ScreenBlur then TriggerScreenblurFadeOut(Config.ScreenBlurFadeMs) end
     other.close()
     TriggerServerEvent('city_inventory:server:setOpen', false)
 end
@@ -360,6 +364,7 @@ AddEventHandler('onResourceStop', function(resource)
 
     if isOpen then
         SetNuiFocus(false, false)
+        TriggerScreenblurFadeOut(0)
     end
 
     weapons.disarm()
