@@ -497,6 +497,88 @@ svg {
     box-shadow: 0 0 12px var(--accent-glow);
 }
 
+/* "How many?" window for buying and splitting */
+.dialog {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 40;
+}
+
+.dialog__box {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 320px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--panel);
+    backdrop-filter: blur(var(--blur));
+    box-shadow: 0 0 24px var(--accent-glow);
+}
+
+.dialog__title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.dialog__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: var(--radius);
+    background: var(--section);
+}
+
+.dialog__image {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.dialog__label {
+    font-weight: 700;
+}
+
+.dialog__amount {
+    display: flex;
+    gap: 6px;
+}
+
+.dialog__step {
+    width: 36px;
+    font-size: 16px;
+}
+
+.dialog__input {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+}
+
+.dialog__input::-webkit-inner-spin-button {
+    appearance: none;
+}
+
+.dialog__total {
+    margin: 0;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.dialog__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
 .tooltip {
     position: fixed;
     max-width: 240px;

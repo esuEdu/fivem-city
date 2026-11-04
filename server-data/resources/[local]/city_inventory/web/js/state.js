@@ -22,7 +22,7 @@ export const state = {
     other: { ...inventory(), open: false, label: '', kind: 'stash' },
 };
 
-// Drag in progress and the slot the right-click menu is for
+// Drag in progress and the slot the right-click menu is for ({ inv, slot })
 export const ui = {
     drag: null,
     menuSlot: null,
@@ -48,6 +48,19 @@ export const el = {
     close: byId('close'),
     popup: byId('hotbar-popup'),
     menu: byId('menu'),
+    dialog: {
+        root: byId('dialog'),
+        title: byId('dialog-title'),
+        image: byId('dialog-image'),
+        label: byId('dialog-label'),
+        input: byId('dialog-input'),
+        minus: byId('dialog-minus'),
+        plus: byId('dialog-plus'),
+        max: byId('dialog-max'),
+        total: byId('dialog-total'),
+        cancel: byId('dialog-cancel'),
+        confirm: byId('dialog-confirm'),
+    },
     tooltip: byId('tooltip'),
     capacity: {
         player: { weight: byId('weight-text'), fill: byId('weight-fill'), slots: byId('slots-text'), hint: byId('inventory-hint') },

@@ -1,5 +1,9 @@
 import { state, el, ui, itemAt } from './state.js';
 import { createElement, formatPrice, formatWeight, post } from './util.js';
+import { openDialog } from './dialog.js';
+
+// Most of one item bought at once when the shop has no stock limit
+const MAX_BUY = 100;
 
 const HOTBAR_VISIBLE_MS = 1500;
 
@@ -63,12 +67,57 @@ function menuItem(label, action, name) {
     return entry;
 }
 
-// Only for the player's own items: stash items have to be taken out first
+// Buys from the shop slot into the player's inventory (toSlot, or wherever it fits), asking how many first
+export function askBuy(shopSlot, toSlot) {
+    const item = itemAt('other', shopSlot);
+    if (!item || item.stock === 0) return;
+
+    // Weapons don't stack, so they're bought one at a time
+    const max = item.weapon ? 1 : Math.min(MAX_BUY, item.stock ?? MAX_BUY);
+    const buy = (count) => post('transfer', { fromInv: 'other', from: shopSlot, toInv: 'player', to: toSlot, count });
+
+    if (max === 1) return buy(1);
+
+    openDialog({ title: state.labels.buy, confirmLabel: state.labels.buy, item, max, onConfirm: buy });
+}
+
+export function askSplit(slot) {
+    const item = itemAt('player', slot);
+    if (!item || item.count < 2) return;
+
+    openDialog({
+        title: state.labels.split,
+        confirmLabel: state.labels.split,
+        item,
+        max: item.count - 1,
+        onConfirm: (count) => post('split', { slot, count }),
+    });
+}
+
+function placeMenu(entries, x, y) {
+    el.menu.replaceChildren(...entries);
+    el.tooltip.classList.add('hidden');
+    el.menu.style.left = `${x}px`;
+    el.menu.style.top = `${y}px`;
+    el.menu.classList.remove('hidden');
+}
+
+export function showShopMenu(slot, x, y) {
+    const item = itemAt('other', slot);
+    if (!item || item.stock === 0) return hideMenus();
+
+    ui.menuSlot = { inv: 'other', slot };
+    placeMenu([menuItem(state.labels.buy, 'buy')], x, y);
+}
+
+// For the player's own items: stash items have to be taken out first
 export function showMenu(slot, x, y) {
     const item = itemAt('player', slot);
     if (!item) return hideMenus();
 
     const entries = [menuItem(item.weapon ? state.labels.equip : state.labels.use, 'use')];
+
+    if (item.count > 1) entries.push(menuItem(state.labels.split, 'split'));
 
     if (item.weapon && item.metadata?.ammo > 0) entries.push(menuItem(state.labels.unload, 'unload'));
 
@@ -77,18 +126,20 @@ export function showMenu(slot, x, y) {
         entries.push(menuItem(state.labels.remove.replace('%s', label), 'detach', name));
     }
 
-    ui.menuSlot = slot;
-    el.menu.replaceChildren(...entries);
-    el.tooltip.classList.add('hidden');
-    el.menu.style.left = `${x}px`;
-    el.menu.style.top = `${y}px`;
-    el.menu.classList.remove('hidden');
+    ui.menuSlot = { inv: 'player', slot };
+    placeMenu(entries, x, y);
 }
 
 el.menu.addEventListener('click', (event) => {
     const { action, name } = event.target.dataset;
-    if (action && ui.menuSlot) post(action, { slot: ui.menuSlot, name });
+    const target = ui.menuSlot;
     hideMenus();
+    if (!action || !target) return;
+
+    if (action === 'buy') return askBuy(target.slot, null);
+    if (action === 'split') return askSplit(target.slot);
+
+    post(action, { slot: target.slot, name });
 });
 
 document.addEventListener('click', (event) => {

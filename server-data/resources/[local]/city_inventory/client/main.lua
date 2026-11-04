@@ -81,6 +81,11 @@ local function setupNui()
             remove = locale('ui_remove'),
             attachments = locale('ui_attachments'),
             free = locale('ui_price_free'),
+            buy = locale('ui_buy'),
+            split = locale('ui_split'),
+            cancel = locale('ui_cancel'),
+            max = locale('ui_max'),
+            total = locale('ui_total'),
         },
         recipes = craft.pairs(),
         componentLabels = craft.componentLabels(),
@@ -264,6 +269,14 @@ end)
 RegisterNUICallback('move', function(data, cb)
     local success = lib.callback.await('city_inventory:move', false, toInteger(data.from), toInteger(data.to), toInteger(data.count))
     cb(success == true)
+end)
+
+-- Moves part of a stack to the first free slot
+RegisterNUICallback('split', function(data, cb)
+    cb(1)
+
+    local success, reason = lib.callback.await('city_inventory:split', false, toInteger(data.slot), toInteger(data.count))
+    if not success then notifyFailure(reason) end
 end)
 
 RegisterNUICallback('use', function(data, cb)

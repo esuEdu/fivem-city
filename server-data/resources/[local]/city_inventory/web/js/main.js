@@ -4,6 +4,7 @@ import { state, el } from './state.js';
 import { applyEntries, buildOtherGrid, buildPlayerGrids, renderAllSlots, renderCapacity, setItems } from './slots.js';
 import { hideMenus, showPopup } from './menu.js';
 import { cancelDrag } from './drag.js';
+import { closeDialog, isDialogOpen } from './dialog.js';
 import { applyTheme, createElement, post } from './util.js';
 
 function buildTabs() {
@@ -46,6 +47,12 @@ el.close.addEventListener('click', () => post('close'));
 
 document.addEventListener('keydown', (event) => {
     if (!isOpen()) return;
+
+    // Escape closes the amount window first, not the inventory
+    if (isDialogOpen()) {
+        if (event.key === 'Escape') closeDialog();
+        return;
+    }
 
     // While typing in search or Qty, only Escape closes
     const typing = event.target instanceof HTMLInputElement;
@@ -110,6 +117,7 @@ const handlers = {
 
     clearOther() {
         if (state.other.open) cancelDrag();
+        closeDialog();
         state.other.open = false;
         state.other.items.clear();
         el.otherGrid.replaceChildren();
@@ -125,6 +133,7 @@ const handlers = {
 
     close() {
         cancelDrag();
+        closeDialog();
         hideMenus();
         el.search.blur();
         el.qty.blur();

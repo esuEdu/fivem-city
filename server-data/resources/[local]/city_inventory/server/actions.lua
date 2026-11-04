@@ -78,6 +78,30 @@ lib.callback.register('city_inventory:move', function(source, fromSlot, toSlot, 
     return success, reason
 end)
 
+-- Splitting a stack: `count` of it goes to the first free slot
+lib.callback.register('city_inventory:split', function(source, slot, count)
+    local src = source
+    local inventory, reason = getActor(src)
+    if not inventory then return false, reason end
+
+    slot, count = toInteger(slot), toInteger(count)
+    local item = inventory:isSlot(slot) and inventory.items[slot]
+
+    if not item or not count or count < 1 or count >= item.count then
+        lib.print.warn(('Player %s sent an invalid split: slot %s x%s'):format(src, slot, count))
+        return false, 'invalid_count'
+    end
+
+    local free = inventory:freeSlots(1)[1]
+    if not free then return false, 'inventory_full' end
+
+    local success
+    success, reason = inventory:move(slot, free, count)
+    if success then players.sync(src) end
+
+    return success, reason
+end)
+
 lib.callback.register('city_inventory:use', function(source, slot, name)
     local src = source
     local inventory, reason = getActor(src)

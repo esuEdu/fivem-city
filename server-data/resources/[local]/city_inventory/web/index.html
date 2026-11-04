@@ -83,6 +83,27 @@
 
     <div id="tooltip" class="tooltip hidden"></div>
 
+    <div id="dialog" class="dialog hidden">
+        <div class="dialog__box">
+            <h2 id="dialog-title" class="dialog__title"></h2>
+            <div class="dialog__item">
+                <img id="dialog-image" class="dialog__image" alt="">
+                <span id="dialog-label" class="dialog__label"></span>
+            </div>
+            <div class="dialog__amount">
+                <button id="dialog-minus" class="tab dialog__step" type="button">-</button>
+                <input id="dialog-input" class="input dialog__input" type="number" min="1" step="1">
+                <button id="dialog-plus" class="tab dialog__step" type="button">+</button>
+                <button id="dialog-max" class="tab" type="button"></button>
+            </div>
+            <p id="dialog-total" class="dialog__total"></p>
+            <div class="dialog__actions">
+                <button id="dialog-cancel" class="tab" type="button"></button>
+                <button id="dialog-confirm" class="tab tab--active" type="button"></button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="js/main.js"></script>
 </body>
 </html>

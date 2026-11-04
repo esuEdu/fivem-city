@@ -57,5 +57,11 @@
     "error_cannot_sell": "This shop doesn't buy items",
     "error_out_of_stock": "That's sold out",
     "error_no_license": "You need a license to buy this",
-    "ui_price_free": "Free"
+    "ui_price_free": "Free",
+    "ui_buy": "Buy",
+    "ui_split": "Split",
+    "ui_cancel": "Cancel",
+    "ui_max": "Max",
+    "ui_total": "Total",
+    "error_invalid_count": "That amount doesn't work"
 }

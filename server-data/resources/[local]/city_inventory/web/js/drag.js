@@ -1,6 +1,7 @@
 import { state, el, ui, itemAt, isShop } from './state.js';
 import { renderSlot, slotOf } from './slots.js';
-import { hideMenus, showMenu, showTooltip } from './menu.js';
+import { askBuy, hideMenus, showMenu, showShopMenu, showTooltip } from './menu.js';
+import { isDialogOpen } from './dialog.js';
 import { createElement, post } from './util.js';
 
 const DRAG_THRESHOLD_PX = 5;
@@ -48,11 +49,6 @@ function dragCount(event, item) {
     return qty > 0 ? Math.min(qty, item.count) : item.count;
 }
 
-function shopCount(event) {
-    const qty = Number.parseInt(el.qty.value, 10);
-    return event.ctrlKey || !(qty > 0) ? 1 : qty;
-}
-
 // Combining only works inside the player's own inventory
 function combineSlot(slotEl) {
     if (!slotEl || ui.drag.inv !== 'player') return null;
@@ -64,7 +60,7 @@ function combineSlot(slotEl) {
 }
 
 function onPointerDown(event) {
-    if (event.button !== 0) return;
+    if (event.button !== 0 || isDialogOpen()) return;
 
     const slotEl = slotAt(event.target);
     if (!slotEl) return;
@@ -118,10 +114,17 @@ document.addEventListener('pointerup', (event) => {
     const { inv, slot } = slotOf(target);
     if (inv === drag.inv && slot === drag.slot) return;
 
-    // Shops only sell: items come out of the shop panel, one or the Qty amount at a time
-    if (isShop() && (drag.inv !== 'other' || inv !== 'player')) return;
+    // Shops only sell: items come out of the shop panel. Ctrl buys one and the Qty field buys that many; otherwise ask
+    if (isShop()) {
+        if (drag.inv !== 'other' || inv !== 'player') return;
 
-    const count = isShop() ? shopCount(event) : dragCount(event, drag.item);
+        const qty = Number.parseInt(el.qty.value, 10);
+        if (!event.ctrlKey && !(qty > 0)) return askBuy(drag.slot, slot);
+
+        return post('transfer', { fromInv: 'other', from: drag.slot, toInv: 'player', to: slot, count: event.ctrlKey ? 1 : qty });
+    }
+
+    const count = dragCount(event, drag.item);
 
     if (drag.inv === 'player' && inv === 'player') {
         post(combine ? 'combine' : 'move', { from: drag.slot, to: slot, count });
@@ -149,5 +152,15 @@ el.inventory.addEventListener('contextmenu', (event) => {
 
 el.other.addEventListener('contextmenu', (event) => {
     event.preventDefault();
-    hideMenus();
+
+    const slotEl = slotAt(event.target);
+    if (!slotEl || !isShop()) return hideMenus();
+
+    showShopMenu(slotOf(slotEl).slot, event.clientX, event.clientY);
+});
+
+// Double-clicking a shop item buys it too
+el.other.addEventListener('dblclick', (event) => {
+    const slotEl = slotAt(event.target);
+    if (slotEl && isShop()) askBuy(slotOf(slotEl).slot, null);
 });
