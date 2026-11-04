@@ -1,6 +1,5 @@
-# FXServer + txAdmin with the whole city baked in.
-# Build from the repo root:
-#   docker buildx build --platform linux/amd64 -f docker/fxserver/Dockerfile -t ghcr.io/esuedu/fivem-city .
+# FXServer + txAdmin. Built by docker-compose.yml (docker compose up -d --build), which also mounts the repo's
+# server-data/ over the copy in the image; see docs/docker.md.
 #
 # FXServer is downloaded and extracted inside the build (not copied from the host),
 # because the artifact relies on symlinks that Windows filesystems break.

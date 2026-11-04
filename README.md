@@ -34,53 +34,21 @@ docker-compose.yml          FXServer + txAdmin and MariaDB
 .env.example                Docker settings -> copy to .env
 ```
 
-## Running with Docker + txAdmin
+## Running with Docker
 
-`docker-compose.yml` runs two containers: FXServer with txAdmin, and MariaDB.
+`docker-compose.yml` runs FXServer with txAdmin and MariaDB, using `server-data/` straight from the repo.
+The full guide (first start, txAdmin setup, everyday commands, updates, backups, troubleshooting) is in
+**[docs/docker.md](docs/docker.md)**. In short:
 
-FXServer is downloaded inside the image build (the current recommended Linux build, or
-`FIVEM_ARTIFACT_URL` from `.env`), so `artifacts/` is not used here. Don't mount a Linux artifact
-from a Windows drive: NTFS breaks its symlinks (`Error relocating ... symbol not found`).
-To update FXServer, run `docker compose build --no-cache fxserver && docker compose up -d`.
-
-1. `cp .env.example .env` and set your [license key](https://portal.cfx.re) and a database password.
-   `server-data/secrets.cfg` is written from it on every start.
-2. `docker compose up -d --build` — the Qbox tables are imported the first time the database is created.
-3. Get the txAdmin PIN: `docker compose logs fxserver | grep -i pin`
-4. Open <http://localhost:40120>, enter the PIN, link your Cfx.re account, then in the setup wizard
-   choose **Existing Server Data** with path `/server-data` and config `server.cfg`.
-
-Resources are committed; run `./scripts/install-resources.sh` only to update them.
-
-Useful commands: `docker compose logs -f fxserver`, `docker compose restart fxserver`,
-`docker compose down` (data is kept in the `txdata` and `dbdata` volumes).
-
-**Apple Silicon Macs are not supported.** FXServer is x86_64 only and crashes under both
-Rosetta and QEMU emulation (`Stack overflow in unmanaged`, restart loop). Run the server on a
-Windows PC or an x86_64 Linux machine/VPS; a Mac can still be used to edit `server-data/resources/`.
-
-## Prebuilt image (run on another PC)
-
-The private image `ghcr.io/esuedu/fivem-city` contains FXServer, `server.cfg` and all resources.
-Secrets are never baked in; they come from `.env`.
-
-**Build and push** (from this repo, after `./scripts/install-resources.sh`):
 ```sh
-docker login ghcr.io -u esuEdu   # token needs write:packages
-docker buildx build --platform linux/amd64 -f docker/fxserver/Dockerfile \
-  -t ghcr.io/esuedu/fivem-city:latest --push .
+cp .env.example .env              # license key + database password
+docker compose up -d --build
+bash scripts/import-sql.sh        # the other resources' tables
+docker compose logs fxserver | grep -i pin   # then http://localhost:40120 -> Existing Server Data -> /server-data
 ```
 
-**Run on the server PC** (x86_64 Windows/Linux with Docker):
-1. Copy the `deploy/` folder to that PC.
-2. `cp .env.example .env` and set `CFX_LICENSE_KEY` and `MYSQL_ROOT_PASSWORD`.
-3. `docker login ghcr.io -u esuEdu` with a token that has `read:packages`.
-4. `docker compose up -d` — the Qbox tables are imported automatically on first start.
-5. Get the txAdmin PIN with `docker compose logs fxserver | grep -i pin`, open
-   <http://localhost:40120> and pick **Existing Server Data** → `/server-data` → `server.cfg`.
-
-To update: push a new image, then `docker compose pull && docker compose up -d` on the server PC.
-Changes made inside the container to `/server-data` are lost on update; commit them to the repo instead.
+**Apple Silicon Macs can't run the server** (FXServer is x86_64 only); use a Windows PC or an x86_64 Linux machine.
+The scripts on the server and their known issues are listed in [docs/scripts/](docs/scripts/README.md).
 
 ## First-time setup (without Docker)
 

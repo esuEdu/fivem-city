@@ -5,7 +5,6 @@ services:
       dockerfile: docker/fxserver/Dockerfile
       args:
         FIVEM_ARTIFACT_URL: ${FIVEM_ARTIFACT_URL:-}
-    image: ghcr.io/esuedu/fivem-city:latest
     # FXServer only ships x86_64 builds (emulated on Apple Silicon)
     platform: linux/amd64
     restart: unless-stopped
