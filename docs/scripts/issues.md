@@ -10,12 +10,14 @@ None known.
 
 ### Fixed in `city_inventory`
 
+- **EMS shops:** our **Medicine Cabinet** stood 3 m from qbx_ambulancejob's free **Armory** at Pillbox; it's removed from `data/shops.lua`.
 - **ox_fuel:** pays with a **"money" item**; `city_inventory` treats that item as the player's qbx cash (`server/cash.lua`, `Config.CashItem`).
 - **qbx_police** (radial **Search** and **Rob**, via `openNearbyInventory`) and **qbx_adminmenu** (**Open inventory**, via `openInventory('player', id)`): player search (`server/searches.lua`).
 
 ### Already patched
 
 - **qbx_core:** uses `city_inventory` (`scripts/patches/qbx_core.patch`).
+- **qbx_radialmenu:** the dead **Give Contact Details** button is removed (`scripts/patches/qbx_radialmenu.patch`).
 - **qbx_police:** registers its locker and trash stashes on start, and **Rob** accepts the hands-up key's animation (scully_emotemenu's `random@mugging3`), not only the emote's (`scripts/patches/qbx_police.patch`).
 
 ### Working through the `ox_inventory` stand-in (nothing to do)
@@ -29,9 +31,7 @@ The stand-in has to stay: about 40 scripts call `exports.ox_inventory`, ox_fuel 
 | What | Where | Problem |
 |---|---|---|
 | **Trade on F6** | Unknown | Nothing in our scripts is bound to F6. Need to find what opens. |
-| **Eating and drinking** | `qbx_smallresources/qbx_consumables` and `city_inventory/data/items.lua` (`client.status`) | Both define what food, drinks, alcohol, joints and coke do. qbx_consumables' `CreateUseableItem` always wins, so ours never runs for those items. Keep one. |
-| **EMS shops** | Our **Medicine Cabinet** (`city_inventory/data/shops.lua`) and qbx_ambulancejob's **Armory** | Two EMS shops 3 m apart at Pillbox; the armory is free, the cabinet charges. Remove one. |
+| **Eating and drinking** | `qbx_smallresources/qbx_consumables` and `city_inventory/data/items.lua` (`client.status`) | Not a duplicate: no item is in both. qbx_consumables does sandwich, coffee, beer, vodka, whiskey (stress relief, drunk effect) and the drugs; `items.lua` does burger, sprunk, water and mustard. Its config also lists tosti, twerks_candy, snikkel_candy, water_bottle and kurkakola, which aren't items (harmless). Using either kind takes one item. |
 | **Clothing on/off** | qbx_radialmenu **Clothing** and illenium-appearance | Two ways to take clothes off; inventory clothing slots would make three. |
-| **Give Contact Details** | qbx_radialmenu (Citizen) | Calls the old qb-phone event, which isn't installed (we use npwd): the button does nothing. Remove it or point it at npwd. |
 | **Opening a trunk** | qbx_radialmenu **Vehicle Doors → Trunk** and TAB at the back of a car | Both open the lid. Harmless. |
 | **Giving items as admin** | `/giveitem` and `/kit` (city_inventory), qbx_adminmenu **Give Item** | Not a duplicate: the admin menu runs our `/giveitem`. |

@@ -49,11 +49,12 @@ Custom code lives in `server-data/resources/[local]/` (`city_base` is the starte
 
 ## Standards
 
-All code in `[local]/` must follow these. Run through each checklist before calling the work done.
+All code in `[local]/` must follow these, and every branch and commit follows `git.md`. Run through each checklist before calling the work done.
 
 @docs/standards/security.md
 @docs/standards/performance.md
 @docs/standards/code-style.md
+@docs/standards/git.md
 
 ## Skills
 
