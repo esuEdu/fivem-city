@@ -1,6 +1,6 @@
 # Scripts on the server
 
-Every resource in `server-data/resources/`, grouped by what it's for. Third-party ones come from the Qbox txAdmin recipe and are installed by `scripts/install-resources.sh`; ours are in `[local]/`.
+Every resource in `server-data/resources/`, grouped by what it's for. Third-party ones come from the Qbox txAdmin recipe and are installed by `scripts/install-resources.sh`; ours are in `[local]/`. Known problems and overlaps between them are in [issues.md](issues.md).
 
 ## Core
 
