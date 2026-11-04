@@ -49,6 +49,7 @@ docker compose logs fxserver | grep -i pin   # then http://localhost:40120 -> Ex
 
 **Apple Silicon Macs can't run the server** (FXServer is x86_64 only); use a Windows PC or an x86_64 Linux machine.
 The scripts on the server and their known issues are listed in [docs/scripts/](docs/scripts/README.md).
+What we're building next is in [docs/roadmap.md](docs/roadmap.md).
 
 ## First-time setup (without Docker)
 
