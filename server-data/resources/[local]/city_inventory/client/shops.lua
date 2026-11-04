@@ -30,13 +30,20 @@ local function addBlip(coords, shop)
     blips[#blips + 1] = blip
 end
 
-local function setup()
+-- Blips don't need ox_target, so they go on the map straight away
+for _, shop in pairs(shopData) do
+    if shop.blip then
+        for _, coords in ipairs(shop.locations or {}) do
+            addBlip(coords, shop)
+        end
+    end
+end
+
+local function addTargets()
     for shopType, shop in pairs(shopData) do
         local label = locale('target_shop', shop.name)
 
         for id, coords in ipairs(shop.locations or {}) do
-            if shop.blip then addBlip(coords, shop) end
-
             zones[#zones + 1] = exports.ox_target:addSphereZone({
                 coords = coords,
                 radius = TARGET_RADIUS,
@@ -72,7 +79,7 @@ end
 -- city_inventory starts before ox_target (server.cfg order), so wait for its exports
 CreateThread(function()
     while GetResourceState('ox_target') ~= 'started' do Wait(500) end
-    setup()
+    addTargets()
 end)
 
 AddEventHandler('onResourceStop', function(resource)
