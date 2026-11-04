@@ -79,13 +79,18 @@ function createSlot(inv, slot, container) {
     renderSlot(slotEl);
 }
 
-// One grid; its first slots are the hotbar (keys 1-5), also shown in the popup when a key is pressed
+// The hotbar slots (keys 1-5) get their own row above the rest, and are also shown in the popup when a key is pressed
 export function buildPlayerGrids() {
+    el.hotbarGrid.replaceChildren();
     el.grid.replaceChildren();
     el.popup.replaceChildren();
 
-    for (let slot = 1; slot <= state.hotbar; slot++) createSlot('player', slot, el.popup);
-    for (let slot = 1; slot <= state.player.slots; slot++) createSlot('player', slot, el.grid);
+    for (let slot = 1; slot <= state.hotbar; slot++) {
+        createSlot('player', slot, el.hotbarGrid);
+        createSlot('player', slot, el.popup);
+    }
+
+    for (let slot = state.hotbar + 1; slot <= state.player.slots; slot++) createSlot('player', slot, el.grid);
 }
 
 export function buildOtherGrid() {

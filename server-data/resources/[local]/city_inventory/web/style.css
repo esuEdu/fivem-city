@@ -307,6 +307,19 @@ button {
     align-content: start;
 }
 
+/* The hotbar row doesn't scroll; a thin line splits it from the rest */
+.grid--hotbar {
+    flex: none;
+    overflow: visible;
+}
+
+.divider {
+    flex: none;
+    height: 1px;
+    margin: 0 4px;
+    background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+}
+
 .grid::-webkit-scrollbar {
     width: 4px;
 }

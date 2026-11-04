@@ -40,6 +40,7 @@ export const el = {
     search: byId('search'),
     qty: byId('qty'),
     tabs: byId('tabs'),
+    hotbarGrid: byId('hotbar-grid'),
     grid: byId('grid'),
     otherGrid: byId('other-grid'),
     close: byId('close'),
