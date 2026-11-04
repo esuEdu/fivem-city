@@ -90,5 +90,10 @@
     "error_trade_no_cash": "Someone doesn't have the cash they offered",
     "trade_full": "%s doesn't have room for the items",
     "trade_no_cash": "%s doesn't have the cash they offered",
-    "trade_done": "Trade complete"
+    "trade_done": "Trade complete",
+    "ui_trunk": "Trunk",
+    "ui_glovebox": "Glovebox",
+    "error_vehicle_locked": "The vehicle is locked",
+    "error_no_vehicle": "There's no vehicle here",
+    "error_no_storage": "This vehicle has no room for items"
 }

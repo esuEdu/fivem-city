@@ -17,6 +17,7 @@ local stashes = {}
 ---@field owner? true | string true: one per character, string: that owner's, nil: shared
 ---@field groups? table<string, integer> job or gang -> lowest grade allowed
 ---@field coords? vector3[] where it can be opened from
+---@field temporary? boolean kept in memory only, never saved (trunks of cars nobody owns)
 
 ---@class StashSession
 ---@field inventory Inventory
@@ -38,7 +39,7 @@ local viewers = {}
 ---@type table<integer, StashSession>
 local sessions = {}
 
-function stashes.register(id, label, slots, maxWeight, owner, groups, coords)
+function stashes.register(id, label, slots, maxWeight, owner, groups, coords, temporary)
     slots, maxWeight = math.tointeger(tonumber(slots)), math.tointeger(tonumber(maxWeight))
 
     if type(id) ~= 'string' or not slots or slots < 1 or not maxWeight or maxWeight < 0 then
@@ -53,7 +54,11 @@ function stashes.register(id, label, slots, maxWeight, owner, groups, coords)
         owner = (owner == true or type(owner) == 'string') and owner or nil,
         groups = access.toGroups(groups),
         coords = access.toCoords(coords),
+        temporary = temporary == true,
     }
+
+    -- e.g. a car someone just bought: its trunk starts being saved
+    if loaded[id] then loaded[id].temporary = temporary == true end
 end
 
 ---The ox_inventory id of one stash: id, or id:owner for stashes that have an owner.
@@ -107,9 +112,10 @@ function stashes.get(id, owner)
     loading[inventoryId] = done
 
     local key = ('stash:%s'):format(inventoryId)
-    local inventory = Inventory.new(key, definition.slots, definition.maxWeight, storage.load(key))
+    local inventory = Inventory.new(key, definition.slots, definition.maxWeight, not definition.temporary and storage.load(key) or nil)
     inventory.type = 'stash'
     inventory.id = inventoryId
+    inventory.temporary = definition.temporary
 
     loaded[inventoryId] = inventory
     viewers[inventory] = {}
@@ -206,7 +212,7 @@ function stashes.saveAll(wait)
     local rows = {}
 
     for _, inventory in pairs(loaded) do
-        if inventory.dirty then
+        if inventory.dirty and not inventory.temporary then
             rows[#rows + 1] = { owner = inventory.owner, entries = inventory:serialize() }
             inventory.dirty = false
         end

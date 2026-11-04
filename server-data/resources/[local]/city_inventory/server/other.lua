@@ -8,6 +8,7 @@ local stashes = require 'server.stashes'
 local shops = require 'server.shops'
 local drops = require 'server.drops'
 local trades = require 'server.trades'
+local vehicles = require 'server.vehicles'
 
 local getActor, toInteger = actor.getActor, actor.toInteger
 
@@ -40,6 +41,16 @@ lib.callback.register('city_inventory:openShop', function(source, shopType, id)
 
     other.closeAll(src)
     return shops.open(src, shopType, id)
+end)
+
+-- Opening the inventory at the back of a car (trunk) or sitting in one (glovebox)
+lib.callback.register('city_inventory:openVehicle', function(source, netId, kind)
+    local src = source
+    local inventory, reason = getActor(src)
+    if not inventory then return false, reason end
+
+    other.closeAll(src)
+    return vehicles.open(src, netId, kind)
 end)
 
 -- Opening the inventory with nothing else open shows the ground

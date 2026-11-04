@@ -4,7 +4,7 @@ lua54 'yes'
 
 name 'city_inventory'
 description 'Player inventory for fivem-city (replaces ox_inventory)'
-version '0.6.0'
+version '0.7.0'
 
 ox_lib 'locale'
 
@@ -39,6 +39,7 @@ files {
     'client/shops.lua',
     'client/drops.lua',
     'client/trade.lua',
+    'client/vehicles.lua',
     'locales/*.json',
     'web/index.html',
     'web/style.css',

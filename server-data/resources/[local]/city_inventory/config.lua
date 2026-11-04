@@ -15,6 +15,34 @@ Config.AutosaveMinutes = 5
 -- How close (meters) a player has to be to a stash's coords to open it, and how far they can walk while it's open
 Config.StashDistance = 5.0
 
+-- Trunks and gloveboxes. Sizes by vehicle type (GetVehicleType: automobile, bike, boat, heli, plane, trailer, ...;
+-- a type left out has none), with bigger ones for some models. The player has to stand within TrunkDistance of the car.
+Config.TrunkDistance = 4.0
+Config.VehicleStorage = {
+    trunk = {
+        automobile = { slots = 30, maxWeight = 100000 },
+        boat = { slots = 30, maxWeight = 120000 },
+        heli = { slots = 20, maxWeight = 60000 },
+        plane = { slots = 40, maxWeight = 150000 },
+        trailer = { slots = 60, maxWeight = 500000 },
+    },
+    glovebox = {
+        automobile = { slots = 5, maxWeight = 10000 },
+        boat = { slots = 5, maxWeight = 10000 },
+        heli = { slots = 5, maxWeight = 10000 },
+        plane = { slots = 5, maxWeight = 10000 },
+    },
+    models = {
+        [`burrito3`] = { trunk = { slots = 50, maxWeight = 250000 } },
+        [`rumpo`] = { trunk = { slots = 50, maxWeight = 250000 } },
+        [`speedo`] = { trunk = { slots = 50, maxWeight = 250000 } },
+        [`youga`] = { trunk = { slots = 50, maxWeight = 250000 } },
+        [`mule`] = { trunk = { slots = 80, maxWeight = 500000 } },
+        [`benson`] = { trunk = { slots = 100, maxWeight = 800000 } },
+        [`pounder`] = { trunk = { slots = 100, maxWeight = 1000000 } },
+    },
+}
+
 -- Items on the ground: size of a drop, how close the player has to be, and how long an unattended drop stays
 Config.DropSlots = 30
 Config.DropMaxWeight = 100000

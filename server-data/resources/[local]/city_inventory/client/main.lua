@@ -7,6 +7,7 @@ local craft = require 'client.craft'
 local other = require 'client.other'
 require 'client.shops'
 require 'client.drops'
+local vehicles = require 'client.vehicles'
 local trade = require 'client.trade'
 local theme = require '@city_ui.theme'
 
@@ -146,11 +147,15 @@ local function open()
     return true
 end
 
----Opens the inventory with the ground next to it, unless a stash, shop or trade is already open there.
+---Opens the inventory with the glovebox, trunk or ground next to it, unless a stash, shop or trade is already open there.
 local function openWithGround()
-    if open() and not other.isOpen() then
-        CreateThread(other.openGround)
-    end
+    if not open() or other.isOpen() then return end
+
+    CreateThread(function()
+        local opened, reason = vehicles.open()
+        if reason then notifyFailure(reason) end
+        if not opened then other.openGround() end
+    end)
 end
 
 local function close()
@@ -161,6 +166,7 @@ local function close()
     SendNUIMessage({ action = 'close' })
     if Config.ScreenBlur then TriggerScreenblurFadeOut(Config.ScreenBlurFadeMs) end
     other.close()
+    vehicles.close()
     TriggerServerEvent('city_inventory:server:setOpen', false)
 end
 
