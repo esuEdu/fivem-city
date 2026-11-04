@@ -27,7 +27,8 @@ function render() {
     if (!item) return hideCard();
 
     const category = state.categories.get(item.category);
-    el.card.root.style.setProperty('--category-tint', category ? tint(category.color, 0.3) : 'transparent');
+    el.card.root.style.setProperty('--category-tint', category ? tint(category.color, 0.22) : 'transparent');
+    el.card.root.style.setProperty('--category-strong', category ? tint(category.color, 0.5) : 'transparent');
 
     el.card.image.src = `images/${item.image}`;
     el.card.title.textContent = item.metadata?.label || item.label;

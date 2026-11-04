@@ -346,13 +346,14 @@ button {
     animation: slot-pop 0.3s var(--ease);
 }
 
+/* The item's category color rises from the bottom of the slot (from under the border, or it repeats along the top edge) */
 .slot--filled {
-    background: radial-gradient(circle at 50% 40%, var(--category-tint, transparent), transparent 75%), var(--slot);
+    background: linear-gradient(to top, var(--category-strong, transparent), var(--category-tint, transparent) 30%, transparent 80%) border-box, var(--slot);
     cursor: grab;
 }
 
 .slot--filled:hover {
-    background: radial-gradient(circle at 50% 40%, var(--category-tint, transparent), transparent 75%), var(--slot-hover);
+    background: linear-gradient(to top, var(--category-strong, transparent), var(--category-tint, transparent) 40%, transparent 95%) border-box, var(--slot-hover);
     border-color: var(--category-strong, var(--border));
     transform: translateY(-2px);
 }
@@ -603,7 +604,7 @@ button {
     height: clamp(76px, 9vh, 104px);
     flex: none;
     border-radius: 16px;
-    background: radial-gradient(circle at 50% 40%, var(--category-tint, transparent), transparent 75%), var(--slot);
+    background: linear-gradient(to top, var(--category-strong, transparent), var(--category-tint, transparent) 30%, transparent 80%) border-box, var(--slot);
 }
 
 .card__image img {
