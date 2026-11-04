@@ -10,7 +10,7 @@ return {
     text = '#eef0f3',
     muted = '#7d8590',
 
-    panel = 'rgba(12, 13, 18, 0.9)',
+    panel = 'rgba(12, 13, 18, 0.6)',
     section = 'rgba(255, 255, 255, 0.035)',
     slot = 'rgba(255, 255, 255, 0.03)',
     slotHover = 'rgba(255, 255, 255, 0.07)',
