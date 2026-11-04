@@ -300,8 +300,9 @@ button {
 .grid {
     flex: 1;
     min-height: 0;
-    margin-right: -8px;
-    padding-right: 8px;
+    /* Room inside the scroll area for the hover lift and the selected outline, so the edge rows aren't cut */
+    margin: -6px -14px -6px -6px;
+    padding: 6px 14px 6px 6px;
     overflow-x: hidden;
     overflow-y: auto;
     align-content: start;
@@ -310,6 +311,8 @@ button {
 /* The hotbar row doesn't scroll; a thin line splits it from the rest */
 .grid--hotbar {
     flex: none;
+    margin: 0;
+    padding: 0;
     overflow: visible;
 }
 
