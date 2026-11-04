@@ -23,9 +23,15 @@ function render() {
         : `${count} / ${item.count}`;
 }
 
+// The item card sits under the window and shows through it, so it's hidden while the window is open (see style.css)
+function setOpen(open) {
+    el.dialog.root.classList.toggle('hidden', !open);
+    document.body.classList.toggle('dialog-open', open);
+}
+
 export function closeDialog() {
     current = null;
-    el.dialog.root.classList.add('hidden');
+    setOpen(false);
 }
 
 function confirm() {
@@ -51,7 +57,7 @@ export function openDialog({ title, confirmLabel, item, max, onConfirm }) {
     el.dialog.input.value = 1;
 
     render();
-    el.dialog.root.classList.remove('hidden');
+    setOpen(true);
     el.dialog.input.focus();
     el.dialog.input.select();
 }

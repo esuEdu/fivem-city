@@ -706,6 +706,11 @@ button {
     display: none;
 }
 
+/* The amount window would show the card through it; the card comes back when the window closes */
+.dialog-open .card {
+    display: none;
+}
+
 /* Right-click menu */
 
 .menu {
