@@ -57,4 +57,4 @@ All code in `[local]/` must follow these. Run through each checklist before call
 
 ## Skills
 
-Project skills in `.claude/skills/` hold the step-by-step workflows: `new-resource` (a new `city_<feature>` script), `add-item` (items, weapons, shops, recipes), `patch-script` (changing a vendored script) and `ship` (checks, NUI preview, commit, in-game test steps). Keep them in step when these workflows change.
+Project skills in `.claude/skills/` hold the step-by-step workflows: `new-resource` (a new `city_<feature>` script), `add-item` (items, weapons, shops, recipes), `patch-script` (changing a vendored script), `replace-script` (our resource replacing a vendored one, which is then removed everywhere) and `ship` (checks, NUI preview, commit, in-game test steps). Keep them in step when these workflows change.

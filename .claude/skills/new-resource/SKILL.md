@@ -11,7 +11,7 @@ Builds a `city_<feature>` resource from the `city_base` template, written to `do
 
 If the request is vague, ask (one AskUserQuestion, max 3-4 questions) only what changes the design: who can use it (everyone / job / admin), where (locations, ox_target on what), what it gives or costs, whether it saves data. Pick sensible defaults for the rest and say so.
 
-Check it doesn't already exist: `docs/scripts/README.md` lists every script and `docs/scripts/issues.md` the known overlaps. If a Qbox script already does it, say so and offer to configure or patch that one instead (see the `patch-script` skill).
+Check it doesn't already exist: `docs/scripts/README.md` lists every script and `docs/scripts/issues.md` the known overlaps. If a Qbox script already does it, say so and offer to configure or patch that one instead (see the `patch-script` skill). If the user wants ours to **replace** an installed script (our own police, racing, phone), follow the `replace-script` skill alongside this one: it maps what the old script provides first and removes it in the same branch.
 
 ## 2. Scaffold
 
