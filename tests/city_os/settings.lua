@@ -16,6 +16,12 @@ assert(s.wallpaper == 'sunset' and s.appearance == 'dark' and s.iconStyle == 'co
 assert(s.extra == nil)
 assert(settings.sanitize({ wallpaper = 'custom' }).wallpaper == 'custom')
 
+-- Device color: one of Config.DeviceColors, or the default
+assert(settings.sanitize(nil).deviceColor == 'graphite')
+assert(settings.sanitize({ deviceColor = 'gold' }).deviceColor == 'gold')
+assert(settings.sanitize({ deviceColor = 'rainbow' }).deviceColor == 'graphite')
+assert(settings.deviceColor('silver').tint == 1 and settings.deviceColor('nope') == nil)
+
 -- Dock: valid ids, no duplicates, at most Config.DockSize
 s = settings.sanitize({ dock = { 'police_mdt', 'police_mdt', 'bad id!', 42, 'a', 'b', 'c', 'd', 'e', 'f', 'g' } })
 assert(#s.dock == Config.DockSize and s.dock[1] == 'police_mdt' and s.dock[2] == 'a')

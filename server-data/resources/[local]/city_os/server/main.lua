@@ -165,6 +165,23 @@ lib.callback.register('city_os:clearNotifications', function(source)
     return true
 end)
 
+lib.addCommand('tablettint', {
+    help = locale('command_tablettint'),
+    params = { { name = 'tint', type = 'number', help = locale('param_tint') } },
+    restricted = 'group.admin',
+}, function(source, args)
+    -- source 0 = server console, which has no tablet in hand
+    if source == 0 then return end
+    if not exports.qbx_core:IsOptin(source) then
+        return exports.qbx_core:Notify(source, locale('not_on_duty'), 'error')
+    end
+
+    local tint = math.tointeger(args.tint)
+    if not tint or tint < 0 or tint > 15 then return end
+
+    TriggerClientEvent('city_os:client:testTint', source, tint)
+end)
+
 RegisterNetEvent('city_os:server:closed', function()
     sessions.stop(source)
 end)

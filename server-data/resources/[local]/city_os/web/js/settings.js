@@ -1,10 +1,10 @@
 import { el, svg, iconTile, post, isWallpaperUrl, GLYPHS } from './util.js';
-import { state, L, onRender, render, changeSettings, applySettings, allApps, dockApps, wallpaperCss } from './state.js';
+import { state, L, onRender, render, changeSettings, applySettings, allApps, dockApps, wallpaperCss, deviceColor } from './state.js';
 
 const page = document.getElementById('settings');
 
 const SECTIONS = [
-    [['wallpaper', 'wallpaper', GLYPHS.picture, '#4fd1d9', '#1f9aa8'], ['home', 'home_icons', GLYPHS.grid, '#6f9bff', '#3f74f0'], ['dock', 'dock', GLYPHS.dock, '#a2aab8', '#6b7383']],
+    [['wallpaper', 'wallpaper', GLYPHS.picture, '#4fd1d9', '#1f9aa8'], ['device', 'device_color', GLYPHS.tablet, '#d9b26b', '#a8803c'], ['home', 'home_icons', GLYPHS.grid, '#6f9bff', '#3f74f0'], ['dock', 'dock', GLYPHS.dock, '#a2aab8', '#6b7383']],
     [['notifications', 'notifications', GLYPHS.bell, '#ff7a7e', '#e5484d'], ['display', 'display', null, '#ffb057', '#f08a1a'], ['privacy', 'privacy', GLYPHS.lock, '#8b8ff8', '#5a5fe0']],
     [['about', 'about', GLYPHS.info, '#a2aab8', '#6b7383']],
 ];
@@ -130,6 +130,32 @@ function wallpaperSection() {
     return [previews, block(L('wallpaper'), list, L('wallpaper_note')), block(L('own_picture'), own, pictureError ? L('picture_bad') : L('picture_note'), pictureError)];
 }
 
+function deviceSection() {
+    const current = deviceColor();
+
+    // A small tablet in the chosen color
+    const preview = el('div', 'kit-card');
+    preview.style.cssText = 'display: flex; justify-content: center;';
+    const device = el('div');
+    device.style.cssText = `width: 220px; height: 158px; padding: 6px; border-radius: 22px; background: linear-gradient(145deg, ${current.frame[0]}, ${current.frame[1]} 40%, ${current.frame[2]}); box-shadow: 0 0 0 1px ${current.edge}, 0 12px 28px rgba(0, 0, 0, 0.35);`;
+    const glass = el('div');
+    glass.style.cssText = `width: 100%; height: 100%; border-radius: 16px; background: ${wallpaperCss()};`;
+    device.append(glass);
+    preview.append(device);
+
+    const swatch = (color) => {
+        const dot = el('span', 'kit-thumb');
+        dot.style.cssText = `width: 30px; border-radius: 15px; background: linear-gradient(145deg, ${color.frame[0]}, ${color.frame[1]} 55%, ${color.frame[2]}); box-shadow: 0 0 0 1px ${color.edge};`;
+        return dot;
+    };
+
+    const list = group(...state.deviceColors.map((color) => row(color.label, {
+        lead: swatch(color), check: color.id === current.id, onClick: () => changeSettings({ deviceColor: color.id }),
+    })));
+
+    return [preview, block(L('device_color'), list, L('device_color_note'))];
+}
+
 function homeSection() {
     const s = state.settings;
     const sample = allApps()[0];
@@ -240,8 +266,8 @@ function aboutSection() {
     ), L('serial_note'))];
 }
 
-const BUILDERS = { wallpaper: wallpaperSection, home: homeSection, dock: dockSection, notifications: notificationsSection, display: displaySection, privacy: privacySection, about: aboutSection };
-const TITLES = { wallpaper: 'wallpaper', home: 'home_icons', dock: 'dock', notifications: 'notifications', display: 'display', privacy: 'privacy', about: 'about' };
+const BUILDERS = { wallpaper: wallpaperSection, device: deviceSection, home: homeSection, dock: dockSection, notifications: notificationsSection, display: displaySection, privacy: privacySection, about: aboutSection };
+const TITLES = { wallpaper: 'wallpaper', device: 'device_color', home: 'home_icons', dock: 'dock', notifications: 'notifications', display: 'display', privacy: 'privacy', about: 'about' };
 
 function sidebar() {
     const side = el('nav', 'kit-sidebar');

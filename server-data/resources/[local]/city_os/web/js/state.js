@@ -10,6 +10,7 @@ export const state = {
     labels: {},
     theme: {},
     wallpapers: [],
+    deviceColors: [],
     customWallpaper: false,
     config: {},
     clock: { hours: 0, minutes: 0 },
@@ -80,6 +81,18 @@ export function applySettings() {
     screen.classList.toggle('bold', s.bold);
     screen.classList.toggle('no-motion', !s.motion);
     screen.style.background = wallpaperCss();
+
+    const color = deviceColor();
+    const tablet = document.getElementById('tablet').style;
+    if (!color) return;
+    tablet.setProperty('--frame-a', color.frame[0]);
+    tablet.setProperty('--frame-b', color.frame[1]);
+    tablet.setProperty('--frame-c', color.frame[2]);
+    tablet.setProperty('--frame-edge', color.edge);
+}
+
+export function deviceColor() {
+    return state.deviceColors.find((c) => c.id === state.settings.deviceColor) || state.deviceColors[0];
 }
 
 // Changes settings right away and saves them a moment later (one save for several quick changes)

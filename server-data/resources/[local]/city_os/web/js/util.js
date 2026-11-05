@@ -15,6 +15,7 @@ export const GLYPHS = {
     chevron: 'M9 5l7 7-7 7',
     search: 'M11 4.5a6.5 6.5 0 1 1 0 13a6.5 6.5 0 1 1 0-13zM16 16l4.5 4.5',
     warning: 'M12 3l9.5 17h-19zM12 10v4.5M12 17.5v.01',
+    tablet: 'M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM11 18h2',
 };
 
 // The tablet's own Settings app, shown like a registered app

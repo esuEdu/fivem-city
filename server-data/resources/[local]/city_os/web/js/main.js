@@ -40,6 +40,7 @@ function open(message) {
         labels: message.labels || {},
         theme: message.theme || {},
         wallpapers: message.wallpapers || [],
+        deviceColors: message.deviceColors || [],
         customWallpaper: message.customWallpaper || false,
         config: message.config || {},
         clock: message.clock,

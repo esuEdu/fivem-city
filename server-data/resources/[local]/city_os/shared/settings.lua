@@ -30,6 +30,14 @@ local function isWallpaper(id)
     return false
 end
 
+---@param id unknown
+---@return table? color from Config.DeviceColors
+function settings.deviceColor(id)
+    for _, color in ipairs(Config.DeviceColors) do
+        if color.id == id then return color end
+    end
+end
+
 ---Settings with every unknown or invalid value replaced by the default.
 ---@param input unknown
 ---@return table
@@ -43,6 +51,7 @@ function settings.sanitize(input)
     end
 
     if isWallpaper(input.wallpaper) then result.wallpaper = input.wallpaper end
+    if settings.deviceColor(input.deviceColor) then result.deviceColor = input.deviceColor end
 
     for key, allowed in pairs(ENUMS) do
         if allowed[input[key]] then result[key] = input[key] end
