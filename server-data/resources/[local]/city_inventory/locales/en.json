@@ -95,5 +95,7 @@
     "ui_glovebox": "Glovebox",
     "error_vehicle_locked": "The vehicle is locked",
     "error_no_vehicle": "There's no vehicle here",
-    "error_no_storage": "This vehicle has no room for items"
+    "error_no_storage": "This vehicle has no room for items",
+    "error_no_player": "There's nobody close enough",
+    "error_search_closed": "You can't search them anymore"
 }

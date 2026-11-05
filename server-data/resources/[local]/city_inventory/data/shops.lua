@@ -112,20 +112,6 @@ return {
         },
     },
 
-    Medicine = {
-        name = 'Medicine Cabinet',
-        groups = { ambulance = 0 },
-        inventory = {
-            { name = 'firstaid', price = 25 },
-            { name = 'bandage', price = 5 },
-            { name = 'painkillers', price = 10 },
-            { name = 'ifaks', price = 40 },
-        },
-        locations = {
-            vec3(306.3687, -601.5139, 43.28406),
-        },
-    },
-
     BlackMarketArms = {
         name = 'Black Market (Arms)',
         inventory = {

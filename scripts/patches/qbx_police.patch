@@ -1,3 +1,16 @@
+diff --git a/server-data/resources/[qbx]/qbx_police/client/interactions.lua b/server-data/resources/[qbx]/qbx_police/client/interactions.lua
+index 1f85d3f..26be0bb 100644
+--- a/server-data/resources/[qbx]/qbx_police/client/interactions.lua
++++ b/server-data/resources/[qbx]/qbx_police/client/interactions.lua
+@@ -136,6 +136,8 @@ RegisterNetEvent('police:client:RobPlayer', function()
+     local playerId = GetPlayerServerId(player)
+ 
+     if not (IsEntityPlayingAnim(playerPed, 'missminuteman_1ig_2', 'handsup_base', 3)
++            -- fivem-city: the hands-up key (scully_emotemenu) plays this one
++            or IsEntityPlayingAnim(playerPed, 'random@mugging3', 'handsup_standing_base', 3)
+             or IsEntityPlayingAnim(playerPed, 'mp_arresting', 'idle', 3)
+             or isTargetDead(playerId))
+     then
 diff --git a/server-data/resources/[qbx]/qbx_police/server/main.lua b/server-data/resources/[qbx]/qbx_police/server/main.lua
 index d29ec4a..07c060e 100644
 --- a/server-data/resources/[qbx]/qbx_police/server/main.lua

@@ -10,6 +10,7 @@ local drops = require 'server.drops'
 local other = require 'server.other'
 local players = require 'server.players'
 local hooks = require 'server.hooks'
+local cash = require 'server.cash'
 
 local resolve = inventories.resolve
 
@@ -69,7 +70,9 @@ exports('AddItem', function(inv, name, count, metadata, slot, cb)
     local inventory = resolve(inv)
     local success, reason = false, 'invalid_inventory'
 
-    if inventory then
+    if inventory and cash.is(inventory, name) then
+        success, reason = cash.add(inventory, count)
+    elseif inventory then
         success, reason = finish(inventory, inventory:add(name, count, toMetadata(metadata), slot and math.tointeger(slot)))
     end
 
@@ -83,6 +86,7 @@ end)
 exports('RemoveItem', function(inv, name, count, metadata, slot)
     local inventory = resolve(inv)
     if not inventory then return false, 'invalid_inventory' end
+    if cash.is(inventory, name) then return cash.remove(inventory, count) end
 
     return finish(inventory, inventory:remove(name, count, toMetadata(metadata), slot and math.tointeger(slot)))
 end)
@@ -104,12 +108,14 @@ end)
 
 exports('CanCarryItem', function(inv, name, count, metadata)
     local inventory = resolve(inv)
+    if inventory and cash.is(inventory, name) then return true end
 
     return inventory and inventory:canFit(name, count, toMetadata(metadata)) or false
 end)
 
 exports('GetItemCount', function(inv, name, metadata, strict)
     local inventory = resolve(inv)
+    if inventory and cash.is(inventory, name) then return cash.count(inventory) end
 
     return inventory and search.count(inventory.items, name, toMetadata(metadata), strict) or 0
 end)
