@@ -1,0 +1,37 @@
+{
+    "lock": {
+        "hint": "Swipe up to open"
+    },
+    "notifications": {
+        "now": "now",
+        "clear": "Clear all",
+        "action": "Open"
+    },
+    "switcher": {
+        "empty": "No open apps"
+    },
+    "control": {
+        "silent": "Silent",
+        "dnd": "Focus",
+        "flashlight": "Flashlight",
+        "dark": "Dark Mode"
+    },
+    "settings": {
+        "title": "Settings",
+        "wallpaper": "Wallpaper",
+        "appearance": "Appearance",
+        "light": "Light",
+        "dark": "Dark",
+        "brightness": "Brightness",
+        "font": "Font",
+        "silent": "Silent Mode",
+        "dnd": "Do Not Disturb",
+        "language": "Language",
+        "number": "My Number",
+        "version": "Version"
+    },
+    "time": {
+        "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    }
+}
