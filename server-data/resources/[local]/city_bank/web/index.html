@@ -23,48 +23,48 @@
                 <circle class="scanner__track" cx="60" cy="60" r="54"></circle>
                 <circle id="scanner-progress" class="scanner__progress" cx="60" cy="60" r="54"></circle>
             </svg>
-            <svg class="scanner__print" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-2.6 0-5 1-6.8 2.8a.75.75 0 1 0 1.06 1.06A8.1 8.1 0 0 1 12 4c2.17 0 4.2.85 5.74 2.36a.75.75 0 1 0 1.06-1.06A9.6 9.6 0 0 0 12 2.5Zm0 3a6.5 6.5 0 0 0-6.5 6.5c0 1.6-.37 3.2-1.08 4.63a.75.75 0 1 0 1.34.67A11.8 11.8 0 0 0 7 12a5 5 0 0 1 10 0c0 2.86-.6 5.64-1.78 8.23a.75.75 0 1 0 1.36.62A21.2 21.2 0 0 0 18.5 12 6.5 6.5 0 0 0 12 5.5Zm0 3A3.5 3.5 0 0 0 8.5 12c0 2.64-.73 5.2-2.12 7.42a.75.75 0 1 0 1.27.8A15.5 15.5 0 0 0 10 12a2 2 0 0 1 4 0c0 3.62-.9 7.15-2.6 10.3a.75.75 0 1 0 1.32.71A23.3 23.3 0 0 0 15.5 12 3.5 3.5 0 0 0 12 8.5Zm0 2.75a.75.75 0 0 0-.75.75c0 3.2-.95 6.31-2.74 8.97a.75.75 0 1 0 1.24.84A17.6 17.6 0 0 0 12.75 12a.75.75 0 0 0-.75-.75Z"/></svg>
+            <svg class="scanner__print" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-2.6 0-5 1-6.8 2.8a.75.75 0 1 0 1.06 1.06A8.1 8.1 0 0 1 12 4c2.17 0 4.2.85 5.74 2.36a.75.75 0 1 0 1.06-1.06A9.6 9.6 0 0 0 12 2.5Zm0 3a6.5 6.5 0 0 0-6.5 6.5c0 1.6-.37 3.2-1.080 4.63a.75.75 0 1 0 1.34.67A11.8 11.8 0 0 0 7 12a5 5 0 0 1 10 0c0 2.86-.6 5.64-1.78 8.23a.75.75 0 1 0 1.36.62A21.2 21.2 0 0 0 18.5 12 6.5 6.5 0 0 0 12 5.5Zm0 3A3.5 3.5 0 0 0 8.5 12c0 2.64-.73 5.2-2.12 7.42a.75.75 0 1 0 1.27.8A15.5 15.5 0 0 0 10 12a2 2 0 0 1 4 0c0 3.62-.9 7.15-2.6 10.3a.75.75 0 1 0 1.32.71A23.3 23.3 0 0 0 15.5 12 3.5 3.5 0 0 0 12 8.5Zm0 2.75a.75.75 0 0 0-.75.75c0 3.2-.95 6.31-2.74 8.97a.75.75 0 1 0 1.24.84A17.6 17.6 0 0 0 12.75 12a.75.75 0 0 0-.75-.75Z"/></svg>
             <svg class="scanner__check" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.55 17.6 4.4 12.45l1.4-1.4 3.75 3.74 8.65-8.64 1.4 1.4-10.05 10.05Z"/></svg>
         </button>
         <p id="scanner-status" class="identity__status"></p>
 
         <div class="identity__actions">
-            <button id="identity-close" class="button button--ghost" type="button" data-label="close"></button>
-            <button id="identity-continue" class="button button--primary" type="button" data-label="identity_continue" disabled></button>
+            <button id="identity-close" class="btn btn--ghost" type="button" data-label="close"></button>
+            <button id="identity-continue" class="btn btn--primary btn--grow" type="button" data-label="identity_continue" disabled></button>
         </div>
     </section>
 
     <!-- Branch panel -->
-    <main id="bank" class="bank hidden">
-        <aside class="sidebar">
-            <div class="brand">
-                <div class="brand__badge">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.47 2.18a1 1 0 0 1 1.06 0l8.5 5A1 1 0 0 1 20.5 9h-17a1 1 0 0 1-.53-1.82l9-5ZM5 10.5h2.5v7H5v-7Zm5.75 0h2.5v7h-2.5v-7Zm5.75 0H19v7h-2.5v-7ZM3 19.5A1 1 0 0 1 4 18.5h16a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1Z"/></svg>
+    <main id="bank" class="app hidden">
+        <aside class="side">
+            <div class="side__brand">
+                <span id="brand-icon" class="side__logo"></span>
+                <div class="side__brand-text">
+                    <span class="side__name" data-label="bank_name"></span>
+                    <span id="branch" class="side__branch"></span>
                 </div>
-                <span id="branch" class="brand__name"></span>
             </div>
-            <nav id="nav" class="nav"></nav>
+            <nav id="nav" class="side__nav"></nav>
         </aside>
 
-        <section class="content">
-            <header class="content__header">
-                <div>
-                    <h1 id="title" class="content__title"></h1>
-                    <p id="subtitle" class="content__subtitle"></p>
+        <section class="main">
+            <header class="topbar">
+                <div class="topbar__titles">
+                    <h1 id="title" class="topbar__title"></h1>
+                    <p id="subtitle" class="topbar__subtitle"></p>
                 </div>
-                <button id="bank-close" class="icon-button" type="button" aria-label="Close">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 10.6 5.3-5.3 1.4 1.4-5.3 5.3 5.3 5.3-1.4 1.4-5.3-5.3-5.3 5.3-1.4-1.4 5.3-5.3-5.3-5.3 1.4-1.4 5.3 5.3Z"/></svg>
-                </button>
+                <div id="topbar-tools" class="topbar__tools"></div>
+                <button id="bank-close" class="ibtn ibtn--large" type="button"></button>
             </header>
-            <div id="tab" class="tab"></div>
+            <div id="tab" class="page"></div>
         </section>
     </main>
 
     <!-- ATM and branch cash desk -->
-    <section id="atm" class="atm hidden"></section>
+    <section id="atm" class="overlay hidden"></section>
 
     <!-- Card machine (customer side) -->
-    <section id="pos" class="pos hidden"></section>
+    <section id="pos" class="overlay hidden"></section>
 
     <div id="modal" class="modal hidden"></div>
     <div id="toast" class="toast hidden"></div>

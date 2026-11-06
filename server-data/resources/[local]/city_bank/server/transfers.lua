@@ -124,7 +124,12 @@ access.panel('scheduled', function(_, _, citizenid)
         { citizenid }
     ) or {}
 
-    return { ok = true, scheduled = rows }
+    local pix = settings.pix
+
+    return {
+        ok = true, scheduled = rows,
+        limits = { perTx = pix.perTx, perDay = pix.perDay, night = pix.nightLimit, nightFrom = pix.nightFrom, nightTo = pix.nightTo },
+    }
 end)
 
 access.panel('schedule', function(_, player, citizenid, fromId, key, amount, frequency, reference)

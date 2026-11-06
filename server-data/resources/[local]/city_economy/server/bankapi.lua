@@ -213,6 +213,23 @@ exports('BankOutflow', function(id, seconds, ref)
     return math.tointeger(MySQL.scalar.await(query, values)) or 0
 end)
 
+---Money in, money out and closing balance per day over the last `days` days (dashboard charts)
+exports('BankDaily', function(id, days)
+    if not trusted() or math.type(id) ~= 'integer' then return {} end
+
+    days = math.min(math.max(math.tointeger(days) or 7, 1), 31)
+
+    return MySQL.query.await([[
+        SELECT DATE_FORMAT(l.`created_at`, '%Y-%m-%d') AS `day`,
+               CAST(COALESCE(SUM(CASE WHEN l.`delta` > 0 THEN l.`delta` END), 0) AS SIGNED) AS `income`,
+               CAST(COALESCE(SUM(CASE WHEN l.`delta` < 0 THEN -l.`delta` END), 0) AS SIGNED) AS `expenses`,
+               CAST(SUBSTRING_INDEX(GROUP_CONCAT(l.`balance_after` ORDER BY l.`id` DESC), ',', 1) AS SIGNED) AS `close`
+        FROM `economy_ledger` l
+        WHERE l.`account_id` = ? AND l.`created_at` >= CURDATE() - INTERVAL ? DAY
+        GROUP BY `day` ORDER BY `day`
+    ]], { id, days - 1 }) or {}
+end)
+
 ---Time-weighted average balance over the last `seconds`
 exports('BankAverageBalance', function(id, seconds)
     if not trusted() or math.type(id) ~= 'integer' or math.type(seconds) ~= 'integer' then return 0 end

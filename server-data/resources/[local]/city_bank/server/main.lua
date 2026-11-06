@@ -5,6 +5,7 @@ lib.locale()
 
 local access = require 'server.access'
 local accounts = require 'server.accounts'
+local money = require 'server.money'
 local profile = require 'server.profile'
 local schema = require 'server.schema'
 
@@ -41,6 +42,10 @@ local function dashboard(src, player)
     overview.loanLeft = loan and loan.left or 0
     overview.staff = access.isStaff(src, citizenid)
     overview.admin = access.isAdmin(src)
+
+    local personal = money.owned(citizenid, 'personal')
+
+    overview.trend = personal and exports.city_economy:BankDaily(personal.id, 7) or {}
 
     return overview
 end

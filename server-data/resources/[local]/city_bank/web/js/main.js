@@ -1,4 +1,4 @@
-import { state, post, applyTheme, label, h } from './util.js';
+import { state, post, applyTheme, label, h, icon, iconButton } from './util.js';
 import { setupIdentity, resetIdentity } from './identity.js';
 import { openAtm } from './atm.js';
 import { openPos } from './pos.js';
@@ -25,6 +25,7 @@ const TABS = [
 const $ = (id) => document.getElementById(id);
 
 const bank = { data: null, tab: 'dashboard', staff: false, admin: false };
+let renderId = 0;
 
 function applyLabels() {
     for (const node of document.querySelectorAll('[data-label]')) node.textContent = label(node.dataset.label);
@@ -36,31 +37,32 @@ function show(view) {
 }
 
 function renderNav() {
-    const nav = $('nav');
-    nav.replaceChildren();
-
-    for (const tab of TABS) {
-        if (tab.staffOnly && !bank.staff) continue;
-
-        nav.append(h('button', {
-            className: `nav__item ${tab.id === bank.tab ? 'nav__item--active' : ''}`,
-            type: 'button',
-            text: label(`nav_${tab.id}`),
-            onClick: () => openTab(tab.id),
-        }));
-    }
+    $('nav').replaceChildren(...TABS.filter((tab) => !tab.staffOnly || bank.staff).map((tab) => h('button', {
+        className: `side__item ${tab.id === bank.tab ? 'is-active' : ''}`,
+        type: 'button',
+        title: label(`nav_${tab.id}`),
+        onClick: () => openTab(tab.id),
+    }, icon(tab.id), h('span', { text: label(`nav_${tab.id}`) }))));
 }
 
 // Renders a tab; tabs call ctx.refresh() after an action to reload themselves
 export async function openTab(id) {
     const tab = TABS.find((entry) => entry.id === id) || TABS[0];
     const container = $('tab');
+    const mine = ++renderId;
 
     bank.tab = tab.id;
     renderNav();
     $('title').textContent = label(`nav_${tab.id}`);
     $('subtitle').textContent = label(`subtitle_${tab.id}`);
-    container.replaceChildren(h('p', { className: 'muted', text: label('loading') }));
+    $('topbar-tools').replaceChildren(iconButton('history', label('refresh'), () => openTab(tab.id)));
+
+    if (!container.firstChild) container.append(h('p', { className: 'empty', text: label('loading') }));
+
+    const page = h('div', { className: 'page__inner' });
+
+    // Tabs append optional parts (`cond ? node : null`); skip the empty ones instead of printing "null"
+    page.append = (...nodes) => Element.prototype.append.apply(page, nodes.flat(Infinity).filter((node) => node !== null && node !== undefined && node !== false));
 
     const ctx = {
         bank,
@@ -72,7 +74,10 @@ export async function openTab(id) {
         },
     };
 
-    await tab.render(container, ctx);
+    await tab.render(page, ctx);
+
+    // A slower, older render must not replace a newer tab
+    if (mine === renderId) container.replaceChildren(page);
 }
 
 export function showBank(data) {
@@ -80,12 +85,15 @@ export function showBank(data) {
     bank.staff = Boolean(data.staff);
     bank.admin = Boolean(data.admin);
     bank.tab = 'dashboard';
+    $('tab').replaceChildren();
     show('bank');
     openTab('dashboard');
 }
 
 setupIdentity({ onDone: (data) => showBank(data), onClose: () => post('close') });
 
+$('brand-icon').append(icon('bank'));
+$('bank-close').append(icon('close'));
 $('bank-close').addEventListener('click', () => post('close'));
 
 document.addEventListener('keydown', (event) => {

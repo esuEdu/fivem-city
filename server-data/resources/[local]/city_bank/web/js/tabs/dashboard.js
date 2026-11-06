@@ -1,22 +1,18 @@
-import { call, h, label, money, dateTime, reasonLabel, section, button, pill, empty, report } from '../util.js';
+import { call, h, label, money, dateTime, reasonLabel, panel, kpi, table, amountCell, chip, button, report } from '../util.js';
+import { lastDays, cashFlow, balanceLine } from '../charts.js';
 
-function stat(key, value, kind = '') {
-    return h('article', { className: `stat ${kind}` },
-        h('p', { className: 'stat__label', text: label(key) }),
-        h('p', { className: 'stat__value', text: value }));
+// Movements as a compact table (used by the dashboard, history and staff client file)
+export function activityTable(history, emptyKey = 'activity_empty') {
+    return table([
+        { title: label('col_date'), render: (e) => dateTime(e.time), className: 'muted nowrap' },
+        { title: label('col_description'), render: (e) => reasonLabel(e.reason), className: 'grow' },
+        { title: label('col_amount'), render: (e) => amountCell(e.delta), align: 'right' },
+        { title: label('col_balance'), render: (e) => h('span', { className: 'num muted', text: money(e.balance_after) }), align: 'right' },
+    ], history, emptyKey);
 }
 
-export function activityList(history) {
-    if (!history || history.length === 0) return empty('activity_empty');
-
-    return h('ul', { className: 'list' }, history.map((entry) => h('li', { className: 'row' },
-        h('div', { className: 'row__main' },
-            h('span', { className: 'row__title', text: reasonLabel(entry.reason) }),
-            h('span', { className: 'row__sub', text: dateTime(entry.time) })),
-        h('div', { className: 'row__side' },
-            h('span', { className: `amount ${entry.delta < 0 ? 'is-out' : 'is-in'}`, text: money(entry.delta, true) }),
-            h('span', { className: 'row__sub mono', text: money(entry.balance_after) })),
-    )));
+function fact(key, value) {
+    return h('div', { className: 'fact' }, h('span', { className: 'fact__key', text: label(key) }), h('span', { className: 'fact__value' }, value));
 }
 
 export default async function render(container, ctx) {
@@ -27,30 +23,28 @@ export default async function render(container, ctx) {
     ctx.bank.data = data;
     document.getElementById('title').textContent = label('greeting', data.firstname || '');
 
-    container.replaceChildren(
-        h('div', { className: 'stats' },
-            stat('balance', money(data.balance), 'stat--accent'),
-            stat('cash', money(data.cash)),
-            stat('income', money(data.income), 'stat--in'),
-            stat('expenses', money(data.expenses), 'stat--out')),
+    const days = lastDays(data.trend, 7);
 
-        h('div', { className: 'grid grid--side' },
-            h('div', { className: 'stack' },
-                section(label('account'),
-                    h('dl', { className: 'facts' },
-                        h('div', {}, h('dt', { text: label('account_number') }), h('dd', { className: 'mono', text: data.number })),
-                        h('div', {}, h('dt', { text: label('status') }),
-                            h('dd', {}, pill(label(data.frozen ? 'status_frozen' : 'status_active'), data.frozen ? 'danger' : 'success')))),
-                    button(label('cash_desk'), ctx.openTeller, 'primary')),
+    container.append(
+        h('div', { className: 'kpis' },
+            kpi(label('balance'), money(data.balance), data.number, 'accent'),
+            kpi(label('cash'), money(data.cash), label('cash_hint')),
+            kpi(label('income'), money(data.income), label('last_24h'), 'in'),
+            kpi(label('expenses'), money(data.expenses), label('last_24h'), 'out'),
+            kpi(label('score'), String(data.score), data.tier)),
 
-                section(label('credit_profile'),
-                    h('dl', { className: 'facts' },
-                        h('div', {}, h('dt', { text: label('score') }), h('dd', { className: 'mono', text: String(data.score) })),
-                        h('div', {}, h('dt', { text: label('tier') }), h('dd', { text: data.tier })),
-                        h('div', {}, h('dt', { text: label('bills_open') }),
-                            h('dd', { text: `${data.billsCount} · ${money(data.billsTotal)}` })),
-                        h('div', {}, h('dt', { text: label('loan_left') }), h('dd', { text: money(data.loanLeft) }))))),
+        h('div', { className: 'grid grid--charts' },
+            panel(label('chart_cashflow'), cashFlow(days)),
+            panel(label('chart_balance'), balanceLine(days, data.balance))),
 
-            section(label('activity'), activityList(data.history))),
+        h('div', { className: 'grid grid--main' },
+            panel(label('activity'), activityTable(data.history), button(label('nav_history'), () => ctx.openTab('history'), 'link')),
+            panel(label('account'), h('div', { className: 'facts' },
+                fact('account_number', h('span', { className: 'num', text: data.number })),
+                fact('status', chip(label(data.frozen ? 'status_frozen' : 'status_active'), data.frozen ? 'bad' : 'good')),
+                fact('tier', data.tier),
+                fact('bills_open', `${data.billsCount} · ${money(data.billsTotal)}`),
+                fact('loan_left', money(data.loanLeft)),
+                h('div', { className: 'facts__actions' }, button(label('cash_desk'), ctx.openTeller, 'primary', false, 'cash'))))),
     );
 }

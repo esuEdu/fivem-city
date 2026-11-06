@@ -1,4 +1,4 @@
-import { call, h, label, money, dateTime, section, button, pill, field, input, select, whole, report, empty } from '../util.js';
+import { call, h, label, money, dateTime, panel, kpi, table, chip, button, field, input, select, report, progress } from '../util.js';
 
 // Same arithmetic as server/rules.lua loanPlan; the page only shows it, the server recomputes everything
 function plan(amount, rate, weeks) {
@@ -7,60 +7,70 @@ function plan(amount, rate, weeks) {
     return { total, installment };
 }
 
-const STATUS_KIND = { requested: 'warning', active: 'success', paid: '', denied: 'danger' };
+const STATUS = { requested: 'warn', active: 'good', paid: '', denied: 'bad' };
 
 export default async function render(container, ctx) {
     const data = await call('loans');
 
     if (!report(data)) return;
 
-    const amount = input({ type: 'range', min: data.min, max: data.max, step: 500, value: Math.min(data.auto, data.max) });
-    const amountText = h('span', { className: 'mono slider__value' });
+    const amount = input({ type: 'range', min: data.min, max: data.max, step: 500, value: Math.min(data.auto, data.max), className: 'range' });
+    const amountText = h('span', { className: 'num strong range__value' });
     const weeks = select(Array.from({ length: data.weeks }, (_, i) => ({ value: String(i + 1), label: label('weeks', i + 1) })), String(data.weeks));
     const reason = input({ placeholder: label('loan_reason'), maxLength: 120 });
-    const summary = h('dl', { className: 'facts' });
+    const summary = h('div', { className: 'summary' });
 
     const update = () => {
         const value = Number(amount.value);
         const result = plan(value, data.rate, Number(weeks.value));
+        const auto = value <= data.auto;
 
         amountText.textContent = money(value);
         summary.replaceChildren(
-            h('div', {}, h('dt', { text: label('interest') }), h('dd', { text: `${data.rate}%` })),
-            h('div', {}, h('dt', { text: label('installment') }), h('dd', { className: 'mono', text: `${money(result.installment)} × ${weeks.value}` })),
-            h('div', {}, h('dt', { text: label('total_repay') }), h('dd', { className: 'mono', text: money(result.total) })),
-            h('div', {}, h('dt', { text: label('approval') }),
-                h('dd', {}, pill(label(value <= data.auto ? 'approval_auto' : 'approval_banker'), value <= data.auto ? 'success' : 'warning'))));
+            h('div', {}, h('span', { text: label('interest') }), h('strong', { text: `${data.rate}%` })),
+            h('div', {}, h('span', { text: label('installment') }), h('strong', { className: 'num', text: `${money(result.installment)} × ${weeks.value}` })),
+            h('div', {}, h('span', { text: label('total_repay') }), h('strong', { className: 'num', text: money(result.total) })),
+            h('div', {}, h('span', { text: label('approval') }), chip(label(auto ? 'approval_auto' : 'approval_banker'), auto ? 'good' : 'warn')));
     };
 
     amount.addEventListener('input', update);
     weeks.addEventListener('change', update);
     update();
 
-    const request = section(label('new_loan'),
-        h('p', { className: 'muted', text: label('loan_terms', data.tier, data.score, money(data.auto)) }),
-        field(label('amount'), h('div', { className: 'slider' }, amount, amountText)),
-        h('div', { className: 'form-grid' }, field(label('installments'), weeks), field(label('loan_reason'), reason)),
-        summary,
-        data.canRequest ? null : h('p', { className: 'notice', text: label('loan_blocked') }),
-        h('div', { className: 'row__actions' },
-            button(label('request_loan'), async () => {
-                const reply = await call('requestLoan', Number(amount.value), Number(weeks.value), reason.value.trim());
-                if (report(reply, reply?.pending ? 'loan_pending' : 'loan_approved')) ctx.refresh();
-            }, 'primary', !data.canRequest)));
+    const active = data.loans.find((l) => l.status === 'active');
 
-    const list = data.loans.length ? h('ul', { className: 'list' }, data.loans.map((loan) => h('li', { className: 'row' },
-        h('div', { className: 'row__main' },
-            h('span', { className: 'row__title', text: `${money(loan.amount)} · ${label('weeks', loan.installments)}` }),
-            h('span', { className: 'row__sub', text: label('loan_progress', loan.paid_count, loan.installments, money(loan.paid_total), money(loan.total)) }),
-            loan.status === 'active' ? h('span', { className: 'row__sub', text: label('next_charge', dateTime(loan.next_due)) }) : null,
-            loan.decision ? h('span', { className: 'row__sub', text: loan.decision }) : null),
-        h('div', { className: 'row__actions' },
-            pill(label(`loan_${loan.status}`), STATUS_KIND[loan.status]),
-            loan.status === 'active' ? button(label('pay_installment'), async () => {
-                if (report(await call('payInstallment', loan.id), 'done')) ctx.refresh();
-            }, 'primary') : null),
-    ))) : empty('no_loans');
+    container.append(
+        h('div', { className: 'kpis' },
+            kpi(label('score'), String(data.score), data.tier, 'accent'),
+            kpi(label('auto_limit'), money(data.auto), label('max_with_banker', money(data.max))),
+            kpi(label('interest'), `${data.rate}%`, label('up_to_weeks', data.weeks)),
+            kpi(label('loan_left'), active ? money(active.total - active.paid_total) : money(0), active ? label('next_charge', dateTime(active.next_due)) : label('no_active_loan'))),
 
-    container.replaceChildren(h('div', { className: 'grid grid--two' }, request, section(label('your_loans'), list)));
+        h('div', { className: 'grid grid--loans' },
+            panel(label('your_loans'), table([
+                { title: '#', render: (l) => `#${l.id}`, className: 'muted' },
+                { title: label('col_amount'), render: (l) => h('span', { className: 'num strong', text: money(l.amount) }) },
+                { title: label('col_progress'), render: (l) => progress(l.paid_total / Math.max(1, l.total), `${l.paid_count}/${l.installments}`), className: 'grow' },
+                { title: label('col_status'), render: (l) => chip(label(`loan_${l.status}`), STATUS[l.status]) },
+                { title: label('col_note'), render: (l) => l.decision || l.reason || '-', className: 'muted truncate' },
+                {
+                    title: '', align: 'right',
+                    render: (l) => (l.status === 'active' ? button(label('pay_installment'), async () => {
+                        if (report(await call('payInstallment', l.id), 'done')) ctx.refresh();
+                    }, 'primary') : null),
+                },
+            ], data.loans, 'no_loans')),
+
+            panel(label('new_loan'), h('div', { className: 'form' },
+                h('p', { className: 'muted', text: label('loan_terms', data.tier, data.score, money(data.auto)) }),
+                field(label('amount'), h('div', { className: 'range-row' }, amount, amountText)),
+                h('div', { className: 'form__grid' }, field(label('installments'), weeks), field(label('loan_reason'), reason)),
+                summary,
+                data.canRequest ? null : h('p', { className: 'notice', text: label('loan_blocked') }),
+                h('div', { className: 'form__actions' },
+                    button(label('request_loan'), async () => {
+                        const reply = await call('requestLoan', Number(amount.value), Number(weeks.value), reason.value.trim());
+                        if (report(reply, reply?.pending ? 'loan_pending' : 'loan_approved')) ctx.refresh();
+                    }, 'primary', !data.canRequest, 'send'))))),
+    );
 }

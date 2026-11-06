@@ -8,6 +8,19 @@ Config.PedDistance = 40.0
 
 Config.Blip = { sprite = 108, color = 2, scale = 0.8 }
 
+-- The bank's own colors on top of city_ui's theme (the rest of the server stays yellow)
+Config.Theme = {
+    accent = '#e5383b',
+    accentText = '#ffffff',
+    accentGlow = 'rgba(229, 56, 59, 0.4)',
+    accentSoft = 'rgba(229, 56, 59, 0.12)',
+    danger = '#ff7a59',
+    panel = 'rgba(14, 15, 19, 0.94)',
+    section = 'rgba(255, 255, 255, 0.03)',
+    radius = '8px',
+    radiusLarge = '14px',
+}
+
 -- Props that work as ATMs (ox_target on the model)
 Config.AtmModels = { `prop_atm_01`, `prop_atm_02`, `prop_atm_03`, `prop_fleeca_atm` }
 
