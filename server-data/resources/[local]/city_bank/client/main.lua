@@ -1,35 +1,39 @@
 local theme = require '@city_ui.theme'
+local nui = require 'client.nui'
 
 lib.locale()
 
 local peds = {}
 local blips = {}
-local openBranch
+
+
+-- Panel requests the page may forward to the server (the server checks everything again)
+local PANEL_CALLS = {
+    dashboard = true, accounts = true, createSavings = true, createShared = true, requestJoin = true, members = true,
+    decideMember = true, setMember = true, removeMember = true, addViewer = true, leaveShared = true, move = true,
+    setGoal = true, rename = true, lookup = true, send = true, scheduled = true, schedule = true, scheduleState = true,
+    cards = true, issueCard = true, blockCard = true, unlockCard = true, cardPin = true, cardLimits = true,
+    cardContactless = true, bills = true, payBill = true, loans = true, requestLoan = true, payInstallment = true,
+    history = true, staffQueue = true, staffDecide = true, staffClient = true, staffCeilings = true, staffFreeze = true,
+    staffBankers = true, staffSetBanker = true,
+}
+
+-- city_ui's look with the bank's red on top
+local bankTheme = {}
+
+for key, value in pairs(theme) do bankTheme[key] = value end
+for key, value in pairs(Config.Theme) do bankTheme[key] = value end
 
 local function setupNui()
-    SendNUIMessage({
-        action = 'setup',
-        theme = theme,
-        labels = lib.getLocales(),
-        currency = '$',
-    })
-end
-
-local function close()
-    if not openBranch then return end
-
-    openBranch = nil
-    SetNuiFocus(false, false)
-    SendNUIMessage({ action = 'close' })
-    TriggerScreenblurFadeOut(250)
+    SendNUIMessage({ action = 'setup', theme = bankTheme, labels = lib.getLocales(), currency = '$' })
 end
 
 ---Closes the panel if the player walks away from the banker
 local function watchDistance(branch)
     CreateThread(function()
-        while openBranch do
+        while nui.branch do
             if #(GetEntityCoords(cache.ped) - branch.coords.xyz) > Config.MaxDistance + 1.0 then
-                close()
+                nui.close()
                 break
             end
 
@@ -40,7 +44,7 @@ end
 
 ---@param branchId integer
 local function openBank(branchId)
-    if openBranch then return end
+    if nui.view then return end
 
     local data = lib.callback.await('city_bank:open', false, branchId)
 
@@ -48,10 +52,8 @@ local function openBank(branchId)
         return lib.notify({ type = 'error', description = locale(data and data.error == 'far' and 'error_far' or 'error_unavailable') })
     end
 
-    openBranch = branchId
-    TriggerScreenblurFadeIn(250)
-    SetNuiFocus(true, true)
-    SendNUIMessage({ action = 'open', branch = Config.Branches[branchId].label, data = data })
+    nui.open('bank', { branch = Config.Branches[branchId].label, data = data })
+    nui.branch = branchId
     watchDistance(Config.Branches[branchId])
 end
 
@@ -118,21 +120,39 @@ RegisterNUICallback('ready', function(_, cb)
 end)
 
 RegisterNUICallback('close', function(_, cb)
-    close()
+    nui.close()
     cb(1)
 end)
 
 RegisterNUICallback('registerFingerprint', function(_, cb)
-    if not openBranch then return cb({ ok = false }) end
+    if nui.view ~= 'bank' then return cb({ ok = false }) end
 
-    cb(lib.callback.await('city_bank:registerFingerprint', false, openBranch) or { ok = false })
+    cb(lib.callback.await('city_bank:registerFingerprint', false) or { ok = false })
+end)
+
+---Generic panel request: { name, args }
+RegisterNUICallback('call', function(data, cb)
+    if nui.view ~= 'bank' or type(data) ~= 'table' or not PANEL_CALLS[data.name] then return cb({ ok = false, error = 'bad_request' }) end
+
+    local args = type(data.args) == 'table' and data.args or {}
+
+    cb(lib.callback.await(('city_bank:%s'):format(data.name), false, table.unpack(args, 1, 8)) or { ok = false, error = 'failed' })
+end)
+
+---The branch cash desk: same screen as an ATM, without the ATM's per-operation cap
+RegisterNUICallback('openTeller', function(_, cb)
+    if nui.view ~= 'bank' or not nui.branch then return cb({ ok = false }) end
+
+    nui.view = 'atm'
+    cb(lib.callback.await('city_bank:atmCards', false) or { ok = false })
 end)
 
 AddEventHandler('onResourceStop', function(resource)
     if resource ~= cache.resource then return end
 
-    close()
+    nui.close()
 
     for branchId in pairs(peds) do removeBanker(branchId) end
     for i = 1, #blips do RemoveBlip(blips[i]) end
 end)
+

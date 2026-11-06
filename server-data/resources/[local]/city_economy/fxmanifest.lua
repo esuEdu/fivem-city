@@ -15,6 +15,7 @@ server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/main.lua',
     'server/exports.lua',
+    'server/bankapi.lua',
     'server/qbx.lua',
     'server/honeypots.lua',
 }

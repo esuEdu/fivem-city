@@ -62,7 +62,7 @@ local function qbxMoneyChange(citizenid, moneyType, action, amount, reason, reso
     local ok, result, balances = ledger.post({
         { account = other, delta = -delta },
         { account = account.id, delta = delta },
-    }, { reason = reason, source = resource, ref = citizenid })
+    }, { reason = reason, source = resource, ref = citizenid, skipMirror = true })
 
     if not ok then
         lib.print.warn(('Ledger refused %s of $%d (%s) for %s from %s: %s'):format(direction, size, reason, citizenid, resource, result))

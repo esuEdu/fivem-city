@@ -37,7 +37,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | Script | What it does |
 |---|---|
 | **city_economy** | Ours: the money ledger. Owns cash and bank (qbx_core only mirrors them); scripts that pay or charge must be on its allowlist. |
-| **city_bank** | Ours: bank branches (banker NPC), fingerprint registration and the account panel. |
+| **city_bank** | Ours: bank branches (banker NPC, fingerprint, panel with accounts, cards, transfers, loans, bills, history and a staff tab for bankers), ATMs, the card machine item and the `bank_card` item. |
 | **qbx_management** | Boss menu: hire, fire, promote, society money. |
 | **qbx_pawnshop** | Sell stolen and valuable items for cash. |
 

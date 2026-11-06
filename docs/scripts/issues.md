@@ -50,3 +50,9 @@ The stand-in has to stay: about 40 scripts call `exports.ox_inventory`, ox_fuel 
 Blocked until rewritten (they stop paying or charging): qbx_taxijob (also trusts the fare sent by the client), qbx_truckerjob, qbx_towjob, qbx_garbagejob, qbx_busjob, qbx_diving, qbx_pawnshop, qbx_storerobbery, qbx_truckrobbery, qbx_streetraces, qbx_properties, qbx_garages, qbx_customs, qbx_cityhall, qbx_carwash, qbx_ambulancejob, qbx_vehicleshop, qbx_vehiclesales, qbx_drugs, qbx_police, qbx_adminmenu and qbx_core's own `/givemoney` / `/setmoney`.
 
 Renewed-Banking was removed. qbx_police (fines, impound), qbx_ambulancejob (`depositSociety`) and qbx_vehicleshop (society funds) still call `exports['Renewed-Banking']` and error when they reach that line, until job accounts exist in city_bank.
+
+### Known limits of city_bank
+
+- **ATM position**: ATMs are map props the server can't list, so it checks the player is within 2.5 m of the ATM position the client reports. Using an ATM still needs the physical card and its PIN, and every limit applies; only the "where" is client-reported.
+- **No phone app yet**: blocking a card also works at a branch, and purchases above a card's limit are refused (the design's phone approval comes with the npwd bank app).
+- **Job accounts**: only bosses (`isboss` grades) manage them; they can add view-only people. qbx_management still doesn't show their balance.

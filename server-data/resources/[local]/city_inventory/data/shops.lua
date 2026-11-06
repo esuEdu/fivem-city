@@ -62,6 +62,7 @@ return {
             { name = 'repairkit', price = 250 },
             { name = 'jerry_can', price = 200 },
             { name = 'binoculars', price = 300 },
+            { name = 'pos_terminal', price = 3000 },
         },
         locations = {
             vec3(2748.0, 3473.0, 55.67),
