@@ -56,6 +56,14 @@ local function tick()
     daily()
 end
 
+-- /bankwarp (server/devtools.lua) runs a tick right away after moving a character's dates back.
+-- Local event only: clients can't trigger it.
+AddEventHandler('city_bank:server:runScheduler', function()
+    local ok, err = pcall(tick)
+
+    if not ok then lib.print.error(('Bank scheduler failed: %s'):format(err)) end
+end)
+
 CreateThread(function()
     schema.wait()
 
