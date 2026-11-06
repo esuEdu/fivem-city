@@ -126,3 +126,4 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_base** | Starter template for new scripts. |
 | **city_inventory**, **city_ui**, **ox_inventory** | See Core above. |
 | **city_economy**, **city_bank** | See Money above. Design and rules: `PROMPT_ECONOMIA_FIVEM.md`, `BANCO_DESIGN.md`. |
+| **city_os** | The iFruit Pad tablet (item + F2): lock screen, home, notifications, Settings, and the platform other scripts add their apps to. See [city-os.md](../city-os.md). |
