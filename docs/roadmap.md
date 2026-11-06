@@ -32,7 +32,8 @@ Everything players control (races, garage, tuning, leaderboards, events, profile
   - [ ] **Profile**: character, rank, money
   - [ ] **Jobs (legal)**: one app per job (police, EMS, mechanic, taxi, …), shown only to players with that job: clock in/out, tasks, job tools; the boss also gets hire, fire, grades and the society account (today's qbx_management boss menu)
   - [ ] **Jobs (illegal)**: drugs, robberies, chop shop, …; hidden from the home screen until unlocked (an item, a contact or reputation), so a police search of the tablet doesn't show it; contacts, jobs on offer, reputation
-  - [ ] **Staff**: only for staff (`group.support`/`mod`/`admin`, on admin duty): player list, spectate, teleport to/bring, heal/revive, freeze, open a player's inventory, warn/kick/ban, and reports from players
+  - [ ] **Staff**: only for staff (`group.support`/`mod`/`admin`): player list, spectate, teleport to/bring, heal/revive, freeze, open a player's inventory, warn/kick/ban, and reports from players
+    - Built as `city_staff` ([city-staff.md](city-staff.md)), replacing qbx_adminmenu and txAdmin's in-game menu; waiting for the in-game test.
 - [ ] Every app action is checked again on the server (job, grade, illegal unlock, staff group + `IsOptin`): hiding an app is only UX
 
 **What goes where:**

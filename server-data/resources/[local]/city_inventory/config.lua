@@ -63,12 +63,13 @@ Config.ShopAccounts = { 'cash', 'bank' }
 -- count, add and remove are their qbx cash instead.
 Config.CashItem = 'money'
 
--- Searching players (police Search, Rob, the admin menu's Open inventory): how close (meters) they have to stand, the
--- job types that may search anyone while on duty, and the ACE that lets staff on admin duty search anyone from anywhere.
+-- Searching players (police Search, Rob, the Staff app's Inventory): how close (meters) they have to stand, the job
+-- types that may search anyone while on duty, and the ACE that lets staff on admin duty search anyone from anywhere
+-- (keep it in step with city_staff's Config.Permissions.inventory).
 -- Anyone may search a player who is cuffed, down or has their hands up.
 Config.SearchDistance = 3.0
 Config.SearchJobTypes = { leo = true }
-Config.SearchStaffAce = 'admin'
+Config.SearchStaffAce = 'mod'
 
 -- Item categories, set with `category` in data/items.lua. Weapons and ammo get theirs automatically;
 -- items without one are 'misc'. The color tints the item's slot in the UI; the order is the order of the filter tabs.
