@@ -406,5 +406,9 @@
     "no_data": "Nothing here yet.",
     "goal_short": "%s% of %s",
     "command_posdemo": "Test the card machine on yourself (admin)",
-    "pos_demo_merchant": "Test charge (you)"
+    "pos_demo_merchant": "Test charge (you)",
+    "command_bankwarp": "Move a player's bank dates back by N days (test)",
+    "param_days": "Days",
+    "notify_warped": "Moved the bank dates back %s days for %s.",
+    "error_own_client": "Staff can't act on their own accounts, cards or loans."
 }

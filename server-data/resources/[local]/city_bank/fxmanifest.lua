@@ -29,6 +29,7 @@ server_scripts {
     'server/pos.lua',
     'server/staff.lua',
     'server/scheduler.lua',
+    'server/devtools.lua',
 }
 
 ui_page 'web/index.html'

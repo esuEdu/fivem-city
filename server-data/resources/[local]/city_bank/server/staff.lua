@@ -1,6 +1,7 @@
 -- Staff tab for bankers (and admins on duty): loan queue, client file, card ceilings, freezes, and (admins only)
 -- the banker list. Every action is written to bank_audit with who did it.
 local access = require 'server.access'
+local accounts = require 'server.accounts'
 local cards = require 'server.cards'
 local loans = require 'server.loans'
 local money = require 'server.money'
@@ -22,6 +23,15 @@ local function staff(name, handler)
     end)
 end
 
+---Staff never act on their own money: their own loan, card or any account they can use. Trying is flagged.
+---@param src integer
+---@param action string
+---@return table reply
+local function ownBusiness(src, action)
+    exports.city_economy:Flag(src, 'bank_staff_self', 3, { action = action })
+    return fail('own_client')
+end
+
 staff('staffQueue', function()
     local rows = MySQL.query.await(
         [[SELECT `id`, `citizenid`, `name`, `amount`, `rate`, `total`, `installments`, `reason`, `created_at` FROM `bank_loans` WHERE `status` = 'requested' ORDER BY `id` LIMIT 50]]
@@ -39,12 +49,13 @@ staff('staffQueue', function()
     return { ok = true, queue = rows }
 end)
 
-staff('staffDecide', function(_, _, actor, id, approve, note)
+staff('staffDecide', function(src, player, actor, id, approve, note)
     id = access.int(id)
 
     local loan = id and MySQL.single.await([[SELECT * FROM `bank_loans` WHERE `id` = ? AND `status` = 'requested']], { id })
 
     if not loan then return fail('no_loan') end
+    if loan.citizenid == player.PlayerData.citizenid then return ownBusiness(src, 'loan') end
 
     note = type(note) == 'string' and note:sub(1, 120) or ''
 
@@ -100,12 +111,17 @@ staff('staffClient', function(_, _, actor, number)
 end)
 
 ---Raises (or resets) a card's ceilings, up to a multiple of the holder's tier
-staff('staffCeilings', function(_, _, actor, id, requested)
+staff('staffCeilings', function(src, player, actor, id, requested)
     id = access.int(id)
 
     local card = id and MySQL.single.await('SELECT * FROM `bank_cards` WHERE `id` = ?', { id })
 
     if not card then return fail('no_card') end
+
+    -- Their own card, or a card on an account they can use (e.g. their shared account)
+    if card.holder == player.PlayerData.citizenid or accounts.perms(player, exports.city_economy:BankGetAccount(card.account_id)) then
+        return ownBusiness(src, 'ceilings')
+    end
 
     if requested == false then
         MySQL.update.await('UPDATE `bank_cards` SET `ceilings` = NULL WHERE `id` = ?', { id })
@@ -131,13 +147,19 @@ staff('staffCeilings', function(_, _, actor, id, requested)
 end)
 
 ---Freezes ('fraud' / 'admin') or unfreezes an account. A debt freeze can be lifted here after negotiating.
-staff('staffFreeze', function(_, _, actor, accountId, reason)
+staff('staffFreeze', function(src, player, actor, accountId, reason)
     accountId = access.int(accountId)
 
     local account = accountId and exports.city_economy:BankGetAccount(accountId)
 
     if not account or account.type == 'system' then return fail('no_account') end
     if reason ~= false and reason ~= 'fraud' and reason ~= 'admin' then return fail('bad_request') end
+    if accounts.perms(player, account) then return ownBusiness(src, 'freeze') end
+
+    -- Bankers lift debt freezes after negotiating; fraud and staff freezes are for admins to lift
+    if reason == false and account.frozen and account.frozen ~= 'debt' and not access.isAdmin(src) then
+        return fail('no_permission')
+    end
 
     exports.city_economy:BankSetFrozen(account.id, reason)
     access.audit(actor, reason and 'freeze' or 'unfreeze', account.owner or '-', { account = account.display, reason = reason })
