@@ -35,3 +35,17 @@ The stand-in has to stay: about 40 scripts call `exports.ox_inventory`, ox_fuel 
 | **Clothing on/off** | qbx_radialmenu **Clothing** and illenium-appearance | Two ways to take clothes off; inventory clothing slots would make three. |
 | **Opening a trunk** | qbx_radialmenu **Vehicle Doors → Trunk** and TAB at the back of a car | Both open the lid. Harmless. |
 | **Giving items as admin** | `/giveitem` and `/kit` (city_inventory), qbx_adminmenu **Give Item** | Not a duplicate: the admin menu runs our `/giveitem`. |
+
+## 3. Money: scripts blocked by city_economy
+
+`city_economy` owns cash and bank. qbx_core's `AddMoney` / `RemoveMoney` / `SetMoney` ask it first (`scripts/patches/qbx_core.patch`), and it only accepts the sources in `city_economy/server/config.lua` (`sources`). Everything else is refused and logged as `Refused credit/debit ... source not registered`. This is on purpose: each script comes back when it is rewritten with server-side validation (see `PROMPT_ECONOMIA_FIVEM.md`, section 11).
+
+| Allowed now | Why |
+|---|---|
+| qbx_core `paycheck` | Salary, capped at $20,000/hour per character. |
+| city_inventory shops and trades | Our own code, already validated on the server. |
+| illenium-appearance (debit only) | Clothing store charges; it checks the result, so a refused charge means no purchase. |
+
+Blocked until rewritten (they stop paying or charging): qbx_taxijob (also trusts the fare sent by the client), qbx_truckerjob, qbx_towjob, qbx_garbagejob, qbx_busjob, qbx_diving, qbx_pawnshop, qbx_storerobbery, qbx_truckrobbery, qbx_streetraces, qbx_properties, qbx_garages, qbx_customs, qbx_cityhall, qbx_carwash, qbx_ambulancejob, qbx_vehicleshop, qbx_vehiclesales, qbx_drugs, qbx_police, qbx_adminmenu and qbx_core's own `/givemoney` / `/setmoney`.
+
+Renewed-Banking was removed. qbx_police (fines, impound), qbx_ambulancejob (`depositSociety`) and qbx_vehicleshop (society funds) still call `exports['Renewed-Banking']` and error when they reach that line, until job accounts exist in city_bank.

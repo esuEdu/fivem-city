@@ -86,6 +86,52 @@ index c67c7cd..9531681 100644
  for name, data in pairs(oxWeapons.Weapons) do
      local weapon = string.lower(name)
      qbShared.Items[weapon] = {
+diff --git a/server-data/resources/[qbx]/qbx_core/config/server.lua b/server-data/resources/[qbx]/qbx_core/config/server.lua
+index edc2219..b25f139 100644
+--- a/server-data/resources/[qbx]/qbx_core/config/server.lua
++++ b/server-data/resources/[qbx]/qbx_core/config/server.lua
+@@ -2,11 +2,11 @@ return {
+     updateInterval = 5, -- how often to update player data in minutes
+ 
+     money = {
+-        ---@alias MoneyType 'cash' | 'bank' | 'crypto'
+-        ---@alias Money {cash: number, bank: number, crypto: number}
++        ---@alias MoneyType 'cash' | 'bank'
++        ---@alias Money {cash: number, bank: number}
+         ---@type Money
+-        moneyTypes = { cash = 500, bank = 5000, crypto = 0 }, -- type = startamount - Add or remove money types for your server (for ex. blackmoney = 0), remember once added it will not be removed from the database!
+-        dontAllowMinus = { 'cash', 'crypto' }, -- Money that is not allowed going in minus
++        moneyTypes = { cash = 0, bank = 0 }, -- city_economy owns these and pays the starting money ($2,000 cash, $18,000 bank)
++        dontAllowMinus = { 'cash', 'bank' }, -- Money that is not allowed going in minus
+         paycheckTimeout = 10, -- The time in minutes that it will give the paycheck
+         paycheckSociety = false -- If true paycheck will come from the society account that the player is employed at
+     },
+@@ -125,19 +125,20 @@ return {
+         exports.qbx_vehiclekeys:SetLockState(vehicle, state)
+     end,
+ 
+-    getSocietyAccount = function(accountName)
+-        return exports['Renewed-Banking']:getAccountMoney(accountName)
++    -- Society accounts come with city_bank job accounts; until then paycheckSociety stays false
++    getSocietyAccount = function()
++        return 0
+     end,
+ 
+-    removeSocietyMoney = function(accountName, payment)
+-        return exports['Renewed-Banking']:removeAccountMoney(accountName, payment)
++    removeSocietyMoney = function()
++        return false
+     end,
+ 
+     ---Paycheck function
+     ---@param player Player Player object
+     ---@param payment number Payment amount
+     sendPaycheck = function (player, payment)
+-        player.Functions.AddMoney('bank', payment)
++        if not player.Functions.AddMoney('bank', payment, 'paycheck') then return end
+         Notify(player.PlayerData.source, locale('info.received_paycheck', payment))
+         TriggerEvent('qbx_core:server:onPaycheck', player.PlayerData.source, payment)
+     end,
 diff --git a/server-data/resources/[qbx]/qbx_core/modules/utils.lua b/server-data/resources/[qbx]/qbx_core/modules/utils.lua
 index efd66f4..82e350a 100644
 --- a/server-data/resources/[qbx]/qbx_core/modules/utils.lua
@@ -149,10 +195,41 @@ index 37bf435..bc4bd08 100644
      startupErrors, errorMessage = true, 'inventory:framework must be set to "qbx" in order to use qbx_core'
  elseif GetConvarInt('onesync_enableInfinity', 0) ~= 1 then
 diff --git a/server-data/resources/[qbx]/qbx_core/server/player.lua b/server-data/resources/[qbx]/qbx_core/server/player.lua
-index 9fb3dbc..05d30df 100644
+index 9fb3dbc..3f71e86 100644
 --- a/server-data/resources/[qbx]/qbx_core/server/player.lua
 +++ b/server-data/resources/[qbx]/qbx_core/server/player.lua
-@@ -910,7 +910,7 @@ function CreatePlayer(playerData, Offline)
+@@ -16,6 +16,30 @@ for i = 1, #accounts do
+     accountsAsItems[accounts[i]] = 0
+ end
+ 
++-- city_economy owns cash and bank: its ledger is the truth and PlayerData.money only mirrors it.
++-- Without city_economy running, those balances can't change at all.
++local ECONOMY = 'city_economy'
++local economyTypes = { cash = true, bank = true }
++
++---@param player Player
++---@param moneyType MoneyType
++---@param action 'add' | 'remove' | 'set'
++---@param amount number
++---@param reason string
++---@return boolean ok
++---@return integer? balance the balance to mirror
++local function economyChange(player, moneyType, action, amount, reason)
++    if GetResourceState(ECONOMY) ~= 'started' then
++        lib.print.warn(('%s %s refused: %s is not running'):format(action, moneyType, ECONOMY))
++        return false
++    end
++
++    local resource = GetInvokingResource() or cache.resource
++    local ok, balance = exports[ECONOMY]:QbxMoneyChange(player.PlayerData.citizenid, moneyType, action, amount, reason, resource)
++
++    return ok == true and math.type(balance) == 'integer', balance
++end
++
+ -- Numeric metadata mirrored from client statebags. Values are validated and
+ -- clamped before being persisted, so a spoofed statebag can't corrupt or crash
+ -- these stats. Add new bounded stats here rather than special-casing them below.
+@@ -910,7 +934,7 @@ function CreatePlayer(playerData, Offline)
      ---@return boolean success
      function self.Functions.AddItem(item, amount, slot, metadata)
          assert(not self.Offline, 'unsupported for offline players')
@@ -161,7 +238,7 @@ index 9fb3dbc..05d30df 100644
      end
  
      ---@deprecated use ox_inventory exports directly
-@@ -920,7 +920,7 @@ function CreatePlayer(playerData, Offline)
+@@ -920,7 +944,7 @@ function CreatePlayer(playerData, Offline)
      ---@return boolean success
      function self.Functions.RemoveItem(item, amount, slot)
          assert(not self.Offline, 'unsupported for offline players')
@@ -170,7 +247,7 @@ index 9fb3dbc..05d30df 100644
      end
  
      ---@deprecated use ox_inventory exports directly
-@@ -928,7 +928,7 @@ function CreatePlayer(playerData, Offline)
+@@ -928,7 +952,7 @@ function CreatePlayer(playerData, Offline)
      ---@return any table
      function self.Functions.GetItemBySlot(slot)
          assert(not self.Offline, 'unsupported for offline players')
@@ -179,7 +256,7 @@ index 9fb3dbc..05d30df 100644
      end
  
      ---@deprecated use ox_inventory exports directly
-@@ -936,7 +936,7 @@ function CreatePlayer(playerData, Offline)
+@@ -936,7 +960,7 @@ function CreatePlayer(playerData, Offline)
      ---@return any table
      function self.Functions.GetItemByName(itemName)
          assert(not self.Offline, 'unsupported for offline players')
@@ -188,7 +265,7 @@ index 9fb3dbc..05d30df 100644
      end
  
      ---@deprecated use ox_inventory exports directly
-@@ -944,13 +944,13 @@ function CreatePlayer(playerData, Offline)
+@@ -944,13 +968,13 @@ function CreatePlayer(playerData, Offline)
      ---@return any table
      function self.Functions.GetItemsByName(itemName)
          assert(not self.Offline, 'unsupported for offline players')
@@ -204,7 +281,7 @@ index 9fb3dbc..05d30df 100644
      end
  
      ---@deprecated use ox_inventory exports directly
-@@ -1000,7 +1000,7 @@ function CreatePlayer(playerData, Offline)
+@@ -1000,7 +1024,7 @@ function CreatePlayer(playerData, Offline)
          local source = self.PlayerData.source
  
          if type(items) ~= 'table' then
@@ -213,7 +290,7 @@ index 9fb3dbc..05d30df 100644
          end
  
          if not next(items) then return false end
-@@ -1009,7 +1009,7 @@ function CreatePlayer(playerData, Offline)
+@@ -1009,7 +1033,7 @@ function CreatePlayer(playerData, Offline)
          for key, value in pairs(items) do
              local itemName = isArray and value or key
              local required = tonumber(amount) or (isArray and 1 or tonumber(value) or 1)
@@ -222,12 +299,107 @@ index 9fb3dbc..05d30df 100644
                  return false
              end
          end
-@@ -1408,7 +1408,7 @@ local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionTyp
+@@ -1244,6 +1268,12 @@ exports('SaveOffline', SaveOffline)
+ function SetPlayerData(identifier, key, value)
+     if type(key) ~= 'string' then return end
+ 
++    -- Money only changes through AddMoney/RemoveMoney/SetMoney (city_economy); a raw overwrite would skip the ledger
++    if key == 'money' then
++        lib.print.warn(('SetPlayerData(money) from %s refused'):format(GetInvokingResource() or cache.resource))
++        return
++    end
++
+     local player = resolvePlayer(identifier)
+ 
+     if not player then return end
+@@ -1408,10 +1438,40 @@ local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionTyp
      local oxMoneyType = toOxAccountName(moneyType)
  
      if accountsAsItems[oxMoneyType] then
 -        exports.ox_inventory:SetItem(source, oxMoneyType, playerMoney[moneyType])
 +        exports.city_inventory:SetItem(source, oxMoneyType, playerMoney[moneyType])
++    end
++end
++
++---city_economy pushes the real balances here (when a character loads, or after it moves money itself)
++---@param source Source
++---@param balances { cash?: integer, bank?: integer }
++---@return boolean
++local function syncEconomyMoney(source, balances)
++    if GetInvokingResource() ~= ECONOMY then
++        lib.print.warn(('SyncEconomyMoney called by %s, refused'):format(tostring(GetInvokingResource())))
++        return false
++    end
++
++    local player = GetPlayer(source)
++
++    if not player or type(balances) ~= 'table' then return false end
++
++    for moneyType, value in pairs(balances) do
++        local old = player.PlayerData.money[moneyType]
++
++        if economyTypes[moneyType] and math.type(value) == 'integer' and value >= 0 and value ~= old then
++            player.PlayerData.money[moneyType] = value
++            emitMoneyEvents(source, player.PlayerData.money, moneyType, value, 'set', 'sync', value - (old or 0))
++        end
      end
++
++    UpdatePlayerData(source)
++
++    return true
  end
  
++exports('SyncEconomyMoney', syncEconomyMoney)
++
+ ---@param value unknown
+ ---@return number?
+ local function validateMoneyAmount(value)
+@@ -1446,7 +1506,15 @@ function AddMoney(identifier, moneyType, amount, reason)
+         amount = amount
+     }) then return false end
+ 
+-    player.PlayerData.money[moneyType] += amount
++    if economyTypes[moneyType] then
++        local ok, balance = economyChange(player, moneyType, 'add', amount, reason)
++
++        if not ok then return false end
++
++        player.PlayerData.money[moneyType] = balance
++    else
++        player.PlayerData.money[moneyType] += amount
++    end
+ 
+     if player.Offline then
+         SaveOffline(player.PlayerData)
+@@ -1505,7 +1573,15 @@ function RemoveMoney(identifier, moneyType, amount, reason)
+         end
+     end
+ 
+-    player.PlayerData.money[moneyType] -= amount
++    if economyTypes[moneyType] then
++        local ok, balance = economyChange(player, moneyType, 'remove', amount, reason)
++
++        if not ok then return false end
++
++        player.PlayerData.money[moneyType] = balance
++    else
++        player.PlayerData.money[moneyType] -= amount
++    end
+ 
+     if player.Offline then
+         SaveOffline(player.PlayerData)
+@@ -1557,6 +1633,14 @@ function SetMoney(identifier, moneyType, amount, reason)
+         amount = amount
+     }) then return false end
+ 
++    if economyTypes[moneyType] then
++        local ok, balance = economyChange(player, moneyType, 'set', amount, reason)
++
++        if not ok then return false end
++
++        amount = balance
++    end
++
+     player.PlayerData.money[moneyType] = amount
+ 
+     if player.Offline then

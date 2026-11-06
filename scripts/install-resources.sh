@@ -2,7 +2,7 @@
 # Downloads the third-party resources the server depends on into resources/.
 # Re-run to update everything to the latest release.
 # The list follows the Qbox txAdmin recipe (github.com/Qbox-project/txAdminRecipe, qbox.yaml),
-# without ox_inventory: city_inventory replaces it.
+# without ox_inventory (city_inventory replaces it) and Renewed-Banking (city_economy + city_bank replace it).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -20,7 +20,6 @@ RELEASES=(
   "ox_doorlock|[ox]|https://github.com/overextended/ox_doorlock/releases/latest/download/ox_doorlock.zip"
   "qbx_core|[qbx]|https://github.com/Qbox-project/qbx_core/releases/latest/download/qbx_core.zip"
   "screencapture|[standalone]|https://github.com/itschip/screencapture/releases/latest/download/screencapture.zip"
-  "Renewed-Banking|[standalone]|https://github.com/Renewed-Scripts/Renewed-Banking/releases/latest/download/Renewed-Banking.zip"
   "illenium-appearance|[standalone]|https://github.com/iLLeniumStudios/illenium-appearance/releases/latest/download/illenium-appearance.zip"
   "Renewed-Weathersync|[standalone]|https://github.com/Renewed-Scripts/Renewed-Weathersync/releases/latest/download/Renewed-Weathersync.zip"
   "xt-prison|[standalone]|https://github.com/xT-Development/xt-prison/releases/latest/download/xt-prison.zip"

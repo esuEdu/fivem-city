@@ -16,6 +16,30 @@ for i = 1, #accounts do
     accountsAsItems[accounts[i]] = 0
 end
 
+-- city_economy owns cash and bank: its ledger is the truth and PlayerData.money only mirrors it.
+-- Without city_economy running, those balances can't change at all.
+local ECONOMY = 'city_economy'
+local economyTypes = { cash = true, bank = true }
+
+---@param player Player
+---@param moneyType MoneyType
+---@param action 'add' | 'remove' | 'set'
+---@param amount number
+---@param reason string
+---@return boolean ok
+---@return integer? balance the balance to mirror
+local function economyChange(player, moneyType, action, amount, reason)
+    if GetResourceState(ECONOMY) ~= 'started' then
+        lib.print.warn(('%s %s refused: %s is not running'):format(action, moneyType, ECONOMY))
+        return false
+    end
+
+    local resource = GetInvokingResource() or cache.resource
+    local ok, balance = exports[ECONOMY]:QbxMoneyChange(player.PlayerData.citizenid, moneyType, action, amount, reason, resource)
+
+    return ok == true and math.type(balance) == 'integer', balance
+end
+
 -- Numeric metadata mirrored from client statebags. Values are validated and
 -- clamped before being persisted, so a spoofed statebag can't corrupt or crash
 -- these stats. Add new bounded stats here rather than special-casing them below.
@@ -1244,6 +1268,12 @@ exports('SaveOffline', SaveOffline)
 function SetPlayerData(identifier, key, value)
     if type(key) ~= 'string' then return end
 
+    -- Money only changes through AddMoney/RemoveMoney/SetMoney (city_economy); a raw overwrite would skip the ledger
+    if key == 'money' then
+        lib.print.warn(('SetPlayerData(money) from %s refused'):format(GetInvokingResource() or cache.resource))
+        return
+    end
+
     local player = resolvePlayer(identifier)
 
     if not player then return end
@@ -1412,6 +1442,36 @@ local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionTyp
     end
 end
 
+---city_economy pushes the real balances here (when a character loads, or after it moves money itself)
+---@param source Source
+---@param balances { cash?: integer, bank?: integer }
+---@return boolean
+local function syncEconomyMoney(source, balances)
+    if GetInvokingResource() ~= ECONOMY then
+        lib.print.warn(('SyncEconomyMoney called by %s, refused'):format(tostring(GetInvokingResource())))
+        return false
+    end
+
+    local player = GetPlayer(source)
+
+    if not player or type(balances) ~= 'table' then return false end
+
+    for moneyType, value in pairs(balances) do
+        local old = player.PlayerData.money[moneyType]
+
+        if economyTypes[moneyType] and math.type(value) == 'integer' and value >= 0 and value ~= old then
+            player.PlayerData.money[moneyType] = value
+            emitMoneyEvents(source, player.PlayerData.money, moneyType, value, 'set', 'sync', value - (old or 0))
+        end
+    end
+
+    UpdatePlayerData(source)
+
+    return true
+end
+
+exports('SyncEconomyMoney', syncEconomyMoney)
+
 ---@param value unknown
 ---@return number?
 local function validateMoneyAmount(value)
@@ -1446,7 +1506,15 @@ function AddMoney(identifier, moneyType, amount, reason)
         amount = amount
     }) then return false end
 
-    player.PlayerData.money[moneyType] += amount
+    if economyTypes[moneyType] then
+        local ok, balance = economyChange(player, moneyType, 'add', amount, reason)
+
+        if not ok then return false end
+
+        player.PlayerData.money[moneyType] = balance
+    else
+        player.PlayerData.money[moneyType] += amount
+    end
 
     if player.Offline then
         SaveOffline(player.PlayerData)
@@ -1505,7 +1573,15 @@ function RemoveMoney(identifier, moneyType, amount, reason)
         end
     end
 
-    player.PlayerData.money[moneyType] -= amount
+    if economyTypes[moneyType] then
+        local ok, balance = economyChange(player, moneyType, 'remove', amount, reason)
+
+        if not ok then return false end
+
+        player.PlayerData.money[moneyType] = balance
+    else
+        player.PlayerData.money[moneyType] -= amount
+    end
 
     if player.Offline then
         SaveOffline(player.PlayerData)
@@ -1556,6 +1632,14 @@ function SetMoney(identifier, moneyType, amount, reason)
         moneyType = moneyType,
         amount = amount
     }) then return false end
+
+    if economyTypes[moneyType] then
+        local ok, balance = economyChange(player, moneyType, 'set', amount, reason)
+
+        if not ok then return false end
+
+        amount = balance
+    end
 
     player.PlayerData.money[moneyType] = amount
 
