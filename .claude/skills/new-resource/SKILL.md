@@ -92,7 +92,7 @@ end)
 
 - Name events after the player action (`city_fishing:server:sellFish`), never `giveItem(item, count)`. Prices, rewards and item names come from config on the server.
 - Items: `exports.city_inventory:AddItem(src, name, count, metadata)`, `RemoveItem`, `GetItemCount`, `CanCarryItem`, `Search` (same API as ox_inventory). Usable items: `exports.qbx_core:CreateUseableItem(name, function(source, item) end)`. New items: use the `add-item` skill.
-- Money: `exports.qbx_core:GetMoney(src, 'cash')`, `RemoveMoney`, `AddMoney`.
+- Money: `exports.qbx_core:GetMoney(src, 'cash')`, `RemoveMoney(src, type, amount, reason)`, `AddMoney(...)`. Always pass a reason, and add the resource + reason to `sources` in `city_economy/server/config.lua` (credit/debit, hourly cap), or `city_economy` refuses the change. The server works out the amount; never take it from the client.
 - Database: oxmysql with `?` parameters only. Create tables with `CREATE TABLE IF NOT EXISTS` at start (see `city_inventory/server/storage.lua`), or ship a `.sql` and add it to `scripts/import-sql.sh`.
 
 **Admin command**:
