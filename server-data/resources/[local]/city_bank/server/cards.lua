@@ -16,6 +16,13 @@ function cards.get(cardId)
     return MySQL.single.await('SELECT * FROM `bank_cards` WHERE `card_id` = ?', { cardId })
 end
 
+---oxmysql returns TINYINT(1) columns as booleans, older rows or other drivers may give 1/0: accept both
+---@param card table
+---@return boolean
+function cards.contactless(card)
+    return card.contactless == true or card.contactless == 1
+end
+
 ---The ceilings of a card: what a banker set, or else the holder's current tier
 ---@param card table
 ---@return table<string, integer>

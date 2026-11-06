@@ -62,7 +62,7 @@ access.panel('cards', function(_, player, citizenid)
 
         out[i] = {
             id = card.id, last4 = card.last4, holder = card.holder_name, mine = card.holder == citizenid,
-            account = labels[card.account_id] or '-', status = card.status, contactless = card.contactless == 1,
+            account = labels[card.account_id] or '-', status = card.status, contactless = cards.contactless(card),
             limits = cards.limits(card), ceilings = cards.ceilings(card),
             pending = card.pending and json.decode(card.pending) or nil, pendingAt = card.pending_at,
         }

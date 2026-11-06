@@ -153,7 +153,7 @@ lib.callback.register('city_bank:posPay', function(source, id, slot, method, mod
         local ok, pinError, triesLeft = cards.checkPin(card, pin)
         if not ok then return fail(pinError, { triesLeft = triesLeft }) end
     else
-        if card.contactless ~= 1 then return fail('no_contactless') end
+        if not cards.contactless(card) then return fail('no_contactless') end
         if amount > (limits.contactlessTx or 0) then return fail('contactless_limit') end
         if cards.spentToday(card.card_id, { 'contactless' }) + amount > (limits.contactlessDay or 0) then return fail('contactless_limit') end
     end
