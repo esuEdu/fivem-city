@@ -105,13 +105,14 @@ AddEventHandler('city_economy:server:credited', function(accountId, citizenid, a
 end)
 
 ---Other resources (e.g. a rewritten police job) create bills here. Only resources in settings.billers may,
----and each one only its own kind of bill.
+---and each one only its own kind of bill (paid into its own job account when the biller names one).
 ---@param targetSrc integer the player who owes
 ---@param amount integer
 ---@param label string
 ---@param issuerSrc integer? the player issuing it (an officer), must be next to the target
 exports('CreateBill', function(targetSrc, amount, label, issuerSrc)
-    local kind = settings.billers[GetInvokingResource()]
+    local biller = settings.billers[GetInvokingResource()]
+    local kind = type(biller) == 'table' and biller.kind or biller
     local target = type(targetSrc) == 'number' and exports.qbx_core:GetPlayer(targetSrc)
 
     if not kind or not target then return false end
@@ -130,7 +131,8 @@ exports('CreateBill', function(targetSrc, amount, label, issuerSrc)
 
     return bills.create({
         citizenid = target.PlayerData.citizenid, kind = kind, label = label, issuer = issuerName,
-        amount = amount, payees = payeesFor(kind),
+        amount = amount,
+        payees = type(biller) == 'table' and biller.job and { { job = biller.job, pct = 100 } } or payeesFor(kind),
     }) ~= nil
 end)
 
