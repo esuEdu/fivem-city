@@ -61,3 +61,5 @@ All code in `[local]/` must follow these, and every branch and commit follows `g
 ## Skills
 
 Project skills in `.claude/skills/` hold the step-by-step workflows: `new-resource` (a new `city_<feature>` script), `add-item` (items, weapons, shops, recipes), `patch-script` (changing a vendored script), `replace-script` (our resource replacing a vendored one, which is then removed everywhere) and `ship` (checks, NUI preview, commit, in-game test steps). Keep them in step when these workflows change.
+
+`docs/skills.md` lists every skill (ours and not ours) with its name, description and location. As soon as someone starts a new skill, or renames, moves or removes one, run the `skill-registry` agent (`.claude/agents/skill-registry.md`) so the list stays complete.
