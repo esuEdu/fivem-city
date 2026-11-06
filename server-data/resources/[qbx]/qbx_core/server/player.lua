@@ -1423,7 +1423,7 @@ exports('SetCharInfo', SetCharInfo)
 ---@param actionType 'add' | 'remove' | 'set'
 ---@param reason? string
 ---@param difference? number
-local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionType, reason, difference)
+local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionType, reason, difference, skipItems)
     local isSet = actionType == 'set'
     local isRemove = actionType == 'remove'
 
@@ -1437,7 +1437,8 @@ local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionTyp
 
     local oxMoneyType = toOxAccountName(moneyType)
 
-    if accountsAsItems[oxMoneyType] then
+    -- skipItems: the inventory itself already moved the cash item (dropping, giving, storing it)
+    if accountsAsItems[oxMoneyType] and not skipItems then
         exports.city_inventory:SetItem(source, oxMoneyType, playerMoney[moneyType])
     end
 end
@@ -1445,8 +1446,9 @@ end
 ---city_economy pushes the real balances here (when a character loads, or after it moves money itself)
 ---@param source Source
 ---@param balances { cash?: integer, bank?: integer }
+---@param skipItems? boolean true when the cash item was already moved by city_inventory
 ---@return boolean
-local function syncEconomyMoney(source, balances)
+local function syncEconomyMoney(source, balances, skipItems)
     if GetInvokingResource() ~= ECONOMY then
         lib.print.warn(('SyncEconomyMoney called by %s, refused'):format(tostring(GetInvokingResource())))
         return false
@@ -1461,7 +1463,7 @@ local function syncEconomyMoney(source, balances)
 
         if economyTypes[moneyType] and math.type(value) == 'integer' and value >= 0 and value ~= old then
             player.PlayerData.money[moneyType] = value
-            emitMoneyEvents(source, player.PlayerData.money, moneyType, value, 'set', 'sync', value - (old or 0))
+            emitMoneyEvents(source, player.PlayerData.money, moneyType, value, 'set', 'sync', value - (old or 0), skipItems == true)
         end
     end
 

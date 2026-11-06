@@ -97,11 +97,9 @@ local offerA, offerB = trades.offer(1), trades.offer(2)
 assert(Inventory.transfer(invs[1], 1, offerA, 1, 3)); trades.changed(1)
 assert(Inventory.transfer(invs[1], 2, offerA, 2)); trades.changed(1)
 assert(Inventory.transfer(invs[2], 1, offerB, 1)); trades.changed(2)
-assert(trades.setCash(1, 200)); assert(select(2, trades.setCash(2, 5000)) == 'cannot_afford')
-assert(select(2, trades.setCash(1, -1)) == 'invalid_count')
 -- accepting, then a change clears the accepts
 assert(trades.accept(1, true)); assert(trades.get(1).accepted[1])
-assert(trades.setCash(1, 150)); assert(not trades.get(1).accepted[1])
+trades.changed(1); assert(not trades.get(1).accepted[1])
 -- 'their' side is never resolved by name; offer belongs to its owner only
 assert(trades.offer(2) == offerB and trades.offer(1) == offerA)
 -- complete
@@ -111,7 +109,8 @@ assert(last('city_inventory:client:closeTrade', 1).args[1] == 'trade_done')
 assert(search.count(invs[2].items, 'water') == 3 and search.count(invs[2].items, 'WEAPON_PISTOL') == 1)
 assert(invs[2].items[search.slots(invs[2].items, 'WEAPON_PISTOL')[1]].metadata.ammo == 7)
 assert(search.count(invs[1].items, 'sandwich') == 2 and search.count(invs[1].items, 'water') == 1)
-assert(money[1] == 350 and money[2] == 250)
+-- cash is the money item now: no money changes hands outside the offers
+assert(money[1] == 500 and money[2] == 100)
 
 -- full inventory: nothing moves, accepts reset
 invs[1] = Inventory.new('A', 1, 100000); invs[1].id = 1; assert(invs[1]:add('phone', 1))

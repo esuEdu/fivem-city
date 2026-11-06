@@ -16,6 +16,7 @@ server_scripts {
     'server/main.lua',
     'server/exports.lua',
     'server/bankapi.lua',
+    'server/cashapi.lua',
     'server/qbx.lua',
     'server/honeypots.lua',
 }

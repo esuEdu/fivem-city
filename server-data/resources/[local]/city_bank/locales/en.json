@@ -410,5 +410,6 @@
     "command_bankwarp": "Move a player's bank dates back by N days (test)",
     "param_days": "Days",
     "notify_warped": "Moved the bank dates back %s days for %s.",
-    "error_own_client": "Staff can't act on their own accounts, cards or loans."
+    "error_own_client": "Staff can't act on their own accounts, cards or loans.",
+    "error_no_cash_space": "No free slot in your inventory for the cash."
 }

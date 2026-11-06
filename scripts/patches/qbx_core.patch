@@ -195,7 +195,7 @@ index 37bf435..bc4bd08 100644
      startupErrors, errorMessage = true, 'inventory:framework must be set to "qbx" in order to use qbx_core'
  elseif GetConvarInt('onesync_enableInfinity', 0) ~= 1 then
 diff --git a/server-data/resources/[qbx]/qbx_core/server/player.lua b/server-data/resources/[qbx]/qbx_core/server/player.lua
-index 9fb3dbc..3f71e86 100644
+index 9fb3dbc..44caa9f 100644
 --- a/server-data/resources/[qbx]/qbx_core/server/player.lua
 +++ b/server-data/resources/[qbx]/qbx_core/server/player.lua
 @@ -16,6 +16,30 @@ for i = 1, #accounts do
@@ -312,11 +312,23 @@ index 9fb3dbc..3f71e86 100644
      local player = resolvePlayer(identifier)
  
      if not player then return end
-@@ -1408,10 +1438,40 @@ local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionTyp
+@@ -1393,7 +1423,7 @@ exports('SetCharInfo', SetCharInfo)
+ ---@param actionType 'add' | 'remove' | 'set'
+ ---@param reason? string
+ ---@param difference? number
+-local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionType, reason, difference)
++local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionType, reason, difference, skipItems)
+     local isSet = actionType == 'set'
+     local isRemove = actionType == 'remove'
+ 
+@@ -1407,11 +1437,43 @@ local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionTyp
+ 
      local oxMoneyType = toOxAccountName(moneyType)
  
-     if accountsAsItems[oxMoneyType] then
+-    if accountsAsItems[oxMoneyType] then
 -        exports.ox_inventory:SetItem(source, oxMoneyType, playerMoney[moneyType])
++    -- skipItems: the inventory itself already moved the cash item (dropping, giving, storing it)
++    if accountsAsItems[oxMoneyType] and not skipItems then
 +        exports.city_inventory:SetItem(source, oxMoneyType, playerMoney[moneyType])
 +    end
 +end
@@ -324,8 +336,9 @@ index 9fb3dbc..3f71e86 100644
 +---city_economy pushes the real balances here (when a character loads, or after it moves money itself)
 +---@param source Source
 +---@param balances { cash?: integer, bank?: integer }
++---@param skipItems? boolean true when the cash item was already moved by city_inventory
 +---@return boolean
-+local function syncEconomyMoney(source, balances)
++local function syncEconomyMoney(source, balances, skipItems)
 +    if GetInvokingResource() ~= ECONOMY then
 +        lib.print.warn(('SyncEconomyMoney called by %s, refused'):format(tostring(GetInvokingResource())))
 +        return false
@@ -340,7 +353,7 @@ index 9fb3dbc..3f71e86 100644
 +
 +        if economyTypes[moneyType] and math.type(value) == 'integer' and value >= 0 and value ~= old then
 +            player.PlayerData.money[moneyType] = value
-+            emitMoneyEvents(source, player.PlayerData.money, moneyType, value, 'set', 'sync', value - (old or 0))
++            emitMoneyEvents(source, player.PlayerData.money, moneyType, value, 'set', 'sync', value - (old or 0), skipItems == true)
 +        end
      end
 +
@@ -354,7 +367,7 @@ index 9fb3dbc..3f71e86 100644
  ---@param value unknown
  ---@return number?
  local function validateMoneyAmount(value)
-@@ -1446,7 +1506,15 @@ function AddMoney(identifier, moneyType, amount, reason)
+@@ -1446,7 +1508,15 @@ function AddMoney(identifier, moneyType, amount, reason)
          amount = amount
      }) then return false end
  
@@ -371,7 +384,7 @@ index 9fb3dbc..3f71e86 100644
  
      if player.Offline then
          SaveOffline(player.PlayerData)
-@@ -1505,7 +1573,15 @@ function RemoveMoney(identifier, moneyType, amount, reason)
+@@ -1505,7 +1575,15 @@ function RemoveMoney(identifier, moneyType, amount, reason)
          end
      end
  
@@ -388,7 +401,7 @@ index 9fb3dbc..3f71e86 100644
  
      if player.Offline then
          SaveOffline(player.PlayerData)
-@@ -1557,6 +1633,14 @@ function SetMoney(identifier, moneyType, amount, reason)
+@@ -1557,6 +1635,14 @@ function SetMoney(identifier, moneyType, amount, reason)
          amount = amount
      }) then return false end
  

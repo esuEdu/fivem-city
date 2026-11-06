@@ -129,6 +129,9 @@ lib.callback.register('city_bank:atmWithdraw', function(source, amount)
 
     if room and amount > room then return fail('member_limit') end
 
+    -- The cash becomes the money item: it needs a free slot (it has no weight)
+    if not exports.city_inventory:CanCarryItem(src, 'money', amount) then return fail('no_cash_space') end
+
     local _, cash = money.playerAccounts(player.PlayerData.citizenid)
     local reason = session.mode == 'teller' and 'bank-teller-withdraw' or 'bank-atm-withdraw'
     local ok, err = money.move(card.account_id, cash.id, amount, reason, card.holder, { by = player.PlayerData.citizenid, card = card.last4 })
