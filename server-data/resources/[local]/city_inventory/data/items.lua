@@ -153,6 +153,25 @@ return {
         category = 'valuable',
     },
 
+    -- Issued only by city_bank at a branch; metadata.card_id points at the card row, nothing else is trusted
+    ['bank_card'] = {
+        label = 'Bank Card',
+        category = 'document',
+        weight = 5,
+        stack = false,
+        description = 'Use it at an ATM or a card machine',
+    },
+
+    -- Card machine: used through city_bank (CreateUseableItem) to charge a nearby player
+    ['pos_terminal'] = {
+        label = 'Card Machine',
+        category = 'electronics',
+        weight = 300,
+        stack = false,
+        consume = 0,
+        description = 'Charge a nearby customer by card',
+    },
+
     ['id_card'] = {
         label = 'Identification Card',
         category = 'document',

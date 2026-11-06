@@ -53,7 +53,7 @@ local function loadAccounts(ids)
     for i = 1, #ids do marks[i] = '?' end
 
     local rows = MySQL.query.await(
-        ('SELECT `id`, `type`, `balance`, `frozen` FROM `economy_accounts` WHERE `id` IN (%s)'):format(table.concat(marks, ', ')),
+        ('SELECT `id`, `type`, `owner`, `balance`, `frozen` FROM `economy_accounts` WHERE `id` IN (%s)'):format(table.concat(marks, ', ')),
         ids
     ) or {}
 
@@ -72,9 +72,13 @@ local function claimRequest(requestId)
     return affected == 1
 end
 
+---Called after every committed posting with the accounts it touched (set by main.lua: mirror sync, credit event)
+---@type fun(accounts: table<integer, table>, entries: table[], info: table)?
+ledger.onPosted = nil
+
 ---Applies a balanced posting.
 ---@param entries { account: integer, delta: integer }[]
----@param info { reason: string, source: string, ref?: string, meta?: table, requestId?: string }
+---@param info { reason: string, source: string, ref?: string, meta?: table, requestId?: string, skipMirror?: boolean }
 ---@return boolean ok
 ---@return string txIdOrError
 ---@return table<integer, integer>? balances new balance of each account
@@ -105,7 +109,7 @@ function ledger.post(entries, info)
         local isSystem = account.type == 'system'
 
         -- A frozen account still receives money, it just can't send it
-        if account.frozen and entry.delta < 0 then
+        if account.frozen and entry.delta < 0 and not (info.allowFrozen and account.frozen == info.allowFrozen) then
             release(ids)
             return false, 'account frozen'
         end
@@ -149,6 +153,14 @@ function ledger.post(entries, info)
         if info.requestId then MySQL.update.await('DELETE FROM `economy_requests` WHERE `request_id` = ?', { info.requestId }) end
         lib.print.error(('Ledger transaction failed (%s from %s)'):format(info.reason, info.source))
         return false, 'database error'
+    end
+
+    if ledger.onPosted then
+        for id, balance in pairs(balances) do accounts[id].balance = balance end
+
+        local ok, err = pcall(ledger.onPosted, accounts, entries, info)
+
+        if not ok then lib.print.error(('After-posting hook failed: %s'):format(err)) end
     end
 
     return true, txId, balances

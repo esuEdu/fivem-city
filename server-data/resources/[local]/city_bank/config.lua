@@ -8,6 +8,12 @@ Config.PedDistance = 40.0
 
 Config.Blip = { sprite = 108, color = 2, scale = 0.8 }
 
+-- Props that work as ATMs (ox_target on the model)
+Config.AtmModels = { `prop_atm_01`, `prop_atm_02`, `prop_atm_03`, `prop_fleeca_atm` }
+
+-- How close a customer must be for the card machine to find them
+Config.PosRange = 3.0
+
 -- Branches with a banker. coords = where the banker stands (z = the ped's center, like GetEntityCoords).
 Config.Branches = {
     { label = 'Pacific Standard', model = `u_m_m_bankman`, coords = vector4(241.44, 227.19, 106.29, 170.43) },

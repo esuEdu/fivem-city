@@ -34,7 +34,7 @@
         </div>
     </section>
 
-    <!-- Account panel -->
+    <!-- Branch panel -->
     <main id="bank" class="bank hidden">
         <aside class="sidebar">
             <div class="brand">
@@ -43,71 +43,31 @@
                 </div>
                 <span id="branch" class="brand__name"></span>
             </div>
-
-            <nav class="nav">
-                <button class="nav__item nav__item--active" type="button" data-label="nav_dashboard"></button>
-                <button class="nav__item" type="button" disabled><span data-label="nav_accounts"></span><span class="soon" data-label="soon"></span></button>
-                <button class="nav__item" type="button" disabled><span data-label="nav_cards"></span><span class="soon" data-label="soon"></span></button>
-                <button class="nav__item" type="button" disabled><span data-label="nav_transfers"></span><span class="soon" data-label="soon"></span></button>
-                <button class="nav__item" type="button" disabled><span data-label="nav_loans"></span><span class="soon" data-label="soon"></span></button>
-                <button class="nav__item" type="button" disabled><span data-label="nav_billing"></span><span class="soon" data-label="soon"></span></button>
-                <button class="nav__item" type="button" disabled><span data-label="nav_history"></span><span class="soon" data-label="soon"></span></button>
-            </nav>
+            <nav id="nav" class="nav"></nav>
         </aside>
 
         <section class="content">
             <header class="content__header">
                 <div>
-                    <h1 id="greeting" class="content__title"></h1>
-                    <p class="content__subtitle" data-label="subtitle"></p>
+                    <h1 id="title" class="content__title"></h1>
+                    <p id="subtitle" class="content__subtitle"></p>
                 </div>
                 <button id="bank-close" class="icon-button" type="button" aria-label="Close">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 10.6 5.3-5.3 1.4 1.4-5.3 5.3 5.3 5.3-1.4 1.4-5.3-5.3-5.3 5.3-1.4-1.4 5.3-5.3-5.3-5.3 1.4-1.4 5.3 5.3Z"/></svg>
                 </button>
             </header>
-
-            <div class="stats">
-                <article class="stat stat--accent">
-                    <p class="stat__label" data-label="balance"></p>
-                    <p id="stat-balance" class="stat__value"></p>
-                </article>
-                <article class="stat">
-                    <p class="stat__label" data-label="cash"></p>
-                    <p id="stat-cash" class="stat__value"></p>
-                </article>
-                <article class="stat">
-                    <p class="stat__label" data-label="income"></p>
-                    <p id="stat-income" class="stat__value stat__value--in"></p>
-                </article>
-                <article class="stat">
-                    <p class="stat__label" data-label="expenses"></p>
-                    <p id="stat-expenses" class="stat__value stat__value--out"></p>
-                </article>
-            </div>
-
-            <div class="grid">
-                <article class="card account">
-                    <p class="eyebrow" data-label="account"></p>
-                    <dl class="account__rows">
-                        <div class="account__row">
-                            <dt data-label="account_number"></dt>
-                            <dd id="account-number" class="mono"></dd>
-                        </div>
-                        <div class="account__row">
-                            <dt data-label="status"></dt>
-                            <dd><span id="account-status" class="pill"></span></dd>
-                        </div>
-                    </dl>
-                </article>
-
-                <article class="card activity">
-                    <p class="eyebrow" data-label="activity"></p>
-                    <ul id="activity" class="activity__list"></ul>
-                    <p id="activity-empty" class="activity__empty hidden" data-label="activity_empty"></p>
-                </article>
-            </div>
+            <div id="tab" class="tab"></div>
         </section>
     </main>
+
+    <!-- ATM and branch cash desk -->
+    <section id="atm" class="atm hidden"></section>
+
+    <!-- Card machine (customer side) -->
+    <section id="pos" class="pos hidden"></section>
+
+    <div id="modal" class="modal hidden"></div>
+    <div id="toast" class="toast hidden"></div>
 
     <script type="module" src="js/main.js"></script>
 </body>

@@ -26,6 +26,10 @@ function schema.create()
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ]])
 
+    -- Savings goals (BANCO_DESIGN.md 3.1), added after the first version of the table
+    MySQL.query.await('ALTER TABLE `economy_accounts` ADD COLUMN IF NOT EXISTS `goal_amount` BIGINT NULL')
+    MySQL.query.await('ALTER TABLE `economy_accounts` ADD COLUMN IF NOT EXISTS `goal_date` INT NULL')
+
     -- Append-only: rows are never updated or deleted, corrections are new rows
     MySQL.query.await([[
         CREATE TABLE IF NOT EXISTS `economy_ledger` (
