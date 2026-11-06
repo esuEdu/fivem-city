@@ -48,7 +48,7 @@ REPOS=(
 
 # Qbox resources, all from github.com/Qbox-project/<name>, into [qbx]
 QBX_REPOS=(
-  qbx_vehicles qbx_scoreboard qbx_adminmenu qbx_vehiclesales qbx_vehicleshop qbx_houserobbery
+  qbx_vehicles qbx_scoreboard qbx_vehiclesales qbx_vehicleshop qbx_houserobbery
   qbx_hud qbx_seatbelt qbx_management qbx_weed qbx_lapraces qbx_garages qbx_ambulancejob
   qbx_medical qbx_radialmenu qbx_police qbx_properties qbx_vehiclekeys qbx_mechanicjob
   qbx_vineyard qbx_scrapyard qbx_towjob qbx_streetraces qbx_storerobbery qbx_spawn
