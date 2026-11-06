@@ -195,6 +195,40 @@ lib.callback.register('city_bank:posPay', function(source, id, slot, method, mod
     return { ok = true }
 end)
 
+-- Test command: charges yourself so one person can see and use the customer screen. The money leaves your card and
+-- comes back to your personal account minus the machine fee. Admins on duty only.
+lib.addCommand('posdemo', {
+    help = locale('command_posdemo'),
+    params = { { name = 'amount', type = 'number', help = locale('param_amount'), optional = true } },
+    restricted = 'group.admin',
+}, function(source, args)
+    if source == 0 then return end
+    if not exports.qbx_core:IsOptin(source) then
+        return exports.qbx_core:Notify(source, locale('not_on_duty'), 'error')
+    end
+
+    local player = exports.qbx_core:GetPlayer(source)
+    local personal = player and money.owned(player.PlayerData.citizenid, 'personal')
+    local amount = math.tointeger(args.amount) or 100
+
+    if not personal or amount <= 0 or amount > settings.pos.maxCharge then
+        return exports.qbx_core:Notify(source, locale('error_bad_amount'), 'error')
+    end
+
+    if byMerchant[source] then close(byMerchant[source]) end
+
+    local id = lib.string.random('..........')
+
+    charges[id] = {
+        id = id, merchant = source, customer = source, amount = amount, posId = 'DEMO',
+        account = personal.id, expires = os.time() + settings.pos.expires, merchantName = locale('pos_demo_merchant'),
+    }
+    byMerchant[source] = id
+
+    access.audit(access.name(player), 'pos_demo', player.PlayerData.citizenid, { amount = amount })
+    TriggerClientEvent('city_bank:client:posRequest', source, { id = id, amount = amount, merchant = charges[id].merchantName })
+end)
+
 -- Charges nobody answered expire on their own
 lib.cron.new('* * * * *', function()
     local now = os.time()

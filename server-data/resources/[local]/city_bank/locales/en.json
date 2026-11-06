@@ -404,5 +404,7 @@
     "col_client": "Client",
     "added_by_col": "Added by",
     "no_data": "Nothing here yet.",
-    "goal_short": "%s% of %s"
+    "goal_short": "%s% of %s",
+    "command_posdemo": "Test the card machine on yourself (admin)",
+    "pos_demo_merchant": "Test charge (you)"
 }
