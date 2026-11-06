@@ -1,0 +1,158 @@
+/* Colors, radius and fonts come from city_ui/theme.lua (applied by app.js on setup) */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: var(--font);
+    color: var(--text);
+    user-select: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.downed {
+    position: absolute;
+    left: 50%;
+    bottom: 6vh;
+    transform: translateX(-50%);
+    width: 440px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-large);
+}
+
+.downed__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.downed__head h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.downed__pulse {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.2s ease-in-out infinite;
+}
+
+.downed--gone .downed__pulse {
+    background: var(--danger);
+    animation: none;
+}
+
+.downed--gone h1 {
+    color: var(--danger);
+}
+
+.downed__hint {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.downed__stats {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 8px 12px;
+    background: var(--section);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.stat__label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.stat__value {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.stat__text {
+    font-size: 14px;
+}
+
+.stat__text--on {
+    color: var(--success);
+}
+
+.downed__timer {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.downed__timer strong {
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--text);
+}
+
+.downed__keys {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.key {
+    padding: 8px 12px;
+    font-size: 13px;
+    background: var(--section);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+}
+
+.key--done {
+    border-left-color: var(--success);
+    color: var(--muted);
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.35;
+        transform: scale(0.7);
+    }
+}

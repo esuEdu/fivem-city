@@ -26,6 +26,10 @@ return {
             -- RemoveItem('money') from scripts like ox_fuel. Never credit: AddItem('money') from any script would print cash.
             { reason = '^inventory%-cash%-item$', debit = true },
         },
+        -- Hospital fees: respawn, bed, reception, NPC ambulance
+        city_hospital = {
+            { reason = '^hospital%-', debit = true },
+        },
         ['illenium-appearance'] = {
             { reason = '^unknown$', debit = true },
         },
