@@ -7,6 +7,11 @@ local drops = require 'server.drops'
 
 local trades = {}
 
+---Set by server/main.lua (left nil in unit tests): recognises the cash item and moves offered cash back to a pocket
+---in the ledger (the offer counts as ground)
+---@type { isCash: fun(name: string): boolean, toPocket: fun(inventory: Inventory, amount: integer): boolean, toGround: fun(inventory: Inventory, amount: integer): boolean }?
+trades.cashHooks = nil
+
 local REQUEST_COOLDOWN_SECONDS = 5
 local REQUEST_TIMEOUT_MS = 20000
 
@@ -14,7 +19,6 @@ local REQUEST_TIMEOUT_MS = 20000
 ---@field a integer
 ---@field b integer
 ---@field offers table<integer, Inventory>
----@field cash table<integer, integer>
 ---@field accepted table<integer, boolean>
 
 ---@type table<integer, Trade>
@@ -68,8 +72,6 @@ local function viewFor(trade, src)
         slots = Config.TradeSlots,
         offer = trade.offers[src].items,
         their = trade.offers[partner].items,
-        cash = trade.cash[src],
-        theirCash = trade.cash[partner],
         accepted = trade.accepted[src],
         theirAccepted = trade.accepted[partner],
     }
@@ -157,7 +159,7 @@ function trades.request(src, target)
     if not canTrade(src) or not canTrade(target) or bySrc[src] or bySrc[target] then return false, 'trade_busy' end
     if not areClose(src, target) then return false, 'too_far' end
 
-    local trade = { a = src, b = target, offers = {}, cash = {}, accepted = {} }
+    local trade = { a = src, b = target, offers = {}, accepted = {} }
 
     for _, side in ipairs({ src, target }) do
         local offer = Inventory.new(('trade:%s'):format(side), Config.TradeSlots, Config.TradeMaxWeight)
@@ -165,30 +167,11 @@ function trades.request(src, target)
         offer.id = side
 
         trade.offers[side] = offer
-        trade.cash[side] = 0
         trade.accepted[side] = false
         bySrc[side] = trade
     end
 
     sendBoth(trade, 'city_inventory:client:openTrade')
-
-    return true
-end
-
----@param src integer
----@param amount unknown cash this player gives
----@return boolean success
----@return string? reason
-function trades.setCash(src, amount)
-    local trade = bySrc[src]
-    if not trade then return false, 'trade_closed' end
-
-    amount = math.tointeger(tonumber(amount))
-    if not amount or amount < 0 then return false, 'invalid_count' end
-    if amount > (exports.qbx_core:GetMoney(src, 'cash') or 0) then return false, 'cannot_afford' end
-
-    trade.cash[src] = amount
-    trades.changed(src)
 
     return true
 end
@@ -200,15 +183,22 @@ local function giveOffer(offer, owner)
     local inventory = players.get(owner)
     local leftovers = {}
 
+    local hooks = trades.cashHooks
+
     for _, item in pairs(offer.items) do
-        if not inventory or not inventory:add(item.name, item.count, item.metadata) then
+        -- Cash leaves the offer (ground) for the pocket in the ledger first; if that fails it goes on the ground
+        local isCash = hooks and hooks.isCash(item.name)
+        local moved = inventory and (not isCash or hooks.toPocket(inventory, item.count))
+
+        if not moved or not inventory:add(item.name, item.count, item.metadata) then
+            if moved and isCash then hooks.toGround(inventory, item.count) end
             leftovers[#leftovers + 1] = { name = item.name, count = item.count, metadata = item.metadata }
         end
     end
 
     if #leftovers > 0 then
         lib.print.warn(('Trade: %d stacks did not fit in %s\'s inventory and were dropped on the ground'):format(#leftovers, owner))
-        drops.custom(leftovers, GetEntityCoords(GetPlayerPed(owner)))
+        drops.custom(leftovers, GetEntityCoords(GetPlayerPed(owner)), nil, nil, true)
     end
 
     if inventory then players.sync(owner) end
@@ -261,8 +251,6 @@ local function complete(trade)
 
         if not fits(players.get(side), trade.offers[partner]) then
             problem = 'trade_full'
-        elseif (exports.qbx_core:GetMoney(side, 'cash') or 0) < trade.cash[side] then
-            problem = 'trade_no_cash'
         end
 
         if problem then
@@ -274,25 +262,7 @@ local function complete(trade)
         end
     end
 
-    -- Cash first: if taking it from the second player fails, the first gets theirs back and nothing else happens
-    local paid = {}
-
-    for _, side in ipairs({ a, b }) do
-        if trade.cash[side] > 0 then
-            if not exports.qbx_core:RemoveMoney(side, 'cash', trade.cash[side], 'trade') then
-                for payer, amount in pairs(paid) do exports.qbx_core:AddMoney(payer, 'cash', amount, 'trade-refund') end
-                return trades.cancel(a, 'trade_no_cash')
-            end
-
-            paid[side] = trade.cash[side]
-        end
-    end
-
     finish(trade)
-
-    for payer, amount in pairs(paid) do
-        exports.qbx_core:AddMoney(partnerOf(trade, payer), 'cash', amount, 'trade')
-    end
 
     giveOffer(trade.offers[a], b)
     giveOffer(trade.offers[b], a)

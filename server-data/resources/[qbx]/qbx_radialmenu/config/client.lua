@@ -9,12 +9,7 @@ return {
             icon = 'user',
             label = 'Citizen',
             items = {
-                {
-                    id = 'givenum',
-                    icon = 'address-book',
-                    label = 'Give Contact Details',
-                    event = 'qb-phone:client:GiveContactDetails'
-                },
+                -- fivem-city: removed Give Contact Details (qb-phone's event; we use npwd)
                 {
                     id = 'getintrunk',
                     icon = 'car',

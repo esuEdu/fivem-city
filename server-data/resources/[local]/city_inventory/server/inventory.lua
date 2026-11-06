@@ -345,27 +345,50 @@ function Inventory.transfer(from, fromSlot, to, toSlot, count)
     local moving = { name = item.name, count = count, metadata = rest and lib.table.deepclone(item.metadata) or item.metadata }
     local movingWeight = weightOf(moving)
     local target = to.items[toSlot]
+    local stacking = not target or (target.name == item.name and Items[item.name].stack and lib.table.matches(target.metadata, item.metadata))
 
-    if not target or (target.name == item.name and Items[item.name].stack and lib.table.matches(target.metadata, item.metadata)) then
+    if stacking then
         if to.weight + movingWeight > to.maxWeight then return false, 'inventory_full' end
+    elseif not rest then
+        local targetWeight = weightOf(target)
 
+        if to.weight - targetWeight + movingWeight > to.maxWeight then return false, 'inventory_full' end
+        if from.weight - movingWeight + targetWeight > from.maxWeight then return false, 'inventory_full' end
+    else
+        return false, 'slot_occupied'
+    end
+
+    -- Cash moving between pockets, the ground and storage is written to the ledger first (server/cashflow.lua)
+    local hooks = Inventory.cashHooks
+
+    if hooks then
+        local itemCount, targetCount = item.count, target and target.count
+        local ok, undo = hooks.before(from, to, { name = item.name, count = count }, not stacking and target or nil)
+
+        if not ok then return false, undo end
+
+        -- Writing the ledger waited on the database: the slots must still hold exactly what was checked
+        if from.items[fromSlot] ~= item or item.count ~= itemCount or to.items[toSlot] ~= target
+            or (target and target.count ~= targetCount) then
+            undo()
+            hooks.after(from, to)
+            return false, 'invalid_slot'
+        end
+    end
+
+    if stacking then
         if target then
             moving = { name = target.name, count = target.count + count, metadata = target.metadata }
         end
 
         from:setSlot(fromSlot, rest)
         to:setSlot(toSlot, moving)
-    elseif not rest then
-        local targetWeight = weightOf(target)
-
-        if to.weight - targetWeight + movingWeight > to.maxWeight then return false, 'inventory_full' end
-        if from.weight - movingWeight + targetWeight > from.maxWeight then return false, 'inventory_full' end
-
+    else
         from:setSlot(fromSlot, target)
         to:setSlot(toSlot, item)
-    else
-        return false, 'slot_occupied'
     end
+
+    if hooks then hooks.after(from, to) end
 
     return true
 end

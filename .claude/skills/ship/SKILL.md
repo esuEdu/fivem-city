@@ -31,8 +31,8 @@ The preview has no game behind it: CSS `backdrop-filter` looks fine there but is
 ## 4. Commit and push (only when the user asked)
 
 - Check `git status` and stage only what belongs to the change (never `.env`, `secrets.cfg`, scratch files).
-- Small changes and docs go straight to `main` when the user asks to commit and push. For a bigger feature, use a branch (`feat/<topic>`) and offer a pull request; the user merges.
-- Message: an imperative subject (`Add trunks and gloveboxes`), then a short body saying what changed and why, ending with the attribution trailer the environment gives (`Co-Authored-By: ...`).
+- Follow `docs/standards/git.md`. Small docs or config fixes go straight to `main` when the user asks to commit and push. Features and anything that needs an in-game test go on a `<type>/<topic>` branch (`feat/player-search`, `fix/fuel-payment`); offer a pull request, the user merges.
+- Message: `<type>(<scope>): <description>` (`feat(inventory): add trunks and gloveboxes`), then a short body saying what changed and why, ending with the attribution trailer the environment gives (`Co-Authored-By: ...`). Split unrelated changes into separate commits.
 - `git push` (`-u origin <branch>` the first time). Report the commit hash.
 
 ## 5. Tell the user how to test it

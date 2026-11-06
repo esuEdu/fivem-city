@@ -62,6 +62,7 @@ return {
             { name = 'repairkit', price = 250 },
             { name = 'jerry_can', price = 200 },
             { name = 'binoculars', price = 300 },
+            { name = 'pos_terminal', price = 3000 },
         },
         locations = {
             vec3(2748.0, 3473.0, 55.67),
@@ -109,20 +110,6 @@ return {
         },
         locations = {
             vec3(451.51, -979.44, 30.68),
-        },
-    },
-
-    Medicine = {
-        name = 'Medicine Cabinet',
-        groups = { ambulance = 0 },
-        inventory = {
-            { name = 'firstaid', price = 25 },
-            { name = 'bandage', price = 5 },
-            { name = 'painkillers', price = 10 },
-            { name = 'ifaks', price = 40 },
-        },
-        locations = {
-            vec3(306.3687, -601.5139, 43.28406),
         },
     },
 

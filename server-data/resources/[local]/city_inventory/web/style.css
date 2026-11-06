@@ -554,7 +554,7 @@ button {
 .trade__footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 10px;
 }
 
@@ -574,41 +574,6 @@ button {
     background: var(--success);
     color: var(--accent-text);
     box-shadow: 0 0 14px var(--success-glow);
-}
-
-.cash {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    height: 34px;
-    padding: 0 12px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--slot);
-    font-family: var(--mono);
-    font-weight: 700;
-}
-
-.cash:focus-within {
-    border-color: var(--accent);
-    box-shadow: 0 0 10px var(--accent-glow);
-}
-
-.cash__sign {
-    color: var(--success);
-}
-
-.cash__input {
-    width: 120px;
-    border: 0;
-    outline: none;
-    background: transparent;
-    color: var(--text);
-    font: inherit;
-}
-
-.cash__input::-webkit-inner-spin-button {
-    appearance: none;
 }
 
 /* Close button and hotbar popup */

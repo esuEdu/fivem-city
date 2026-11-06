@@ -2,11 +2,11 @@ return {
     updateInterval = 5, -- how often to update player data in minutes
 
     money = {
-        ---@alias MoneyType 'cash' | 'bank' | 'crypto'
-        ---@alias Money {cash: number, bank: number, crypto: number}
+        ---@alias MoneyType 'cash' | 'bank'
+        ---@alias Money {cash: number, bank: number}
         ---@type Money
-        moneyTypes = { cash = 500, bank = 5000, crypto = 0 }, -- type = startamount - Add or remove money types for your server (for ex. blackmoney = 0), remember once added it will not be removed from the database!
-        dontAllowMinus = { 'cash', 'crypto' }, -- Money that is not allowed going in minus
+        moneyTypes = { cash = 0, bank = 0 }, -- city_economy owns these and pays the starting money ($2,000 cash, $18,000 bank)
+        dontAllowMinus = { 'cash', 'bank' }, -- Money that is not allowed going in minus
         paycheckTimeout = 10, -- The time in minutes that it will give the paycheck
         paycheckSociety = false -- If true paycheck will come from the society account that the player is employed at
     },
@@ -125,19 +125,20 @@ return {
         exports.qbx_vehiclekeys:SetLockState(vehicle, state)
     end,
 
-    getSocietyAccount = function(accountName)
-        return exports['Renewed-Banking']:getAccountMoney(accountName)
+    -- Society accounts come with city_bank job accounts; until then paycheckSociety stays false
+    getSocietyAccount = function()
+        return 0
     end,
 
-    removeSocietyMoney = function(accountName, payment)
-        return exports['Renewed-Banking']:removeAccountMoney(accountName, payment)
+    removeSocietyMoney = function()
+        return false
     end,
 
     ---Paycheck function
     ---@param player Player Player object
     ---@param payment number Payment amount
     sendPaycheck = function (player, payment)
-        player.Functions.AddMoney('bank', payment)
+        if not player.Functions.AddMoney('bank', payment, 'paycheck') then return end
         Notify(player.PlayerData.source, locale('info.received_paycheck', payment))
         TriggerEvent('qbx_core:server:onPaycheck', player.PlayerData.source, payment)
     end,

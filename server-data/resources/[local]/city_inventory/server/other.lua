@@ -1,4 +1,4 @@
--- The second panel next to the player's inventory: a stash, a shop, the ground or a trade. A player has at most one
+-- The second panel next to the player's inventory: a stash, a shop, the ground, a trade or a searched player. A player has at most one
 -- open; opening one closes the others. The client names a side and a slot; the server works out which inventory that is.
 
 local Inventory = require 'server.inventory'
@@ -9,6 +9,7 @@ local shops = require 'server.shops'
 local drops = require 'server.drops'
 local trades = require 'server.trades'
 local vehicles = require 'server.vehicles'
+local searches = require 'server.searches'
 
 local getActor, toInteger = actor.getActor, actor.toInteger
 
@@ -20,6 +21,7 @@ function other.closeAll(src)
     shops.close(src)
     drops.close(src)
     trades.cancel(src)
+    searches.close(src)
 end
 
 -- Opening a stash from the client (ox_inventory's openInventory('stash', id)); the server checks job, distance and hooks
@@ -53,6 +55,21 @@ lib.callback.register('city_inventory:openVehicle', function(source, netId, kind
     return vehicles.open(src, netId, kind)
 end)
 
+-- Searching another player: police Search, Rob, the admin menu's Open inventory. Who may is checked in server/searches.lua
+lib.callback.register('city_inventory:openPlayer', function(source, target)
+    local src = source
+    local inventory, reason = getActor(src)
+    if not inventory then return false, reason end
+
+    if type(target) ~= 'number' then
+        lib.print.warn(('Player %s asked to search an invalid player: %s'):format(src, target))
+        return false, 'no_player'
+    end
+
+    other.closeAll(src)
+    return searches.open(src, target)
+end)
+
 -- Opening the inventory with nothing else open shows the ground
 lib.callback.register('city_inventory:openGround', function(source)
     local src = source
@@ -64,7 +81,7 @@ lib.callback.register('city_inventory:openGround', function(source)
 end)
 
 ---@param src integer
----@param side unknown 'player', 'other' (stash or ground) or 'offer' (the player's side of a trade)
+---@param side unknown 'player', 'other' (stash, ground or a searched player) or 'offer' (the player's side of a trade)
 ---@param putting boolean items are going into it (an empty Ground panel becomes a drop)
 ---@return Inventory?
 ---@return string? reason
@@ -74,6 +91,7 @@ local function sideInventory(src, side, putting)
 
     if side == 'other' then
         if drops.hasSession(src) then return drops.session(src, putting) end
+        if searches.hasSession(src) then return searches.session(src) end
         return stashes.session(src)
     end
 
@@ -86,6 +104,9 @@ local function syncSide(inventory)
         stashes.sync(inventory)
     elseif inventory.type == 'drop' then
         drops.sync(inventory)
+    elseif inventory.type == 'player' then
+        -- The searched player; the one searching is synced after
+        players.sync(inventory.id --[[@as integer]])
     end
 end
 
@@ -147,14 +168,6 @@ lib.callback.register('city_inventory:requestTrade', function(source, target)
 
     other.closeAll(src)
     return trades.request(src, target)
-end)
-
-lib.callback.register('city_inventory:tradeCash', function(source, amount)
-    local src = source
-    local inventory, reason = getActor(src)
-    if not inventory then return false, reason end
-
-    return trades.setCash(src, amount)
 end)
 
 lib.callback.register('city_inventory:tradeAccept', function(source, accepted)

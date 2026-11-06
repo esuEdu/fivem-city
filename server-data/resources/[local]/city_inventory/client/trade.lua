@@ -20,7 +20,7 @@ function trade.init(hookFns)
     hooks = hookFns
 end
 
----@param view table what the server sends: partner, slots, offer, their, cash, theirCash, accepted, theirAccepted
+---@param view table what the server sends: partner, slots, offer, their, accepted, theirAccepted
 local function send(view)
     SendNUIMessage({
         action = 'setTrade',
@@ -28,8 +28,6 @@ local function send(view)
         slots = view.slots,
         offer = other.toEntries(view.offer),
         their = other.toEntries(view.their),
-        cash = view.cash,
-        theirCash = view.theirCash,
         accepted = view.accepted,
         theirAccepted = view.theirAccepted,
     })
@@ -88,19 +86,9 @@ RegisterNetEvent('city_inventory:client:closeTrade', function(reason)
     end
 end)
 
--- Both accepted but one side can't take the items or doesn't have the cash
+-- Both accepted but one side can't take the items
 RegisterNetEvent('city_inventory:client:tradeProblem', function(problem, name)
     lib.notify({ description = locale(problem, name), type = 'error' })
-end)
-
-RegisterNUICallback('tradeCash', function(data, cb)
-    cb(1)
-
-    local amount = tonumber(data.amount)
-    if not amount then return end
-
-    local success, reason = lib.callback.await('city_inventory:tradeCash', false, math.floor(amount))
-    if not success then hooks.notifyFailure(reason) end
 end)
 
 RegisterNUICallback('tradeAccept', function(data, cb)

@@ -136,6 +136,8 @@ RegisterNetEvent('police:client:RobPlayer', function()
     local playerId = GetPlayerServerId(player)
 
     if not (IsEntityPlayingAnim(playerPed, 'missminuteman_1ig_2', 'handsup_base', 3)
+            -- fivem-city: the hands-up key (scully_emotemenu) plays this one
+            or IsEntityPlayingAnim(playerPed, 'random@mugging3', 'handsup_standing_base', 3)
             or IsEntityPlayingAnim(playerPed, 'mp_arresting', 'idle', 3)
             or isTargetDead(playerId))
     then

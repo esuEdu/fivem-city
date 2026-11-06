@@ -36,7 +36,8 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 
 | Script | What it does |
 |---|---|
-| **Renewed-Banking** | Banks and ATMs: accounts, transfers, job and shared accounts. |
+| **city_economy** | Ours: the money ledger. Owns cash and bank (qbx_core only mirrors them); scripts that pay or charge must be on its allowlist. |
+| **city_bank** | Ours: bank branches (banker NPC, fingerprint, panel with accounts, cards, transfers, loans, bills, history and a staff tab for bankers), ATMs, the card machine item and the `bank_card` item. |
 | **qbx_management** | Boss menu: hire, fire, promote, society money. |
 | **qbx_pawnshop** | Sell stolen and valuable items for cash. |
 
@@ -124,4 +125,5 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 |---|---|
 | **city_base** | Starter template for new scripts. |
 | **city_inventory**, **city_ui**, **ox_inventory** | See Core above. |
+| **city_economy**, **city_bank** | See Money above. Design and rules: `PROMPT_ECONOMIA_FIVEM.md`, `BANCO_DESIGN.md`. |
 | **city_os** | The iFruit Pad tablet (item + F2): lock screen, home, notifications, Settings, and the platform other scripts add their apps to. See [city-os.md](../city-os.md). |
