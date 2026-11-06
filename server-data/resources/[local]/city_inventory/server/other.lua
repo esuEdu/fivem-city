@@ -170,14 +170,6 @@ lib.callback.register('city_inventory:requestTrade', function(source, target)
     return trades.request(src, target)
 end)
 
-lib.callback.register('city_inventory:tradeCash', function(source, amount)
-    local src = source
-    local inventory, reason = getActor(src)
-    if not inventory then return false, reason end
-
-    return trades.setCash(src, amount)
-end)
-
 lib.callback.register('city_inventory:tradeAccept', function(source, accepted)
     local src = source
     local inventory, reason = getActor(src)

@@ -25,6 +25,10 @@ local sessions = {}
 
 local nextId = 0
 
+---Set by server/main.lua (left nil in unit tests): recognises the cash item and writes off cash in a drop that disappears
+---@type { isCash: fun(name: string): boolean, lost: fun(amount: integer, id: string) }?
+drops.cash = nil
+
 ---@param position vector3
 ---@return string? id
 ---@return Drop?
@@ -65,6 +69,17 @@ end
 ---@param id string
 function drops.remove(id)
     if not list[id] then return end
+
+    -- Cash nobody picked up is gone for good: the ledger writes it off too
+    if drops.cash then
+        local amount = 0
+
+        for _, item in pairs(list[id].inventory.items) do
+            if drops.cash.isCash(item.name) then amount = amount + item.count end
+        end
+
+        if amount > 0 then drops.cash.lost(amount, id) end
+    end
 
     for src in pairs(viewers[id]) do
         sessions[src] = nil
@@ -187,15 +202,23 @@ end
 ---@param coords vector3
 ---@param slots? integer
 ---@param maxWeight? integer
+---@param withCash? boolean only for cash already moved to the ground in the ledger (death drops, trade leftovers)
 ---@return string? id
-function drops.custom(items, coords, slots, maxWeight)
+function drops.custom(items, coords, slots, maxWeight, withCash)
     if type(items) ~= 'table' or not coords then return end
 
     local inventory = drops.create(coords, slots, maxWeight)
 
     for _, entry in ipairs(items) do
         local name, count, metadata = entry.name or entry[1], entry.count or entry[2], entry.metadata or entry[3]
-        local success, reason = inventory:add(name, count or 1, metadata)
+        local success, reason
+
+        -- A script dropping cash out of nowhere would create money
+        if not withCash and drops.cash and drops.cash.isCash(name) then
+            success, reason = false, 'cash_locked'
+        else
+            success, reason = inventory:add(name, count or 1, metadata)
+        end
 
         if not success then
             lib.print.warn(('Drop %s: could not add %sx %s (%s)'):format(inventory.id, count, name, reason))

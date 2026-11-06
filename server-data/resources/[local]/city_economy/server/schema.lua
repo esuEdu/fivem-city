@@ -1,7 +1,8 @@
 local schema = {}
 
 -- System accounts: where new money comes from and where spent money goes (PROMPT_ECONOMIA_FIVEM.md 4)
-schema.SYSTEM_ACCOUNTS = { 'WORLD_MINT', 'WORLD_SINK', 'GOV_TREASURY', 'BANK_RESERVE' }
+-- CASH_GROUND: cash lying in drops and trade offers (lost on restart). CASH_STORED: cash in stashes, trunks, gloveboxes.
+schema.SYSTEM_ACCOUNTS = { 'WORLD_MINT', 'WORLD_SINK', 'GOV_TREASURY', 'BANK_RESERVE', 'CASH_GROUND', 'CASH_STORED' }
 
 function schema.create()
     -- unique_key = '<type>:<owner>' keeps one personal and one cash account per character.

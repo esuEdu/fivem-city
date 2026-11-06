@@ -143,9 +143,13 @@ return {
         consume = 0,
     },
 
+    -- The player's cash itself: city_economy's ledger follows every move of it (server/cashflow.lua). No weight, so
+    -- cash from an ATM or a sale always fits.
     ['money'] = {
         label = 'Money',
         category = 'valuable',
+        weight = 0,
+        description = 'Cash',
     },
 
     ['black_money'] = {

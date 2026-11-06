@@ -23,8 +23,6 @@ return {
         city_inventory = {
             { reason = '^shop%-refund$', credit = true, perHour = 500000 },
             { reason = '^shop%-', debit = true },
-            { reason = '^trade$', credit = true, debit = true, perHour = 500000 },
-            { reason = '^trade%-refund$', credit = true, perHour = 500000 },
             -- RemoveItem('money') from scripts like ox_fuel. Never credit: AddItem('money') from any script would print cash.
             { reason = '^inventory%-cash%-item$', debit = true },
         },

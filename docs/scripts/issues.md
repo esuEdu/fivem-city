@@ -11,7 +11,7 @@ None known.
 ### Fixed in `city_inventory`
 
 - **EMS shops:** our **Medicine Cabinet** stood 3 m from qbx_ambulancejob's free **Armory** at Pillbox; it's removed from `data/shops.lua`.
-- **ox_fuel:** pays with a **"money" item**; `city_inventory` treats that item as the player's qbx cash (`server/cash.lua`, `Config.CashItem`).
+- **ox_fuel:** pays with the **"money" item**, which is the player's real cash (`server/cash.lua`, `server/cashflow.lua`, `Config.CashItem`).
 - **qbx_police** (radial **Search** and **Rob**, via `openNearbyInventory`) and **qbx_adminmenu** (**Open inventory**, via `openInventory('player', id)`): player search (`server/searches.lua`).
 
 ### Already patched
@@ -58,3 +58,4 @@ Renewed-Banking was removed. qbx_police (fines, impound), qbx_ambulancejob (`dep
 - **Job accounts**: only bosses (`isboss` grades) manage them; they can add view-only people. qbx_management still doesn't show their balance.
 - **Test commands** (admin on duty): `/posdemo [amount]` opens the card machine's customer screen with a charge to yourself; `/bankwarp [id] [days]` moves a character's bank dates back (bills, installments, card cycle, scheduled transfers, pending limits) and runs the scheduler at once. Both are written to `bank_audit`.
 - **Staff can't act on themselves**: approving their own loan, changing ceilings of their own cards (or cards on accounts they can use) and freezing/unfreezing those accounts is refused and flagged. Only admins lift fraud and staff freezes; bankers lift debt freezes.
+- **Cash item**: `money` is the player's cash. Every move (ground, trade, stash/trunk, another player, death drop) goes through city_economy's ledger; cash on the ground lives in the `CASH_GROUND` account and is written off when a drop expires or the resource restarts, cash in storage lives in `CASH_STORED`. Trades no longer have a typed cash field: drag the money item into the offer.

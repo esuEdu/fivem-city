@@ -1,8 +1,46 @@
+local Inventory = require 'server.inventory'
 local players = require 'server.players'
 local stashes = require 'server.stashes'
 local trades = require 'server.trades'
+local drops = require 'server.drops'
 local other = require 'server.other'
 local storage = require 'server.storage'
+local cashflow = require 'server.cashflow'
+
+-- The cash item is the player's cash: every move of it goes through city_economy's ledger (server/cashflow.lua).
+-- The modules only get these hooks here, so their unit tests run without the economy.
+Inventory.cashHooks = { before = cashflow.beforeTransfer, after = cashflow.afterTransfer }
+
+drops.cash = {
+    isCash = cashflow.isCash,
+    lost = function(amount, id) cashflow.move('ground', 'sink', amount, { drop = id }) end,
+}
+
+trades.cashHooks = {
+    isCash = cashflow.isCash,
+    toPocket = function(inventory, amount) return cashflow.move('ground', cashflow.side(inventory), amount) end,
+    toGround = function(inventory, amount) return cashflow.move(cashflow.side(inventory), 'ground', amount) end,
+}
+
+players.cash = {
+    item = Config.CashItem,
+    isCash = cashflow.isCash,
+    expected = function(src) return math.tointeger(exports.qbx_core:GetMoney(src, 'cash')) end,
+    mismatch = function(src, have, want)
+        if GetResourceState('city_economy') ~= 'started' then return end
+        exports.city_economy:Flag(src, 'cash_item_mismatch', 4, { inventory = have, ledger = want })
+    end,
+}
+
+-- Drops and trade offers only live in memory: cash that was on the ground when this resource stopped is gone
+CreateThread(function()
+    while GetResourceState('city_economy') ~= 'started' do Wait(500) end
+
+    exports.city_economy:CashResetGround()
+
+    -- Cash can only move once the old ground balance is written off, or a drop made meanwhile would be wiped too
+    cashflow.ready = true
+end)
 
 ---@param src integer
 local function loadPlayer(src)

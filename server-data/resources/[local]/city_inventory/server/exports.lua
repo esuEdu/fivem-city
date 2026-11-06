@@ -11,8 +11,21 @@ local other = require 'server.other'
 local players = require 'server.players'
 local hooks = require 'server.hooks'
 local cash = require 'server.cash'
+local cashflow = require 'server.cashflow'
 
 local resolve = inventories.resolve
+
+---Cash can't be added to or removed from a stash, drop or trade by a script: only moved by players (cashflow) or,
+---for a player's own pocket, through qbx money (cash.lua). Anything else would create or destroy money off the ledger.
+---@param inventory Inventory
+---@param name unknown
+---@return boolean blocked
+local function cashBlocked(inventory, name)
+    if inventory.type == 'player' or not cashflow.isCash(name) then return false end
+
+    lib.print.warn(('%s tried to change cash in %s %s directly, refused'):format(tostring(GetInvokingResource()), inventory.type, tostring(inventory.id)))
+    return true
+end
 
 ---ox_inventory accepts a string as shorthand for { type = string }
 ---@param metadata unknown
@@ -72,6 +85,8 @@ exports('AddItem', function(inv, name, count, metadata, slot, cb)
 
     if inventory and cash.is(inventory, name) then
         success, reason = cash.add(inventory, count)
+    elseif inventory and cashBlocked(inventory, name) then
+        reason = 'cash_locked'
     elseif inventory then
         success, reason = finish(inventory, inventory:add(name, count, toMetadata(metadata), slot and math.tointeger(slot)))
     end
@@ -87,6 +102,7 @@ exports('RemoveItem', function(inv, name, count, metadata, slot)
     local inventory = resolve(inv)
     if not inventory then return false, 'invalid_inventory' end
     if cash.is(inventory, name) then return cash.remove(inventory, count) end
+    if cashBlocked(inventory, name) then return false, 'cash_locked' end
 
     return finish(inventory, inventory:remove(name, count, toMetadata(metadata), slot and math.tointeger(slot)))
 end)
@@ -95,20 +111,49 @@ exports('SetItem', function(inv, name, count, metadata)
     local inventory = resolve(inv)
     if not inventory then return false, 'invalid_inventory' end
 
+    -- A pocket's cash item is only ever set by qbx_core mirroring city_economy's ledger
+    if cashflow.isCash(name) and (inventory.type ~= 'player' or GetInvokingResource() ~= 'qbx_core') then
+        lib.print.warn(('%s tried to set cash in %s %s directly, refused'):format(tostring(GetInvokingResource()), inventory.type, tostring(inventory.id)))
+        return false, 'cash_locked'
+    end
+
     return finish(inventory, inventory:set(name, count, toMetadata(metadata)))
 end)
+
+---Clearing an inventory destroys the cash in it (written to the ledger); if the ledger refuses, the cash stays
+---@param inventory Inventory
+---@param keep unknown
+---@return unknown keep
+local function clearCash(inventory, keep)
+    local kept = type(keep) == 'table' and keep or { keep }
+
+    for _, name in ipairs(kept) do
+        if cashflow.isCash(name) then return keep end
+    end
+
+    local amount = cashflow.count(inventory)
+    local side = cashflow.side(inventory)
+
+    if amount > 0 and not (side and cashflow.move(side, 'sink', amount, { cleared_by = GetInvokingResource() })) then
+        kept[#kept + 1] = Config.CashItem
+        return kept
+    end
+
+    return keep
+end
 
 exports('ClearInventory', function(inv, keep)
     local inventory = resolve(inv)
     if not inventory then return end
 
-    inventory:clear(keep)
+    inventory:clear(clearCash(inventory, keep))
     inventories.sync(inventory)
 end)
 
 exports('CanCarryItem', function(inv, name, count, metadata)
     local inventory = resolve(inv)
-    if inventory and cash.is(inventory, name) then return true end
+    -- Cash has no weight but still needs a slot to land in
+    if inventory and cash.is(inventory, name) then return inventory:canFit(Config.CashItem, math.tointeger(count) or 1) end
 
     return inventory and inventory:canFit(name, count, toMetadata(metadata)) or false
 end)
@@ -173,16 +218,23 @@ exports('CreateDropFromPlayer', function(playerId)
     local inventory = src and players.get(src)
     if not inventory or not next(inventory.items) then return end
 
+    -- The cash goes to the ground in the ledger first; if that's refused it stays in the pocket
+    local amount = cashflow.count(inventory)
+    local cashMoved = amount == 0 or cashflow.move(cashflow.side(inventory), 'ground', amount, { reason = 'drop_from_player' })
     local items = {}
 
     for _, item in pairs(inventory.items) do
-        items[#items + 1] = { name = item.name, count = item.count, metadata = item.metadata }
+        if cashMoved or not cashflow.isCash(item.name) then
+            items[#items + 1] = { name = item.name, count = item.count, metadata = item.metadata }
+        end
     end
 
-    -- Sized to hold all of it, whatever it weighs
-    local id = drops.custom(items, GetEntityCoords(GetPlayerPed(src)), #items, inventory.weight)
+    if #items == 0 then return end
 
-    inventory:clear()
+    -- Sized to hold all of it, whatever it weighs
+    local id = drops.custom(items, GetEntityCoords(GetPlayerPed(src)), #items, inventory.weight, true)
+
+    inventory:clear(not cashMoved and Config.CashItem or nil)
     players.sync(src)
 
     return id
