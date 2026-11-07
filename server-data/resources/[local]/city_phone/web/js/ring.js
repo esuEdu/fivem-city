@@ -93,7 +93,14 @@ export function setRings(rings) {
         }
     }
 
-    for (const id of [...players.keys()]) if (!seen.has(id)) stop(id);
+    // The alarm is not a ringing phone: setRings never stops it
+    for (const id of [...players.keys()]) if (!seen.has(id) && id !== 'alarm') stop(id);
+}
+
+// An alarm or timer on this phone: loud, only for this player, until stopped
+export function setAlarm(on, tone) {
+    stop('alarm');
+    if (on) start({ id: 'alarm', tone: TONES[tone] ? tone : 'marimba', volume: 1, vibrate: true });
 }
 
 // Settings: a few seconds of a tone
