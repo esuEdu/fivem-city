@@ -9,6 +9,10 @@ Config.Languages = { 'en', 'pt-br' }
 Config.Fonts = { 'inter', 'poppins', 'roboto', 'nunito' }
 Config.Wallpapers = { 'aurora', 'sunset', 'ocean', 'forest', 'graphite', 'candy' }
 Config.Brightness = { min = 30, max = 100 }
+Config.Ringtones = { 'classic', 'marimba', 'chime', 'pulse' }
+
+-- Other players hear a ringing phone up to this far away (meters), quieter with distance
+Config.RingDistance = 20.0
 
 -- Holding the phone
 Config.Prop = { model = `prop_npc_phone_02`, bone = 28422, offset = vec3(0.0, 0.0, 0.0), rotation = vec3(0.0, 0.0, 0.0) }

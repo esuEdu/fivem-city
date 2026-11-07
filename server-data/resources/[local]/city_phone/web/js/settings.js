@@ -1,6 +1,7 @@
 // The built-in Settings app: profile, wallpaper, appearance, brightness, font, sounds, Do Not Disturb, language and
 // about. Every change is saved on the server (character metadata), which checks the value again.
 import { t } from './i18n.js';
+import { TONES, preview } from './ring.js';
 import { state, emit } from './state.js';
 import { el, icon, post } from './util.js';
 
@@ -97,13 +98,17 @@ function pop() {
     setTimeout(() => node.remove(), 350);
 }
 
-function choicePage(title, key, options, render) {
+function choicePage(title, key, options, render, onPick) {
     return page(() => t(title), (redraw) => [
         group(null, ...Object.entries(options).map(([value, text]) => {
             const item = row({
                 label: text,
                 right: check(state.settings[key] === value),
-                onClick: async () => { await saveSetting(key, value); redraw(); },
+                onClick: async () => {
+                    if (onPick) onPick(value);
+                    await saveSetting(key, value);
+                    redraw();
+                },
             });
             if (render) render(item, value);
             return item;
@@ -165,6 +170,8 @@ function rootPage() {
                     onClick: () => push(choicePage('settings.font', 'font', FONTS, (item, value) => { item.style.fontFamily = FONTS[value]; })) }),
             ),
             group(null,
+                row({ label: t('settings.ringtone'), iconName: 'bell', color: '#ff2d55', value: t(`ringtones.${state.settings.ringtone}`), link: true,
+                    onClick: () => push(choicePage('settings.ringtone', 'ringtone', ringtoneNames(), null, preview)) }),
                 row({ label: t('settings.silent'), iconName: 'silent', color: '#ff375f', right: toggleSwitch('silent'), onClick: flip('silent') }),
                 row({ label: t('settings.dnd'), iconName: 'moon', color: '#5e5ce6', right: toggleSwitch('dnd'), onClick: flip('dnd') }),
             ),
@@ -176,6 +183,10 @@ function rootPage() {
             ),
         ];
     }, true);
+}
+
+function ringtoneNames() {
+    return Object.fromEntries(Object.keys(TONES).map((tone) => [tone, t(`ringtones.${tone}`)]));
 }
 
 // Builds the app inside its view

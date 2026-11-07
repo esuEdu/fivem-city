@@ -15,6 +15,7 @@ client_scripts {
     'client/main.lua',
     'client/notify.lua',
     'client/flashlight.lua',
+    'client/ring.lua',
     'client/compat.lua',
 }
 

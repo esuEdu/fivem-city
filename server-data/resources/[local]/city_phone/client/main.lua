@@ -93,6 +93,15 @@ end)
 exports('IsOpen', function() return isOpen end)
 exports('Close', close)
 
+---Opens the phone from code (an incoming call). Needs the phone item; returns whether it opened.
+exports('Open', function()
+    if isOpen then return true end
+    if exports.city_inventory:GetItemCount(Config.Item) < 1 then return false end
+
+    open()
+    return isOpen
+end)
+
 ---The settings the phone uses now (theme, language, font, ...), for apps that draw outside the phone
 exports('GetSettings', function() return profile and profile.settings end)
 
