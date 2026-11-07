@@ -67,6 +67,7 @@ export function openContact(contact) {
         h('div', 'card', null, h('span', 'avatar avatar--big', initials(contact.name)), h('h2', '', contact.name), h('span', 'item__side', formatNumber(contact.number))),
         h('div', 'actions', null,
             button('action', null, () => dial(contact.number), h('span', '', '☎'), h('span', '', t('contacts.call'))),
+            button('action', null, () => call('message', { number: contact.number }), h('span', '', '✉'), h('span', '', t('contacts.message'))),
             button('action', null, favorite, h('span', '', contact.favorite ? '★' : '☆'), h('span', '', t('contacts.favorite'))),
             button('action', null, () => editContact(contact), h('span', '', '✎'), h('span', '', t('contacts.edit'))),
         ),
