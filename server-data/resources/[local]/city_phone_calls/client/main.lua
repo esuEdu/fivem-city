@@ -49,3 +49,9 @@ for name, keys in pairs(FORWARD) do
         cb({ ok = result ~= false and result ~= nil, result = result, reason = reason })
     end)
 end
+
+-- "Message" on a contact: opens that chat in the Messages app (if it is installed)
+RegisterNUICallback('message', function(data, cb)
+    if type(data.number) == 'string' then TriggerEvent('city_phone_messages:client:openWith', data.number) end
+    cb({ ok = true })
+end)

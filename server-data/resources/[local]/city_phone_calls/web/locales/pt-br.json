@@ -31,6 +31,7 @@
     "contacts.full": "Seus contatos estão cheios",
     "contacts.invalid": "Confira o nome e o número",
     "contacts.call": "Ligar",
+    "contacts.message": "Mensagem",
     "contacts.favorite": "Favorito",
     "contacts.block": "Bloquear este número",
     "contacts.unblock": "Desbloquear",

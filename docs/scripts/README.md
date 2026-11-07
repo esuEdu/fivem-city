@@ -100,6 +100,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | Script | What it does |
 |---|---|
 | **city_phone** | Ours, replaces npwd: the phone (used from the `phone` item): lock screen, home screen, dynamic island, control center, multitask and Settings. Each app is its own resource that registers with it. |
+| **city_phone_messages** | Ours: the Messages app: chats and groups (up to 10), delivered/read, reactions, fixed and live (15 min) location. |
 | **city_phone_calls** | Ours: the Phone app: calls through pma-voice (up to 4 people, mute, hidden number), contacts, favorites, recents, blocked numbers and sharing your contact with people nearby. |
 | **pma-voice** | Proximity voice chat. |
 | **mm_radio** | Radio item for police, EMS and other channels. |

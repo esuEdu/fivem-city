@@ -29,8 +29,9 @@ export async function loadTexts() {
     }
 }
 
+// Kept as asked even before the texts finish loading; t() falls back to English
 export function setLanguage(lang) {
-    language = dictionaries[lang] ? lang : 'en';
+    language = lang === 'pt-br' ? 'pt-br' : 'en';
 }
 
 export function t(key, ...values) {

@@ -53,8 +53,19 @@ exports('RegisterApp', function(data)
         page = url(resource, data.page),
         dock = data.dock == true,
         order = tonumber(data.order) or 100,
+        badge = registered[data.id] and registered[data.id].badge or 0,
     }
 
+    send('apps', { apps = apps.list() })
+end)
+
+---The red count on an app's icon (unread messages, missed calls); 0 hides it
+exports('SetBadge', function(id, count)
+    local app = registered[id]
+    count = math.max(0, math.floor(tonumber(count) or 0))
+    if not app or app.badge == count then return end
+
+    app.badge = count
     send('apps', { apps = apps.list() })
 end)
 
