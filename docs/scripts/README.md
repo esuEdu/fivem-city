@@ -64,6 +64,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **qbx_police** | Police: cuffing, escorting, evidence, fines, jail, locker. |
 | **city_hospital** | Ours, replaces qbx_ambulancejob: EMS job (duty, garage, armory, locker, Pillbox elevator, calls, examine/revive/treat/bill), downed screen, `/finalizado`, hospital respawn, beds, NPC reception and the NPC ambulance. |
 | **qbx_mechanicjob** | Mechanic: repairs and parts, with the job's stash. |
+| **city_dispatch** | Ours: calls to the city services from the phone (type, text, anonymous, location): police and mechanics on duty get a phone notification, a blip and `/calls`; 192 goes to city_hospital's EMS calls. The caller only hears that someone is on the way. |
 | **qbx_taxijob** | Taxi with NPC fares. |
 | **qbx_busjob** | Bus routes. |
 | **qbx_truckerjob** | Delivery trucker. |
@@ -103,7 +104,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_phone_camera** | Ours: the Camera app: back camera with zoom, selfie, filters (game timecycles), HUD hidden; the server takes the picture with screencapture. |
 | **city_phone_photos** | Ours: the Photos app: up to 300 photos per character in the database, favorites, delete, photo wallpaper. |
 | **city_phone_messages** | Ours: the Messages app: chats and groups (up to 10), delivered/read, reactions, fixed and live (15 min) location. |
-| **city_phone_calls** | Ours: the Phone app: calls through pma-voice (up to 4 people, mute, hidden number), contacts, favorites, recents, blocked numbers and sharing your contact with people nearby. |
+| **city_phone_calls** | Ours: the Phone app: calls through pma-voice (up to 4 people, mute, hidden number), contacts, favorites, recents, blocked numbers and sharing your contact with people nearby, and the city services (190 police, 192 EMS, mechanic) as fixed contacts that send a written call. |
 | **pma-voice** | Proximity voice chat. |
 | **mm_radio** | Radio item for police, EMS and other channels. |
 | **qbx_chat_theme** | Chat style. |
