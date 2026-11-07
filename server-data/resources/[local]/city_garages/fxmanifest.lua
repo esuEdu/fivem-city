@@ -38,7 +38,6 @@ files {
 dependencies {
     'ox_lib',
     'qbx_core',
-    'qbx_vehicles',
     'ox_target',
     'city_ui',
     'city_economy',

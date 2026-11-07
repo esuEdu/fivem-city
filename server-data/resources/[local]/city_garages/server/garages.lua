@@ -2,6 +2,9 @@
 
 local settings = require 'server.config'
 
+-- qbx_vehicles is server_only, so it can't be in the manifest's dependencies (clients would refuse to start us)
+assert(lib.checkDependency('qbx_vehicles', '1.3.1', true))
+
 local VEHICLES = exports.qbx_core:GetVehiclesByName()
 local KINDS = { car = true, air = true, sea = true }
 
