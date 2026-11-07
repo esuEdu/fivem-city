@@ -29,6 +29,7 @@ Config.Permissions = {
     bucket = 'admin',
     setJob = 'admin',
     setGang = 'admin',
+    setStats = 'admin',   -- armor, hunger, thirst
 
     -- ban list and staff log
     unban = 'admin',

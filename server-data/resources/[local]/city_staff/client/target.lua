@@ -7,6 +7,13 @@ RegisterNetEvent('city_staff:client:kill', function()
     SetEntityHealth(cache.ped, 0)
 end)
 
+-- Staff "Revive" on a player who isn't down: back to full health
+RegisterNetEvent('city_staff:client:fullHealth', function()
+    if GetInvokingResource() then return end
+
+    SetEntityHealth(cache.ped, GetEntityMaxHealth(cache.ped))
+end)
+
 RegisterNetEvent('city_staff:client:warned', function(reason)
     if GetInvokingResource() or type(reason) ~= 'string' then return end
 

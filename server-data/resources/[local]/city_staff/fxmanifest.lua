@@ -24,6 +24,7 @@ server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/main.lua',
     'server/players.lua',
+    'server/character.lua',
     'server/sanctions.lua',
     'server/reports.lua',
     'server/stats.lua',

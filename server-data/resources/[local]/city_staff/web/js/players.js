@@ -1,5 +1,6 @@
 import { el, L, run, icon, pill, confirmButton, searchField, formatTime, duration, money, healthKind } from './ui.js';
 import { app, can, go } from './main.js';
+import { characterCard } from './character.js';
 
 let filter = '';
 let selected = null;
@@ -70,8 +71,9 @@ async function playerDetail(id) {
 
     const infoRow = (iconName, label, value) => el('div', { class: 'info-row' }, icon(iconName, 18), el('span', { text: label }), el('span', { class: 'value', text: value || '—' }));
 
-    const actionButton = (action, iconName, label) => can(action)
-        ? el('button', { class: 'action', onclick: act(action) }, icon(iconName), label)
+    // state: 'on' while the player is frozen or cuffed, 'attention' when the button is what they need (Revive while down)
+    const actionButton = (action, iconName, label, state = '') => can(action)
+        ? el('button', { class: `action ${state}`, 'aria-pressed': state === 'on' ? 'true' : null, onclick: act(action) }, el('span', { class: 'action-icon' }, icon(iconName, 22, 1.9)), el('span', { text: label }))
         : null;
 
     const actions = [
@@ -79,12 +81,12 @@ async function playerDetail(id) {
         actionButton('bring', 'bring', L('ui_bring')),
         actionButton('spectate', 'spectate', L('ui_spectate')),
         actionButton('heal', 'heal', L('ui_heal')),
-        actionButton('revive', 'revive', L('ui_revive')),
-        actionButton('freeze', 'freeze', player.frozen ? L('ui_unfreeze') : L('ui_freeze')),
-        actionButton('cuff', 'cuff', player.cuffed ? L('ui_uncuff') : L('ui_cuff')),
+        actionButton('revive', 'revive', player.dead ? L('ui_revive') : L('ui_full_health'), player.dead ? 'attention' : ''),
+        actionButton('freeze', 'freeze', player.frozen ? L('ui_unfreeze') : L('ui_freeze'), player.frozen ? 'on' : ''),
+        actionButton('cuff', 'cuff', player.cuffed ? L('ui_uncuff') : L('ui_cuff'), player.cuffed ? 'on' : ''),
         actionButton('inventory', 'inventory', L('ui_inventory')),
         actionButton('clothing', 'clothing', L('ui_clothing')),
-        can('kill') ? confirmButton([icon('kill'), L('ui_kill')], act('kill'), 'danger', 'action') : null,
+        can('kill') ? confirmButton([el('span', { class: 'action-icon' }, icon('kill', 22, 1.9)), el('span', { text: L('ui_kill') })], act('kill'), 'danger', 'action') : null,
     ].filter(Boolean);
 
     return el('div', { class: 'stack' },
@@ -101,48 +103,19 @@ async function playerDetail(id) {
             stat(L('ui_bank'), money(player.bank)),
         ),
         el('div', { class: 'card flush' },
-            infoRow('job', L('ui_job'), player.jobGrade ? `${player.job} · ${player.jobGrade}` : player.job),
-            infoRow('gang', L('ui_gang'), player.gangGrade ? `${player.gang} · ${player.gangGrade}` : player.gang),
+            // Job, gang and bucket move to the Character card for staff who can change them
+            can('setJob') && app.jobs ? null : infoRow('job', L('ui_job'), player.jobGrade ? `${player.job} · ${player.jobGrade}` : player.job),
+            can('setGang') && app.gangs ? null : infoRow('gang', L('ui_gang'), player.gangGrade ? `${player.gang} · ${player.gangGrade}` : player.gang),
             infoRow('place', L('ui_location'), player.place),
             infoRow('vehicle', L('ui_vehicle'), player.vehicle ? `${player.vehicle.name || L('ui_unknown_vehicle')} · ${player.vehicle.plate}` : L('ui_on_foot')),
             infoRow('clock', L('ui_ping'), `${player.ping} ms`),
-            infoRow('bucket', L('ui_bucket'), String(player.bucket)),
+            can('bucket') ? null : infoRow('bucket', L('ui_bucket'), String(player.bucket)),
             infoRow('license', L('ui_license'), player.license),
         ),
         actions.length ? el('div', { class: 'card actions' }, actions) : null,
-        groupForms(player, act),
+        characterCard(player, act),
         sanctions(player, act),
     );
-}
-
-// Job, gang and routing bucket forms, for the levels that have them
-function groupForms(player, act) {
-    const rows = [];
-
-    for (const kind of ['job', 'gang']) {
-        const action = kind === 'job' ? 'setJob' : 'setGang';
-        const groups = kind === 'job' ? app.jobs : app.gangs;
-        if (!can(action) || !groups) continue;
-
-        const grade = el('select', { class: 'field' });
-        const name = el('select', { class: 'field wide', onchange: () => fillGrades() }, groups.map((group) => el('option', { value: group.name, text: group.label })));
-        const fillGrades = () => {
-            const group = groups.find((entry) => entry.name === name.value);
-            grade.replaceChildren(...(group ? group.grades : []).map((entry) => el('option', { value: String(entry.level), text: `${entry.level} · ${entry.name}` })));
-        };
-        fillGrades();
-
-        rows.push(el('div', { class: 'form-row' }, el('span', { class: 'label', text: L(`ui_${kind}`) }), name, grade,
-            el('button', { class: 'kit-btn', text: L('ui_set'), onclick: () => act(action, { name: name.value, grade: Number(grade.value) })() })));
-    }
-
-    if (can('bucket')) {
-        const bucket = el('input', { class: 'field', type: 'number', min: '0', max: String(app.maxBucket), value: String(player.bucket), 'aria-label': L('ui_bucket') });
-        rows.push(el('div', { class: 'form-row' }, el('span', { class: 'label', text: L('ui_bucket') }), bucket,
-            el('button', { class: 'kit-btn', text: L('ui_set'), onclick: () => act('bucket', { bucket: Number(bucket.value) })() })));
-    }
-
-    return rows.length ? el('div', { class: 'card form' }, el('strong', { text: L('ui_change') }), rows) : null;
 }
 
 function sanctions(player, act) {

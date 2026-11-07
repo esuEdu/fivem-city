@@ -65,7 +65,11 @@ staff.register('player', function(_, data)
     local playerData = player.PlayerData
     local license = GetPlayerIdentifierByType(tostring(target), 'license2') or GetPlayerIdentifierByType(tostring(target), 'license')
 
+    info.jobName = playerData.job.name
+    info.jobLevel = playerData.job.grade and playerData.job.grade.level or 0
     info.jobGrade = playerData.job.grade and playerData.job.grade.name
+    info.gangName = playerData.gang.name
+    info.gangLevel = playerData.gang.grade and playerData.gang.grade.level or 0
     info.gang = playerData.gang.label
     info.gangGrade = playerData.gang.grade and playerData.gang.grade.name
     info.ping = GetPlayerPing(tostring(target))
@@ -80,6 +84,8 @@ staff.register('player', function(_, data)
     local vehicleInfo = vehicle ~= 0 and exports.qbx_core:GetVehiclesByHash()[GetEntityModel(vehicle)]
 
     info.armor = GetPedArmour(ped)
+    info.hunger = math.floor(tonumber(playerData.metadata.hunger) or 100)
+    info.thirst = math.floor(tonumber(playerData.metadata.thirst) or 100)
     info.cash = exports.qbx_core:GetMoney(target, 'cash') or 0
     info.bank = exports.qbx_core:GetMoney(target, 'bank') or 0
     info.coords = GetEntityCoords(ped)
@@ -129,7 +135,8 @@ staff.register('heal', function(src, data)
     local target, reason = staff.target(src, data)
     if not target then return false, reason end
 
-    exports.qbx_medical:Heal(target)
+    -- Wounds and bleeding only (qbx_medical's own heal); health and hunger stay as they are
+    TriggerClientEvent('qbx_medical:client:heal', target, 'full')
     staff.log(src, 'heal', target)
 
     return true
@@ -139,7 +146,15 @@ staff.register('revive', function(src, data)
     local target, reason = staff.target(src, data)
     if not target then return false, reason end
 
-    exports.qbx_medical:Revive(target)
+    local metadata = exports.qbx_core:GetPlayer(target).PlayerData.metadata
+
+    -- Down: a full revive. Alive: just back to full health
+    if metadata.isdead or metadata.inlaststand then
+        exports.qbx_medical:Revive(target)
+    else
+        TriggerClientEvent('city_staff:client:fullHealth', target)
+    end
+
     staff.log(src, 'revive', target)
 
     return true
@@ -188,42 +203,6 @@ staff.register('clothing', function(src, data)
 
     return true
 end)
-
-staff.register('bucket', function(src, data)
-    local target, reason = staff.target(src, data, { outrank = true })
-    if not target then return false, reason end
-
-    local bucket = rules.toId(data.bucket)
-    if not bucket or bucket > Config.MaxBucket then return false, 'invalid' end
-
-    exports.qbx_core:SetPlayerBucket(target, bucket)
-    staff.log(src, 'bucket', target, tostring(bucket))
-
-    return true
-end)
-
----@param kind 'job' | 'gang'
-local function setGroup(kind)
-    return function(src, data)
-        local target, reason = staff.target(src, data, { outrank = true })
-        if not target then return false, reason end
-
-        local groups = kind == 'job' and exports.qbx_core:GetJobs() or exports.qbx_core:GetGangs()
-        local group = type(data.name) == 'string' and groups[data.name]
-        local grade = rules.toId(data.grade)
-        if not group or not grade or not group.grades[grade] then return false, 'invalid' end
-
-        local success = kind == 'job' and exports.qbx_core:SetJob(target, data.name, grade) or kind == 'gang' and exports.qbx_core:SetGang(target, data.name, grade)
-        if not success then return false, 'failed' end
-
-        staff.log(src, kind == 'job' and 'setJob' or 'setGang', target, ('%s %d'):format(data.name, grade))
-
-        return true
-    end
-end
-
-staff.register('setJob', setGroup('job'))
-staff.register('setGang', setGroup('gang'))
 
 -- Only checks and logs: the staff member's client then opens the inventory, and city_inventory checks again
 staff.register('inventory', function(src, data)
