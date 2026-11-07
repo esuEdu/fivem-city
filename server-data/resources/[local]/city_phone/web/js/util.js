@@ -13,10 +13,11 @@ export function post(name, data = {}) {
 }
 
 // Text always goes in with textContent; only our own constant icons are parsed as markup
-export function el(tag, className, text) {
+export function el(tag, className, text, ...children) {
     const node = document.createElement(tag);
     if (className) node.className = className;
     if (text !== undefined && text !== null) node.textContent = text;
+    node.append(...children.filter(Boolean));
     return node;
 }
 

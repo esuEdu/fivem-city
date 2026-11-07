@@ -2,26 +2,33 @@
 // sends updates (a call starting or ending); data comes from our resource's callbacks.
 import { renderCall } from './callscreen.js';
 import { contacts, closeSheet, setRefresh } from './contacts.js';
-import { state, call, loadTexts, setLanguage, t } from './lib.js';
+import { state, call, loadTexts, setLanguage, t, h, button, icon, applyContext } from './lib.js';
 import { favorites, recents, keypad } from './tabs.js';
 
-const TABS = { favorites, recents, contacts, keypad };
+const TABS = [
+    ['favorites', 'star', favorites],
+    ['recents', 'clock', recents],
+    ['contacts', 'person', contacts],
+    ['keypad', 'keypad', keypad],
+];
+
 const search = document.createElement('input');
-search.className = 'search';
 search.addEventListener('input', () => render());
 
-function render() {
-    const view = TABS[state.tab];
-    document.getElementById('content').replaceChildren(...view(render, search).flat().filter(Boolean));
-
-    for (const tab of document.querySelectorAll('#tabbar button')) {
-        tab.classList.toggle('tab--on', tab.dataset.tab === state.tab);
-    }
+function renderTabbar() {
+    document.getElementById('tabbar').replaceChildren(...TABS.map(([id, iconName]) => button(`k-tab${state.tab === id ? ' k-tab--on' : ''}`, null, () => {
+        state.tab = id;
+        closeSheet();
+        render();
+        if (id === 'recents') refresh();
+    }, icon(iconName), h('span', '', t(`tabs.${id}`)))));
 }
 
-function translate() {
-    for (const node of document.querySelectorAll('[data-text]')) node.textContent = t(node.dataset.text);
+function render() {
+    const view = TABS.find(([id]) => id === state.tab)[2];
     search.placeholder = t('contacts.search');
+    document.getElementById('content').replaceChildren(...view(render, search).flat().filter(Boolean));
+    renderTabbar();
 }
 
 async function refresh() {
@@ -39,25 +46,15 @@ async function refresh() {
     renderCall();
 }
 
-function applyContext(context) {
-    const root = document.documentElement;
-    root.dataset.theme = context.theme === 'light' ? 'light' : 'dark';
-    root.style.setProperty('--font', context.font || 'Inter');
-
-    for (const [name, value] of Object.entries(context.colors || {})) {
-        if (value) root.style.setProperty(`--${name}`, value);
-    }
-
-    setLanguage(context.language);
-    translate();
-    render();
-    renderCall();
-}
-
 window.addEventListener('message', (event) => {
     const message = event.data || {};
 
-    if (message.type === 'city_phone:context') applyContext(message);
+    if (message.type === 'city_phone:context') {
+        applyContext(message);
+        setLanguage(message.language);
+        render();
+        renderCall();
+    }
 
     if (message.type === 'city_phone:message') {
         const data = message.data || {};
@@ -73,19 +70,9 @@ window.addEventListener('message', (event) => {
     }
 });
 
-for (const tab of document.querySelectorAll('#tabbar button')) {
-    tab.addEventListener('click', () => {
-        state.tab = tab.dataset.tab;
-        closeSheet();
-        render();
-        if (state.tab === 'recents') refresh();
-    });
-}
-
 async function start() {
     await loadTexts();
     setRefresh(refresh);
-    translate();
     render();
     await refresh();
 }

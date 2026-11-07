@@ -7,6 +7,7 @@ import { setActivity } from './island.js';
 import { initLock, lock } from './lock.js';
 import { initNotifications, addNotification } from './notifications.js';
 import { setRings } from './ring.js';
+import { fit, initResize } from './resize.js';
 import { refreshSettings } from './settings.js';
 import { state, on, emit } from './state.js';
 import { initSwitcher, closeSwitcher, isSwitcherOpen } from './switcher.js';
@@ -14,14 +15,7 @@ import { $, post, applyTheme } from './util.js';
 import { initViews, launch, goHome, messageApp, activeApp } from './views.js';
 
 const FONTS = { inter: 'Inter', poppins: 'Poppins', roboto: 'Roboto', nunito: 'Nunito' };
-const PHONE_HEIGHT = 868;
-const MAX_SCREEN_SHARE = 0.86;
 let pendingApp = null;
-
-function fit() {
-    const scale = Math.min(1, (window.innerHeight * MAX_SCREEN_SHARE) / PHONE_HEIGHT);
-    $('phone').style.setProperty('--scale', scale.toFixed(3));
-}
 
 function applySettings(key) {
     const { theme, font, wallpaper, brightness, language } = state.settings;
@@ -33,6 +27,7 @@ function applySettings(key) {
     document.documentElement.style.setProperty('--font', FONTS[font] || 'Inter');
     screen.className = `screen wp-${wallpaper}`;
     $('dim').style.opacity = String(((100 - brightness) / 100) * 0.75);
+    fit();
 
     if (key === undefined || key === 'language') {
         setLanguage(language);
@@ -103,8 +98,8 @@ on('requestClose', () => post('close'));
 on('settings', applySettings);
 
 async function start() {
+    initResize();
     fit();
-    window.addEventListener('resize', fit);
 
     await loadLanguages();
     setLanguage(state.settings.language);

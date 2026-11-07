@@ -1,6 +1,8 @@
 // The call screen over the app: incoming (answer / decline), calling (with the ringback tone) and in a call
 // (timer, mute, add someone, end)
-import { state, call, t, h, button, nameFor, toast, reasonText } from './lib.js';
+import {
+    state, call, t, h, button, icon, input, avatar, toast, openSheet, closeSheet, navBar, nameFor, reasonText,
+} from './lib.js';
 
 let timer = null;
 let muted = false;
@@ -31,35 +33,26 @@ function stopRingback() {
     ringback = null;
 }
 
-function who(current) {
-    const first = current.people[0];
-    return first ? nameFor(first.number) : t('unknown');
-}
-
 function clock(since) {
     const seconds = Math.max(0, Math.floor(Date.now() / 1000) - since);
     return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
-function roundButton(label, symbol, onClick, on = false) {
-    return button(`call__button${on ? ' call__button--on' : ''}`, null, onClick, h('span', 'round', symbol), h('span', '', label));
+function roundButton(label, iconName, onClick, extra = '') {
+    return button(`call__button ${extra}`, null, onClick, h('span', `round ${extra.includes('--red') ? 'round--red' : ''} ${extra.includes('--green') ? 'round--green' : ''}`, null, icon(iconName)), label ? h('span', '', label) : null);
 }
 
-async function addPerson() {
-    const input = h('input', 'search');
-    Object.assign(input, { placeholder: t('contacts.number'), maxLength: 15 });
+function addPerson() {
+    const number = input('k-field', t('contacts.number'), 15);
 
-    const sheet = document.getElementById('sheet');
-    sheet.replaceChildren(
-        h('div', 'head', null, button('link', t('contacts.cancel'), () => sheet.classList.remove('sheet--open')), button('link', t('call.add'), async () => {
-            const result = await call('add', { number: input.value.replace(/\D/g, '') });
+    openSheet(
+        navBar(button('k-link', t('contacts.cancel'), closeSheet), t('call.addTitle'), button('k-link', t('call.add'), async () => {
+            const result = await call('add', { number: number.value.replace(/\D/g, '') });
             if (!result.ok) return toast(reasonText(result.reason));
-            sheet.classList.remove('sheet--open');
+            closeSheet();
         })),
-        h('h1', 'title', t('call.addTitle')),
-        input,
+        h('div', 'k-group', null, number),
     );
-    sheet.classList.add('sheet--open');
 }
 
 export function renderCall() {
@@ -78,6 +71,8 @@ export function renderCall() {
     if (current.status === 'calling') startRingback();
     else stopRingback();
 
+    const first = current.people[0];
+    const who = first ? nameFor(first.number) : t('unknown');
     const status = h('div', 'call__status', t(`call.${current.status}`));
     const others = current.people.slice(1).map((person) => nameFor(person.number) + (person.ringing ? ` (${t('call.ringing')})` : ''));
 
@@ -88,29 +83,24 @@ export function renderCall() {
 
     const buttons = current.status === 'incoming'
         ? h('div', 'call__incoming', null,
-            roundButton(t('call.decline'), '✕', () => call('hangup')),
-            roundButton(t('call.accept'), '☎', () => call('accept')),
+            roundButton(t('call.decline'), 'hangup', () => call('hangup'), 'call__button--red'),
+            roundButton(t('call.accept'), 'phone', () => call('accept'), 'call__button--green'),
         )
         : h('div', 'call__buttons', null,
-            roundButton(t('call.mute'), muted ? '\u{1F507}' : '\u{1F3A4}', async () => {
+            roundButton(t('call.mute'), muted ? 'micOff' : 'mic', async () => {
                 if ((await call('mute', { muted: !muted })).ok) {
                     muted = !muted;
                     renderCall();
                 }
-            }, muted),
+            }, muted ? 'call__button--on' : ''),
             h('span'),
-            current.status === 'active' ? roundButton(t('call.add'), '+', addPerson) : h('span'),
-            button('call__end round round--red', '✕', () => call('hangup')),
+            current.status === 'active' ? roundButton(t('call.add'), 'plus', addPerson) : h('span'),
+            roundButton(null, 'hangup', () => call('hangup'), 'call__end call__button--red'),
         );
 
-    // The incoming buttons: decline red, accept green
-    if (current.status === 'incoming') {
-        buttons.children[0].querySelector('.round').classList.add('round--red');
-        buttons.children[1].querySelector('.round').classList.add('round--green');
-    }
-
     node.replaceChildren(...[
-        h('div', 'call__who', who(current)),
+        avatar(who === t('unknown') ? '?' : who, 'big'),
+        h('div', 'call__who', who),
         status,
         others.length ? h('div', 'call__people', others.join(' · ')) : null,
         buttons,

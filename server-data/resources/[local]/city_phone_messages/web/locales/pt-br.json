@@ -12,6 +12,8 @@
     "compose.title": "Nova Mensagem",
     "compose.number": "Número de telefone",
     "compose.start": "Iniciar",
+    "compose.to": "Para:",
+    "group.people": "Pessoas",
     "group.new": "Novo Grupo",
     "group.name": "Nome do grupo",
     "group.create": "Criar",

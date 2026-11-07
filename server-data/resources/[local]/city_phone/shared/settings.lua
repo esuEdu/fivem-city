@@ -12,9 +12,10 @@ local function boolean(value)
     return value == true or value == false
 end
 
-local function brightness(value)
-    return type(value) == 'number' and value == math.floor(value)
-        and value >= Config.Brightness.min and value <= Config.Brightness.max
+local function percent(limits)
+    return function(value)
+        return type(value) == 'number' and value == math.floor(value) and value >= limits.min and value <= limits.max
+    end
 end
 
 local RULES = {
@@ -23,7 +24,8 @@ local RULES = {
     font = oneOf(Config.Fonts),
     wallpaper = oneOf(Config.Wallpapers),
     ringtone = oneOf(Config.Ringtones),
-    brightness = brightness,
+    brightness = percent(Config.Brightness),
+    size = percent(Config.Size),
     silent = boolean,
     dnd = boolean,
 }
@@ -35,6 +37,7 @@ local DEFAULTS = {
     wallpaper = Config.Wallpapers[1],
     ringtone = Config.Ringtones[1],
     brightness = Config.Brightness.max,
+    size = 100,
     silent = false,
     dnd = false,
 }

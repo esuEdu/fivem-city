@@ -1,36 +1,26 @@
 // Contacts tab, a contact's page, the edit form, blocked numbers and sharing your own contact
-import { state, call, t, h, button, formatNumber, initials, toast } from './lib.js';
+import {
+    state, call, t, h, button, icon, input, avatar, toast, openSheet, closeSheet, navBar, backButton, formatNumber,
+} from './lib.js';
 import { dial } from './tabs.js';
 
 let refresh = () => {};
+
+export { closeSheet };
 
 export function setRefresh(fn) {
     refresh = fn;
 }
 
-function sheet(...children) {
-    const node = document.getElementById('sheet');
-    node.replaceChildren(...children.flat(Infinity).filter(Boolean));
-    node.classList.add('sheet--open');
-}
-
-export function closeSheet() {
-    document.getElementById('sheet').classList.remove('sheet--open');
-}
-
-function back(label = t('tabs.contacts'), onClick = closeSheet) {
-    return h('div', 'head', null, button('link', `‹ ${label}`, onClick), h('span'));
-}
-
 export function editContact(contact) {
-    const name = h('input', 'field');
-    const number = h('input', 'field');
+    const name = input('k-field', t('contacts.name'), 30);
+    const number = input('k-field', t('contacts.number'), 15);
 
-    Object.assign(name, { placeholder: t('contacts.name'), value: contact.name || '', maxLength: 30 });
-    Object.assign(number, { placeholder: t('contacts.number'), value: contact.number || '', maxLength: 15 });
+    name.value = contact.name || '';
+    number.value = contact.number || '';
     number.addEventListener('input', () => { number.value = number.value.replace(/\D/g, ''); });
 
-    const save = button('link', t('contacts.save'), async () => {
+    const save = button('k-link', t('contacts.save'), async () => {
         const result = await call('saveContact', { contact: { id: contact.id, name: name.value, number: number.value, favorite: contact.favorite } });
         if (!result.ok) return toast(t(result.reason === 'full' ? 'contacts.full' : 'contacts.invalid'));
 
@@ -38,10 +28,10 @@ export function editContact(contact) {
         await refresh();
     });
 
-    sheet(
-        h('div', 'head', null, button('link', t('contacts.cancel'), closeSheet), save),
-        h('h1', 'title', contact.id ? t('contacts.edit') : t('contacts.new')),
-        h('div', 'group', null, name, number),
+    openSheet(
+        navBar(button('k-link', t('contacts.cancel'), closeSheet), contact.id ? t('contacts.edit') : t('contacts.new'), save),
+        h('div', 'card', null, avatar(contact.name || '?', 'big')),
+        h('div', 'k-group', null, name, number),
     );
 }
 
@@ -50,6 +40,28 @@ async function block(number, blocked) {
         toast(t(blocked ? 'contacts.blocked' : 'contacts.unblocked'));
         await refresh();
     }
+}
+
+function action(iconName, label, onClick) {
+    return button('action', null, onClick, icon(iconName), h('span', '', label));
+}
+
+// Sharing your contact: the people close by have no names, only how far they are
+async function sharePage() {
+    const result = await call('nearby');
+    const people = result.ok ? result.result : [];
+
+    openSheet(
+        navBar(backButton(t('tabs.contacts'), closeSheet), t('share.title'), null),
+        h('p', 'k-group__label', t('share.hint')),
+        people.length === 0
+            ? h('div', 'k-empty', null, icon('person'), h('span', '', t('share.nobody')))
+            : h('div', 'k-group', null, people.map((person, index) => button('k-row', null, async () => {
+                const sent = await call('share', { target: person.id });
+                toast(t(sent.ok ? 'share.sent' : 'share.failed'));
+                if (sent.ok) closeSheet();
+            }, h('span', '', t('share.person', index + 1)), h('span', 'distance', `${person.distance} m`)))),
+    );
 }
 
 export function openContact(contact) {
@@ -62,18 +74,21 @@ export function openContact(contact) {
         openContact(contact);
     };
 
-    sheet(
-        back(),
-        h('div', 'card', null, h('span', 'avatar avatar--big', initials(contact.name)), h('h2', '', contact.name), h('span', 'item__side', formatNumber(contact.number))),
+    openSheet(
+        navBar(backButton(t('tabs.contacts'), closeSheet), null, button('k-link', t('contacts.edit'), () => editContact(contact))),
+        h('div', 'card', null, avatar(contact.name, 'big'), h('div', 'card__name', contact.name)),
         h('div', 'actions', null,
-            button('action', null, () => dial(contact.number), h('span', '', '☎'), h('span', '', t('contacts.call'))),
-            button('action', null, () => call('message', { number: contact.number }), h('span', '', '✉'), h('span', '', t('contacts.message'))),
-            button('action', null, favorite, h('span', '', contact.favorite ? '★' : '☆'), h('span', '', t('contacts.favorite'))),
-            button('action', null, () => editContact(contact), h('span', '', '✎'), h('span', '', t('contacts.edit'))),
+            action('phone', t('contacts.call'), () => dial(contact.number)),
+            action('message', t('contacts.message'), () => call('message', { number: contact.number })),
+            action(contact.favorite ? 'starFilled' : 'star', t('contacts.favorite'), favorite),
+            action('share', t('share.button'), sharePage),
         ),
-        h('div', 'group', null,
-            button('row row--danger', t(isBlocked ? 'contacts.unblock' : 'contacts.block'), async () => { await block(contact.number, !isBlocked); closeSheet(); }),
-            button('row row--danger', t('contacts.delete'), async () => {
+        h('div', 'k-group', null,
+            h('div', 'k-row', null, h('span', '', t('mobile')), h('span', 'k-row__value', formatNumber(contact.number))),
+        ),
+        h('div', 'k-group', null,
+            button('k-row k-row--danger', t(isBlocked ? 'contacts.unblock' : 'contacts.block'), async () => { await block(contact.number, !isBlocked); closeSheet(); }),
+            button('k-row k-row--danger', t('contacts.delete'), async () => {
                 if ((await call('deleteContact', { id: contact.id })).ok) {
                     closeSheet();
                     await refresh();
@@ -84,32 +99,14 @@ export function openContact(contact) {
 }
 
 function blockedPage() {
-    sheet(
-        back(),
-        h('h1', 'title', t('contacts.blockedTitle')),
+    openSheet(
+        navBar(backButton(t('tabs.contacts'), closeSheet), t('contacts.blockedTitle'), null),
         state.blocked.length === 0
-            ? h('p', 'empty', t('contacts.noneBlocked'))
-            : h('div', 'group', null, state.blocked.map((number) => button('row', formatNumber(number), async () => { await block(number, false); blockedPage(); },
-                h('span', 'row--link', t('contacts.unblock'))))),
-    );
-}
-
-// Sharing: the people close by have no names, only how far they are
-async function sharePage() {
-    const result = await call('nearby');
-    const people = result.ok ? result.result : [];
-
-    sheet(
-        back(),
-        h('h1', 'title', t('share.title')),
-        h('p', 'item__side', t('share.hint')),
-        people.length === 0
-            ? h('p', 'empty', t('share.nobody'))
-            : h('div', 'group', null, people.map((person, index) => button('row', t('share.person', index + 1), async () => {
-                const sent = await call('share', { target: person.id });
-                toast(t(sent.ok ? 'share.sent' : 'share.failed'));
-                if (sent.ok) closeSheet();
-            }, h('span', 'item__side', `${person.distance} m`)))),
+            ? h('div', 'k-empty', null, icon('block'), h('span', '', t('contacts.noneBlocked')))
+            : h('div', 'k-group', null, state.blocked.map((number) => h('div', 'k-row', null,
+                h('span', '', formatNumber(number)),
+                button('k-link', t('contacts.unblock'), async () => { await block(number, false); blockedPage(); }),
+            ))),
     );
 }
 
@@ -123,23 +120,23 @@ export function contacts(render, search) {
         const first = contact.name[0]?.toUpperCase() || '#';
         if (first !== letter) {
             letter = first;
-            rows.push(h('div', 'letter', letter));
+            rows.push(h('div', 'k-section-letter', letter));
         }
-        rows.push(button('item', null, () => openContact(contact),
-            h('span', 'avatar', initials(contact.name)),
-            h('span', 'item__main', null, h('strong', '', contact.name)),
+        rows.push(button('k-item', null, () => openContact(contact),
+            avatar(contact.name, 'small'),
+            h('span', 'k-item__main', null, h('span', 'k-item__title', contact.name)),
         ));
     }
 
     return [
-        h('div', 'head', null, button('link', t('contacts.blockedTitle'), blockedPage), button('link link--big', '+', () => editContact({}))),
-        h('h1', 'title', t('tabs.contacts')),
-        search,
-        button('item', null, sharePage,
-            h('span', 'avatar', initials(t('contacts.me'))),
-            h('span', 'item__main', null, h('strong', '', t('contacts.myCard')), h('small', '', formatNumber(state.myNumber))),
-            h('span', 'link', t('share.button')),
+        navBar(button('k-link', t('contacts.blockedTitle'), blockedPage), null, button('k-link', null, () => editContact({}), icon('plus'))),
+        h('h1', 'k-large-title', t('tabs.contacts')),
+        h('label', 'k-search', null, icon('search'), search),
+        button('k-item', null, sharePage,
+            avatar(t('contacts.me')),
+            h('span', 'k-item__main', null, h('span', 'k-item__title', t('contacts.myCard')), h('span', 'k-item__subtitle', formatNumber(state.myNumber))),
+            h('span', 'k-link', null, icon('share')),
         ),
-        rows.length ? h('div', 'list', null, rows) : h('p', 'empty', t('contacts.empty')),
+        rows.length ? h('div', 'k-list', null, rows) : h('div', 'k-empty', null, icon('person'), h('span', '', t('contacts.empty'))),
     ];
 }

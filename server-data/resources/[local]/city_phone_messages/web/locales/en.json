@@ -12,6 +12,8 @@
     "compose.title": "New Message",
     "compose.number": "Phone number",
     "compose.start": "Start",
+    "compose.to": "To:",
+    "group.people": "People",
     "group.new": "New Group",
     "group.name": "Group name",
     "group.create": "Create",

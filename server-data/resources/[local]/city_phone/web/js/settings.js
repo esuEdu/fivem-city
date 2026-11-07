@@ -143,7 +143,16 @@ function appearancePage() {
         range.addEventListener('input', () => { state.settings.brightness = Number(range.value); emit('settings', 'brightness'); });
         range.addEventListener('change', () => saveSetting('brightness', Number(range.value)));
 
-        return [box, group(t('settings.brightness'), row({ label: '', right: range }))];
+        const size = el('input', 'range');
+        Object.assign(size, { type: 'range', min: 70, max: 130, value: state.settings.size || 100 });
+        size.addEventListener('input', () => { state.settings.size = Number(size.value); emit('settings', 'size'); });
+        size.addEventListener('change', () => saveSetting('size', Number(size.value)));
+
+        return [
+            box,
+            group(t('settings.brightness'), row({ label: '', right: range })),
+            group(t('settings.size'), row({ label: '', right: size })),
+        ];
     });
 }
 

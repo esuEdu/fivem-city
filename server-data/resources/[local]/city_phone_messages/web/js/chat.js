@@ -1,7 +1,9 @@
 // One chat: the messages (bubbles, locations, live locations, system lines), reactions, delivered/read, and the bar
 // to write, send a location or start sharing the live location
 import { openGroupInfo } from './group.js';
-import { state, call, t, h, button, toast, nameFor, titleOf, clock, systemText, REACTIONS, closeSheet } from './lib.js';
+import {
+    state, call, t, h, button, iconButton, icon, avatar, toast, nameFor, titleOf, clock, systemText, REACTIONS, closeSheet, backButton,
+} from './lib.js';
 
 let back = () => {};
 
@@ -52,7 +54,7 @@ function reactionBadge(message) {
 function content(message, mine) {
     if (message.kind === 'location') {
         const at = parse(message.body);
-        return [h('div', 'bubble__title', `\u{1F4CD} ${t('location')}`), button('bubble__link', t('map.show'), () => waypoint(at.x, at.y))];
+        return [h('div', 'bubble__title', null, icon('pin'), h('span', '', t('location'))), button('bubble__link', t('map.show'), () => waypoint(at.x, at.y))];
     }
 
     if (message.kind === 'live') {
@@ -61,7 +63,7 @@ function content(message, mine) {
         const latest = state.live[data.session];
 
         return [
-            h('div', 'bubble__title', `\u{1F4E1} ${t('live.title')}`),
+            h('div', 'bubble__title', null, icon('live'), h('span', '', t('live.title'))),
             h('div', 'bubble__small', running ? t('live.until', clock(data.ends)) : t('live.ended')),
             running && mine ? button('bubble__link', t('live.stop'), () => call('stopLive', { session: data.session })) : null,
             running && !mine && latest ? button('bubble__link', t('map.show'), () => waypoint(latest.x, latest.y)) : null,
@@ -131,14 +133,14 @@ async function older(list) {
 function attachMenu() {
     const menu = document.getElementById('attach');
     menu.replaceChildren(
-        button('attach__item', `\u{1F4CD} ${t('attach.location')}`, async () => {
+        button('attach__item', null, async () => {
             menu.classList.remove('attach--open');
             if (!(await call('sendLocation', { id: state.chat.id })).ok) toast(t('error.invalid'));
-        }),
-        button('attach__item', `\u{1F4E1} ${t('attach.live')}`, async () => {
+        }, icon('pin'), h('span', '', t('attach.location'))),
+        button('attach__item', null, async () => {
             menu.classList.remove('attach--open');
             if (!(await call('startLive', { id: state.chat.id })).ok) toast(t('error.invalid'));
-        }),
+        }, icon('live'), h('span', '', t('attach.live'))),
     );
     menu.classList.toggle('attach--open');
 }
@@ -173,15 +175,17 @@ export function renderChat(scroll = true) {
     const view = document.getElementById('chat');
     view.replaceChildren(
         h('div', 'chat__head', null,
-            button('link', `‹ ${t('title')}`, () => { closeSheet(); back(); }),
-            h('strong', 'chat__title', titleOf(chat)),
-            chat.group ? button('link', 'i', () => openGroupInfo()) : h('span'),
+            backButton(t('title'), () => { closeSheet(); back(); }),
+            button('chat__who', null, () => chat.group && openGroupInfo(),
+                chat.group ? avatar(titleOf(chat), 'small', 'group') : avatar(titleOf(chat), 'small'),
+                h('span', 'chat__title', titleOf(chat)),
+            ),
+            chat.group ? iconButton('k-link chat__info', 'info', () => openGroupInfo()) : h('span'),
         ),
         list,
         h('div', 'composer', null,
-            button('composer__plus', '+', attachMenu),
-            field,
-            button('composer__send', '↑', send),
+            iconButton('composer__plus', 'plus', attachMenu),
+            h('label', 'composer__field', null, field, iconButton('composer__send', 'send', send)),
         ),
         attach,
     );

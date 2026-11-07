@@ -4,7 +4,7 @@ export const state = {
     profile: { name: '', number: '' },
     settings: {
         theme: 'dark', language: 'en', font: 'inter', wallpaper: 'aurora',
-        brightness: 100, silent: false, dnd: false,
+        brightness: 100, silent: false, dnd: false, size: 100, ringtone: 'classic',
     },
     clock: { hours: 12, minutes: 0, weekday: 0, day: 1, month: 0, year: 2026 },
     apps: [],

@@ -23,6 +23,7 @@
         "light": "Claro",
         "dark": "Escuro",
         "brightness": "Brilho",
+        "size": "Tamanho do Celular (ou arraste o canto de cima)",
         "font": "Fonte",
         "silent": "Modo Silencioso",
         "dnd": "Não Perturbe",

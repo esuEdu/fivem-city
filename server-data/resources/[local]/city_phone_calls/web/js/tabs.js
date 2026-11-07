@@ -1,27 +1,28 @@
 // Favorites, Recents and Keypad tabs
-import { state, call, t, h, button, formatNumber, nameFor, initials, toast, reasonText, contactFor } from './lib.js';
 import { openContact, editContact } from './contacts.js';
+import {
+    state, call, t, h, button, iconButton, icon, avatar, toast, navBar, formatNumber, nameFor, contactFor, reasonText,
+} from './lib.js';
 
 export async function dial(number, hidden = state.hidden) {
     const result = await call('dial', { number, hidden });
     if (!result.ok) toast(reasonText(result.reason));
 }
 
-function title(text, right) {
-    return [h('div', 'head', null, h('span'), right), h('h1', 'title', text)];
+function empty(iconName, text) {
+    return h('div', 'k-empty', null, icon(iconName), h('span', '', text));
 }
 
 export function favorites() {
     const list = state.contacts.filter((contact) => contact.favorite);
 
-    if (list.length === 0) return [...title(t('tabs.favorites')), h('p', 'empty', t('favorites.empty'))];
-
     return [
-        ...title(t('tabs.favorites')),
-        h('div', 'list', null, list.map((contact) => button('item', null, () => dial(contact.number),
-            h('span', 'avatar', initials(contact.name)),
-            h('span', 'item__main', null, h('strong', '', contact.name), h('small', '', formatNumber(contact.number))),
-            button('link', 'i', (event) => { event.stopPropagation(); openContact(contact); }),
+        navBar(null, null, null),
+        h('h1', 'k-large-title', t('tabs.favorites')),
+        list.length === 0 ? empty('star', t('favorites.empty')) : h('div', 'k-list', null, list.map((contact) => button('k-item', null, () => dial(contact.number),
+            avatar(contact.name),
+            h('span', 'k-item__main', null, h('span', 'k-item__title', contact.name), h('span', 'k-item__subtitle', t('mobile'))),
+            iconButton('info', 'info', (event) => { event.stopPropagation(); openContact(contact); }),
         ))),
     ];
 }
@@ -33,40 +34,47 @@ function ago(at) {
     return t('time.days', Math.floor(seconds / 86400));
 }
 
+const DIRECTION_ICON = { out: 'phone', in: 'phone', missed: 'phone' };
+
 export function recents(render) {
-    const clear = button('link', t('recents.clear'), async () => {
+    const clear = state.recents.length ? button('k-link', t('recents.clear'), async () => {
         if ((await call('clearRecents')).ok) {
             state.recents = [];
             render();
         }
-    });
-
-    if (state.recents.length === 0) return [...title(t('tabs.recents')), h('p', 'empty', t('recents.empty'))];
+    }) : null;
 
     return [
-        ...title(t('tabs.recents'), clear),
-        h('div', 'list', null, state.recents.map((entry) => {
+        navBar(null, null, clear),
+        h('h1', 'k-large-title', t('tabs.recents')),
+        state.recents.length === 0 ? empty('clock', t('recents.empty')) : h('div', 'k-list', null, state.recents.map((entry) => {
             const missed = entry.direction === 'missed';
-            const kind = t(`recents.${entry.direction}`);
 
-            return button(`item${missed ? ' item--missed' : ''}`, null, () => entry.number && dial(entry.number),
-                h('span', 'item__main', null, h('strong', '', nameFor(entry.number)), h('small', '', kind)),
-                h('span', 'item__side', ago(entry.at)),
-                entry.number && button('link', 'i', (event) => {
+            return button(`k-item k-item--plain${missed ? ' k-item--missed' : ''}`, null, () => entry.number && dial(entry.number),
+                h('span', 'direction', null, entry.direction === 'out' ? icon(DIRECTION_ICON.out) : null),
+                h('span', 'k-item__main', null,
+                    h('span', 'k-item__title', nameFor(entry.number)),
+                    h('span', 'k-item__subtitle', t(`recents.${entry.direction}`)),
+                ),
+                h('span', 'distance', ago(entry.at)),
+                entry.number ? iconButton('info', 'info', (event) => {
                     event.stopPropagation();
                     const contact = contactFor(entry.number);
                     if (contact) openContact(contact);
                     else editContact({ name: '', number: entry.number });
-                }),
+                }) : null,
             );
         })),
     ];
 }
 
-const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'];
+const KEYS = [
+    ['1', ''], ['2', 'ABC'], ['3', 'DEF'], ['4', 'GHI'], ['5', 'JKL'], ['6', 'MNO'],
+    ['7', 'PQRS'], ['8', 'TUV'], ['9', 'WXYZ'], ['*', ''], ['0', '+'], ['#', ''],
+];
 
 export function keypad(render) {
-    const display = h('div', 'keypad__number', formatNumber(state.number) === t('unknown') ? '' : formatNumber(state.number));
+    const digits = state.number;
 
     const press = (key) => {
         if (state.number.length >= 15) return;
@@ -74,28 +82,28 @@ export function keypad(render) {
         render();
     };
 
-    const back = button('link', '⌫', () => {
-        state.number = state.number.slice(0, -1);
-        render();
-    });
-
-    const hide = button(`pill${state.hidden ? ' pill--on' : ''}`, t('keypad.hide'), () => {
-        state.hidden = !state.hidden;
-        render();
-    });
-
-    const add = state.number && !contactFor(state.number)
-        ? button('link', t('keypad.add'), () => editContact({ name: '', number: state.number }))
+    const add = digits && !contactFor(digits)
+        ? button('k-link', t('keypad.add'), () => editContact({ name: '', number: digits }))
         : null;
 
     return [h('div', 'keypad', null,
-        display,
-        add || h('span', 'link', ' '),
-        h('div', 'keypad__grid', null, KEYS.map((key) => button('key', key, () => press(key)))),
+        h('div', 'keypad__number', formatNumber(digits)),
+        h('div', 'keypad__add', null, add),
+        h('div', 'keypad__grid', null, KEYS.map(([digit, letters]) => button('key', null, () => press(digit),
+            h('span', 'key__digit', digit),
+            letters ? h('span', 'key__letters', letters) : null,
+        ))),
         h('div', 'keypad__actions', null,
-            hide,
-            button('round round--green', '☎', () => state.number && dial(state.number.replace(/\D/g, ''))),
-            state.number ? back : h('span'),
+            iconButton(`keypad__hide${state.hidden ? ' keypad__hide--on' : ''}`, 'eyeOff', () => {
+                state.hidden = !state.hidden;
+                render();
+            }, t('keypad.hide')),
+            iconButton('round round--green', 'phone', () => digits && dial(digits.replace(/\D/g, ''))),
+            digits ? iconButton('keypad__back', 'backspace', () => {
+                state.number = state.number.slice(0, -1);
+                render();
+            }) : h('span'),
         ),
+        h('div', 'keypad__hint', state.hidden ? t('keypad.hidden') : ''),
     )];
 }
