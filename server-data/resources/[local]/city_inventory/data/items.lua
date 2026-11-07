@@ -561,6 +561,14 @@ return {
         weight = 100,
     },
 
+    ['darkchat_usb'] = {
+        label = 'Encrypted USB',
+        category = 'electronics',
+        weight = 50,
+        description = 'Opens DarkChat on your phone while you carry it',
+        client = { image = 'usb_black.png' },
+    },
+
     ['trojan_usb'] = {
         label = 'Trojan USB',
         category = 'electronics',

@@ -29,6 +29,7 @@ FXServer is x86_64 only: run this on a Windows PC or an x86_64 Linux machine. **
    | `CFX_LICENSE_KEY` | Your license key. |
    | `MYSQL_ROOT_PASSWORD` | Any password, **letters and numbers only** (it goes into a connection URL). |
    | `MYSQL_DATABASE` | Leave `fivem_city`. |
+   | `YOUTUBE_API_KEY` | Optional. A YouTube Data API v3 key (Google Cloud console → APIs & Services → enable "YouTube Data API v3" → Credentials → API key), so the phone's Music app can search songs by title. The free quota is about 100 searches a day; repeated searches are cached. Without it, players paste links. After changing it: `docker compose up -d` (a restart doesn't read `.env` again). |
 
    `.env` is never committed. The container writes `server-data/secrets.cfg` from it on every start.
 3. **Build and start**

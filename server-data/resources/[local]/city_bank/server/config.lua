@@ -70,6 +70,9 @@ return {
 
     pos = { mdrDebitPct = 2, mdrCreditPct = 3, maxCharge = 100000, expires = 60, maxDistance = 3.0 },
 
+    -- The phone's Wallet app: the item it needs, and how long the card owner has to approve a purchase over the limit
+    app = { item = 'phone', approvalSeconds = 60 },
+
     savings = { ratePct = 0.1, maxPerDay = 1000, every = DAY },
 
     shared = { maxPerPlayer = 1, memberDailyLimit = 20000 },
