@@ -121,7 +121,12 @@ function wallpaperPage() {
         const grid = el('div', 'wallpapers');
         for (const name of WALLPAPERS) {
             const button = el('button', `wallpaper wp-${name}${state.settings.wallpaper === name ? ' wallpaper--on' : ''}`);
-            button.addEventListener('click', async () => { await saveSetting('wallpaper', name); redraw(); });
+            button.addEventListener('click', async () => {
+                // A gradient replaces a photo wallpaper
+                if (state.settings.wallpaperPhoto > 0) await saveSetting('wallpaperPhoto', 0);
+                await saveSetting('wallpaper', name);
+                redraw();
+            });
             grid.append(button);
         }
         return [grid];

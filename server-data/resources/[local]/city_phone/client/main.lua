@@ -7,6 +7,18 @@ local CLOCK_MS = 2000
 
 local isOpen = false
 local profile
+local wallpaper = { id = 0, data = nil }
+
+-- A photo wallpaper comes from the Photos app (if it is installed); fetched once and kept
+local function loadWallpaper()
+    local id = profile and profile.settings.wallpaperPhoto or 0
+
+    if id > 0 and wallpaper.id ~= id and GetResourceState('city_phone_photos') == 'started' then
+        wallpaper = { id = id, data = lib.callback.await('city_phone_photos:photo', false, id) }
+    end
+
+    SendNUIMessage({ action = 'wallpaperImage', data = id > 0 and wallpaper.id == id and wallpaper.data or false })
+end
 
 local function clock()
     return {
@@ -38,6 +50,7 @@ local function open()
     SendNUIMessage({ action = 'open', profile = profile, apps = apps.list(), clock = clock() })
     SetNuiFocus(true, true)
     hold.start()
+    CreateThread(loadWallpaper)
 
     -- The status bar clock follows the game's clock, only while the phone is open
     CreateThread(function()
@@ -66,6 +79,7 @@ RegisterNUICallback('saveSetting', function(data, cb)
     local ok = lib.callback.await('city_phone:saveSetting', false, data.key, data.value)
 
     if ok and profile then profile.settings[data.key] = data.value end
+    if ok and data.key == 'wallpaperPhoto' then CreateThread(loadWallpaper) end
 
     cb(ok == true)
 end)
@@ -100,6 +114,16 @@ exports('Open', function()
 
     open()
     return isOpen
+end)
+
+---Uses one of the player's photos as the wallpaper (the Photos app); the server checks the value again
+exports('SetWallpaperPhoto', function(id)
+    if not profile or not lib.callback.await('city_phone:saveSetting', false, 'wallpaperPhoto', id) then return false end
+
+    profile.settings.wallpaperPhoto = id
+    SendNUIMessage({ action = 'setting', key = 'wallpaperPhoto', value = id })
+    loadWallpaper()
+    return true
 end)
 
 ---The settings the phone uses now (theme, language, font, ...), for apps that draw outside the phone

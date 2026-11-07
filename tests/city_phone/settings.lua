@@ -31,6 +31,8 @@ check(settings.valid('ringtone', 'chime') and not settings.valid('ringtone', 'x'
 check(clean.extra == nil, 'unknown keys are dropped')
 check(settings.clean(nil).brightness == 100, 'no saved settings gives full defaults')
 check(settings.clean(nil).size == 100, 'phone size defaults to 100%')
+check(settings.clean(nil).wallpaperPhoto == 0, 'no photo wallpaper by default')
+check(settings.valid('wallpaperPhoto', 12) and not settings.valid('wallpaperPhoto', -1) and not settings.valid('wallpaperPhoto', 'x'), 'photo wallpaper takes a photo id')
 check(settings.valid('size', 70) and settings.valid('size', 130), 'size limits are allowed')
 check(not settings.valid('size', 69) and not settings.valid('size', 131) and not settings.valid('size', 99.5), 'size outside the limits is refused')
 

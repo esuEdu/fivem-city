@@ -107,9 +107,10 @@ export function closeSheet() {
     document.getElementById('k-sheet')?.classList.remove('k-sheet--open');
 }
 
-// The bar at the top of a page or sheet: left action, centered title, right action
+// The bar at the top of a page or sheet: left action, centered title (text or an element), right action
 export function navBar(left, title, right) {
-    return h('div', 'k-navbar', null, h('div', 'k-navbar__side', null, left), h('div', 'k-navbar__title', title), h('div', 'k-navbar__side k-navbar__side--end', null, right));
+    const middle = title instanceof Node ? h('div', 'k-navbar__title', null, title) : h('div', 'k-navbar__title', title);
+    return h('div', 'k-navbar', null, h('div', 'k-navbar__side', null, left), middle, h('div', 'k-navbar__side k-navbar__side--end', null, right));
 }
 
 // A "‹ Back" text button

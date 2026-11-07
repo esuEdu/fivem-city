@@ -15,6 +15,7 @@ import { $, post, applyTheme } from './util.js';
 import { initViews, launch, goHome, messageApp, activeApp } from './views.js';
 
 const FONTS = { inter: 'Inter', poppins: 'Poppins', roboto: 'Roboto', nunito: 'Nunito' };
+const WALLPAPER_IMAGE = /^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+/=]+$/;
 let pendingApp = null;
 
 function applySettings(key) {
@@ -25,7 +26,10 @@ function applySettings(key) {
     phone.dataset.theme = theme;
     phone.style.setProperty('--font', FONTS[font] || 'Inter');
     document.documentElement.style.setProperty('--font', FONTS[font] || 'Inter');
-    screen.className = `screen wp-${wallpaper}`;
+    // A photo wallpaper (a data URI checked here, since it goes into a style) or a gradient one
+    const photo = state.settings.wallpaperPhoto > 0 && WALLPAPER_IMAGE.test(state.wallpaperImage || '') ? state.wallpaperImage : null;
+    screen.className = photo ? 'screen' : `screen wp-${wallpaper}`;
+    screen.style.backgroundImage = photo ? `url("${photo}")` : '';
     $('dim').style.opacity = String(((100 - brightness) / 100) * 0.75);
     fit();
 
@@ -75,6 +79,8 @@ const handlers = {
     openApp: (message) => { if (state.open) launch(message.app); else pendingApp = message.app; },
     flashlight: (message) => setFlashlight(message.on === true),
     ring: (message) => setRings(message.rings),
+    wallpaperImage: (message) => { state.wallpaperImage = message.data || null; applySettings('wallpaper'); },
+    setting: (message) => { state.settings[message.key] = message.value; emit('settings', message.key); },
 };
 
 window.addEventListener('message', (event) => {
