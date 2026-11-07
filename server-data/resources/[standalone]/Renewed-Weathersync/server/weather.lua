@@ -105,3 +105,14 @@ if useScheduledWeather then
         end
     end)
 end
+-- fivem-city: the coming weathers (minutes each) for the phone's Weather app
+exports('GetForecast', function(count)
+    local list = {}
+
+    for i = 1, math.min(tonumber(count) or 6, #weatherList) do
+        local entry = weatherList[i]
+        list[i] = { weather = entry.weather, time = entry.time, isRain = entry.isRain, windSpeed = entry.windSpeed }
+    end
+
+    return list
+end)
