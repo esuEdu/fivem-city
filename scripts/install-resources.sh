@@ -22,7 +22,6 @@ RELEASES=(
   "screencapture|[standalone]|https://github.com/itschip/screencapture/releases/latest/download/screencapture.zip"
   "illenium-appearance|[standalone]|https://github.com/iLLeniumStudios/illenium-appearance/releases/latest/download/illenium-appearance.zip"
   "Renewed-Weathersync|[standalone]|https://github.com/Renewed-Scripts/Renewed-Weathersync/releases/latest/download/Renewed-Weathersync.zip"
-  "xt-prison|[standalone]|https://github.com/xT-Development/xt-prison/releases/latest/download/xt-prison.zip"
   "vehiclehandler|[standalone]|https://github.com/QuantumMalice/vehiclehandler/releases/latest/download/vehiclehandler.zip"
   "loadscreen|[standalone]|https://github.com/D4isDAVID/loadscreen/releases/latest/download/loadscreen.zip"
   "mana_audio|[standalone]|https://github.com/Manason/mana_audio/releases/latest/download/mana_audio.zip"
@@ -46,7 +45,7 @@ REPOS=(
 QBX_REPOS=(
   qbx_vehicles qbx_scoreboard qbx_vehiclesales qbx_vehicleshop qbx_houserobbery
   qbx_hud qbx_seatbelt qbx_management qbx_weed qbx_lapraces
-  qbx_medical qbx_radialmenu qbx_police qbx_properties qbx_vehiclekeys qbx_mechanicjob
+  qbx_medical qbx_radialmenu qbx_properties qbx_vehiclekeys qbx_mechanicjob
   qbx_vineyard qbx_scrapyard qbx_towjob qbx_streetraces qbx_storerobbery qbx_spawn
   qbx_smallresources qbx_recyclejob qbx_diving qbx_divegear qbx_cityhall qbx_truckrobbery
   qbx_pawnshop qbx_taxijob qbx_busjob qbx_newsjob qbx_jewelery qbx_bankrobbery qbx_truckerjob

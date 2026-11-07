@@ -1,5 +1,5 @@
 diff --git a/server-data/resources/[qbx]/qbx_radialmenu/config/client.lua b/server-data/resources/[qbx]/qbx_radialmenu/config/client.lua
-index f15f2e5..c03a103 100644
+index f15f2e5..b012e70 100644
 --- a/server-data/resources/[qbx]/qbx_radialmenu/config/client.lua
 +++ b/server-data/resources/[qbx]/qbx_radialmenu/config/client.lua
 @@ -9,12 +9,7 @@ return {
@@ -16,3 +16,202 @@ index f15f2e5..c03a103 100644
                  {
                      id = 'getintrunk',
                      icon = 'car',
+@@ -32,47 +27,16 @@ return {
+                     icon = 'exclamation-triangle',
+                     label = 'Interaction',
+                     items = {
+-                        {
+-                            id = 'handcuff',
+-                            icon = 'user-lock',
+-                            label = 'Cuff',
+-                            event = 'police:client:CuffPlayer',
+-                        },
+-                        {
+-                            id = 'playerInVehicle',
+-                            icon = 'car-side',
+-                            label = 'Put In Vehicle',
+-                            event = 'police:client:PutPlayerInVehicle',
+-                        },
+-                        {
+-                            id = 'playerOutVehicle',
+-                            icon = 'car-side',
+-                            label = 'Take Out Vehicle',
+-                            event = 'police:client:SetPlayerOutVehicle',
+-                        },
++                        -- fivem-city: qbx_police is gone. Cuffing, escorting and cars are under Police Interactions
++                        -- (city_police); Rob opens city_inventory's search, which decides who may be robbed.
++                        -- Kidnap and Take Hostage were removed.
+                         {
+                             id = 'stealPlayer',
+                             icon = 'mask',
+                             label = 'Rob',
+-                            event = 'police:client:RobPlayer',
+-                        },
+-                        {
+-                            id = 'kidnapPlayer',
+-                            icon = 'user-group',
+-                            label = 'Kidnap',
+-                            event = 'police:client:KidnapPlayer',
+-                        },
+-                        {
+-                            id = 'escortPlayer',
+-                            icon = 'user-group',
+-                            label = 'Escort',
+-                            event = 'police:client:EscortPlayer',
+-                        },
+-                        {
+-                            id = 'takeHostage',
+-                            icon = 'child',
+-                            label = 'Take Hostage',
+-                            event = 'police:client:TakeHostage',
++                            action = function()
++                                return function() exports.city_inventory:openNearbyInventory() end
++                            end,
+                         },
+                     },
+                 },
+@@ -227,12 +191,7 @@ return {
+                 label = 'Reset House Lock',
+                 event = 'qb-houses:client:ResetHouse',
+             },
+-            {
+-                id = 'revokeDriversLicense',
+-                icon = 'id-card',
+-                label = 'Revoke Drivers License',
+-                event = 'police:client:SeizeDriverLicense',
+-            },
++            -- fivem-city: licences are revoked in the MDT (city_police)
+             {
+                 id = 'policeInteractions',
+                 icon = 'list-check',
+@@ -244,23 +203,54 @@ return {
+                         label = 'Check Health Status',
+                         event = 'hospital:client:CheckStatus',
+                     },
++                    -- fivem-city: city_police's actions on the closest player (arrests are made in the MDT)
++                    {
++                        id = 'cuff',
++                        icon = 'user-lock',
++                        label = 'Cuff',
++                        event = 'city_police:client:radialCuff',
++                    },
++                    {
++                        id = 'softcuff',
++                        icon = 'link',
++                        label = 'Soft Cuff',
++                        event = 'city_police:client:radialSoftCuff',
++                    },
+                     {
+                         id = 'escort',
+                         icon = 'user-group',
+                         label = 'Escort',
+-                        event = 'police:client:EscortPlayer',
++                        event = 'city_police:client:radialEscort',
++                    },
++                    {
++                        id = 'playerInVehicle',
++                        icon = 'car-side',
++                        label = 'Put In Vehicle',
++                        event = 'city_police:client:radialPutIn',
++                    },
++                    {
++                        id = 'playerOutVehicle',
++                        icon = 'car-side',
++                        label = 'Take Out Vehicle',
++                        event = 'city_police:client:radialTakeOut',
+                     },
+                     {
+                         id = 'search',
+                         icon = 'magnifying-glass',
+                         label = 'Search',
+-                        event = 'police:client:SearchPlayer',
++                        event = 'city_police:client:radialSearch',
+                     },
+                     {
+-                        id = 'jail',
+-                        icon = 'user-lock',
+-                        label = 'Jail',
+-                        event = 'police:client:JailPlayer',
++                        id = 'checkStatus',
++                        icon = 'eye',
++                        label = 'Check Status',
++                        event = 'city_police:client:radialStatus',
++                    },
++                    {
++                        id = 'anklet',
++                        icon = 'satellite-dish',
++                        label = 'Ankle Monitor',
++                        event = 'city_police:client:radialAnklet',
+                     },
+                 },
+             },
+@@ -273,48 +263,49 @@ return {
+                         id = 'cone',
+                         icon = 'triangle-exclamation',
+                         label = 'Cone',
+-                        event = 'police:client:spawnPObj',
++                        event = 'city_police:client:placeObject',
+                         args = 'cone',
+                     },
+                     {
+                         id = 'gate',
+                         icon = 'torii-gate',
+                         label = 'Gate',
+-                        event = 'police:client:spawnPObj',
++                        event = 'city_police:client:placeObject',
+                         args = 'barrier',
+                     },
+                     {
+                         id = 'speedSign',
+                         icon = 'sign-hanging',
+                         label = 'Speed Limit Sign',
+-                        event = 'police:client:spawnPObj',
++                        event = 'city_police:client:placeObject',
+                         args = 'roadsign',
+                     },
+                     {
+                         id = 'tent',
+                         icon = 'campground',
+                         label = 'Tent',
+-                        event = 'police:client:spawnPObj',
++                        event = 'city_police:client:placeObject',
+                         args = 'tent',
+                     },
+                     {
+                         id = 'lighting',
+                         icon = 'lightbulb',
+                         label = 'Lighting',
+-                        event = 'police:client:spawnPObj',
++                        event = 'city_police:client:placeObject',
+                         args = 'light',
+                     },
+                     {
+                         id = 'spikeStrip',
+                         icon = 'caret-up',
+                         label = 'Spikestrip',
+-                        event = 'police:client:SpawnSpikeStrip',
++                        event = 'city_police:client:placeObject',
++                        args = 'spike',
+                     },
+                     {
+                         id = 'deleteObject',
+                         icon = 'trash',
+                         label = 'Delete Object',
+-                        event = 'police:client:deleteObject',
++                        event = 'city_police:client:removeObject',
+                     },
+                 },
+             },
+@@ -344,12 +335,6 @@ return {
+                 label = 'Emergency Button',
+                 serverEvent = 'hospital:server:emergencyAlert',
+             },
+-            {
+-                id = 'escort',
+-                icon = 'user-group',
+-                label = 'Escort',
+-                event = 'police:client:EscortPlayer',
+-            },
+         },
+         mechanic = {
+             {

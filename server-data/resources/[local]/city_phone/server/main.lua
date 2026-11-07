@@ -1,6 +1,7 @@
--- The phone's server side: opening it from the item, the player's settings (saved in their character metadata),
--- and notifications other resources send to a player.
+-- The phone's server side: opening it from the item (or a burner, server/burner.lua), the player's settings (saved
+-- in their character metadata), and notifications other resources send to a player.
 local settings = require 'shared.settings'
+local burner = require 'server.burner'
 
 local META_KEY = 'phonesettings'
 local THROTTLE_MS = 300
@@ -11,22 +12,25 @@ exports.qbx_core:CreateUseableItem(Config.Item, function(source)
 
     if Player(src).state.isDead then return false end
 
-    TriggerClientEvent('city_phone:client:toggle', src)
+    burner.stop(src)
+    TriggerClientEvent('city_phone:client:toggle', src, false)
 
     -- The phone is not used up
     return false
 end)
 
--- What the phone needs when it opens: the owner's name, number and settings
+-- What the phone needs when it opens: the owner's name, number and settings (a burner shows only its number)
 lib.callback.register('city_phone:profile', function(source)
     local player = exports.qbx_core:GetPlayer(source)
     if not player then return end
 
     local info = player.PlayerData.charinfo
+    local burnerNumber = burner.of(source)
 
     return {
-        name = ('%s %s'):format(info.firstname, info.lastname),
-        number = tostring(info.phone or ''),
+        name = burnerNumber and 'Burner' or ('%s %s'):format(info.firstname, info.lastname),
+        number = burnerNumber or tostring(info.phone or ''),
+        burner = burnerNumber ~= nil,
         settings = settings.clean(player.PlayerData.metadata[META_KEY]),
     }
 end)

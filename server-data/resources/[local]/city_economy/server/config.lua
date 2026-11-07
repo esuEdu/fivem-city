@@ -35,6 +35,10 @@ return {
             { reason = '^garage%-depot$', debit = true },
             { reason = '^garage%-refund$', credit = true, perHour = 50000 },
         },
+        -- Phone Market: the fee to publish or renew an ad
+        city_phone_market = {
+            { reason = '^market%-ad$', debit = true },
+        },
         ['illenium-appearance'] = {
             { reason = '^unknown$', debit = true },
         },

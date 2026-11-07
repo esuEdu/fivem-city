@@ -1,0 +1,47 @@
+/* The sentence counter and the prison computer. Colors come from city_ui/theme.lua (app.js applyTheme). */
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; font-family: var(--font, 'Poppins', sans-serif); color: var(--text, #eef0f3); }
+.hidden { display: none !important; }
+button { font: inherit; cursor: pointer; }
+
+/* Counter */
+.counter { position: fixed; top: 24px; right: 24px; display: flex; flex-direction: column; gap: 2px; min-width: 200px; padding: 12px 18px; border-radius: var(--radius-large, 22px); background: rgba(16, 18, 24, 0.88); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); overflow: hidden; }
+.counter .bars { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.03) 22px 26px); pointer-events: none; }
+.counter-label { position: relative; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted, #7d8590); }
+.counter-text { position: relative; font-size: 17px; font-weight: 700; }
+.counter.done { border-color: var(--success, #3ecf72); }
+.counter.done .counter-text { color: var(--success, #3ecf72); }
+
+/* Computer */
+.computer { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(5, 6, 9, 0.7); }
+.panel { width: min(980px, 94vw); height: min(640px, 88vh); display: flex; flex-direction: column; border-radius: var(--radius-large, 22px); background: rgba(16, 18, 24, 0.97); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); overflow: hidden; }
+header { display: flex; align-items: center; gap: 18px; padding: 18px 22px; border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.06)); }
+h1 { margin: 0; font-size: 18px; flex-grow: 1; }
+nav { display: flex; gap: 6px; }
+.tab { height: 34px; padding: 0 16px; border: 0; border-radius: var(--radius, 10px); background: var(--slot, rgba(255, 255, 255, 0.03)); color: var(--muted, #7d8590); font-weight: 600; }
+.tab.active { background: var(--accent, #f5c542); color: var(--accent-text, #15181d); }
+.ghost { height: 34px; padding: 0 14px; border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); border-radius: var(--radius, 10px); background: transparent; color: var(--text, #eef0f3); }
+.ghost:hover { background: var(--slot-hover, rgba(255, 255, 255, 0.07)); }
+.primary { height: 34px; padding: 0 18px; border: 0; border-radius: var(--radius, 10px); background: var(--accent, #f5c542); color: var(--accent-text, #15181d); font-weight: 700; }
+.danger { border-color: var(--danger, #e5484d); color: var(--danger, #e5484d); }
+
+.view { flex-grow: 1; overflow-y: auto; padding: 10px 22px 22px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { position: sticky; top: 0; padding: 10px 8px; text-align: left; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted, #7d8590); background: rgba(16, 18, 24, 0.97); }
+td { padding: 10px 8px; border-top: 1px solid var(--border, rgba(255, 255, 255, 0.06)); vertical-align: middle; }
+td.mono { font-family: var(--mono, monospace); }
+.name { font-weight: 600; }
+.sub { display: block; font-size: 11px; color: var(--muted, #7d8590); }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: var(--accent-soft, rgba(245, 197, 66, 0.1)); color: var(--accent, #f5c542); }
+.badge.escaped { background: rgba(229, 72, 77, 0.12); color: var(--danger, #e5484d); }
+.dot { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 4px; background: var(--muted, #7d8590); }
+.dot.on { background: var(--success, #3ecf72); }
+.actions { display: flex; gap: 6px; justify-content: flex-end; }
+.actions button { height: 30px; font-size: 12px; }
+.empty { padding: 60px 0; text-align: center; color: var(--muted, #7d8590); }
+
+.dialog { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(5, 6, 9, 0.6); }
+.dialog-card { width: 320px; padding: 22px; border-radius: var(--radius-large, 22px); background: rgba(20, 22, 29, 0.99); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); }
+.dialog-card h2 { margin: 0 0 14px; font-size: 15px; }
+.dialog-card input { width: 100%; height: 40px; padding: 0 12px; border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); border-radius: var(--radius, 10px); background: var(--slot, rgba(255, 255, 255, 0.03)); color: var(--text, #eef0f3); font: inherit; font-family: var(--mono, monospace); }
+.dialog-buttons { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }

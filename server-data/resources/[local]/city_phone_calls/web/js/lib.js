@@ -18,6 +18,7 @@ export const state = {
     blocked: [],
     call: null,
     hidden: false,
+    services: [],
 };
 
 // Our resource's callbacks always answer { ok, result, reason }

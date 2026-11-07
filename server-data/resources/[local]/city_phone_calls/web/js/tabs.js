@@ -3,8 +3,13 @@ import { openContact, editContact } from './contacts.js';
 import {
     state, call, t, h, button, iconButton, icon, avatar, toast, navBar, formatNumber, nameFor, contactFor, reasonText,
 } from './lib.js';
+import { serviceFor, reportSheet } from './services.js';
 
 export async function dial(number, hidden = state.hidden) {
+    // 190, 192, ...: a written call to the service instead of ringing someone
+    const service = serviceFor(number);
+    if (service) return reportSheet(service);
+
     const result = await call('dial', { number, hidden });
     if (!result.ok) toast(reasonText(result.reason));
 }
