@@ -1,0 +1,151 @@
+/* DarkChat: always dark, terminal look. What the kit (city_phone/web/kit/kit.css) doesn't already cover. */
+
+:root,
+:root[data-theme] {
+    --bg: #000000;
+    --bg-2: #0d0f0d;
+    --fill: #141814;
+    --text: #d8ffd8;
+    --text-2: rgba(160, 255, 170, 0.6);
+    --separator: rgba(48, 209, 88, 0.2);
+    --bar: rgba(5, 8, 5, 0.96);
+}
+
+body {
+    background: #000000;
+}
+
+.k-link,
+.k-tab--on {
+    color: #30d158;
+}
+
+.k-link--danger {
+    color: #ff453a;
+}
+
+.k-button {
+    background: #30d158;
+    color: #000000;
+}
+
+.logo,
+.welcome__logo {
+    font-family: 'Consolas', 'Courier New', monospace;
+    color: #30d158;
+}
+
+.hint {
+    margin: -12px 16px 22px;
+    font-size: 13px;
+    color: var(--text-2);
+}
+
+.wide {
+    width: 100%;
+}
+
+.welcome {
+    margin: 50px 0 30px;
+    text-align: center;
+}
+
+.welcome__logo {
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.welcome__text {
+    color: var(--text-2);
+}
+
+.room__hash {
+    width: 36px;
+    height: 36px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--fill);
+    color: #30d158;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 18px;
+}
+
+.room__lock {
+    color: var(--text-2);
+}
+
+.room__lock .k-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* A room */
+.terminal {
+    padding-bottom: 70px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.line {
+    margin-bottom: 4px;
+    overflow-wrap: anywhere;
+}
+
+.line--system {
+    color: var(--text-2);
+}
+
+.line__time {
+    margin-right: 6px;
+    color: var(--text-2);
+}
+
+.line__alias {
+    margin-right: 6px;
+    color: #30d158;
+}
+
+.line--mine .line__alias {
+    color: #64d2ff;
+}
+
+.prompt {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px 12px 26px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bar);
+    border-top: 0.5px solid var(--separator);
+    font-family: 'Consolas', 'Courier New', monospace;
+}
+
+.prompt__sign {
+    color: #30d158;
+}
+
+.prompt__input {
+    flex: 1;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 6px;
+    background: var(--fill);
+    color: var(--text);
+    font-family: inherit;
+}
+
+.prompt__send {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    background: #30d158;
+    color: #000000;
+}
