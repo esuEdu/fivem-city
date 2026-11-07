@@ -38,6 +38,8 @@ local FORWARD = {
     hangup = {},
     nearby = {},
     share = { 'target' },
+    services = {},
+    report = { 'service', 'kind', 'text', 'anonymous' },
 }
 
 for name, keys in pairs(FORWARD) do
