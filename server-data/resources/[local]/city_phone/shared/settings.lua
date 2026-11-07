@@ -18,12 +18,18 @@ local function percent(limits)
     end
 end
 
+-- A photo from the Photos app as wallpaper (its id; 0 = use the gradient wallpaper)
+local function photoId(value)
+    return type(value) == 'number' and value == math.floor(value) and value >= 0 and value < 2 ^ 31
+end
+
 local RULES = {
     theme = oneOf(Config.Themes),
     language = oneOf(Config.Languages),
     font = oneOf(Config.Fonts),
     wallpaper = oneOf(Config.Wallpapers),
     ringtone = oneOf(Config.Ringtones),
+    wallpaperPhoto = photoId,
     brightness = percent(Config.Brightness),
     size = percent(Config.Size),
     silent = boolean,
@@ -36,6 +42,7 @@ local DEFAULTS = {
     font = Config.Fonts[1],
     wallpaper = Config.Wallpapers[1],
     ringtone = Config.Ringtones[1],
+    wallpaperPhoto = 0,
     brightness = Config.Brightness.max,
     size = 100,
     silent = false,

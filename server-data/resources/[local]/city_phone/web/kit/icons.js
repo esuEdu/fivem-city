@@ -32,6 +32,11 @@ export const ICONS = {
     backspace: line('<path d="M9 5h11v14H9l-6-7z"/><path d="m12 9 5 6M17 9l-5 6"/>'),
     eyeOff: line('<path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 8.5 4 9.5 6a12 12 0 0 1-2.4 3.2M6.6 7.6C4.6 8.9 3.2 10.7 2.5 12c1 2 4.5 6 9.5 6 1.5 0 2.9-.4 4.1-1M9.9 10a3 3 0 0 0 4.1 4.1"/>'),
     flashlight: solid('<path d="M7 2h10v4l-2 4v12H9V10L7 6zm5 10a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>'),
+    camera: line('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
+    photo: line('<rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-8 8"/>'),
+    heart: line('<path d="M12 20s-7-4.5-9-9a4.8 4.8 0 0 1 9-3 4.8 4.8 0 0 1 9 3c-2 4.5-9 9-9 9z"/>'),
+    heartFilled: solid('<path d="M12 20s-7-4.5-9-9a4.8 4.8 0 0 1 9-3 4.8 4.8 0 0 1 9 3c-2 4.5-9 9-9 9z"/>'),
+    wallpaper: line('<rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="m6 16 4-4 4 4 2-2 2 2"/>'),
     resize: line('<path d="M4 10V4h6M4 4l7 7M20 14v6h-6M20 20l-7-7"/>'),
 };
 

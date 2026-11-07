@@ -1,0 +1,13 @@
+{
+    "library": "Biblioteca",
+    "favorites": "Favoritos",
+    "count": "%s de %s fotos",
+    "empty": "Nenhuma foto ainda. Tire algumas com a Câmera.",
+    "noFavorites": "Toque no coração de uma foto para ver aqui",
+    "back": "Fotos",
+    "favorite": "Favoritar",
+    "wallpaper": "Papel de parede",
+    "wallpaperSet": "Definida como papel de parede",
+    "delete": "Apagar",
+    "failed": "Algo deu errado"
+}
