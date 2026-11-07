@@ -17,6 +17,7 @@ shared_scripts {
 client_scripts {
     'client/main.lua',
     'client/target.lua',
+    'client/rating.lua',
 }
 
 server_scripts {
@@ -25,8 +26,12 @@ server_scripts {
     'server/players.lua',
     'server/sanctions.lua',
     'server/reports.lua',
+    'server/stats.lua',
     'server/self.lua',
 }
+
+-- The rating prompt players see; the Staff app itself (web/index.html) runs inside the tablet
+ui_page 'web/prompt.html'
 
 files {
     'shared/*.lua',
@@ -35,11 +40,14 @@ files {
     'locales/*.json',
     'web/index.html',
     'web/style.css',
+    'web/prompt.html',
+    'web/prompt.css',
     'web/js/*.js',
 }
 
 dependencies {
     'city_os',
+    'city_ui',
     'city_inventory',
     'oxmysql',
     'ox_lib',

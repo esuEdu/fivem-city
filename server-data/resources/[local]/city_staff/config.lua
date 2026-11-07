@@ -6,9 +6,10 @@ Config.Levels = { 'support', 'mod', 'admin' }
 
 -- The lowest level that may do each thing. Remove a line to turn that tool off.
 Config.Permissions = {
-    -- the app, the player list and reports
+    -- the app (dashboard and player list), reports, and the ratings players gave staff
     app = 'support',
     reports = 'support',
+    ratings = 'support',
 
     -- on a player
     ['goto'] = 'support',
@@ -53,14 +54,22 @@ Config.MaxBanHours = 168
 -- Ban lengths offered in the app, in hours (0 = permanent, only with banLong)
 Config.BanLengths = { 1, 6, 24, 72, 168, 720, 0 }
 
--- /report: shortest gap between two reports from one player (seconds), longest message, and how many open reports
--- are kept (the oldest closed ones go first)
+-- /report: shortest gap between two reports from one player (seconds), longest message, and how many reports may be
+-- open at once (new ones are refused above that)
 Config.ReportCooldown = 60
 Config.ReportMaxLength = 300
 Config.MaxReports = 100
 
 -- How many staff log entries the app shows
 Config.LogLimit = 200
+
+-- Ratings: after staff close a report, the player who sent it is asked to rate them (1-5 stars, these tags, a comment).
+-- They have this many minutes to answer.
+Config.RatingMinutes = 10
+Config.RatingTags = { 'Fast', 'Polite', 'Fixed it', "Didn't help" }
+
+-- Dashboard: reports a staff member aims to close per period (the ring on "Your ..." card)
+Config.Goals = { today = 5, week = 30, month = 120 }
 
 -- Highest routing bucket staff can put a player in
 Config.MaxBucket = 1000

@@ -1,0 +1,39 @@
+/* The rating prompt over the game. Colors come from the City OS kit (kit.css) and the city_ui theme. */
+
+html, body { margin: 0; height: 100%; background: transparent; font-family: var(--font, 'Poppins', 'Segoe UI', Arial, sans-serif); font-size: 14px; color: var(--fg); }
+* { box-sizing: border-box; }
+.hidden { display: none !important; }
+
+#rating { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(0, 0, 0, 0.35); }
+.dialog { width: 520px; padding: 26px; border-radius: 22px; background: var(--group); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5); animation: pop 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes pop { from { transform: scale(0.94); opacity: 0; } }
+
+#ask { display: flex; flex-direction: column; gap: 16px; }
+.head { display: flex; align-items: center; gap: 14px; }
+.avatar { flex: none; width: 46px; height: 46px; border-radius: 23px; background: var(--field); display: grid; place-items: center; font-weight: 700; }
+.who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.who strong { font-size: 18px; }
+.who small { font-size: 13px; color: var(--muted2); }
+
+.stars { display: flex; justify-content: center; gap: 8px; }
+.stars button { width: 56px; height: 56px; border: 0; border-radius: 14px; background: var(--field); color: var(--switch-off); font-size: 32px; line-height: 1; cursor: pointer; transition: transform 0.12s; }
+.stars button:hover { transform: scale(1.06); }
+.stars button.on { background: var(--accent-soft, rgba(245, 197, 66, 0.16)); color: var(--accent); }
+.word { min-height: 20px; margin-top: -6px; text-align: center; font-weight: 600; color: var(--accent-ink); }
+
+.tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.tags button { height: 32px; padding: 0 14px; border-radius: 16px; border: 1px solid var(--line); background: transparent; color: var(--fg2); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.tags button.on { border-color: var(--accent); background: var(--accent-soft, rgba(245, 197, 66, 0.14)); color: var(--accent-ink); }
+
+.comment { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted2); }
+.comment textarea { resize: none; padding: 10px 12px; border: 0; border-radius: 11px; outline: 0; background: var(--field); color: var(--fg); font: inherit; font-size: 14px; }
+
+.buttons { display: flex; gap: 10px; }
+.buttons .kit-btn { height: 42px; padding: 0 20px; }
+.buttons .kit-btn:disabled { opacity: 0.5; cursor: default; }
+.spacer { flex-grow: 1; }
+
+#thanks { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 26px 0; text-align: center; }
+#thanks strong { font-size: 20px; }
+#thanks small { max-width: 340px; color: var(--muted2); }
+.check { width: 64px; height: 64px; border-radius: 32px; background: var(--success-glow, rgba(62, 207, 114, 0.2)); color: var(--success); display: grid; place-items: center; }

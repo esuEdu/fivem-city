@@ -1,33 +1,39 @@
-import { el, L, setLabels, run } from './ui.js';
-import { renderPlayers, renderPlayer } from './players.js';
-import { renderReports, openReports } from './reports.js';
+import { el, L, setLabels, run, icon } from './ui.js';
+import { renderDashboard } from './dashboard.js';
+import { renderPlayers } from './players.js';
+import { renderReports, loadReports } from './reports.js';
+import { renderRatings } from './ratings.js';
 import { renderBans, renderLog } from './records.js';
 import { renderMe } from './me.js';
 
 // Everything the tabs share: what this staff member may do, and the lists the forms use
-export const app = { permissions: {}, tab: 'players', openReports: 0 };
+export const app = { permissions: {}, tab: 'dashboard', openReports: 0 };
 
 const content = document.getElementById('content');
 const nav = document.getElementById('nav');
 
+const SELF_TOOLS = ['noclip', 'invisible', 'godmode', 'names', 'blips', 'spawnVehicle', 'fixVehicle', 'deleteVehicle', 'saveVehicle'];
+
 const TABS = [
-    { id: 'players', permission: 'app', render: renderPlayers },
-    { id: 'player', permission: 'app', render: renderPlayer, hidden: true },
-    { id: 'reports', permission: 'reports', render: renderReports },
-    { id: 'bans', permission: 'ban', render: renderBans },
-    { id: 'log', permission: 'log', render: renderLog },
-    { id: 'me', permission: null, render: renderMe },
+    { id: 'dashboard', icon: 'dashboard', permission: 'app', render: renderDashboard },
+    { id: 'players', icon: 'players', permission: 'app', render: renderPlayers },
+    { id: 'reports', icon: 'reports', permission: 'reports', render: renderReports },
+    { id: 'ratings', icon: 'star', permission: 'ratings', render: renderRatings },
+    { id: 'bans', icon: 'ban', permission: 'ban', render: renderBans },
+    { id: 'log', icon: 'log', permission: 'log', render: renderLog },
+    { id: 'me', icon: 'tools', permission: null, render: renderMe },
 ];
 
 export function can(action) {
     return app.permissions[action] === true;
 }
 
-// Each tab draws into the content area; `args` lets a tab open on one item (a report from a notification)
+// Each tab draws into the content area; `args` lets a tab open on one item (a player, a report from a notification)
 export async function go(tab, args) {
     app.tab = tab;
     drawNav();
-    content.replaceChildren(el('div', { class: 'loading', text: L('ui_loading') }));
+
+    if (!content.firstChild) content.replaceChildren(el('div', { class: 'loading', text: L('ui_loading') }));
 
     const view = await TABS.find((entry) => entry.id === tab).render(args);
     if (app.tab === tab) content.replaceChildren(view);
@@ -38,20 +44,18 @@ export function setReportsBadge(count) {
     drawNav();
 }
 
-function drawNav() {
-    // A player's page belongs under Players
-    const current = app.tab === 'player' ? 'players' : app.tab;
-
-    nav.replaceChildren(...TABS
-        .filter((tab) => !tab.hidden && (tab.permission ? can(tab.permission) : hasSelfTools()))
-        .map((tab) => el('button', { class: `kit-nav${current === tab.id ? ' on' : ''}`, onclick: () => go(tab.id) },
-            el('span', { text: L(`ui_tab_${tab.id}`) }),
-            tab.id === 'reports' && app.openReports > 0 ? el('span', { class: 'badge', text: String(app.openReports) }) : null,
-        )));
+export function setStaffOnline(count) {
+    document.getElementById('online-count').textContent = L('ui_staff_online_count', count);
 }
 
-function hasSelfTools() {
-    return ['noclip', 'invisible', 'godmode', 'names', 'blips', 'spawnVehicle', 'fixVehicle', 'deleteVehicle', 'saveVehicle'].some(can);
+function drawNav() {
+    nav.replaceChildren(...TABS
+        .filter((tab) => tab.permission ? can(tab.permission) : SELF_TOOLS.some(can))
+        .map((tab) => el('button', { class: `nav${app.tab === tab.id ? ' on' : ''}`, onclick: () => go(tab.id) },
+            icon(tab.icon),
+            el('span', { class: 'label', text: L(`ui_tab_${tab.id}`) }),
+            tab.id === 'reports' && app.openReports > 0 ? el('span', { class: 'badge', text: String(app.openReports) }) : null,
+        )));
 }
 
 async function start() {
@@ -63,17 +67,21 @@ async function start() {
 
     Object.assign(app, response.data);
     setLabels(response.data.labels);
-    document.getElementById('title').textContent = L('ui_title');
-    document.getElementById('level').textContent = L(`level_${app.level}`);
 
-    if (can('reports')) await openReports();
-    go('players');
+    document.getElementById('logo').append(icon('shield', 22, 2));
+    document.getElementById('title').textContent = L('ui_title');
+    document.getElementById('me').textContent = `${app.me} · ${L(`level_${app.level}`)}`;
+    document.getElementById('online-label').textContent = L('ui_staff_online');
+    setStaffOnline(app.staffOnline);
+
+    if (can('reports')) await loadReports();
+    go('dashboard');
 }
 
 window.CityOS.on('message', async (message) => {
     if (message && message.type === 'reports' && can('reports')) {
-        await openReports();
-        if (app.tab === 'reports') go('reports');
+        await loadReports();
+        if (app.tab === 'reports' || app.tab === 'dashboard') go(app.tab);
     }
 });
 

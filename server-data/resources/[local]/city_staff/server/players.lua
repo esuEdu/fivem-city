@@ -9,6 +9,24 @@ local frozen = {}
 ---@type table<integer, integer> staff spectating -> the routing bucket they came from
 local spectating = {}
 
+---@type table<integer, integer> server id -> os.time() they joined (players already on when this started count from then)
+local joined = {}
+local startedAt = os.time()
+
+AddEventHandler('playerJoining', function()
+    joined[source] = os.time()
+end)
+
+---Health as a percentage: a ped's health runs from 100 (dead) to its max (200 for players).
+---@param ped integer
+---@return integer
+local function healthPercent(ped)
+    local max = GetEntityMaxHealth(ped)
+    if max <= 100 then return 0 end
+
+    return math.max(0, math.min(100, math.floor((GetEntityHealth(ped) - 100) / (max - 100) * 100 + 0.5)))
+end
+
 ---@param src integer
 ---@return table row as the player list shows it
 local function row(src)
@@ -21,6 +39,8 @@ local function row(src)
         account = GetPlayerName(src),
         citizenid = data.citizenid,
         job = data.job.label,
+        health = healthPercent(GetPlayerPed(src)),
+        online = os.time() - (joined[src] or startedAt),
     }
 end
 
@@ -55,6 +75,18 @@ staff.register('player', function(_, data)
     info.license = license
     info.dead = playerData.metadata.isdead or playerData.metadata.inlaststand or false
     info.cuffed = playerData.metadata.ishandcuffed or false
+    local ped = GetPlayerPed(target)
+    local vehicle = GetVehiclePedIsIn(ped, false)
+    local vehicleInfo = vehicle ~= 0 and exports.qbx_core:GetVehiclesByHash()[GetEntityModel(vehicle)]
+
+    info.armor = GetPedArmour(ped)
+    info.cash = exports.qbx_core:GetMoney(target, 'cash') or 0
+    info.bank = exports.qbx_core:GetMoney(target, 'bank') or 0
+    info.coords = GetEntityCoords(ped)
+    info.vehicle = vehicle ~= 0 and {
+        name = vehicleInfo and ('%s %s'):format(vehicleInfo.brand or '', vehicleInfo.name or ''):gsub('^%s+', '') or nil,
+        plate = GetVehicleNumberPlateText(vehicle),
+    } or nil
     info.warnings = MySQL.query.await('SELECT `reason`, `staff_name`, UNIX_TIMESTAMP(`created_at`) AS `time` FROM `city_staff_warnings` WHERE `citizenid` = ? ORDER BY `id` DESC LIMIT 20', { playerData.citizenid }) or {}
 
     return true, info
@@ -229,6 +261,7 @@ AddEventHandler('playerDropped', function()
     local src = source
     frozen[src] = nil
     spectating[src] = nil
+    joined[src] = nil
 end)
 
 AddEventHandler('onResourceStop', function(resource)

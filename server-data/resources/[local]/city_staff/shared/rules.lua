@@ -81,6 +81,55 @@ function rules.cleanText(text, maxLength)
     return text:sub(1, maxLength)
 end
 
+---A player's rating of the staff member who closed their report, cleaned up, or nil and why not.
+---@param stars unknown 1 to 5
+---@param tags unknown list of Config.RatingTags entries
+---@param comment unknown optional text
+---@return { stars: integer, tags: string?, comment: string? }?
+---@return string? reason
+function rules.rating(stars, tags, comment)
+    stars = math.tointeger(tonumber(stars))
+    if not stars or stars < 1 or stars > 5 then return nil, 'invalid' end
+
+    local picked = {}
+
+    if type(tags) == 'table' then
+        for _, tag in ipairs(Config.RatingTags) do
+            for _, given in ipairs(tags) do
+                if given == tag then
+                    picked[#picked + 1] = tag
+                    break
+                end
+            end
+        end
+    end
+
+    return {
+        stars = stars,
+        tags = #picked > 0 and table.concat(picked, ',') or nil,
+        comment = rules.cleanText(comment, 200),
+    }
+end
+
+-- How far back each dashboard period reaches
+local PERIODS = { today = true, week = 7, month = 30 }
+
+---When a dashboard period starts: local midnight for today, else that many days back.
+---@param period unknown 'today' | 'week' | 'month'
+---@param now integer os.time()
+---@return integer start
+---@return string period the period used (unknown ones become 'today')
+function rules.periodStart(period, now)
+    if not PERIODS[period] then period = 'today' end
+
+    if period == 'today' then
+        local date = os.date('*t', now)
+        return os.time({ year = date.year, month = date.month, day = date.day, hour = 0 }), period
+    end
+
+    return now - PERIODS[period] * 86400, period
+end
+
 ---@param value unknown
 ---@return integer? a non-negative integer
 function rules.toId(value)

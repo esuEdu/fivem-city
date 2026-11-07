@@ -52,4 +52,21 @@ assert(rules.cleanText('   ', 50) == nil and rules.cleanText(nil, 50) == nil and
 assert(rules.toId(3) == 3 and rules.toId('7') == 7 and rules.toId(0) == 0)
 assert(rules.toId(-1) == nil and rules.toId(1.5) == nil and rules.toId('x') == nil and rules.toId(nil) == nil)
 
+-- Ratings: 1-5 stars, only configured tags (in config order), optional comment
+local rating = assert(rules.rating(4, { 'Polite', 'Fast', 'made up' }, '  thanks  '))
+assert(rating.stars == 4 and rating.tags == 'Fast,Polite' and rating.comment == 'thanks')
+rating = assert(rules.rating('5', nil, nil))
+assert(rating.stars == 5 and rating.tags == nil and rating.comment == nil)
+for _, bad in ipairs({ 0, 6, 2.5, 'x', nil }) do
+    assert(select(2, rules.rating(bad)) == 'invalid', tostring(bad))
+end
+
+-- Dashboard periods: today starts at local midnight, week and month go back 7 and 30 days
+local now = os.time({ year = 2026, month = 11, day = 6, hour = 15, min = 30 })
+local start, period = rules.periodStart('today', now)
+assert(period == 'today' and os.date('*t', start).hour == 0 and os.date('*t', start).day == 6)
+assert(rules.periodStart('week', now) == now - 7 * 86400)
+assert(rules.periodStart('month', now) == now - 30 * 86400)
+assert(select(2, rules.periodStart('year', now)) == 'today')
+
 print('ok')

@@ -8,13 +8,22 @@
     <script src="https://cfx-nui-city_os/web/kit/kit.js"></script>
 </head>
 <body class="kit-page">
-    <div class="kit-split">
-        <aside class="kit-sidebar">
-            <div class="kit-title" id="title">Staff</div>
-            <div class="level"><span class="kit-pill accent" id="level"></span></div>
+    <div class="app">
+        <aside class="side">
+            <div class="brand">
+                <span class="logo" id="logo"></span>
+                <div class="who">
+                    <strong id="title">Staff</strong>
+                    <small id="me"></small>
+                </div>
+            </div>
             <nav id="nav"></nav>
+            <div class="online">
+                <small id="online-label"></small>
+                <span><i class="dot"></i><span id="online-count">—</span></span>
+            </div>
         </aside>
-        <main class="kit-content" id="content"></main>
+        <main id="content"></main>
     </div>
     <div id="toast"></div>
     <script type="module" src="js/main.js"></script>

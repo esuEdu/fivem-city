@@ -49,7 +49,12 @@ staff.register('app', function(src)
     local level = staff.rank(src)
     local permissions = rules.permissions(level)
 
+    local player = exports.qbx_core:GetPlayer(src)
+    local charinfo = player.PlayerData.charinfo
+
     return true, {
+        me = ('%s %s'):format(charinfo.firstname, charinfo.lastname),
+        staffOnline = #staff.online('app'),
         level = Config.Levels[level],
         permissions = permissions,
         banLengths = Config.BanLengths,

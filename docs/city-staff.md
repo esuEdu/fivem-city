@@ -18,8 +18,10 @@ The **Staff** app on the iFruit tablet, and the staff commands around it. It rep
 
 ## Tabs
 
-- **Players**: everyone online, searchable by id, name or citizen id. A player's page has their info (job, gang, ping, bucket, license, status), the actions, job/gang/bucket forms, warn/kick/ban with a reason, and their last 20 warnings.
-- **Reports**: from `/report <message>` (anyone; one per `Config.ReportCooldown`). Online staff get a banner and a badge on the app icon. Claim, reply (the player gets a notification), go to the player, close. Kept in memory only, lost on restart.
+- **Dashboard**: open reports (and how long the oldest has waited), reports closed, average first reply and the staff rating for Today / Week / Month; a chart of reports sent vs closed over the last 7 days; your own card (closed vs `Config.Goals`, rank, rating, reply time); the team table (who's online, closed, rating, first reply); the latest ratings.
+- **Players**: list on the left (job, time online, health bar), the selected player on the right: health, armor, cash, bank, job, gang, location (street, worked out on the staff member's client), vehicle and plate, ping, bucket, license, status pills, the actions, job/gang/bucket forms, warn/kick/ban with a reason, and their last 20 warnings.
+- **Reports**: from `/report <message>` (anyone; one per `Config.ReportCooldown`). Online staff get a banner and a badge on the app icon. Open / Mine / Closed; each report is a conversation: claim, reply (the player gets a notification), go to or bring the player, **Close and ask for rating**. Saved in `city_staff_reports`, so open reports survive a restart (their senders show as offline).
+- **Ratings**: when staff close a report and the sender is online, the sender gets a prompt (this resource's `ui_page`, `web/prompt.html`): 1–5 stars, tags from `Config.RatingTags`, an optional comment, or Skip. The server only takes a rating it asked for, from that player, once, within `Config.RatingMinutes`. The tab shows the last 30 days: overall score, how many of each star, each staff member's rating and trend (vs the 30 days before), and the comments. Every staff level sees it (`Config.Permissions.ratings`).
 - **Bans**: active bans from qbx_core's `bans` table, with Unban for admins. Bans made in txAdmin's panel live in txAdmin and aren't listed.
 - **Staff log**: the last `Config.LogLimit` staff actions, searchable (admins).
 - **My tools**: noclip, invisible, godmode, names over heads, map blips; spawn (by model name from qbx_core's vehicle list), fix, delete and save vehicles.
@@ -30,7 +32,8 @@ The **Staff** app on the iFruit tablet, and the staff commands around it. It rep
 
 - **Warnings**: `city_staff_warnings` (citizenid, license, reason, staff name, time). The player sees a dialog with the reason.
 - **Bans**: rows in qbx_core's `bans` (license, discord, ip, reason, expire, bannedby); qbx_core refuses the connection while `expire` is in the future. Permanent = `expire` 2147483647. IPs are stored for the check but never sent to the app.
-- **Staff log**: `city_staff_log`, one row per action (staff, action, target, details, time). Both tables are created on start.
+- **Staff log**: `city_staff_log`, one row per action (staff, action, target, details, time).
+- **Reports and ratings**: `city_staff_reports`, one row per report: sender, message, replies (JSON), when it was sent, first claimed or answered (`response_at`, for reply times), who claimed and closed it (name, license, level), and the rating (stars, tags, comment, time). All three tables are created on start.
 
 ## How tools work
 

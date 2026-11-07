@@ -6,7 +6,7 @@ local spectate = require 'client.spectate'
 
 -- Server callbacks the page may call (city_staff:<name>)
 local ACTIONS = {
-    app = true, players = true, player = true, log = true,
+    app = true, dashboard = true, ratings = true, players = true, player = true, log = true,
     ['goto'] = true, bring = true, heal = true, revive = true, freeze = true, kill = true, cuff = true,
     clothing = true, bucket = true, setJob = true, setGang = true, inventory = true, spectate = true,
     warn = true, kick = true, ban = true, bans = true, unban = true,
@@ -35,13 +35,26 @@ local function prepare(action, args)
     end
 end
 
+---"Zone, Street" for a position; street names only exist on the client.
+---@param coords vector3
+---@return string
+local function placeName(coords)
+    local street = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))
+    local zone = GetLabelText(GetNameOfZone(coords.x, coords.y, coords.z))
+
+    return zone ~= 'NULL' and ('%s, %s'):format(zone, street) or street
+end
+
 ---What happens on this client after the server said yes.
 ---@param action string
 ---@param result any
 local function finish(action, result)
     if CLOSES_TABLET[action] and exports.city_os:IsOpen() then exports.city_os:Close() end
 
-    if action == 'inventory' then
+    if action == 'player' then
+        result.place = placeName(result.coords)
+        result.coords = nil
+    elseif action == 'inventory' then
         exports.ox_inventory:openInventory('player', result)
     elseif action == 'spectate' then
         spectate.start(result)
