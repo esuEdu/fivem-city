@@ -15,8 +15,9 @@ export const SETTINGS_APP = {
     order: 1000,
 };
 
+// A burner phone has no Settings (only the apps the server allows)
 export function allApps() {
-    return [...state.apps, SETTINGS_APP];
+    return state.profile.burner ? [...state.apps] : [...state.apps, SETTINGS_APP];
 }
 
 export function findApp(id) {

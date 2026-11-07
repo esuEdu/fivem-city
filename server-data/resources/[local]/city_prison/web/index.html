@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>city_prison</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="counter" class="counter hidden">
+        <span class="bars"></span>
+        <span id="counter-label" class="counter-label"></span>
+        <span id="counter-text" class="counter-text"></span>
+    </div>
+
+    <div id="computer" class="computer hidden">
+        <div class="panel">
+            <header>
+                <h1 id="title"></h1>
+                <nav>
+                    <button class="tab active" data-tab="inmates" id="tab-inmates"></button>
+                    <button class="tab" data-tab="history" id="tab-history"></button>
+                </nav>
+                <button id="close" class="ghost"></button>
+            </header>
+            <section id="inmates" class="view"></section>
+            <section id="history" class="view hidden"></section>
+        </div>
+
+        <div id="dialog" class="dialog hidden">
+            <div class="dialog-card">
+                <h2 id="dialog-title"></h2>
+                <input id="dialog-input" type="number" min="0" step="1">
+                <div class="dialog-buttons">
+                    <button id="dialog-cancel" class="ghost"></button>
+                    <button id="dialog-save" class="primary"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

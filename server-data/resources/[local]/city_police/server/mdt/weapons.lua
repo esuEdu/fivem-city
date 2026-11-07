@@ -53,3 +53,17 @@ mdt.register('setWeaponStatus', function(src, data)
 
     return changed > 0, changed > 0 and nil or 'not_found'
 end, 'weapons')
+
+---Serials of the weapons registered to a character, as a set (city_prison keeps these, seizes the rest)
+---@param citizenid string
+---@return table<string, true>
+exports('RegisteredWeapons', function(citizenid)
+    if type(citizenid) ~= 'string' then return {} end
+
+    local serials = {}
+    local rows = MySQL.query.await("SELECT serial FROM city_police_weapons WHERE owner_cid = ? AND status = 'registered'", { citizenid })
+
+    for _, row in ipairs(rows or {}) do serials[row.serial] = true end
+
+    return serials
+end)

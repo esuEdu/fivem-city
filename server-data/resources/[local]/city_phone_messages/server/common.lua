@@ -11,14 +11,14 @@ function common.player(src)
     local player = exports.qbx_core:GetPlayer(src)
     if not player then return end
 
-    return player, tostring(player.PlayerData.charinfo.phone or '')
+    -- The number of the phone in use: their own, or a burner's (city_phone decides)
+    return player, exports.city_phone:ActiveNumber(src)
 end
 
 ---@param number string
----@return integer? source of the player with that number, if online
+---@return integer? source of the player whose phone answers that number now
 function common.online(number)
-    local player = exports.qbx_core:GetPlayerByPhone(number)
-    return player and player.PlayerData.source or nil
+    return exports.city_phone:SourceByNumber(number)
 end
 
 ---@param value unknown
@@ -44,7 +44,7 @@ function common.text(value, limit)
 end
 
 function common.hasPhone(src)
-    return exports.city_inventory:GetItemCount(src, Config.Item) > 0
+    return exports.city_phone:HasPhone(src)
 end
 
 function common.throttled(src, key, ms)

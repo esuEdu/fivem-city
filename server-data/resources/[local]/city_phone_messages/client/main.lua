@@ -111,7 +111,7 @@ RegisterNetEvent('city_phone_messages:client:message', function(message)
 
     exports.city_phone:SendAppMessage(APP, { action = 'message', message = message })
 
-    local mine = message.sender == tostring(QBX.PlayerData.charinfo.phone or '')
+    local mine = message.sender == (LocalPlayer.state.phoneBurner or tostring(QBX.PlayerData.charinfo.phone or ''))
     if mine or message.kind == 'system' then return end
 
     -- On screen the page marks it read; otherwise a notification and one more unread

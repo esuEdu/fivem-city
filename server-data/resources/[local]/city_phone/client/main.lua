@@ -46,6 +46,7 @@ local function open()
     profile = profile or lib.callback.await('city_phone:profile', false)
     if not profile then return end
 
+    apps.setBurner(profile.burner)
     isOpen = true
     SendNUIMessage({ action = 'open', profile = profile, apps = apps.list(), clock = clock() })
     SetNuiFocus(true, true)
@@ -61,8 +62,16 @@ local function open()
     end)
 end
 
-RegisterNetEvent('city_phone:client:toggle', function()
+-- burner: opened from a burner phone (another number, fewer apps) or from the player's own phone
+RegisterNetEvent('city_phone:client:toggle', function(burner)
     if GetInvokingResource() then return end
+
+    -- Switching between the own phone and a burner: read the profile again
+    if profile and (profile.burner == true) ~= (burner == true) then
+        close()
+        profile = nil
+    end
+
     if isOpen then close() else open() end
 end)
 
@@ -86,7 +95,10 @@ end)
 
 -- Losing the phone item or going down closes it
 AddEventHandler('ox_inventory:itemCount', function(name, count)
-    if name == Config.Item and count < 1 then close() end
+    if count > 0 then return end
+
+    local using = profile and profile.burner and Config.BurnerItem or Config.Item
+    if name == using then close() end
 end)
 
 AddStateBagChangeHandler('isDead', ('player:%s'):format(cache.serverId), function(_, _, value)
@@ -110,7 +122,12 @@ exports('Close', close)
 ---Opens the phone from code (an incoming call). Needs the phone item; returns whether it opened.
 exports('Open', function()
     if isOpen then return true end
-    if exports.city_inventory:GetItemCount(Config.Item) < 1 then return false end
+
+    local using = LocalPlayer.state.phoneBurner and Config.BurnerItem or Config.Item
+    if exports.city_inventory:GetItemCount(using) < 1 then return false end
+
+    -- An incoming call on the other phone than the profile we have
+    if profile and (profile.burner == true) ~= (LocalPlayer.state.phoneBurner ~= nil) then profile = nil end
 
     open()
     return isOpen

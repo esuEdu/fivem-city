@@ -75,7 +75,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **qbx_scrapyard** | Scrap stolen cars for materials. |
 | **qbx_vineyard** | Pick grapes and make wine. |
 | **qbx_diving / qbx_divegear** | Diving for coral, and the dive gear. |
-| **xt-prison** | Prison sentences, jobs inside and breakouts. Not called by the police any more (city_police only shows the arrest screen for now); to be replaced by our own prison. |
+| **city_prison** | Ours, replaces xt-prison: Bolingbroke sentences (an arrest in the MDT sends the suspect straight in; one month = one minute played), belongings in a locker (illegal items to the police evidence locker), jobs that cut the time, contraband crafting (shank, gate jammer, burner phone), escapes with a gate hack, alarm and an MDT warrant, and the prison computer for the police. See [city-prison.md](../city-prison.md). |
 
 ## Crime
 

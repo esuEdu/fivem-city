@@ -40,7 +40,7 @@ Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuff
 - **Evidence**: shooting drops casings (with the weapon's serial), wounds drop blood, robberies leave fingerprints (no gloves). Officers on duty see them when aiming a flashlight, and pick them up with an `empty_evidence_bag`. Evidence on the ground disappears after `Config.Evidence.minutes`.
 - **Ankle monitor**: the person's position shows on the MDT map while it's on.
 - **Radars**: fixed speed cameras (km/h). Speeding gives the driver a bank bill; a flagged plate creates a call.
-- **Arrest**: for now the suspect only sees an arrest screen with the months and the crimes, and the arrest goes in their record (`metadata.injail` is set to the months). Serving the sentence comes with our prison script later.
+- **Arrest**: the suspect sees an arrest screen with the months and the crimes, the arrest goes in their record, and `city_prison` takes them straight to Bolingbroke ([city-prison.md](city-prison.md)).
 - **Panic button** (radial "Emergency"): a high-priority call with the officer's position.
 
 ## Calls (dispatch)
@@ -76,4 +76,4 @@ Fines, radar tickets and impound fees are **bank bills** (`exports.city_bank:Cre
 
 ## Not in v1
 
-Serving sentences (prison), BOLO, K9, body cams, the helicopter camera, court and lawyers, evidence photos.
+BOLO, K9, body cams, the helicopter camera, court and lawyers, evidence photos.

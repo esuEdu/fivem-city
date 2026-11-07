@@ -64,6 +64,12 @@ lib.callback.register('city_hospital:respawn', function(source)
     if throttled(src, 'respawn') then return false end
     if not state.down(src) or state.remaining(src, settings.times.downWait) > 0 then return false end
 
+    -- Inmates wake up in the prison infirmary, free, with what they carry
+    if GetResourceState('city_prison') == 'started' and exports.city_prison:Respawn(src) then
+        lib.print.info(('city_hospital: %s respawned in the prison infirmary'):format(GetPlayerName(src)))
+        return true
+    end
+
     local hospital = beds.nearestHospital(src)
     local bed = beds.free(hospital)
 

@@ -105,6 +105,10 @@ Config.MaxClip = 100
 Config.Recipes = {
     { ingredients = { { 'rolling_paper', 1 }, { 'weed_skunk', 1 } }, result = { 'joint', 1 }, duration = 3000 },
     { ingredients = { { 'metalscrap', 5 }, { 'rubber', 2 } }, result = { 'repairkit', 1 }, duration = 5000 },
+    -- Prison contraband (city_prison); no two recipes share a pair of ingredients
+    { ingredients = { { 'prison_scrap', 2 }, { 'prison_cloth', 1 } }, result = { 'weapon_switchblade', 1 }, duration = 6000 },
+    { ingredients = { { 'prison_wire', 2 }, { 'prison_scrap', 1 } }, result = { 'prison_jammer', 1 }, duration = 8000 },
+    { ingredients = { { 'prison_battery', 1 }, { 'prison_circuit', 1 } }, result = { 'burner_phone', 1 }, duration = 8000 },
 }
 
 -- Item sets for the /kit admin command. The first one is given when no name is typed.
