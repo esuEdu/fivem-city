@@ -54,14 +54,19 @@ local function stopBack()
     cam = nil
 end
 
+-- CELL_CAM_ACTIVATE_SELFIE_MODE: FiveM's Lua has no named function for it, so it is called by its hash
+local function selfieMode(on)
+    Citizen.InvokeNative(0x2491A93618B7D838, on)
+end
+
 local function startSelfie()
     CreateMobilePhone(1)
     CellCamActivate(true, true)
-    CellFrontCamActivate(true)
+    selfieMode(true)
 end
 
 local function stopSelfie()
-    CellFrontCamActivate(false)
+    selfieMode(false)
     CellCamActivate(false, false)
     DestroyMobilePhone()
 end
@@ -134,45 +139,60 @@ local function stop(reopen)
     if reopen then exports.city_phone:Open() end
 end
 
+---One frame of camera mode; returns true when camera mode should end (and whether to reopen the phone)
+local function frame()
+    -- Leave camera mode on losing the phone or going down
+    if LocalPlayer.state.isDead or exports.city_inventory:GetItemCount(Config.Item) < 1 then return true, false end
+
+    DisableControlAction(0, 24, true)
+    DisableControlAction(0, 25, true)
+    DisableControlAction(0, 37, true)
+    DisableControlAction(0, 140, true)
+    DisableControlAction(0, 141, true)
+    DisableControlAction(0, 142, true)
+    DisableControlAction(0, 199, true)
+    DisableControlAction(0, 200, true)
+
+    if not selfie then
+        DisableControlAction(0, 1, true)
+        DisableControlAction(0, 2, true)
+        moveBack()
+    end
+
+    if hideHud then HideHudAndRadarThisFrame() end
+
+    if key('shoot') or key('shootAlt') then CreateThread(shoot) end
+    if key('selfie') then toggleSelfie() end
+    if key('hud') then hideHud = not hideHud; sendState() end
+
+    if key('filterLeft') or key('filterRight') then
+        filter = (filter - 1 + (key('filterRight') and 1 or -1)) % #Config.Filters + 1
+        applyFilter()
+        sendState()
+    end
+
+    if not selfie and (key('zoomIn') or key('zoomOut')) then
+        fov = math.max(Config.Fov.min, math.min(Config.Fov.max, fov + (key('zoomIn') and -Config.Fov.step or Config.Fov.step)))
+        sendState()
+    end
+
+    -- Backspace, right mouse or Esc (Esc is held back so the pause menu doesn't open)
+    if key('exit') or key('exitAlt') or IsDisabledControlJustPressed(0, 200) then return true, true end
+
+    return false
+end
+
+-- Any error in a frame ends camera mode instead of leaving the player stuck in it
 local function loop()
     while active do
-        -- Leave camera mode on losing the phone, going down or opening the pause menu
-        if LocalPlayer.state.isDead or exports.city_inventory:GetItemCount(Config.Item) < 1 then return stop(false) end
+        local ok, finished, reopen = pcall(frame)
 
-        DisableControlAction(0, 24, true)
-        DisableControlAction(0, 25, true)
-        DisableControlAction(0, 37, true)
-        DisableControlAction(0, 140, true)
-        DisableControlAction(0, 141, true)
-        DisableControlAction(0, 142, true)
-        DisableControlAction(0, 199, true)
-        DisableControlAction(0, 200, true)
-
-        if not selfie then
-            DisableControlAction(0, 1, true)
-            DisableControlAction(0, 2, true)
-            moveBack()
+        if not ok then
+            lib.print.error(('city_phone_camera: %s'):format(finished))
+            return stop(true)
         end
 
-        if hideHud then HideHudAndRadarThisFrame() end
-
-        if key('shoot') or key('shootAlt') then CreateThread(shoot) end
-        if key('selfie') then toggleSelfie() end
-        if key('hud') then hideHud = not hideHud; sendState() end
-
-        if key('filterLeft') or key('filterRight') then
-            filter = (filter - 1 + (key('filterRight') and 1 or -1)) % #Config.Filters + 1
-            applyFilter()
-            sendState()
-        end
-
-        if not selfie and (key('zoomIn') or key('zoomOut')) then
-            fov = math.max(Config.Fov.min, math.min(Config.Fov.max, fov + (key('zoomIn') and -Config.Fov.step or Config.Fov.step)))
-            sendState()
-        end
-
-        -- Backspace, right mouse or Esc (Esc is held back so the pause menu doesn't open)
-        if key('exit') or key('exitAlt') or IsDisabledControlJustPressed(0, 200) then return stop(true) end
+        if finished then return stop(reopen) end
 
         Wait(0)
     end
