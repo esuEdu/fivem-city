@@ -1,0 +1,13 @@
+{
+    "library": "Library",
+    "favorites": "Favorites",
+    "count": "%s of %s photos",
+    "empty": "No photos yet. Take some with the Camera.",
+    "noFavorites": "Tap the heart on a photo to see it here",
+    "back": "Photos",
+    "favorite": "Favorite",
+    "wallpaper": "Wallpaper",
+    "wallpaperSet": "Set as wallpaper",
+    "delete": "Delete",
+    "failed": "Something went wrong"
+}

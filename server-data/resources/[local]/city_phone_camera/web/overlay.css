@@ -1,0 +1,132 @@
+/* Camera mode overlay. It never shows in the photo: the capture only takes the game view. */
+@font-face { font-family: 'Inter'; src: url('https://cfx-nui-city_phone/web/fonts/inter.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    color: #ffffff;
+    user-select: none;
+}
+
+.camera {
+    position: fixed;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+.camera--on {
+    opacity: 1;
+}
+
+.corner {
+    position: absolute;
+    width: 46px;
+    height: 46px;
+    border: 3px solid rgba(255, 255, 255, 0.85);
+}
+
+.corner--tl { top: 7vh; left: 5vw; border-right: 0; border-bottom: 0; border-top-left-radius: 14px; }
+.corner--tr { top: 7vh; right: 5vw; border-left: 0; border-bottom: 0; border-top-right-radius: 14px; }
+.corner--bl { bottom: 12vh; left: 5vw; border-right: 0; border-top: 0; border-bottom-left-radius: 14px; }
+.corner--br { bottom: 12vh; right: 5vw; border-left: 0; border-top: 0; border-bottom-right-radius: 14px; }
+
+.top {
+    position: absolute;
+    top: 3vh;
+    left: 50%;
+    display: flex;
+    gap: 8px;
+    transform: translateX(-50%);
+}
+
+.pill {
+    padding: 6px 14px;
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.55);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.pill--accent {
+    background: #ffd60a;
+    color: #000000;
+}
+
+.message {
+    position: absolute;
+    top: 10vh;
+    left: 50%;
+    padding: 8px 16px;
+    border-radius: 18px;
+    background: rgba(0, 0, 0, 0.7);
+    font-size: 14px;
+    font-weight: 500;
+    transform: translate(-50%, -8px);
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.message--on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.keys {
+    position: absolute;
+    left: 50%;
+    bottom: 3.5vh;
+    display: flex;
+    gap: 10px;
+    transform: translateX(-50%);
+}
+
+.key {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 12px 6px 6px;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.55);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.key kbd {
+    min-width: 26px;
+    padding: 3px 7px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #000000;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.flash {
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.flash--on {
+    animation: flash 0.45s ease-out;
+}
+
+@keyframes flash {
+    0% { opacity: 0.85; }
+    100% { opacity: 0; }
+}
