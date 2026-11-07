@@ -84,7 +84,11 @@ mdt.register('charge', function(src, data)
 
     if kind == 'arrest' then
         records.serveWarrants(citizenid, officer)
-        exports.qbx_core:SetMetadata(targetSrc, 'injail', totals.months)
+
+        -- Straight to Bolingbroke (city_prison adds any time owed from an escape)
+        if totals.months > 0 and GetResourceState('city_prison') == 'started' then
+            exports.city_prison:Jail(targetSrc, totals.months, officer)
+        end
 
         local titles = {}
         for _, charge in ipairs(charges) do

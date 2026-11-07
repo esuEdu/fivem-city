@@ -1,5 +1,4 @@
--- The arrested player's screen: months, crimes, the officer. For now this is the whole sentence; serving it comes with
--- our prison script.
+-- The arrested player's screen: months, crimes, the officer. city_prison takes them to Bolingbroke at the same time.
 
 local theme = require '@city_ui.theme'
 

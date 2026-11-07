@@ -55,3 +55,20 @@ mdt.register('closeWarrant', function(src, data)
 
     return changed > 0, changed > 0 and nil or 'not_found'
 end, 'warrants')
+
+---A warrant from another server script (city_prison, for an escape). No charges; the reason says why.
+---@param data { citizenid: string, name: string, reason: string, issuedBy: string, days?: integer }
+---@return integer? id
+exports('IssueWarrant', function(data)
+    if type(data) ~= 'table' or type(data.citizenid) ~= 'string' or type(data.name) ~= 'string' then return end
+
+    local reason = police.clean(data.reason, settings.text.line)
+    local days = math.tointeger(data.days) or settings.warrantDays
+    if reason == '' or days < 1 or days > 30 then return end
+
+    local now = os.time()
+
+    return MySQL.insert.await('INSERT INTO city_police_warrants (citizenid, name, reason, charges, issued_by, created, expires) VALUES (?, ?, ?, ?, ?, ?, ?)', {
+        data.citizenid, data.name, reason, '[]', police.clean(data.issuedBy, settings.text.short), now, now + days * 86400,
+    })
+end)
