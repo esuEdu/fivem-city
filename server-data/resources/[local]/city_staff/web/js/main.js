@@ -70,7 +70,8 @@ async function start() {
 
     document.getElementById('logo').append(icon('shield', 22, 2));
     document.getElementById('title').textContent = L('ui_title');
-    document.getElementById('me').textContent = `${app.me} · ${L(`level_${app.level}`)}`;
+    document.getElementById('me').textContent = app.me;
+    document.getElementById('level').textContent = L(`level_${app.level}`);
     document.getElementById('online-label').textContent = L('ui_staff_online');
     setStaffOnline(app.staffOnline);
 

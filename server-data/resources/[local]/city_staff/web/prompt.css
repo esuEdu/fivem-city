@@ -2,6 +2,9 @@
 
 html, body { margin: 0; height: 100%; background: transparent; font-family: var(--font, 'Poppins', 'Segoe UI', Arial, sans-serif); font-size: 14px; color: var(--fg); }
 * { box-sizing: border-box; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 4px; background: var(--chip); background-clip: padding-box; }
 .hidden { display: none !important; }
 
 #rating { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(0, 0, 0, 0.35); }
