@@ -44,10 +44,11 @@ The stand-in has to stay: about 40 scripts call `exports.ox_inventory`, ox_fuel 
 |---|---|
 | qbx_core `paycheck` | Salary, capped at $20,000/hour per character. |
 | city_inventory shops and trades | Our own code, already validated on the server. |
+| city_garages (impound lot fee `garage-depot`, refund `garage-refund`) | Our own code; the fee is worked out on the server. |
 | illenium-appearance (debit only) | Clothing store charges; it checks the result, so a refused charge means no purchase. |
 | The `money` item via `RemoveItem` (debit only, reason `inventory-cash-item`) | Lets ox_fuel charge cash. `AddItem('money')` stays blocked: any script could otherwise create cash. |
 
-Blocked until rewritten (they stop paying or charging): qbx_taxijob (also trusts the fare sent by the client), qbx_truckerjob, qbx_towjob, qbx_garbagejob, qbx_busjob, qbx_diving, qbx_pawnshop, qbx_storerobbery, qbx_truckrobbery, qbx_streetraces, qbx_properties, qbx_garages, qbx_customs, qbx_cityhall, qbx_carwash, qbx_vehicleshop, qbx_vehiclesales and qbx_drugs.
+Blocked until rewritten (they stop paying or charging): qbx_taxijob (also trusts the fare sent by the client), qbx_truckerjob, qbx_towjob, qbx_garbagejob, qbx_busjob, qbx_diving, qbx_pawnshop, qbx_storerobbery, qbx_truckrobbery, qbx_streetraces, qbx_properties, qbx_customs, qbx_cityhall, qbx_carwash, qbx_vehicleshop, qbx_vehiclesales and qbx_drugs.
 
 Renewed-Banking was removed. qbx_vehicleshop (society funds) still calls `exports['Renewed-Banking']` and error when they reach that line, until job accounts exist in city_bank.
 

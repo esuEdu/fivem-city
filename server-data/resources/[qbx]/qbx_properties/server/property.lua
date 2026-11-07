@@ -395,15 +395,17 @@ local function canAccess(source, owner, keyholders)
 end
 
 local function registerGarage(name, owner, keyholders, garage)
+    local state = GetResourceState('city_garages')
+    if state ~= 'started' and state ~= 'starting' then return end
     local garageName = 'property_' .. string.gsub(string.lower(name), ' ', '_')
-    exports.qbx_garages:RegisterGarage(garageName, {
+    local coords = vec4(garage.x, garage.y, garage.z, garage.w)
+    exports.city_garages:RegisterGarage(garageName, {
         label = name,
-        vehicleType = 'car',
-        accessPoints = {
-            {
-                coords = vec4(garage.x, garage.y, garage.z, garage.w),
-            }
-        },
+        kind = 'car',
+        coords = coords,
+        spawns = { coords },
+        blip = false,
+        ped = false,
         canAccess = function(source)
             return canAccess(source, owner, keyholders)
         end
@@ -581,4 +583,10 @@ RegisterNetEvent('qbx_properties:server:removeDecoration', function(objectId)
         message = locale('logs.remove_decoration', player.PlayerData.citizenid, objectId, propertyId),
         webhook = config.discordWebhook
     })
+end)
+
+-- city_garages starts after [qbx]: register the house garages again whenever it (re)starts
+AddEventHandler('onResourceStart', function(resource)
+    if resource ~= 'city_garages' then return end
+    registerGarages()
 end)

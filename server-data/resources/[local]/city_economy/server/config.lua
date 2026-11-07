@@ -30,6 +30,11 @@ return {
         city_hospital = {
             { reason = '^hospital%-', debit = true },
         },
+        -- Impound lot fee, and its refund when the car can't be spawned
+        city_garages = {
+            { reason = '^garage%-depot$', debit = true },
+            { reason = '^garage%-refund$', credit = true, perHour = 50000 },
+        },
         -- Phone Market: the fee to publish or renew an ad
         city_phone_market = {
             { reason = '^market%-ad$', debit = true },

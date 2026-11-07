@@ -1,5 +1,5 @@
 -- Impounds: an officer impounds the car in front of them; it stays in player_vehicles with state 2 until released
--- (state 0, so qbx_garages' depot has it). The fee is a bank bill to the owner on release.
+-- (state 0, so city_garages' impound lot has it). The fee is a bank bill to the owner on release.
 
 local mdt = require 'server.mdt.core'
 local police = require 'server.police'
