@@ -3,21 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Phone</title>
+    <link rel="stylesheet" href="https://cfx-nui-city_phone/web/kit/kit.css">
     <link rel="stylesheet" href="style.css">
     <script type="module" src="js/main.js"></script>
 </head>
 <body>
-    <main id="content" class="content"></main>
-
-    <nav id="tabbar" class="tabbar">
-        <button data-tab="favorites"><span class="tabbar__icon">&#9733;</span><span data-text="tabs.favorites"></span></button>
-        <button data-tab="recents"><span class="tabbar__icon">&#9719;</span><span data-text="tabs.recents"></span></button>
-        <button data-tab="contacts"><span class="tabbar__icon">&#9786;</span><span data-text="tabs.contacts"></span></button>
-        <button data-tab="keypad"><span class="tabbar__icon">&#8943;</span><span data-text="tabs.keypad"></span></button>
-    </nav>
-
-    <section id="sheet" class="sheet"></section>
+    <main id="content" class="k-page page--tabs"></main>
+    <nav id="tabbar" class="k-tabbar"></nav>
     <section id="call" class="call"></section>
-    <div id="toast" class="toast"></div>
 </body>
 </html>

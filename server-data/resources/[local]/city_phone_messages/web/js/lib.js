@@ -1,4 +1,10 @@
-// Shared helpers for the Messages page: talking to our resource, texts, names, building elements
+// Messages helpers: talking to our resource, texts, names, and the kit's building blocks
+import { formatNumber } from 'https://cfx-nui-city_phone/web/kit/kit.js';
+
+export {
+    h, button, iconButton, icon, input, avatar, toast, openSheet, closeSheet, navBar, backButton, applyContext, formatNumber,
+} from 'https://cfx-nui-city_phone/web/kit/kit.js';
+
 const RESOURCE = 'city_phone_messages';
 const dictionaries = {};
 let language = 'en';
@@ -39,12 +45,6 @@ export function t(key, ...values) {
     return text.replace(/%s/g, () => String(values[index++] ?? ''));
 }
 
-export function formatNumber(number) {
-    if (!number) return '';
-    if (number.length === 10) return `(${number.slice(0, 3)}) ${number.slice(3, 6)}-${number.slice(6)}`;
-    return number;
-}
-
 export function nameFor(number) {
     if (number === state.number) return t('you');
     return state.contacts.find((contact) => contact.number === number)?.name || formatNumber(number);
@@ -57,53 +57,9 @@ export function titleOf(conversation) {
     return nameFor(members.find((number) => number !== state.number) || state.number);
 }
 
-export function initials(name) {
-    return (name || '?').split(/\s+/).map((part) => part[0] || '').join('').slice(0, 2).toUpperCase();
-}
-
 export function clock(at) {
     const date = new Date(at * 1000);
     return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-}
-
-export function h(tag, className, text, ...children) {
-    const node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text !== undefined && text !== null && text !== '') node.textContent = text;
-    node.append(...children.flat(Infinity).filter(Boolean));
-    return node;
-}
-
-export function button(className, text, onClick, ...children) {
-    const node = h('button', className, text, ...children);
-    node.addEventListener('click', onClick);
-    return node;
-}
-
-export function input(className, placeholder, maxLength) {
-    const node = h('input', className);
-    Object.assign(node, { placeholder, maxLength });
-    return node;
-}
-
-let toastTimer = null;
-
-export function toast(text) {
-    const node = document.getElementById('toast');
-    node.textContent = text;
-    node.classList.add('toast--on');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => node.classList.remove('toast--on'), 2200);
-}
-
-export function sheet(...children) {
-    const node = document.getElementById('sheet');
-    node.replaceChildren(...children.flat(Infinity).filter(Boolean));
-    node.classList.add('sheet--open');
-}
-
-export function closeSheet() {
-    document.getElementById('sheet').classList.remove('sheet--open');
 }
 
 // What a system message says ("Ana added Bruno")
