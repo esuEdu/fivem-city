@@ -92,6 +92,7 @@ Restyle in the inventory's style (`city_ui` theme):
   - [x] InstaPic (`city_phone_social`): photo posts, likes, comments, follows and feed, explore, 24-hour stories, notifications, staff removal
   - [x] Matchy (`city_phone_dating`): dating profiles with photos, like or pass, matches, private chat, unmatch
   - [x] DarkChat (`city_phone_darkchat`): anonymous rooms by name and password with an alias, only with the encrypted USB, messages gone after 24 h
+  - [x] Weazel News (`city_phone_news`): articles by reporters on duty, breaking news to every phone, likes and comments
   - [x] Camera (`city_phone_camera`) and Photos (`city_phone_photos`): back camera, selfie, zoom, filters, clean HUD; photos in the database, favorites, photo wallpaper
   - [x] Replace what uses npwd today: the `phone` item's on/off (`city_inventory/data/items.lua`), qbx_vehicleshop (falls back to an ox_lib dialog on its own), the qbx_npwd bridge, and the npwd garage and mail apps (their features move to City OS / the new phone)
   - [x] Remove npwd, qbx_npwd and `[npwd-apps]` from `install-resources.sh` and `server.cfg`

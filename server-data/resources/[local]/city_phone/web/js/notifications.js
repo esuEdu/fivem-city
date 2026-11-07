@@ -7,7 +7,7 @@ import { $, el, icon, post } from './util.js';
 
 const MAX = 30;
 const TOAST_MS = 4500;
-const APP_COLORS = { clock: '#ff9f0a', phone: '#34c759', mail: '#0a84ff', police: '#1f3b73', mechanic: '#f2a900', races: '#ff9f0a', social: '#d62976', dating: '#ff2d55', darkchat: '#0d0f0d' };
+const APP_COLORS = { clock: '#ff9f0a', phone: '#34c759', mail: '#0a84ff', police: '#1f3b73', mechanic: '#f2a900', races: '#ff9f0a', social: '#d62976', dating: '#ff2d55', darkchat: '#0d0f0d', news: '#c62828' };
 
 function since(notification) {
     const minutes = Math.floor((Date.now() - notification.at) / 60000);
