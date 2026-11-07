@@ -30,6 +30,11 @@ return {
         city_hospital = {
             { reason = '^hospital%-', debit = true },
         },
+        -- Impound lot fee, and its refund when the car can't be spawned
+        city_garages = {
+            { reason = '^garage%-depot$', debit = true },
+            { reason = '^garage%-refund$', credit = true, perHour = 50000 },
+        },
         ['illenium-appearance'] = {
             { reason = '^unknown$', debit = true },
         },

@@ -48,7 +48,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **qbx_vehicles** | Owned cars data (used by garages, keys and trunks). |
 | **qbx_vehicleshop** | Car dealership (PDM) and buying cars. |
 | **qbx_vehiclesales** | Used-car lot where players sell cars to each other. |
-| **qbx_garages** | Parking garages, impound, house and job garages. |
+| **city_garages** | Ours, replaces qbx_garages: unified garages (park in one, take out in any other of the same kind: cars, air, boats), gang and house garages, impound lots with a fee, a list with search and favorites, and the car's picture and condition before taking it out. |
 | **qbx_vehiclekeys** | Car keys, locking and unlocking, lockpicking and hotwiring. |
 | **ox_fuel** | Fuel, gas stations and jerry cans. |
 | **qbx_customs** | Benny's / LS Customs: tuning, paint, repair. |
@@ -129,6 +129,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_inventory**, **city_ui**, **ox_inventory** | See Core above. |
 | **city_economy**, **city_bank** | See Money above. Design and rules: `PROMPT_ECONOMIA_FIVEM.md`, `BANCO_DESIGN.md`. |
 | **city_hospital** | See Jobs above. |
+| **city_garages** | See Vehicles above. |
 | **city_phone** | See Communication above. |
 | **city_os** | The iFruit Pad tablet (item + F2): lock screen, home, notifications, Settings, and the platform other scripts add their apps to. See [city-os.md](../city-os.md). |
 | **city_staff** | The **Staff** tablet app (replaced qbx_adminmenu): players and actions, `/report` reports, warnings, bans, staff log, noclip and other staff tools, vehicles. See [city-staff.md](../city-staff.md). |

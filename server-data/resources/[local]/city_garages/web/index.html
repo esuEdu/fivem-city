@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>city_garages</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="app.js"></script>
+</head>
+<body>
+    <main id="garage" class="garage hidden">
+        <aside class="garage__side">
+            <header class="garage__head">
+                <div>
+                    <span id="kind" class="garage__kind"></span>
+                    <h1 id="title"></h1>
+                </div>
+                <span id="count" class="garage__count"></span>
+            </header>
+
+            <input id="search" class="garage__search" type="text" autocomplete="off" spellcheck="false">
+
+            <nav class="tabs">
+                <button id="tab-all" class="tabs__tab is-active" data-tab="all"></button>
+                <button id="tab-fav" class="tabs__tab" data-tab="fav"></button>
+            </nav>
+
+            <ul id="list" class="list"></ul>
+            <p id="empty" class="list__empty hidden"></p>
+        </aside>
+
+        <section class="garage__detail">
+            <button id="close" class="garage__close" aria-label="Close">&times;</button>
+
+            <p id="placeholder" class="detail__placeholder"></p>
+
+            <div id="detail" class="detail hidden">
+                <figure class="detail__photo">
+                    <img id="photo" alt="">
+                    <svg id="photo-fallback" class="detail__fallback hidden" viewBox="0 0 64 32" aria-hidden="true">
+                        <path d="M6 22c0-3 1-5 4-6l6-6c2-2 4-3 7-3h14c3 0 5 1 7 3l6 6c4 1 8 2 8 6v3H6z" fill="currentColor"/>
+                        <circle cx="17" cy="25" r="5" fill="currentColor"/>
+                        <circle cx="47" cy="25" r="5" fill="currentColor"/>
+                    </svg>
+                </figure>
+
+                <div class="detail__info">
+                    <div class="detail__top">
+                        <h2 id="name"></h2>
+                        <span id="state" class="chip"></span>
+                    </div>
+                    <span id="plate" class="plate"></span>
+
+                    <div class="stats">
+                        <div class="stat">
+                            <span id="engine-label" class="stat__label"></span>
+                            <div class="stat__bar"><i id="engine-bar"></i></div>
+                            <span id="engine" class="stat__value"></span>
+                        </div>
+                        <div class="stat">
+                            <span id="body-label" class="stat__label"></span>
+                            <div class="stat__bar"><i id="body-bar"></i></div>
+                            <span id="body" class="stat__value"></span>
+                        </div>
+                        <div class="stat">
+                            <span id="fuel-label" class="stat__label"></span>
+                            <div class="stat__bar"><i id="fuel-bar"></i></div>
+                            <span id="fuel" class="stat__value"></span>
+                        </div>
+                    </div>
+
+                    <p id="hint" class="detail__hint hidden"></p>
+                    <button id="take" class="detail__take"></button>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

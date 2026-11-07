@@ -1,0 +1,233 @@
+local theme = require '@city_ui.theme'
+local park = require 'client.park'
+
+local garages = {}
+local blips = {}
+local points = {}
+local peds = {}
+local zones = {}
+local current
+
+---@param garage table
+---@return boolean
+local function allowed(garage)
+    return not garage.groups or exports.qbx_core:HasPrimaryGroup(garage.groups)
+end
+
+-- Favorites are a per-player convenience, kept on this machine
+local function loadFavorites()
+    local ok, list = pcall(json.decode, GetResourceKvpString('favorites') or '[]')
+
+    return ok and type(list) == 'table' and list or {}
+end
+
+local function saveFavorite(id, on)
+    local list = loadFavorites()
+    local kept = {}
+
+    for i = 1, #list do
+        if list[i] ~= id then kept[#kept + 1] = list[i] end
+    end
+
+    if on then kept[#kept + 1] = id end
+    SetResourceKvp('favorites', json.encode(kept))
+end
+
+local function close()
+    if not current then return end
+
+    current = nil
+    SetNuiFocus(false, false)
+    SendNUIMessage({ action = 'close' })
+end
+
+---@param garage table
+local function open(garage)
+    if current then return end
+
+    if not allowed(garage) then
+        return exports.qbx_core:Notify(locale('error_no_access'), 'error')
+    end
+
+    local vehicles = lib.callback.await('city_garages:getVehicles', false, garage.id)
+    if not vehicles then return exports.qbx_core:Notify(locale('error_no_access'), 'error') end
+    if #vehicles == 0 then return exports.qbx_core:Notify(locale('no_vehicles'), 'inform') end
+
+    current = garage
+    SetNuiFocus(true, true)
+    SendNUIMessage({
+        action = 'open',
+        garage = { label = garage.label, depot = garage.depot },
+        vehicles = vehicles,
+        favorites = loadFavorites(),
+    })
+end
+
+---@param garage table
+---@return table
+local function targetOption(garage)
+    return {
+        name = ('city_garages:%s'):format(garage.id),
+        label = locale(garage.depot and 'target_depot' or 'target_garage'),
+        icon = garage.depot and 'fas fa-truck-ramp-box' or 'fas fa-warehouse',
+        distance = Config.UseDistance,
+        canInteract = function()
+            return not cache.vehicle and allowed(garage)
+        end,
+        onSelect = function()
+            CreateThread(function() open(garage) end)
+        end,
+    }
+end
+
+---@param garage table
+local function spawnPed(garage)
+    if peds[garage.id] then return end
+
+    local coords = garage.coords
+    lib.requestModel(Config.Ped)
+
+    local ped = CreatePed(4, Config.Ped, coords.x, coords.y, coords.z - 1.0, coords.w, false, true)
+    SetModelAsNoLongerNeeded(Config.Ped)
+    FreezeEntityPosition(ped, true)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, Config.PedScenario, 0, true)
+
+    exports.ox_target:addLocalEntity(ped, targetOption(garage))
+    peds[garage.id] = ped
+end
+
+---@param id string
+local function removePed(id)
+    local ped = peds[id]
+    if not ped then return end
+
+    exports.ox_target:removeLocalEntity(ped)
+    DeleteEntity(ped)
+    peds[id] = nil
+end
+
+---@param garage table
+local function addBlip(garage)
+    if not garage.blip or garage.groups then return end
+
+    local coords = garage.coords
+    local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
+    SetBlipSprite(blip, garage.blip.sprite or 357)
+    SetBlipDisplay(blip, 4)
+    SetBlipScale(blip, 0.6)
+    SetBlipColour(blip, garage.blip.color or 3)
+    SetBlipAsShortRange(blip, true)
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentSubstringPlayerName(garage.blip.name or garage.label)
+    EndTextCommandSetBlipName(blip)
+    blips[garage.id] = blip
+end
+
+---@param id string
+local function removeGarage(id)
+    removePed(id)
+    park.remove(id)
+
+    if blips[id] then RemoveBlip(blips[id]) end
+    if points[id] then points[id]:remove() end
+    if zones[id] then exports.ox_target:removeZone(zones[id]) end
+
+    blips[id], points[id], zones[id], garages[id] = nil, nil, nil, nil
+end
+
+---@param garage table
+local function addGarage(garage)
+    removeGarage(garage.id)
+    garages[garage.id] = garage
+    addBlip(garage)
+
+    if not garage.depot then park.add(garage) end
+
+    if not garage.ped then
+        zones[garage.id] = exports.ox_target:addSphereZone({
+            coords = garage.coords.xyz,
+            radius = 1.5,
+            options = { targetOption(garage) },
+        })
+        return
+    end
+
+    points[garage.id] = lib.points.new({
+        coords = garage.coords.xyz,
+        distance = Config.PedDistance,
+        onEnter = function()
+            spawnPed(garage)
+        end,
+        onExit = function()
+            removePed(garage.id)
+        end,
+    })
+end
+
+RegisterNetEvent('city_garages:client:garageRegistered', function(garage)
+    if type(garage) ~= 'table' or type(garage.id) ~= 'string' then return end
+
+    addGarage(garage)
+end)
+
+RegisterNUICallback('ready', function(_, cb)
+    local labels = {}
+
+    for _, key in ipairs({
+        'ui_search', 'ui_all', 'ui_favorites', 'ui_count', 'ui_empty', 'ui_select', 'ui_plate', 'ui_engine', 'ui_body',
+        'ui_fuel', 'ui_fee', 'ui_take_out', 'ui_pay_take_out', 'ui_close', 'ui_depot', 'ui_garage', 'state_garaged',
+        'state_street', 'state_depot', 'state_impounded', 'hint_street', 'hint_depot', 'hint_impounded', 'hint_garaged',
+    }) do
+        labels[key] = locale(key)
+    end
+
+    cb({ theme = theme, labels = labels })
+end)
+
+RegisterNUICallback('close', function(_, cb)
+    close()
+    cb(true)
+end)
+
+RegisterNUICallback('favorite', function(data, cb)
+    local id = math.tointeger(data and data.id)
+    if id then saveFavorite(id, data.on == true) end
+    cb(true)
+end)
+
+RegisterNUICallback('takeOut', function(data, cb)
+    local garage = current
+    local id = math.tointeger(data and data.id)
+    if not garage or not id then return cb(false) end
+
+    local netId, err = lib.callback.await('city_garages:takeOut', false, garage.id, id)
+
+    if not netId then
+        exports.qbx_core:Notify(locale(('error_%s'):format(err or 'failed')), 'error')
+        return cb(false)
+    end
+
+    close()
+    exports.qbx_core:Notify(locale('taken_out'), 'success')
+    cb(true)
+end)
+
+CreateThread(function()
+    local list = lib.callback.await('city_garages:getGarages', false)
+
+    for _, garage in pairs(list or {}) do
+        addGarage(garage)
+    end
+end)
+
+AddEventHandler('onResourceStop', function(resource)
+    if resource ~= cache.resource then return end
+
+    close()
+
+    for id in pairs(garages) do
+        removeGarage(id)
+    end
+end)
