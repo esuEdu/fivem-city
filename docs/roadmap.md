@@ -90,6 +90,7 @@ Restyle in the inventory's style (`city_ui` theme):
   - [x] Maps app (`city_phone_gps`): opens the game map (route, your position) and shows or clears the route you have set
   - [x] Market app (`city_phone_market`): classified ads with a fee, expiry, limit, photo, favorites, contact through Messages, staff removal
   - [x] InstaPic (`city_phone_social`): photo posts, likes, comments, follows and feed, explore, 24-hour stories, notifications, staff removal
+  - [x] Matchy (`city_phone_dating`): dating profiles with photos, like or pass, matches, private chat, unmatch
   - [x] Camera (`city_phone_camera`) and Photos (`city_phone_photos`): back camera, selfie, zoom, filters, clean HUD; photos in the database, favorites, photo wallpaper
   - [x] Replace what uses npwd today: the `phone` item's on/off (`city_inventory/data/items.lua`), qbx_vehicleshop (falls back to an ox_lib dialog on its own), the qbx_npwd bridge, and the npwd garage and mail apps (their features move to City OS / the new phone)
   - [x] Remove npwd, qbx_npwd and `[npwd-apps]` from `install-resources.sh` and `server.cfg`
