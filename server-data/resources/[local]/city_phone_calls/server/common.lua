@@ -11,7 +11,21 @@ function common.player(src)
     local player = exports.qbx_core:GetPlayer(src)
     if not player then return end
 
-    return player, player.PlayerData.citizenid, tostring(player.PlayerData.charinfo.phone or '')
+    -- The number of the phone in use: their own, or a burner's (city_phone decides)
+    return player, player.PlayerData.citizenid, exports.city_phone:ActiveNumber(src)
+end
+
+---@param number string
+---@return integer? source of the player whose phone answers this number now
+function common.online(number)
+    return exports.city_phone:SourceByNumber(number)
+end
+
+---A burner always calls with a hidden number
+---@param src integer
+---@return boolean
+function common.isBurner(src)
+    return exports.city_phone:IsBurner(src)
 end
 
 ---A number as typed: digits only, within the allowed length
@@ -40,7 +54,7 @@ end
 ---@param src integer
 ---@return boolean
 function common.hasPhone(src)
-    return exports.city_inventory:GetItemCount(src, Config.Item) > 0
+    return exports.city_phone:HasPhone(src)
 end
 
 ---true when the same action came too soon after the last one
