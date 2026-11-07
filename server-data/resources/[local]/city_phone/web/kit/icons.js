@@ -37,6 +37,8 @@ export const ICONS = {
     heart: line('<path d="M12 20s-7-4.5-9-9a4.8 4.8 0 0 1 9-3 4.8 4.8 0 0 1 9 3c-2 4.5-9 9-9 9z"/>'),
     heartFilled: solid('<path d="M12 20s-7-4.5-9-9a4.8 4.8 0 0 1 9-3 4.8 4.8 0 0 1 9 3c-2 4.5-9 9-9 9z"/>'),
     wallpaper: line('<rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="m6 16 4-4 4 4 2-2 2 2"/>'),
+    wallet: line('<rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 10h18M16 15h2M6 6l9-3 2 3"/>'),
+    card: line('<rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6 15h4"/>'),
     note: line('<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>'),
     pin: line('<path d="M9 3h6l-1 6 4 3v2H6v-2l4-3z"/><path d="M12 14v7"/>'),
     pinFilled: solid('<path d="M9 3h6l-1 6 4 3v2H6v-2l4-3z"/><rect x="11" y="14" width="2" height="7" rx="1"/>'),
