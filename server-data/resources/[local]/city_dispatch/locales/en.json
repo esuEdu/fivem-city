@@ -16,5 +16,6 @@
     "menu_respond": "Respond (set GPS)",
     "menu_close": "Close call",
     "not_responder": "You are not on duty for a service",
-    "command_help": "Open calls for your service"
+    "command_help": "Open calls for your service",
+    "use_mdt": "Police calls are in the MDT on your tablet"
 }

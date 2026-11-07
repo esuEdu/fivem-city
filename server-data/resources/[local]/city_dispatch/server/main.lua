@@ -1,6 +1,6 @@
 -- Calls to the city services. The phone (city_phone_calls) reports a call with the Report export; responders on duty
 -- get it at once, see the open ones with /calls and respond (GPS). The caller only hears that someone is on the way,
--- never who. 192 calls go to city_hospital's calls list instead.
+-- never who. 192 calls go to city_hospital's calls list instead, and 190 calls to city_police's (the MDT).
 lib.locale()
 
 ---@class DispatchCall
@@ -51,7 +51,7 @@ local function expired(call, now)
     return now - call.at > EXPIRE
 end
 
----The service a player answers calls for (on duty), if any. EMS use city_hospital's list.
+---The service a player answers calls for (on duty), if any. EMS use city_hospital's list, police the MDT.
 ---@param src integer
 ---@return string?
 local function serviceOf(src)
@@ -60,7 +60,7 @@ local function serviceOf(src)
     if not job or not job.onduty then return end
 
     for id, service in pairs(Config.Services) do
-        if not service.hospital and service.jobType == job.type then return id end
+        if not service.hospital and not service.mdt and service.jobType == job.type then return id end
     end
 end
 
@@ -162,6 +162,9 @@ exports('Report', function(src, serviceId, kind, text, anonymous)
         if not ok then return false, id end
 
         hospitalCalls[id] = { src = src, at = os.time(), notified = false }
+    elseif service.mdt then
+        local ok, reason = exports.city_police:PhoneCall(src, Config.TypeLabels[kind], message, caller)
+        if not ok then return false, reason end
     else
         local count, list = exports.qbx_core:GetDutyCountType(service.jobType)
         if not count or count == 0 then return false, 'no_units' end
@@ -203,6 +206,13 @@ AddEventHandler('city_hospital:server:callAccepted', function(id)
 
     entry.notified = true
     tellCaller(entry.src, 'ems')
+end)
+
+-- city_police: the first unit attached to a 190 call (the caller's server id)
+AddEventHandler('city_police:server:callAccepted', function(src)
+    if GetInvokingResource() ~= 'city_police' then return end
+
+    tellCaller(src, 'police')
 end)
 
 lib.callback.register('city_dispatch:calls', function(source)
