@@ -34,7 +34,7 @@ const TEXTS = {
     },
     'pt-br': {
         city: 'Los Santos', now: 'Agora', in: 'em %s min', wind: 'Vento', calm: 'Calmo', light: 'Fraco', strong: 'Forte',
-        forecast: 'Próximas horas', lasts: 'cerca de %s min', feels: 'Sensação de %s°', unknown: 'Sem previsão no momento',
+        forecast: 'Próximas mudanças', lasts: 'cerca de %s min', feels: 'Sensação de %s°', unknown: 'Sem previsão no momento',
         EXTRASUNNY: 'Ensolarado', CLEAR: 'Céu limpo', NEUTRAL: 'Ameno', SMOG: 'Poluição', FOGGY: 'Neblina', CLOUDS: 'Nublado',
         OVERCAST: 'Encoberto', CLEARING: 'Abrindo', RAIN: 'Chuva', THUNDER: 'Tempestade', SNOW: 'Neve', SNOWLIGHT: 'Neve fraca',
         BLIZZARD: 'Nevasca', XMAS: 'Neve', HALLOWEEN: 'Neblina sinistra',
