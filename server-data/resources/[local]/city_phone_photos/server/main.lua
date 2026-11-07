@@ -90,3 +90,14 @@ end)
 AddEventHandler('playerDropped', function()
     busy[source], lastPhoto[source] = nil, nil
 end)
+
+-- For other phone apps (Market): a character's photo ids, newest first, and one photo's image
+exports('List', function(citizenid)
+    if type(citizenid) ~= 'string' then return {} end
+    return store.list(citizenid)
+end)
+
+exports('Data', function(citizenid, id)
+    if type(citizenid) ~= 'string' or math.type(id) ~= 'integer' then return end
+    return store.data(citizenid, id)
+end)
