@@ -2,7 +2,7 @@
 # Writes scripts/patches/<resource>.patch with ALL our changes to a vendored resource (upstream -> working tree), so
 # install-resources.sh can re-apply them after an update. The committed copy already includes the old patch, so a plain
 # `git diff` would only hold the new changes: this rebuilds the full patch on a clean checkout instead.
-# Usage: bash scripts/make-patch.sh "server-data/resources/[qbx]/qbx_police"
+# Usage: bash scripts/make-patch.sh "server-data/resources/[qbx]/qbx_medical"
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

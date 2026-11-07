@@ -61,10 +61,10 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 
 | Script | What it does |
 |---|---|
-| **qbx_police** | Police: cuffing, escorting, evidence, fines, jail, locker. |
+| **city_police** | Ours, replaces qbx_police: the LSPD job (duty, armory, lockers, garage and helipad, cuff/escort/search, objects and spike strips, evidence, security cameras, ankle monitors, speed cameras, impounds) and the **MDT** tablet app (dispatch, live map, units, people, vehicles, weapons, reports, warrants, charges, impounds, licences, evidence, cameras, certifications, management). See [city-police.md](../city-police.md). |
 | **city_hospital** | Ours, replaces qbx_ambulancejob: EMS job (duty, garage, armory, locker, Pillbox elevator, calls, examine/revive/treat/bill), downed screen, `/finalizado`, hospital respawn, beds, NPC reception and the NPC ambulance. |
 | **qbx_mechanicjob** | Mechanic: repairs and parts, with the job's stash. |
-| **city_dispatch** | Ours: calls to the city services from the phone (type, text, anonymous, location): police and mechanics on duty get a phone notification, a blip and `/calls`; 192 goes to city_hospital's EMS calls. The caller only hears that someone is on the way. |
+| **city_dispatch** | Ours: calls to the city services from the phone (type, text, anonymous, location): mechanics on duty get a phone notification, a blip and `/calls`; 190 goes to city_police's calls (the MDT) and 192 to city_hospital's EMS calls. The caller only hears that someone is on the way. |
 | **qbx_taxijob** | Taxi with NPC fares. |
 | **qbx_busjob** | Bus routes. |
 | **qbx_truckerjob** | Delivery trucker. |
@@ -75,7 +75,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **qbx_scrapyard** | Scrap stolen cars for materials. |
 | **qbx_vineyard** | Pick grapes and make wine. |
 | **qbx_diving / qbx_divegear** | Diving for coral, and the dive gear. |
-| **xt-prison** | Prison sentences, jobs inside and breakouts. |
+| **xt-prison** | Prison sentences, jobs inside and breakouts. Not called by the police any more (city_police only shows the arrest screen for now); to be replaced by our own prison. |
 
 ## Crime
 
@@ -129,7 +129,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_base** | Starter template for new scripts. |
 | **city_inventory**, **city_ui**, **ox_inventory** | See Core above. |
 | **city_economy**, **city_bank** | See Money above. Design and rules: `PROMPT_ECONOMIA_FIVEM.md`, `BANCO_DESIGN.md`. |
-| **city_hospital** | See Jobs above. |
+| **city_hospital**, **city_police** | See Jobs above. |
 | **city_phone** | See Communication above. |
 | **city_os** | The iFruit Pad tablet (item + F2): lock screen, home, notifications, Settings, and the platform other scripts add their apps to. See [city-os.md](../city-os.md). |
 | **city_staff** | The **Staff** tablet app (replaced qbx_adminmenu): players and actions, `/report` reports, warnings, bans, staff log, noclip and other staff tools, vehicles. See [city-staff.md](../city-staff.md). |
