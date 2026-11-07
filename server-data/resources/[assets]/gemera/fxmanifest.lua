@@ -16,4 +16,16 @@ data_file 'HANDLING_FILE' 'data/handling.meta'
 data_file 'VEHICLE_METADATA_FILE' 'data/vehicles.meta'
 data_file 'VEHICLE_VARIATION_FILE' 'data/carvariations.meta'
 
+shared_scripts {
+    '@ox_lib/init.lua',
+    '@qbx_core/modules/lib.lua',
+}
+
 client_script 'names.lua'
+
+server_script 'server.lua'
+
+dependencies {
+    'ox_lib',
+    'qbx_core',
+}
