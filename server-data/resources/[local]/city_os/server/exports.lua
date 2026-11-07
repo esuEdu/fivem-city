@@ -58,7 +58,8 @@ exports('Notify', function(target, data)
 
     notifications.add(citizenid, note)
 
-    if src and sessions.get(src) then
+    -- Also while the tablet is put away: the client then shows banner notifications as a toast
+    if src then
         TriggerClientEvent('city_os:client:notify', src, sessions.toClient(note))
     end
 

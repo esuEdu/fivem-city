@@ -112,7 +112,6 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 
 | Script | What it does |
 |---|---|
-| **qbx_adminmenu** | Admin menu: noclip, teleport, give items and money, spectate, bans. |
 | **Renewed-Weathersync** | Synced weather and time. |
 | **bob74_ipl** | Loads interiors (stores, offices, the bank vault). |
 | **pillbox** | Pillbox hospital map. |
@@ -132,3 +131,4 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_hospital** | See Jobs above. |
 | **city_phone** | See Communication above. |
 | **city_os** | The iFruit Pad tablet (item + F2): lock screen, home, notifications, Settings, and the platform other scripts add their apps to. See [city-os.md](../city-os.md). |
+| **city_staff** | The **Staff** tablet app (replaced qbx_adminmenu): players and actions, `/report` reports, warnings, bans, staff log, noclip and other staff tools, vehicles. See [city-staff.md](../city-staff.md). |

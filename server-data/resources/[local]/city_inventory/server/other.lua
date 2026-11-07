@@ -55,7 +55,7 @@ lib.callback.register('city_inventory:openVehicle', function(source, netId, kind
     return vehicles.open(src, netId, kind)
 end)
 
--- Searching another player: police Search, Rob, the admin menu's Open inventory. Who may is checked in server/searches.lua
+-- Searching another player: police Search, Rob, the Staff app's Inventory. Who may is checked in server/searches.lua
 lib.callback.register('city_inventory:openPlayer', function(source, target)
     local src = source
     local inventory, reason = getActor(src)

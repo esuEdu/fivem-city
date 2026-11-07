@@ -31,7 +31,7 @@ grep -rn --include='*.lua' "<event prefix>:" . | grep -v "^./\[.*\]/<old>/"   # 
 grep -rn "<old>" ../server.cfg ../../scripts ../../docs ../../CLAUDE.md ../../.claude
 ```
 
-Radial menus, admin menus and HUDs often fire the old script's events by name (`qbx_radialmenu/config/client.lua`, `qbx_adminmenu`); check them.
+Radial menus, admin tools and HUDs often fire the old script's events by name (`qbx_radialmenu/config/client.lua`, `city_staff/server/players.lua`); check them.
 
 Write the result down as a table for the user and for the PR:
 
