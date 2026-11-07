@@ -7,7 +7,7 @@ import { $, el, icon, post } from './util.js';
 
 const MAX = 30;
 const TOAST_MS = 4500;
-const APP_COLORS = { phone: '#34c759', mail: '#0a84ff', police: '#1f3b73', races: '#ff9f0a' };
+const APP_COLORS = { phone: '#34c759', mail: '#0a84ff', police: '#1f3b73', races: '#ff9f0a', darkchat: '#0d0f0d' };
 
 function since(notification) {
     const minutes = Math.floor((Date.now() - notification.at) / 60000);
