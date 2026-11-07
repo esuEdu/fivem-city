@@ -1,0 +1,22 @@
+diff --git a/server-data/resources/[standalone]/Renewed-Weathersync/server/weather.lua b/server-data/resources/[standalone]/Renewed-Weathersync/server/weather.lua
+index 18d3cd2..e0198d7 100644
+--- a/server-data/resources/[standalone]/Renewed-Weathersync/server/weather.lua
++++ b/server-data/resources/[standalone]/Renewed-Weathersync/server/weather.lua
+@@ -104,4 +104,15 @@ if useScheduledWeather then
+             }
+         end
+     end)
+-end
+\ No newline at end of file
++end
++-- fivem-city: the coming weathers (minutes each) for the phone's Weather app
++exports('GetForecast', function(count)
++    local list = {}
++
++    for i = 1, math.min(tonumber(count) or 6, #weatherList) do
++        local entry = weatherList[i]
++        list[i] = { weather = entry.weather, time = entry.time, isRain = entry.isRain, windSpeed = entry.windSpeed }
++    end
++
++    return list
++end)

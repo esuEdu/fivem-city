@@ -30,6 +30,7 @@ server_scripts {
     'server/staff.lua',
     'server/scheduler.lua',
     'server/devtools.lua',
+    'server/app.lua',
 }
 
 ui_page 'web/index.html'

@@ -30,6 +30,10 @@ return {
         city_hospital = {
             { reason = '^hospital%-', debit = true },
         },
+        -- Phone Market: the fee to publish or renew an ad
+        city_phone_market = {
+            { reason = '^market%-ad$', debit = true },
+        },
         ['illenium-appearance'] = {
             { reason = '^unknown$', debit = true },
         },

@@ -1,6 +1,7 @@
 -- Who is asking and from where. Every panel request goes through access.panel: the player must be online, at the
 -- branch they opened (checked again on each request), with a registered fingerprint, and not spamming.
 local schema = require 'server.schema'
+local settings = require 'server.config'
 
 local access = {}
 
@@ -107,7 +108,20 @@ end
 ---Registers a panel request. handler(src, player, citizenid, ...) returns the reply table.
 ---@param name string
 ---@param handler fun(src: integer, player: table, citizenid: string, ...): table
+local handlers = {}
+
 function access.panel(name, handler)
+    local function run(src, player, ...)
+        local ok, result = pcall(handler, src, player, player.PlayerData.citizenid, ...)
+
+        if not ok then
+            lib.print.error(('city_bank:%s failed for %s: %s'):format(name, src, result))
+            return { ok = false, error = 'failed' }
+        end
+
+        return result
+    end
+
     lib.callback.register(('city_bank:%s'):format(name), function(source, ...)
         local src = source
 
@@ -118,20 +132,46 @@ function access.panel(name, handler)
         local player = access.atBranch(src)
 
         if not player then return { ok = false, error = 'far' } end
+        if not exports.city_economy:HasFingerprint(player.PlayerData.citizenid) then return { ok = false, error = 'fingerprint' } end
 
-        local citizenid = player.PlayerData.citizenid
-
-        if not exports.city_economy:HasFingerprint(citizenid) then return { ok = false, error = 'fingerprint' } end
-
-        local ok, result = pcall(handler, src, player, citizenid, ...)
-
-        if not ok then
-            lib.print.error(('city_bank:%s failed for %s: %s'):format(name, src, result))
-            return { ok = false, error = 'failed' }
-        end
-
-        return result
+        return run(src, player, ...)
     end)
+
+    handlers[name] = run
+end
+
+---Opens a panel request to the phone's Wallet app too (city_bank:app:<name>), with the same handler and rules.
+---@param name string
+function access.allowApp(name)
+    local run = handlers[name]
+    if not run then return lib.print.error(('city_bank: no panel %s to open to the app'):format(name)) end
+
+    -- The Wallet app opens the account of whoever uses the phone (BANCO_DESIGN.md 1): no branch or fingerprint, but a
+    -- phone in their pockets and not down
+    lib.callback.register(('city_bank:app:%s'):format(name), function(source, ...)
+        local src = source
+
+        if access.throttled(src, 'app:' .. name) then return { ok = false, error = 'busy' } end
+
+        schema.wait()
+
+        local player = access.onPhone(src)
+
+        if not player then return { ok = false, error = 'no_phone' } end
+
+        return run(src, player, ...)
+    end)
+end
+
+---@param src integer
+---@return table? player
+function access.onPhone(src)
+    local player = exports.qbx_core:GetPlayer(src)
+
+    if not player or Player(src).state.isDead then return end
+    if exports.city_inventory:GetItemCount(src, settings.app.item) < 1 then return end
+
+    return player
 end
 
 AddEventHandler('playerDropped', function()

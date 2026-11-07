@@ -73,6 +73,8 @@ window.addEventListener('message', (event) => {
 async function start() {
     await loadTexts();
     setRefresh(refresh);
+    const services = await call('services');
+    state.services = services.ok && Array.isArray(services.result) ? services.result : [];
     render();
     await refresh();
 }

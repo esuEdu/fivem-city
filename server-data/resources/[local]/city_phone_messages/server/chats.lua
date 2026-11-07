@@ -104,6 +104,24 @@ lib.callback.register('city_phone_messages:sendLocation', function(source, conve
     return chats.post(conversationId, number, 'location', body) ~= nil
 end)
 
+-- The route set on the sender's map: the point comes from the client, so only its shape and bounds are checked
+lib.callback.register('city_phone_messages:sendRoute', function(source, conversationId, x, y)
+    local src = source
+    local number = common.member(src, conversationId)
+    if not number or not common.hasPhone(src) or common.throttled(src, 'send', 1000) then return false end
+
+    local bounds = Config.MapBounds
+    if type(x) ~= 'number' or type(y) ~= 'number' or x ~= x or y ~= y
+        or x < bounds.minX or x > bounds.maxX or y < bounds.minY or y > bounds.maxY then
+        lib.print.warn(('city_phone_messages: %s sent a map point out of bounds'):format(src))
+        return false
+    end
+
+    local body = json.encode({ x = math.floor(x * 10) / 10, y = math.floor(y * 10) / 10 })
+
+    return chats.post(conversationId, number, 'location', body) ~= nil
+end)
+
 -- Read receipts: the chat is open on this phone up to that message
 lib.callback.register('city_phone_messages:read', function(source, conversationId, upTo)
     local src = source
