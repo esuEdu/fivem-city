@@ -115,6 +115,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **Renewed-Weathersync** | Synced weather and time. |
 | **bob74_ipl** | Loads interiors (stores, offices, the bank vault). |
 | **pillbox** | Pillbox hospital map. |
+| **gemera** | Koenigsegg Gemera add-on car (spawn name `gemera`, not sold at the dealership). Our own: the model came without meta files, so `data/*.meta` were written for this server. |
 | **loadscreen** | The loading screen. |
 | **ox_doorlock** | Locked doors (police station, banks). |
 | **qbx_smallresources** | Small extras: no weapon drops from NPCs, crouch, ignore keys and more. |

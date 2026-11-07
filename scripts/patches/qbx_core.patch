@@ -806,3 +806,24 @@ index 9fb3dbc..44caa9f 100644
      player.PlayerData.money[moneyType] = amount
  
      if player.Offline then
+diff --git a/server-data/resources/[qbx]/qbx_core/shared/vehicles.lua b/server-data/resources/[qbx]/qbx_core/shared/vehicles.lua
+index 996898b..c9778fd 100644
+--- a/server-data/resources/[qbx]/qbx_core/shared/vehicles.lua
++++ b/server-data/resources/[qbx]/qbx_core/shared/vehicles.lua
+@@ -2970,6 +2970,16 @@ return {
+         type = 'automobile',
+         hash = `gburrito2`,
+     },
++    -- Add-on car from [assets]/gemera
++    gemera = {
++        name = 'Gemera',
++        brand = 'Koenigsegg',
++        model = 'gemera',
++        price = 2000000,
++        category = 'super',
++        type = 'automobile',
++        hash = `gemera`,
++    },
+     glendale = {
+         name = 'Glendale',
+         brand = 'Benefactor',
