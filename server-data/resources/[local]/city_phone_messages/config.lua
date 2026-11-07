@@ -19,3 +19,6 @@ Config.LiveUpdateSeconds = 4
 Config.Reactions = { 'heart', 'like', 'laugh', 'wow', 'question' }
 
 Config.NumberLength = { min = 3, max = 15 }
+
+-- A point sent from the map (the route set on the GPS) must be inside these game coordinates
+Config.MapBounds = { minX = -4500.0, maxX = 4500.0, minY = -4500.0, maxY = 8500.0 }

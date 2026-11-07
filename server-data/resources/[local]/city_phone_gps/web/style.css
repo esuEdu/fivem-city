@@ -1,0 +1,53 @@
+/* Maps app: what the kit (city_phone/web/kit/kit.css) doesn't already cover */
+
+.hero {
+    margin: 8px 0 26px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+}
+
+.hero__map {
+    width: 112px;
+    height: 112px;
+    display: grid;
+    place-items: center;
+    border-radius: 28px;
+    background: linear-gradient(160deg, #5ac8fa, #0a84ff);
+    color: #ffffff;
+}
+
+.hero__map .k-icon {
+    width: 52px;
+    height: 52px;
+}
+
+.hero__open {
+    min-width: 200px;
+}
+
+.hero__hint {
+    max-width: 260px;
+    font-size: 13px;
+    color: var(--text-2);
+}
+
+.route {
+    min-width: 0;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.route__street {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.route__zone {
+    font-size: 13px;
+    color: var(--text-2);
+}
