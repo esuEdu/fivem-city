@@ -48,7 +48,7 @@ local function finish(action, result)
         result.place = placeName(result.coords)
         result.coords = nil
     elseif action == 'inventory' then
-        exports.ox_inventory:openInventory('player', result)
+        exports.city_inventory:openInventory('player', result)
     elseif action == 'spectate' then
         spectate.start(result)
     elseif selfTools.all()[action] ~= nil then
