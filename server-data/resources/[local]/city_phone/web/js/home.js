@@ -24,7 +24,10 @@ export function findApp(id) {
 
 function tile(app) {
     const button = el('button', 'app-icon');
-    button.append(appIcon(app), el('span', '', label(app)));
+    const icon = appIcon(app);
+    if (app.badge > 0) icon.append(el('span', 'badge', app.badge > 99 ? '99+' : String(app.badge)));
+
+    button.append(icon, el('span', '', label(app)));
     button.addEventListener('click', () => emit('launch', app.id));
     return button;
 }

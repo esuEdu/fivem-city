@@ -161,6 +161,32 @@
     transition: transform 0.15s;
 }
 
+.app-icon .icon {
+    position: relative;
+    overflow: visible;
+}
+
+.app-icon .icon img {
+    border-radius: inherit;
+}
+
+.badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--danger);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    text-shadow: none;
+}
+
 .app-icon:active .icon {
     transform: scale(0.9);
 }
