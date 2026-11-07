@@ -64,6 +64,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **qbx_police** | Police: cuffing, escorting, evidence, fines, jail, locker. |
 | **city_hospital** | Ours, replaces qbx_ambulancejob: EMS job (duty, garage, armory, locker, Pillbox elevator, calls, examine/revive/treat/bill), downed screen, `/finalizado`, hospital respawn, beds, NPC reception and the NPC ambulance. |
 | **qbx_mechanicjob** | Mechanic: repairs and parts, with the job's stash. |
+| **city_dispatch** | Ours: calls to the city services from the phone (type, text, anonymous, location): police and mechanics on duty get a phone notification, a blip and `/calls`; 192 goes to city_hospital's EMS calls. The caller only hears that someone is on the way. |
 | **qbx_taxijob** | Taxi with NPC fares. |
 | **qbx_busjob** | Bus routes. |
 | **qbx_truckerjob** | Delivery trucker. |
@@ -102,9 +103,17 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_phone** | Ours, replaces npwd: the phone (used from the `phone` item): lock screen, home screen, dynamic island, control center, multitask and Settings. Each app is its own resource that registers with it. |
 | **city_phone_camera** | Ours: the Camera app: back camera with zoom, selfie, filters (game timecycles), HUD hidden; the server takes the picture with screencapture. |
 | **city_phone_photos** | Ours: the Photos app: up to 300 photos per character in the database, favorites, delete, photo wallpaper. |
-| **city_phone_messages** | Ours: the Messages app: chats and groups (up to 10), delivered/read, reactions, fixed and live (15 min) location. |
+| **city_phone_wallet** | Ours: the Wallet app: city_bank on the phone (balance and statement, Pix by phone or account number, block cards, contactless, card limits) and approving card purchases over the limit. |
+| **city_phone_notes**, **city_phone_clock**, **city_phone_calendar**, **city_phone_weather** | Ours: Notes (pinned, search), Clock (world clock, real-time alarms that ring with the phone closed, stopwatch, timer), Calendar (month view), Weather (now + forecast from Renewed-Weathersync, patched to export GetForecast). |
+| **city_phone_messages** | Ours: the Messages app: chats and groups (up to 10), delivered/read, reactions, fixed and live (15 min) location, and the route set on your map. |
+| **city_phone_gps** | Ours: the Maps app: opens the game map (set a route, your position moves) and shows the route you have set, with its distance and a button to clear it. |
+| **city_phone_market** | Ours: the Market app: classified ads (category, price, description, a photo from Photos, number shown or not) for 7 days at $100 from the bank, up to 5 per character, search, favorites, "Contact" opens Messages; mods remove ads. |
+| **city_phone_social** | Ours: InstaPic, the photo social app: one account per character (@username, name, bio, profile photo), posts from your Photos with captions, likes, comments, follows and a feed, explore, 24-hour stories, notifications, and mods remove posts and comments. |
+| **city_phone_dating** | Ours: Matchy, the dating app: a profile with up to 3 photos from Photos, name, bio, age from the character and who you want to see; cards to like or pass, matches with a notification, a private chat that never shows numbers, unmatch. |
+| **city_phone_darkchat** | Ours: DarkChat, anonymous chat rooms shown only on phones carrying the `darkchat_usb` item: rooms found only by exact name (optional password), a chosen alias, messages deleted after 24 h. |
+| **city_phone_news** | Ours: Weazel News: articles (headline, story, category) written by reporters on duty, breaking news that notifies every phone, likes and comments; the author, the paper's boss and mods delete. |
 | **city_phone_music** | Ours: the Music app: search YouTube by title (server key `youtube_api_key`) or paste a YouTube / https audio link, library and playlists, shuffle and repeat, mini player and the dynamic island; only the phone's owner hears it. |
-| **city_phone_calls** | Ours: the Phone app: calls through pma-voice (up to 4 people, mute, hidden number), contacts, favorites, recents, blocked numbers and sharing your contact with people nearby. |
+| **city_phone_calls** | Ours: the Phone app: calls through pma-voice (up to 4 people, mute, hidden number), contacts, favorites, recents, blocked numbers and sharing your contact with people nearby, and the city services (190 police, 192 EMS, mechanic) as fixed contacts that send a written call. |
 | **pma-voice** | Proximity voice chat. |
 | **mm_radio** | Radio item for police, EMS and other channels. |
 | **qbx_chat_theme** | Chat style. |
