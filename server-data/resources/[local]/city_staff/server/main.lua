@@ -68,3 +68,9 @@ end)
 staff.register('log', function()
     return true, log.recent(Config.LogLimit)
 end)
+
+-- Staff actions taken in other resources (removing a Market ad) go to the same log
+exports('Log', function(src, action, target, details)
+    if type(src) ~= 'number' or type(action) ~= 'string' then return end
+    log.add(src, action:sub(1, 32), target, type(details) == 'string' and details or nil)
+end)
