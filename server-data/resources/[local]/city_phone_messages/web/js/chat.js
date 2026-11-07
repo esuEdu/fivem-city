@@ -141,6 +141,11 @@ function attachMenu() {
             menu.classList.remove('attach--open');
             if (!(await call('startLive', { id: state.chat.id })).ok) toast(t('error.invalid'));
         }, icon('live'), h('span', '', t('attach.live'))),
+        button('attach__item', null, async () => {
+            menu.classList.remove('attach--open');
+            const result = await call('sendRoute', { id: state.chat.id });
+            if (!result.ok) toast(t(result.reason === 'no_route' ? 'error.no_route' : 'error.invalid'));
+        }, icon('pin'), h('span', '', t('attach.route'))),
     );
     menu.classList.toggle('attach--open');
 }

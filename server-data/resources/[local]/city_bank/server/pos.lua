@@ -2,6 +2,7 @@
 -- machine and pays by inserting a card (PIN) or tapping it (contactless, if enabled). The amount is the one stored here
 -- when the merchant created the charge; nothing the customer's client sends can change it.
 local access = require 'server.access'
+local approvals = require 'server.approvals'
 local cards = require 'server.cards'
 local credit = require 'server.credit'
 local money = require 'server.money'
@@ -116,7 +117,8 @@ end)
 lib.callback.register('city_bank:posDecline', function(source, id)
     local charge = type(id) == 'string' and charges[id]
 
-    if charge and charge.customer == source then
+    -- Closing the machine while the card owner decides doesn't cancel the sale
+    if charge and charge.customer == source and not charge.awaiting then
         exports.qbx_core:Notify(charge.merchant, locale('notify_pos_declined'), 'error')
         close(id)
     end
@@ -124,36 +126,17 @@ lib.callback.register('city_bank:posDecline', function(source, id)
     return true
 end)
 
----Pays a charge. method = 'chip' (PIN) or 'tap' (contactless), mode = 'debit' or 'credit'.
-lib.callback.register('city_bank:posPay', function(source, id, slot, method, mode, pin)
-    local src = source
+-- Limits the card holder may lift by approving on their phone; a short balance or the credit ceiling are never lifted
+local APPROVABLE = { card_limit = true, contactless_limit = true }
+local NO_LIMITS = { contactlessTx = math.huge, contactlessDay = math.huge, debitDay = math.huge, creditDay = math.huge }
 
-    if access.throttled(src, 'posPay') then return fail('busy') end
-
-    local charge = type(id) == 'string' and charges[id]
-
-    if not charge or charge.customer ~= src or charge.expires < os.time() then
-        if charge then close(id) end
-        return fail('expired')
-    end
-
-    if method ~= 'chip' and method ~= 'tap' then return fail('bad_request') end
-    if mode ~= 'debit' and mode ~= 'credit' then return fail('bad_request') end
-    if not access.near(src, GetEntityCoords(GetPlayerPed(charge.merchant)), settings.pos.maxDistance) then return fail('far') end
-
-    local card, err = cards.fromSlot(src, slot)
-
-    if not card then return fail(err) end
-    if card.status ~= 'active' then return fail('card_locked') end
-
+---Takes the payment, once the card and the PIN (or contactless) were checked. approved = the holder said yes on their
+---phone, so the card's own limits don't apply; the balance, the credit ceiling and everything else still do.
+local function settle(charge, card, method, mode, approved)
     local amount = charge.amount
-    local limits = cards.limits(card)
+    local limits = approved and NO_LIMITS or cards.limits(card)
 
-    if method == 'chip' then
-        local ok, pinError, triesLeft = cards.checkPin(card, pin)
-        if not ok then return fail(pinError, { triesLeft = triesLeft }) end
-    else
-        if not cards.contactless(card) then return fail('no_contactless') end
+    if method == 'tap' then
         if amount > (limits.contactlessTx or 0) then return fail('contactless_limit') end
         if cards.spentToday(card.card_id, { 'contactless' }) + amount > (limits.contactlessDay or 0) then return fail('contactless_limit') end
     end
@@ -180,7 +163,7 @@ lib.callback.register('city_bank:posPay', function(source, id, slot, method, mod
         }
     end
 
-    local ok, postError = money.post(entries, 'bank-pos-' .. mode, card.holder, { pos = charge.posId, card = card.last4 })
+    local ok, postError = money.post(entries, 'bank-pos-' .. mode, card.holder, { pos = charge.posId, card = card.last4, approved = approved or nil })
 
     if not ok then return fail(postError == 'insufficient funds' and 'insufficient' or postError == 'account frozen' and 'frozen' or 'failed') end
 
@@ -190,9 +173,94 @@ lib.callback.register('city_bank:posPay', function(source, id, slot, method, mod
     if method == 'tap' then cards.record(card.card_id, 'contactless', amount) end
 
     exports.qbx_core:Notify(charge.merchant, locale('notify_pos_paid', amount), 'success')
-    close(id)
+    close(charge.id)
 
     return { ok = true }
+end
+
+---The card holder answered (or didn't, in time). Pays if they approved and the sale still stands.
+local function answered(charge, cardId, method, mode, accept, why)
+    charge.awaiting = nil
+
+    if not charges[charge.id] then return { ok = false, error = 'expired' } end
+
+    if not accept then
+        exports.qbx_core:Notify(charge.merchant, locale('notify_pos_declined'), 'error')
+        exports.qbx_core:Notify(charge.customer, locale(why == 'timeout' and 'notify_approval_timeout' or 'notify_approval_declined'), 'error')
+        close(charge.id)
+        return { ok = true }
+    end
+
+    local card = cards.get(cardId)
+    local stillThere = GetPlayerName(charge.customer) and GetPlayerName(charge.merchant)
+        and access.near(charge.customer, GetEntityCoords(GetPlayerPed(charge.merchant)), settings.pos.maxDistance)
+
+    if not card or card.status ~= 'active' or not stillThere then
+        exports.qbx_core:Notify(charge.merchant, locale('notify_pos_declined'), 'error')
+        close(charge.id)
+        return { ok = false, error = 'expired' }
+    end
+
+    local result = settle(charge, card, method, mode, true)
+
+    if result.ok then
+        exports.qbx_core:Notify(charge.customer, locale('notify_pos_paid', charge.amount), 'success')
+    else
+        exports.qbx_core:Notify(charge.customer, locale('notify_approval_failed'), 'error')
+        exports.qbx_core:Notify(charge.merchant, locale('notify_pos_declined'), 'error')
+        close(charge.id)
+    end
+
+    return result
+end
+
+---Pays a charge. method = 'chip' (PIN) or 'tap' (contactless), mode = 'debit' or 'credit'.
+lib.callback.register('city_bank:posPay', function(source, id, slot, method, mode, pin)
+    local src = source
+
+    if access.throttled(src, 'posPay') then return fail('busy') end
+
+    local charge = type(id) == 'string' and charges[id]
+
+    if not charge or charge.customer ~= src or charge.expires < os.time() then
+        if charge then close(id) end
+        return fail('expired')
+    end
+
+    if charge.awaiting then return fail('approval_pending') end
+
+    if method ~= 'chip' and method ~= 'tap' then return fail('bad_request') end
+    if mode ~= 'debit' and mode ~= 'credit' then return fail('bad_request') end
+    if not access.near(src, GetEntityCoords(GetPlayerPed(charge.merchant)), settings.pos.maxDistance) then return fail('far') end
+
+    local card, err = cards.fromSlot(src, slot)
+
+    if not card then return fail(err) end
+    if card.status ~= 'active' then return fail('card_locked') end
+
+    if method == 'chip' then
+        local ok, pinError, triesLeft = cards.checkPin(card, pin)
+        if not ok then return fail(pinError, { triesLeft = triesLeft }) end
+    elseif not cards.contactless(card) then
+        return fail('no_contactless')
+    end
+
+    local reply = settle(charge, card, method, mode, false)
+
+    -- Over the card's own limit: its holder may approve it on their phone
+    if reply.ok or not APPROVABLE[reply.error] then return reply end
+
+    local cardId = card.card_id
+    local sent = approvals.request(card.holder, { amount = charge.amount, merchant = charge.merchantName, last4 = card.last4 }, function(accept, why)
+        return answered(charge, cardId, method, mode, accept, why)
+    end)
+
+    if not sent then return reply end
+
+    charge.awaiting = true
+    charge.expires = os.time() + settings.app.approvalSeconds + 5
+
+    return fail('approval_pending')
 end)
 
 -- Test command: charges yourself so one person can see and use the customer screen. The money leaves your card and

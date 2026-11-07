@@ -1,0 +1,116 @@
+/* Weather: a sky colored by the weather and the hour, white text on top */
+
+body {
+    color: #ffffff;
+    transition: background 0.6s;
+}
+
+.weather {
+    position: absolute;
+    inset: 0;
+    padding: 64px 16px 30px;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.18);
+}
+
+.hero__city {
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.hero__temp {
+    font-size: 96px;
+    font-weight: 200;
+    line-height: 1;
+    margin-left: 22px;
+}
+
+.hero__name {
+    font-size: 19px;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.hero__icon {
+    margin: 10px 0 22px;
+}
+
+.hero__icon .k-icon {
+    width: 56px;
+    height: 56px;
+}
+
+.card {
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.16);
+    border: 0.5px solid rgba(255, 255, 255, 0.18);
+}
+
+.card__label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    opacity: 0.7;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.22);
+}
+
+.card__label .k-icon {
+    width: 15px;
+    height: 15px;
+}
+
+.card__value {
+    margin-top: 8px;
+    font-size: 26px;
+    font-weight: 500;
+}
+
+.card__sub {
+    margin-top: 4px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.rows {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 82px 32px 1fr auto;
+    align-items: center;
+    min-height: 44px;
+    font-size: 15px;
+}
+
+.row + .row {
+    border-top: 0.5px solid rgba(255, 255, 255, 0.14);
+}
+
+.row__when {
+    font-weight: 600;
+}
+
+.row__icon .k-icon {
+    width: 22px;
+    height: 22px;
+}
+
+.row__temp {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}

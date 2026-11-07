@@ -21,6 +21,7 @@ server_scripts {
     'server/main.lua',
     'server/contacts.lua',
     'server/share.lua',
+    'server/emergency.lua',
 }
 
 files {
