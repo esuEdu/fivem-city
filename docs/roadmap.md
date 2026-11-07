@@ -85,7 +85,8 @@ Restyle in the inventory's style (`city_ui` theme):
   - [ ] Social apps: dating ("Tinder"-style), photos ("Instagram"-style), Twitter-style
   - [x] Base (`city_phone`): lock screen, home, dynamic island, control center, multitask, Settings (theme, font, language, wallpaper), and an API for app resources (`exports.city_phone:RegisterApp`)
   - [x] Phone app (`city_phone_calls`): calls with pma-voice (conference up to 4, mute, hidden number, ringtones others hear), contacts, favorites, recents, blocking, sharing your contact
-  - [x] Messages app (`city_phone_messages`): chats, groups, delivered/read, reactions, fixed and live location
+  - [x] Messages app (`city_phone_messages`): chats, groups, delivered/read, reactions, fixed and live location, and the route set on your map
+  - [x] Maps app (`city_phone_gps`): opens the game map (route, your position) and shows or clears the route you have set
   - [x] Camera (`city_phone_camera`) and Photos (`city_phone_photos`): back camera, selfie, zoom, filters, clean HUD; photos in the database, favorites, photo wallpaper
   - [x] Replace what uses npwd today: the `phone` item's on/off (`city_inventory/data/items.lua`), qbx_vehicleshop (falls back to an ox_lib dialog on its own), the qbx_npwd bridge, and the npwd garage and mail apps (their features move to City OS / the new phone)
   - [x] Remove npwd, qbx_npwd and `[npwd-apps]` from `install-resources.sh` and `server.cfg`

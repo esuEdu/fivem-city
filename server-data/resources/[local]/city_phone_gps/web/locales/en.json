@@ -1,0 +1,10 @@
+{
+    "title": "Maps",
+    "open": "Open Map",
+    "hint": "Set a route on the map. Your position moves with you.",
+    "route": "Route",
+    "noRoute": "No route set",
+    "distance": "%s away",
+    "clear": "Clear Route",
+    "cleared": "Route cleared"
+}
