@@ -1,4 +1,4 @@
--- ox_inventory's client exports and events, for scripts written for it (qbx_hud, ox_fuel, ox_target, qbx_npwd,
+-- ox_inventory's client exports and events, for scripts written for it (qbx_hud, ox_fuel, ox_target,
 -- mm_radio, qbx_police, ...). The ox_inventory resource forwards its exports here.
 
 local Items = require 'shared.items'
