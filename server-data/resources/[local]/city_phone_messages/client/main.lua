@@ -82,6 +82,17 @@ for name, keys in pairs(FORWARD) do
     end)
 end
 
+-- Sending the route set on the map as a location; the server checks the point
+RegisterNUICallback('sendRoute', function(data, cb)
+    local blip = GetFirstBlipInfoId(8)
+    if not DoesBlipExist(blip) then return cb({ ok = false, reason = 'no_route' }) end
+
+    local coords = GetBlipInfoIdCoord(blip)
+    local id = type(data) == 'table' and data.id or nil
+    local result = lib.callback.await('city_phone_messages:sendRoute', false, id, coords.x + 0.0, coords.y + 0.0)
+    cb({ ok = result == true })
+end)
+
 -- The page says which chat is on screen, so a new message there doesn't notify
 RegisterNUICallback('viewing', function(data, cb)
     viewing = tonumber(data.id)

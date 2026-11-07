@@ -12,6 +12,7 @@ if [ -n "${CFX_LICENSE_KEY:-}" ]; then
 sv_licenseKey "${CFX_LICENSE_KEY}"
 set steam_webApiKey "${STEAM_WEBAPIKEY:-none}"
 set mysql_connection_string "mysql://root:${MYSQL_ROOT_PASSWORD}@${MYSQL_HOST:-mariadb}:3306/${MYSQL_DATABASE:-fivem_city}?charset=utf8mb4"
+set youtube_api_key "${YOUTUBE_API_KEY:-}"
 EOF
 elif [ ! -f "$SECRETS" ]; then
   echo "No secrets: set CFX_LICENSE_KEY and MYSQL_ROOT_PASSWORD, or mount server-data/secrets.cfg" >&2

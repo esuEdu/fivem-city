@@ -87,7 +87,14 @@ Restyle in the inventory's style (`city_ui` theme):
   - [x] Base (`city_phone`): lock screen, home, dynamic island, control center, multitask, Settings (theme, font, language, wallpaper), and an API for app resources (`exports.city_phone:RegisterApp`)
   - [x] Phone app (`city_phone_calls`): calls with pma-voice (conference up to 4, mute, hidden number, ringtones others hear), contacts, favorites, recents, blocking, sharing your contact
   - [x] City services (`city_dispatch`): 190 police, 192 EMS and mechanic as fixed contacts; a written call with type, location and an anonymous option goes to whoever is on duty (notification, blip, `/calls`; EMS in the hospital's list)
-  - [x] Messages app (`city_phone_messages`): chats, groups, delivered/read, reactions, fixed and live location
+  - [x] Messages app (`city_phone_messages`): chats, groups, delivered/read, reactions, fixed and live location, and the route set on your map
+  - [x] Maps app (`city_phone_gps`): opens the game map (route, your position) and shows or clears the route you have set
+  - [x] Market app (`city_phone_market`): classified ads with a fee, expiry, limit, photo, favorites, contact through Messages, staff removal
+  - [x] InstaPic (`city_phone_social`): photo posts, likes, comments, follows and feed, explore, 24-hour stories, notifications, staff removal
+  - [x] Matchy (`city_phone_dating`): dating profiles with photos, like or pass, matches, private chat, unmatch
+  - [x] DarkChat (`city_phone_darkchat`): anonymous rooms by name and password with an alias, only with the encrypted USB, messages gone after 24 h
+  - [x] Weazel News (`city_phone_news`): articles by reporters on duty, breaking news to every phone, likes and comments
+  - [x] Music (`city_phone_music`): YouTube search and links, audio links, library, playlists, shuffle/repeat, mini player and island
   - [x] Camera (`city_phone_camera`) and Photos (`city_phone_photos`): back camera, selfie, zoom, filters, clean HUD; photos in the database, favorites, photo wallpaper
   - [x] Replace what uses npwd today: the `phone` item's on/off (`city_inventory/data/items.lua`), qbx_vehicleshop (falls back to an ox_lib dialog on its own), the qbx_npwd bridge, and the npwd garage and mail apps (their features move to City OS / the new phone)
   - [x] Remove npwd, qbx_npwd and `[npwd-apps]` from `install-resources.sh` and `server.cfg`

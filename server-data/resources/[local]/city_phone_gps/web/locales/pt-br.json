@@ -1,0 +1,10 @@
+{
+    "title": "Mapas",
+    "open": "Abrir mapa",
+    "hint": "Marque uma rota no mapa. Sua posição anda com você.",
+    "route": "Rota",
+    "noRoute": "Nenhuma rota marcada",
+    "distance": "a %s",
+    "clear": "Limpar rota",
+    "cleared": "Rota apagada"
+}

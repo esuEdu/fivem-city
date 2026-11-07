@@ -54,7 +54,6 @@ Renewed-Banking was removed. qbx_vehicleshop (society funds) still calls `export
 ### Known limits of city_bank
 
 - **ATM position**: ATMs are map props the server can't list, so it checks the player is within 2.5 m of the ATM position the client reports. Using an ATM still needs the physical card and its PIN, and every limit applies; only the "where" is client-reported.
-- **No phone app yet**: blocking a card also works at a branch, and purchases above a card's limit are refused (the design's phone approval comes with the city_phone wallet app).
 - **Job accounts**: only bosses (`isboss` grades) manage them; they can add view-only people. qbx_management still doesn't show their balance.
 - **Test commands** (admin on duty): `/posdemo [amount]` opens the card machine's customer screen with a charge to yourself; `/bankwarp [id] [days]` moves a character's bank dates back (bills, installments, card cycle, scheduled transfers, pending limits) and runs the scheduler at once. Both are written to `bank_audit`.
 - **Staff can't act on themselves**: approving their own loan, changing ceilings of their own cards (or cards on accounts they can use) and freezing/unfreezing those accounts is refused and flagged. Only admins lift fraud and staff freezes; bankers lift debt freezes.

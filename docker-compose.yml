@@ -20,6 +20,8 @@ services:
       CFX_LICENSE_KEY: ${CFX_LICENSE_KEY:-}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+      # Optional: lets the phone's Music app search YouTube by title
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
       # Pre-fills the database step of the txAdmin setup wizard
       TXHOST_DEFAULT_DBHOST: mariadb
       TXHOST_DEFAULT_DBPORT: 3306

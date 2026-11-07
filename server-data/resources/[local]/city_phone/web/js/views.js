@@ -48,6 +48,8 @@ function create(app) {
         const frame = el('iframe');
         frame.src = app.page;
         frame.title = label(app);
+        // Apps may play media (the Music app's YouTube player) without a click first
+        frame.allow = 'autoplay; encrypted-media';
         frame.addEventListener('load', () => sendTo(entry, context()));
         view.append(frame);
         entry.frame = frame;
