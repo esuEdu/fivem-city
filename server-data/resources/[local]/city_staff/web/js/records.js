@@ -2,14 +2,14 @@ import { el, L, run, icon, heading, pill, confirmButton, searchField, formatTime
 import { can, go } from './main.js';
 
 // The icon and color each staff log action gets
-const ACTION_LOOK = {
+export const ACTION_LOOK = {
     ban: ['ban', 'red'], kick: ['kick', 'red'], kill: ['kill', 'red'], unban: ['check', 'green'],
     warn: ['warn', 'gold'], closeReport: ['check', 'green'], claimReport: ['reports', 'blue'], replyReport: ['reports', 'blue'],
     goto: ['goto', 'blue'], bring: ['bring', 'blue'], spectate: ['spectate', 'blue'],
     heal: ['heal', 'red'], revive: ['revive', 'red'], freeze: ['freeze', 'blue'], unfreeze: ['freeze', 'blue'],
     inventory: ['inventory', 'grey'], cuff: ['cuff', 'grey'], clothing: ['clothing', 'grey'], bucket: ['bucket', 'grey'],
     setJob: ['job', 'grey'], setGang: ['gang', 'grey'],
-    spawnVehicle: ['vehicle', 'grey'], fixVehicle: ['vehicle', 'grey'], deleteVehicle: ['vehicle', 'grey'], saveVehicle: ['vehicle', 'grey'],
+    spawnVehicle: ['vehicle', 'grey'],
 };
 
 export async function renderBans() {

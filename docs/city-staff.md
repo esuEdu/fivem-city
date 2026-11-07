@@ -13,8 +13,8 @@ The **Staff** app on the iFruit tablet, and the staff commands around it. It rep
 | Level | Can |
 | --- | --- |
 | support | player list, reports, go to, bring, heal, revive, freeze, warn |
-| mod | + spectate, open inventory, cuff, kick, ban up to `Config.MaxBanHours` (7 days), noclip, invisible, names, blips, fix and delete vehicles |
-| admin | + longer and permanent bans, unban, staff log, kill, clothing menu, routing bucket, set job/gang, armor/hunger/thirst, godmode, spawn vehicles, save a vehicle to their garage |
+| mod | + spectate, open inventory, cuff, kick, ban up to `Config.MaxBanHours` (7 days), noclip, invisible, names, blips |
+| admin | + longer and permanent bans, unban, staff log, Team tab, kill, clothing menu, routing bucket, set job/gang, armor/hunger/thirst, godmode, spawn vehicles |
 
 ## Tabs
 
@@ -22,9 +22,10 @@ The **Staff** app on the iFruit tablet, and the staff commands around it. It rep
 - **Players**: list on the left (job, time online, health bar), the selected player on the right: health, armor, cash, bank, job, gang, location (street, worked out on the staff member's client), vehicle and plate, ping, bucket, license, status pills, the actions (Freeze and Cuff light up while on, Revive while the player is down; Heal cures wounds and bleeding only; Revive brings a downed player back, or fills a living one to full health), the **Character** card (job, gang, armor, hunger, thirst, bucket: each shows its current value, Edit opens a searchable picker or slider, and a Review step shows old → new before it applies; Fire sets unemployed / no gang), warn/kick/ban with a reason, and their last 20 warnings.
 - **Reports**: from `/report <message>` (anyone; one per `Config.ReportCooldown`). Online staff get a banner and a badge on the app icon. Open / Mine / Closed; each report is a conversation: claim, reply (the player gets a notification), go to or bring the player, **Close and ask for rating**. Saved in `city_staff_reports`, so open reports survive a restart (their senders show as offline).
 - **Ratings**: when staff close a report and the sender is online, the sender gets a prompt (this resource's `ui_page`, `web/prompt.html`): 1–5 stars, tags from `Config.RatingTags`, an optional comment, or Skip. The server only takes a rating it asked for, from that player, once, within `Config.RatingMinutes`. The tab shows the last 30 days: overall score, how many of each star, each staff member's rating and trend (vs the 30 days before), and the comments. Every staff level sees it (`Config.Permissions.ratings`).
+- **Team** (admins, `Config.Permissions.team`): every staff member with activity in Today / Week / Month, or online now: reports closed, rating, first reply, actions and sanctions from the staff log, last active. A person's page: those numbers, a 14-day chart of reports they answered first and closed, what they did (actions by type), their rating spread and latest ratings, and their last 30 logged actions. Staff are told apart by license, so one person's characters count together.
 - **Bans**: active bans from qbx_core's `bans` table, with Unban for admins. Bans made in txAdmin's panel live in txAdmin and aren't listed.
 - **Staff log**: the last `Config.LogLimit` staff actions, searchable (admins).
-- **My tools**: noclip, invisible, godmode, names over heads, map blips; spawn (by model name from qbx_core's vehicle list), fix, delete and save vehicles.
+- **My tools**: noclip, invisible, godmode, names over heads, map blips; spawn a vehicle (by model name from qbx_core's vehicle list).
 
 **No staff commands in game**: everything is in the app. The only command left here is `/report` for players (to become an app or a key later). The qbx_core patch also removes qbx_core's admin commands (`/tp`, `/tpm`, `/car`, `/dv`, `/setjob`, `/changejob`, `/addjob`, `/removejob`, `/setgang`, `/givemoney`, `/setmoney`, `/addpermission`, `/removepermission`, `/openserver`, `/closeserver`, `/togglepvp`, `/logout`, `/deletechar`, `/optin`); players keep `/job`, `/gang`, `/ooc`, `/me`, `/id`. Staff levels are set in `server.cfg` (`add_principal`) or txAdmin, not in game.
 

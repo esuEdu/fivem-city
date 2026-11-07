@@ -34,10 +34,6 @@ export async function renderMe() {
         vehicles.push(model, el('button', { class: 'kit-btn accent', text: L('ui_spawn'), onclick: spawn }));
     }
 
-    if (can('fixVehicle')) vehicles.push(el('button', { class: 'kit-btn', text: L('ui_fix'), onclick: () => run('fixVehicle', {}, L('ui_fixed')) }));
-    if (can('deleteVehicle')) vehicles.push(el('button', { class: 'kit-btn', text: L('ui_delete_vehicle'), onclick: () => run('deleteVehicle', {}, L('ui_deleted')) }));
-    if (can('saveVehicle')) vehicles.push(el('button', { class: 'kit-btn', text: L('ui_save_vehicle'), onclick: () => run('saveVehicle', {}, L('vehicle_saved')) }));
-
     return el('div', { class: 'stack' },
         heading(L('ui_tab_me')),
         cards.length ? el('div', { class: 'tools' }, cards) : null,

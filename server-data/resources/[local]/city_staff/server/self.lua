@@ -1,4 +1,4 @@
--- Staff tools on themselves (noclip, invisible, godmode, names, blips) and vehicles. The server only checks
+-- Staff tools on themselves (noclip, invisible, godmode, names, blips) and spawning vehicles. The server only checks
 -- permission and logs; the staff member's client does the toggles.
 
 local staff = require 'server.staff'
@@ -68,54 +68,6 @@ staff.register('spawnVehicle', function(src, data)
     staff.log(src, 'spawnVehicle', nil, model)
 
     return true, netId
-end)
-
--- The client repairs the staff member's own vehicle once this says yes
-staff.register('fixVehicle', function(src)
-    staff.log(src, 'fixVehicle')
-
-    return true
-end)
-
-staff.register('deleteVehicle', function(src, data)
-    local netId = math.tointeger(tonumber(data.netId))
-    local vehicle = netId and NetworkGetEntityFromNetworkId(netId)
-    if not vehicle or vehicle == 0 or not DoesEntityExist(vehicle) or GetEntityType(vehicle) ~= 2 then return false, 'no_vehicle' end
-
-    if #(GetEntityCoords(GetPlayerPed(src)) - GetEntityCoords(vehicle)) > Config.DeleteVehicleDistance then return false, 'too_far' end
-
-    local plate = GetVehicleNumberPlateText(vehicle)
-    DeleteEntity(vehicle)
-    staff.log(src, 'deleteVehicle', nil, plate)
-
-    return true
-end)
-
----Saves the vehicle the staff member sits in to their own garage (qbx_vehicles).
-staff.register('saveVehicle', function(src, data)
-    local vehicle = GetVehiclePedIsIn(GetPlayerPed(src), false)
-    if vehicle == 0 then return false, 'no_vehicle' end
-
-    local info = exports.qbx_core:GetVehiclesByHash()[GetEntityModel(vehicle)]
-    if not info then return false, 'unknown_model' end
-
-    local citizenid = exports.qbx_core:GetPlayer(src).PlayerData.citizenid
-    local existing = Entity(vehicle).state.vehicleid
-
-    if existing then
-        local success = exports.qbx_vehicles:SetPlayerVehicleOwner(existing, citizenid)
-        if not success then return false, 'failed' end
-    else
-        local props = type(data.props) == 'table' and data.props or {}
-        local vehicleId = exports.qbx_vehicles:CreatePlayerVehicle({ model = info.model, citizenid = citizenid, props = props })
-        if not vehicleId then return false, 'failed' end
-
-        Entity(vehicle).state:set('vehicleid', vehicleId, true)
-    end
-
-    staff.log(src, 'saveVehicle', nil, info.model)
-
-    return true
 end)
 
 AddEventHandler('playerDropped', function()

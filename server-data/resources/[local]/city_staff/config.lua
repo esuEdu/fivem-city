@@ -31,9 +31,10 @@ Config.Permissions = {
     setGang = 'admin',
     setStats = 'admin',   -- armor, hunger, thirst
 
-    -- ban list and staff log
+    -- ban list, staff log, and the Team tab (how each staff member is doing)
     unban = 'admin',
     log = 'admin',
+    team = 'admin',
 
     -- on themselves
     noclip = 'mod',
@@ -43,10 +44,7 @@ Config.Permissions = {
     godmode = 'admin',
 
     -- vehicles
-    fixVehicle = 'mod',
-    deleteVehicle = 'mod',
     spawnVehicle = 'admin',
-    saveVehicle = 'admin',
 }
 
 -- Longest ban (hours) for staff without banLong
@@ -83,9 +81,6 @@ Config.NameDistance = 60.0
 
 -- Noclip speeds (meters per frame): normal, holding Shift, holding Alt
 Config.NoclipSpeeds = { normal = 0.6, fast = 2.5, slow = 0.12 }
-
--- Deleting a vehicle: how close (meters) it must be to the staff member
-Config.DeleteVehicleDistance = 10.0
 
 -- The app's icon on the tablet
 Config.App = {

@@ -73,7 +73,7 @@ async function playerDetail(id) {
 
     // state: 'on' while the player is frozen or cuffed, 'attention' when the button is what they need (Revive while down)
     const actionButton = (action, iconName, label, state = '') => can(action)
-        ? el('button', { class: `action ${state}`, 'aria-pressed': state === 'on' ? 'true' : null, onclick: act(action) }, el('span', { class: 'action-icon' }, icon(iconName, 22, 1.9)), el('span', { text: label }))
+        ? el('button', { class: `action ${state}`, 'aria-pressed': state === 'on' ? 'true' : null, onclick: act(action) }, el('span', { class: 'action-icon' }, icon(iconName, 26, 1.8)), el('span', { text: label }))
         : null;
 
     const actions = [
@@ -86,7 +86,7 @@ async function playerDetail(id) {
         actionButton('cuff', 'cuff', player.cuffed ? L('ui_uncuff') : L('ui_cuff'), player.cuffed ? 'on' : ''),
         actionButton('inventory', 'inventory', L('ui_inventory')),
         actionButton('clothing', 'clothing', L('ui_clothing')),
-        can('kill') ? confirmButton([el('span', { class: 'action-icon' }, icon('kill', 22, 1.9)), el('span', { text: L('ui_kill') })], act('kill'), 'danger', 'action') : null,
+        can('kill') ? confirmButton([el('span', { class: 'action-icon' }, icon('kill', 26, 1.8)), el('span', { text: L('ui_kill') })], act('kill'), 'danger', 'action') : null,
     ].filter(Boolean);
 
     return el('div', { class: 'stack' },

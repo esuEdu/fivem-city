@@ -4,6 +4,7 @@ import { renderPlayers } from './players.js';
 import { renderReports, loadReports } from './reports.js';
 import { renderRatings } from './ratings.js';
 import { renderBans, renderLog } from './records.js';
+import { renderTeam } from './team.js';
 import { renderMe } from './me.js';
 
 // Everything the tabs share: what this staff member may do, and the lists the forms use
@@ -12,13 +13,14 @@ export const app = { permissions: {}, tab: 'dashboard', openReports: 0 };
 const content = document.getElementById('content');
 const nav = document.getElementById('nav');
 
-const SELF_TOOLS = ['noclip', 'invisible', 'godmode', 'names', 'blips', 'spawnVehicle', 'fixVehicle', 'deleteVehicle', 'saveVehicle'];
+const SELF_TOOLS = ['noclip', 'invisible', 'godmode', 'names', 'blips', 'spawnVehicle'];
 
 const TABS = [
     { id: 'dashboard', icon: 'dashboard', permission: 'app', render: renderDashboard },
     { id: 'players', icon: 'players', permission: 'app', render: renderPlayers },
     { id: 'reports', icon: 'reports', permission: 'reports', render: renderReports },
     { id: 'ratings', icon: 'star', permission: 'ratings', render: renderRatings },
+    { id: 'team', icon: 'players', permission: 'team', render: renderTeam },
     { id: 'bans', icon: 'ban', permission: 'ban', render: renderBans },
     { id: 'log', icon: 'log', permission: 'log', render: renderLog },
     { id: 'me', icon: 'tools', permission: null, render: renderMe },

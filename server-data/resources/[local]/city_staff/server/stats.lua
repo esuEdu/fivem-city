@@ -1,96 +1,10 @@
--- Dashboard and Ratings numbers, worked out from city_staff_reports (server/reports.lua creates it).
+-- The Dashboard and Ratings tabs (numbers from server/metrics.lua; server/reports.lua creates the table).
 
 local rules = require 'shared.rules'
 local staff = require 'server.staff'
+local metrics = require 'server.metrics'
 
 local CHART_DAYS = 7
-
----@param value unknown
----@return number?
-local function round1(value)
-    value = tonumber(value)
-    return value and math.floor(value * 10 + 0.5) / 10 or nil
-end
-
----Staff on the server right now, by license, with their level.
----@return table<string, string> license -> level
-local function onlineStaff()
-    local list = {}
-
-    for _, src in ipairs(staff.online('app')) do
-        local license = staff.who(src).license
-        if license then list[license] = Config.Levels[staff.rank(src)] end
-    end
-
-    return list
-end
-
----Reports sent and closed per day, for the last CHART_DAYS days (oldest first).
----@param now integer
----@return { day: string, sent: integer, closed: integer }[]
-local function chart(now)
-    local today = rules.periodStart('today', now)
-    local first = today - (CHART_DAYS - 1) * 86400
-    local days = {}
-
-    for i = 1, CHART_DAYS do
-        days[i] = { day = os.date('%a', first + (i - 1) * 86400), sent = 0, closed = 0 }
-    end
-
-    local sent = MySQL.query.await('SELECT FLOOR((`created_at` - ?) / 86400) AS `d`, COUNT(*) AS `n` FROM `city_staff_reports` WHERE `created_at` >= ? GROUP BY `d`', { first, first }) or {}
-    local closed = MySQL.query.await('SELECT FLOOR((`closed_at` - ?) / 86400) AS `d`, COUNT(*) AS `n` FROM `city_staff_reports` WHERE `closed_at` >= ? GROUP BY `d`', { first, first }) or {}
-
-    for _, row in ipairs(sent) do
-        local day = days[math.floor(tonumber(row.d)) + 1]
-        if day then day.sent = tonumber(row.n) end
-    end
-
-    for _, row in ipairs(closed) do
-        local day = days[math.floor(tonumber(row.d)) + 1]
-        if day then day.closed = tonumber(row.n) end
-    end
-
-    return days
-end
-
----Each staff member's closed reports, rating and response time since `since`, most closed first.
----@param since integer
----@return table[]
-local function team(since)
-    local rows = MySQL.query.await([[
-        SELECT `closed_license` AS `license`, MAX(`closed_name`) AS `name`, MAX(`closed_level`) AS `level`, COUNT(*) AS `closed`,
-            AVG(`rating`) AS `rating`, COUNT(`rating`) AS `ratings`
-        FROM `city_staff_reports` WHERE `closed_at` >= ? AND `closed_license` IS NOT NULL
-        GROUP BY `closed_license` ORDER BY `closed` DESC LIMIT 20
-    ]], { since }) or {}
-
-    local responses = MySQL.query.await([[
-        SELECT `response_license` AS `license`, AVG(`response_at` - `created_at`) AS `seconds`
-        FROM `city_staff_reports` WHERE `created_at` >= ? AND `response_license` IS NOT NULL GROUP BY `response_license`
-    ]], { since }) or {}
-
-    local responseOf = {}
-    for _, row in ipairs(responses) do
-        responseOf[row.license] = tonumber(row.seconds)
-    end
-
-    local online = onlineStaff()
-
-    for _, row in ipairs(rows) do
-        row.rating = round1(row.rating)
-        row.response = responseOf[row.license] and math.floor(responseOf[row.license]) or nil
-        row.online = online[row.license] ~= nil
-        row.level = online[row.license] or row.level
-    end
-
-    return rows
-end
-
----@param limit integer
----@return table[]
-local function latestRatings(limit)
-    return MySQL.query.await('SELECT `id`, `name`, `closed_name`, `rating`, `rating_tags`, `rating_comment`, `rated_at` FROM `city_staff_reports` WHERE `rating` IS NOT NULL ORDER BY `rated_at` DESC LIMIT ?', { limit }) or {}
-end
 
 staff.register('dashboard', function(src, data)
     local now = os.time()
@@ -104,7 +18,7 @@ staff.register('dashboard', function(src, data)
     local response = MySQL.scalar.await('SELECT AVG(`response_at` - `created_at`) FROM `city_staff_reports` WHERE `created_at` >= ? AND `response_at` IS NOT NULL', { since })
     local rating = MySQL.single.await('SELECT AVG(`rating`) AS `average`, COUNT(`rating`) AS `count` FROM `city_staff_reports` WHERE `rated_at` >= ?', { since }) or {}
 
-    local members = team(since)
+    local members = metrics.reportsByStaff(since)
     local myLicense = staff.who(src).license
     local me = { closed = 0, goal = Config.Goals[period] }
 
@@ -119,7 +33,7 @@ staff.register('dashboard', function(src, data)
 
     local online = 0
 
-    for _ in pairs(onlineStaff()) do
+    for _ in pairs(metrics.onlineStaff()) do
         online = online + 1
     end
 
@@ -130,14 +44,14 @@ staff.register('dashboard', function(src, data)
         closed = closed,
         closedBefore = closedBefore,
         response = tonumber(response) and math.floor(tonumber(response)) or nil,
-        rating = round1(rating.average),
+        rating = metrics.round1(rating.average),
         ratings = rating.count or 0,
-        chart = chart(now),
+        chart = metrics.daily(now, CHART_DAYS),
         team = members,
         teamSize = #members,
         me = me,
         staffOnline = online,
-        latest = latestRatings(3),
+        latest = metrics.latestRatings(3),
     }
 end, 'app')
 
@@ -162,20 +76,20 @@ staff.register('ratings', function()
         previous[row.license] = tonumber(row.rating)
     end
 
-    local members = team(since)
+    local members = metrics.reportsByStaff(since)
 
     for _, member in ipairs(members) do
         local old = previous[member.license]
-        member.trend = member.rating and old and round1(member.rating - old) or nil
+        member.trend = member.rating and old and metrics.round1(member.rating - old) or nil
         member.license = nil
     end
 
     return true, {
-        rating = round1(summary.average),
+        rating = metrics.round1(summary.average),
         ratings = summary.count or 0,
         closed = summary.closed or 0,
         stars = stars,
         team = members,
-        latest = latestRatings(30),
+        latest = metrics.latestRatings(30),
     }
 end)

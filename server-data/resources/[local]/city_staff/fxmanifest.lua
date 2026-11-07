@@ -28,6 +28,7 @@ server_scripts {
     'server/sanctions.lua',
     'server/reports.lua',
     'server/stats.lua',
+    'server/team.lua',
     'server/self.lua',
 }
 
