@@ -86,6 +86,13 @@ async function pay(method, pin) {
     const text = reply?.error === 'wrong_pin' ? label('wrong_pin', reply.triesLeft) : errorText(reply?.error);
 
     if (method === 'chip' && reply?.error === 'wrong_pin') return pinScreen(text);
+
+    // Over the card limit: the owner answers on their phone; the result arrives as a notification
+    if (reply?.error === 'approval_pending') {
+        render(text, '');
+        setTimeout(() => post('close'), 3500);
+        return;
+    }
     render(text, 'is-error');
 }
 
