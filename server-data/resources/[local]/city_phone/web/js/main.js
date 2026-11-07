@@ -6,6 +6,7 @@ import { loadLanguages, setLanguage } from './i18n.js';
 import { setActivity } from './island.js';
 import { initLock, lock } from './lock.js';
 import { initNotifications, addNotification } from './notifications.js';
+import { setRings } from './ring.js';
 import { refreshSettings } from './settings.js';
 import { state, on, emit } from './state.js';
 import { initSwitcher, closeSwitcher, isSwitcherOpen } from './switcher.js';
@@ -78,6 +79,7 @@ const handlers = {
     appMessage: (message) => messageApp(message.app, message.data),
     openApp: (message) => { if (state.open) launch(message.app); else pendingApp = message.app; },
     flashlight: (message) => setFlashlight(message.on === true),
+    ring: (message) => setRings(message.rings),
 };
 
 window.addEventListener('message', (event) => {

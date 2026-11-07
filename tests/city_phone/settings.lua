@@ -26,6 +26,8 @@ local clean = settings.clean({ theme = 'light', font = 'comic', extra = 'x' })
 check(clean.theme == 'light', 'valid saved value kept')
 check(clean.font == 'inter', 'invalid saved value back to default')
 check(clean.language == 'en' and clean.wallpaper == 'aurora', 'missing values get defaults')
+check(clean.ringtone == 'classic', 'ringtone defaults to the first one')
+check(settings.valid('ringtone', 'chime') and not settings.valid('ringtone', 'x'), 'only known ringtones')
 check(clean.extra == nil, 'unknown keys are dropped')
 check(settings.clean(nil).brightness == 100, 'no saved settings gives full defaults')
 

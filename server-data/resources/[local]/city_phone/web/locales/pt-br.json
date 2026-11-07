@@ -28,7 +28,14 @@
         "dnd": "Não Perturbe",
         "language": "Idioma",
         "number": "Meu Número",
-        "version": "Versão"
+        "version": "Versão",
+        "ringtone": "Toque"
+    },
+    "ringtones": {
+        "classic": "Clássico",
+        "marimba": "Marimba",
+        "chime": "Sinos",
+        "pulse": "Pulso"
     },
     "time": {
         "days": ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],

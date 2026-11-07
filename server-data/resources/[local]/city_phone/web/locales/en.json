@@ -28,7 +28,14 @@
         "dnd": "Do Not Disturb",
         "language": "Language",
         "number": "My Number",
-        "version": "Version"
+        "version": "Version",
+        "ringtone": "Ringtone"
+    },
+    "ringtones": {
+        "classic": "Classic",
+        "marimba": "Marimba",
+        "chime": "Chime",
+        "pulse": "Pulse"
     },
     "time": {
         "days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],

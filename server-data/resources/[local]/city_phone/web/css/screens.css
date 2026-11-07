@@ -190,7 +190,8 @@
     display: none;
 }
 
-.dock .app-icon span {
+/* No names under the dock icons */
+.dock .app-icon > span:not(.icon) {
     display: none;
 }
 

@@ -27,6 +27,10 @@ function context() {
         language: state.settings.language,
         font: FONTS[state.settings.font] || 'Inter',
         profile: state.profile,
+        // city_ui colors, so apps match the rest of the city
+        colors: Object.fromEntries(['accent', 'accent-text', 'success', 'danger'].map((name) => [
+            name, getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim(),
+        ])),
     };
 }
 

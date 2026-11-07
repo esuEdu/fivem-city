@@ -70,6 +70,29 @@ end
 
 exports('Notify', notify)
 
+---Makes a player's phone ring (or stop) for everyone close by. Silent mode only vibrates; Do Not Disturb doesn't ring.
+---@param src integer
+---@param ringing boolean
+exports('SetRinging', function(src, ringing)
+    local player = exports.qbx_core:GetPlayer(src)
+    if not player then return end
+
+    local current = settings.clean(player.PlayerData.metadata[META_KEY])
+    local value = false
+
+    if ringing and not current.dnd then
+        value = { tone = current.ringtone, loud = not current.silent }
+    end
+
+    Player(src).state:set('phoneRinging', value, true)
+end)
+
+---A player's phone settings (theme, ringtone, silent, dnd, ...)
+exports('GetSettings', function(src)
+    local player = exports.qbx_core:GetPlayer(src)
+    return player and settings.clean(player.PlayerData.metadata[META_KEY]) or nil
+end)
+
 AddEventHandler('playerDropped', function()
     lastSave[source] = nil
 end)
