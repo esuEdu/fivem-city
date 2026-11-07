@@ -6,7 +6,7 @@ import { loadLanguages, setLanguage } from './i18n.js';
 import { setActivity } from './island.js';
 import { initLock, lock } from './lock.js';
 import { initNotifications, addNotification } from './notifications.js';
-import { setRings } from './ring.js';
+import { setRings, setAlarm } from './ring.js';
 import { fit, initResize } from './resize.js';
 import { refreshSettings } from './settings.js';
 import { state, on, emit } from './state.js';
@@ -79,6 +79,7 @@ const handlers = {
     openApp: (message) => { if (state.open) launch(message.app); else pendingApp = message.app; },
     flashlight: (message) => setFlashlight(message.on === true),
     ring: (message) => setRings(message.rings),
+    alarm: (message) => setAlarm(message.on === true, message.tone),
     wallpaperImage: (message) => { state.wallpaperImage = message.data || null; applySettings('wallpaper'); },
     setting: (message) => { state.settings[message.key] = message.value; emit('settings', message.key); },
 };
