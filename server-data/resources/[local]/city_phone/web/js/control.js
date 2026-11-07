@@ -67,11 +67,7 @@ function render() {
     $('control-grid').replaceChildren(
         toggle('silent', 'silent', silent, () => saveSetting('silent', !silent)),
         toggle('dnd', 'moon', dnd, () => saveSetting('dnd', !dnd)),
-        toggle('flashlight', 'flashlight', state.flashlight, async () => {
-            const result = await post('flashlight', { on: !state.flashlight });
-            state.flashlight = result === true;
-            render();
-        }),
+        toggle('flashlight', 'flashlight', state.flashlight, toggleFlashlight),
         slider(),
         toggle('dark', 'contrast', theme === 'dark', () => saveSetting('theme', theme === 'dark' ? 'light' : 'dark')),
     );
@@ -79,10 +75,25 @@ function render() {
 
 export function setFlashlight(value) {
     state.flashlight = value;
+    $('lock-flashlight').classList.toggle('lock__corner--on', value);
     if (isControlOpen()) render();
 }
 
+export async function toggleFlashlight() {
+    const result = await post('flashlight', { on: !state.flashlight });
+    setFlashlight(result === true);
+}
+
 export function initControl() {
+    // The flashlight button on the lock screen
+    const lockButton = $('lock-flashlight');
+    lockButton.append(icon('flashlight'));
+    lockButton.addEventListener('pointerdown', (event) => event.stopPropagation());
+    lockButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        toggleFlashlight();
+    });
+
     $('status-icons').addEventListener('click', () => {
         render();
         $('control').classList.toggle('control--open');

@@ -9,6 +9,8 @@ Config.Languages = { 'en', 'pt-br' }
 Config.Fonts = { 'inter', 'poppins', 'roboto', 'nunito' }
 Config.Wallpapers = { 'aurora', 'sunset', 'ocean', 'forest', 'graphite', 'candy' }
 Config.Brightness = { min = 30, max = 100 }
+-- Phone size in percent (Settings > Appearance, or drag the phone's corner)
+Config.Size = { min = 70, max = 130 }
 Config.Ringtones = { 'classic', 'marimba', 'chime', 'pulse' }
 
 -- Other players hear a ringing phone up to this far away (meters), quieter with distance

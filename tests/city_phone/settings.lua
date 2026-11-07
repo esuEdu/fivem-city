@@ -30,5 +30,8 @@ check(clean.ringtone == 'classic', 'ringtone defaults to the first one')
 check(settings.valid('ringtone', 'chime') and not settings.valid('ringtone', 'x'), 'only known ringtones')
 check(clean.extra == nil, 'unknown keys are dropped')
 check(settings.clean(nil).brightness == 100, 'no saved settings gives full defaults')
+check(settings.clean(nil).size == 100, 'phone size defaults to 100%')
+check(settings.valid('size', 70) and settings.valid('size', 130), 'size limits are allowed')
+check(not settings.valid('size', 69) and not settings.valid('size', 131) and not settings.valid('size', 99.5), 'size outside the limits is refused')
 
 finish()

@@ -75,36 +75,72 @@ button {
     --ph-glass-strong: rgba(242, 242, 247, 0.95);
 }
 
+/* A titanium edge (the ::before ring) around a thin black bezel */
 .phone__frame {
     position: absolute;
     inset: 0;
-    padding: 12px;
+    padding: 11px;
     border-radius: 64px;
-    background: #0b0b0d;
-    box-shadow:
-        0 0 0 2px #3a3a3e,
-        0 0 0 4px #1a1a1d,
-        0 30px 80px rgba(0, 0, 0, 0.55);
+    background: #050506;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.phone__frame::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    z-index: -1;
+    border-radius: 68px;
+    background: linear-gradient(145deg, #8e8e94 0%, #3b3b40 18%, #1f1f23 45%, #4a4a50 70%, #9a9aa0 100%);
 }
 
 .phone__button {
     position: absolute;
     width: 4px;
     border-radius: 2px;
-    background: #2a2a2e;
+    background: linear-gradient(90deg, #6a6a70, #2c2c30);
 }
 
-.phone__button--silent { left: -5px; top: 150px; height: 30px; }
-.phone__button--up { left: -5px; top: 205px; height: 60px; }
-.phone__button--down { left: -5px; top: 280px; height: 60px; }
-.phone__button--power { right: -5px; top: 230px; height: 95px; }
+.phone__button--silent { left: -8px; top: 150px; height: 30px; }
+.phone__button--up { left: -8px; top: 205px; height: 60px; }
+.phone__button--down { left: -8px; top: 280px; height: 60px; }
+.phone__button--power { right: -8px; top: 230px; height: 95px; background: linear-gradient(270deg, #6a6a70, #2c2c30); }
+
+/* Drag this corner to make the phone bigger or smaller */
+.phone__resize {
+    position: absolute;
+    top: -14px;
+    left: -14px;
+    z-index: 5;
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(28, 28, 30, 0.9);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    cursor: nwse-resize;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.phone:hover .phone__resize,
+.phone__resize--active {
+    opacity: 1;
+}
+
+.phone__resize svg {
+    width: 16px;
+    height: 16px;
+}
 
 .screen {
     position: relative;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    border-radius: 52px;
+    border-radius: 53px;
     background-color: var(--ph-bg);
     background-size: cover;
     color: var(--ph-text);

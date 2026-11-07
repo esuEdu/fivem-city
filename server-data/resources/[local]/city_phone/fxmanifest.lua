@@ -34,6 +34,8 @@ files {
     'web/js/*.js',
     'web/locales/*.json',
     'web/fonts/*.woff2',
+    'web/kit/*.css',
+    'web/kit/*.js',
 }
 
 dependencies {

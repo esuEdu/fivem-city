@@ -23,6 +23,7 @@
         "light": "Light",
         "dark": "Dark",
         "brightness": "Brightness",
+        "size": "Phone Size (or drag the top-left corner)",
         "font": "Font",
         "silent": "Silent Mode",
         "dnd": "Do Not Disturb",
