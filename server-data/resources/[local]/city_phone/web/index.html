@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>city_phone</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/screens.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <script type="module" src="js/main.js"></script>
+</head>
+<body>
+    <div id="phone" class="phone" data-theme="dark">
+        <div class="phone__frame">
+            <span class="phone__button phone__button--silent"></span>
+            <span class="phone__button phone__button--up"></span>
+            <span class="phone__button phone__button--down"></span>
+            <span class="phone__button phone__button--power"></span>
+            <button id="resize" class="phone__resize" type="button"></button>
+
+            <div id="screen" class="screen wp-aurora">
+                <header id="statusbar" class="statusbar">
+                    <span id="status-time" class="statusbar__time"></span>
+                    <span id="status-icons" class="statusbar__icons"></span>
+                </header>
+
+                <div id="island" class="island">
+                    <div class="island__content"></div>
+                </div>
+
+                <section id="home" class="home">
+                    <div id="home-grid" class="home__grid"></div>
+                    <nav id="dock" class="dock"></nav>
+                </section>
+
+                <section id="views" class="views"></section>
+
+                <section id="lock" class="lock">
+                    <div class="lock__clock">
+                        <span id="lock-date" class="lock__date"></span>
+                        <span id="lock-time" class="lock__time"></span>
+                    </div>
+                    <div id="lock-list" class="lock__list"></div>
+                    <span id="lock-hint" class="lock__hint"></span>
+                    <button id="lock-flashlight" class="lock__corner lock__corner--left" type="button"></button>
+                </section>
+
+                <section id="switcher" class="switcher">
+                    <div id="switcher-cards" class="switcher__cards"></div>
+                    <span id="switcher-empty" class="switcher__empty"></span>
+                </section>
+
+                <section id="control" class="control">
+                    <div id="control-grid" class="control__grid"></div>
+                </section>
+
+                <div id="dim" class="screen__dim"></div>
+                <div id="homebar" class="homebar"><span></span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toasts" class="toasts"></div>
+</body>
+</html>

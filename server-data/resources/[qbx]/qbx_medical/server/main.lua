@@ -68,6 +68,8 @@ exports('ResetHungerAndThirst', resetHungerAndThirst)
 local function revivePlayer(player)
     resetHungerAndThirst(player)
     local target = type(player) == 'table' and player.PlayerData.source or player
+    -- city_hospital: the death state bag is set by the client, so this tells the server which revives are real
+    TriggerEvent('qbx_medical:server:revived', target)
     TriggerClientEvent('qbx_medical:client:playerRevived', target)
 end
 

@@ -62,7 +62,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | Script | What it does |
 |---|---|
 | **qbx_police** | Police: cuffing, escorting, evidence, fines, jail, locker. |
-| **qbx_ambulancejob** | EMS: revive, heal, hospital beds, armory. |
+| **city_hospital** | Ours, replaces qbx_ambulancejob: EMS job (duty, garage, armory, locker, Pillbox elevator, calls, examine/revive/treat/bill), downed screen, `/finalizado`, hospital respawn, beds, NPC reception and the NPC ambulance. |
 | **qbx_mechanicjob** | Mechanic: repairs and parts, with the job's stash. |
 | **qbx_taxijob** | Taxi with NPC fares. |
 | **qbx_busjob** | Bus routes. |
@@ -99,8 +99,11 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 
 | Script | What it does |
 |---|---|
-| **npwd + qbx_npwd** | The phone: contacts, messages, calls, Twitter, photos, bank and more. |
-| **npwd_qbx_garages / npwd_qbx_mail** | Phone apps for your garages and email. |
+| **city_phone** | Ours, replaces npwd: the phone (used from the `phone` item): lock screen, home screen, dynamic island, control center, multitask and Settings. Each app is its own resource that registers with it. |
+| **city_phone_camera** | Ours: the Camera app: back camera with zoom, selfie, filters (game timecycles), HUD hidden; the server takes the picture with screencapture. |
+| **city_phone_photos** | Ours: the Photos app: up to 300 photos per character in the database, favorites, delete, photo wallpaper. |
+| **city_phone_messages** | Ours: the Messages app: chats and groups (up to 10), delivered/read, reactions, fixed and live (15 min) location. |
+| **city_phone_calls** | Ours: the Phone app: calls through pma-voice (up to 4 people, mute, hidden number), contacts, favorites, recents, blocked numbers and sharing your contact with people nearby. |
 | **pma-voice** | Proximity voice chat. |
 | **mm_radio** | Radio item for police, EMS and other channels. |
 | **qbx_chat_theme** | Chat style. |
@@ -125,5 +128,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_base** | Starter template for new scripts. |
 | **city_inventory**, **city_ui**, **ox_inventory** | See Core above. |
 | **city_economy**, **city_bank** | See Money above. Design and rules: `PROMPT_ECONOMIA_FIVEM.md`, `BANCO_DESIGN.md`. |
+| **city_hospital** | See Jobs above. |
+| **city_phone** | See Communication above. |
 | **city_os** | The iFruit Pad tablet (item + F2): lock screen, home, notifications, Settings, and the platform other scripts add their apps to. See [city-os.md](../city-os.md). |
 | **city_staff** | The **Staff** tablet app (replaced qbx_adminmenu): players and actions, `/report` reports, warnings, bans, staff log, noclip and other staff tools, vehicles. See [city-staff.md](../city-staff.md). |

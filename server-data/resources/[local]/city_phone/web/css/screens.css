@@ -1,0 +1,551 @@
+/* Lock screen, home screen, app views, multitask, control center and the banners shown with the phone closed */
+
+.lock,
+.home,
+.views,
+.switcher,
+.control {
+    position: absolute;
+    inset: 0;
+}
+
+.lock {
+    z-index: 30;
+    padding: 70px 18px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.12);
+    transition: transform 0.4s var(--ease), opacity 0.4s;
+    cursor: grab;
+}
+
+.lock--hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.lock__clock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 18px;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.25);
+}
+
+.lock__date {
+    font-size: 19px;
+    font-weight: 600;
+}
+
+.lock__time {
+    font-size: 92px;
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -3px;
+}
+
+.lock__corner {
+    position: absolute;
+    bottom: 46px;
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.35);
+    color: #ffffff;
+}
+
+.lock__corner svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+}
+
+.lock__corner--left {
+    left: 44px;
+}
+
+.lock__corner--on {
+    background: #ffffff;
+    color: #000000;
+}
+
+.lock__list {
+    width: 100%;
+    margin-top: 36px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    scrollbar-width: none;
+}
+
+.lock__list::-webkit-scrollbar {
+    display: none;
+}
+
+.lock__clear {
+    align-self: flex-end;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.lock__hint {
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.85;
+    margin-bottom: 8px;
+}
+
+.card {
+    display: flex;
+    gap: 11px;
+    padding: 12px 14px;
+    border-radius: 22px;
+    background: rgba(28, 28, 32, 0.55);
+    border: 0.5px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    color: #ffffff;
+    text-align: left;
+    cursor: default;
+}
+
+.card .icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+}
+
+.card__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13.5px;
+    line-height: 1.3;
+}
+
+.card__head {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+}
+
+.card__head small {
+    font-weight: 400;
+    opacity: 0.7;
+}
+
+.card__button {
+    align-self: flex-start;
+    margin-top: 6px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.home {
+    z-index: 10;
+    padding: 62px 20px 0;
+    transition: transform 0.35s var(--ease), opacity 0.35s;
+}
+
+/* The home screen only shows once the lock screen is out of the way */
+.phone--locked .home,
+.phone--locked .views {
+    opacity: 0;
+    transition: none;
+}
+
+.home--behind {
+    transform: scale(0.92);
+    opacity: 0;
+}
+
+.home__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 24px;
+    justify-items: center;
+}
+
+/* The clock widget across the top of the home screen */
+.widget {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 158px;
+    margin-bottom: 4px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 26px;
+    background: rgba(18, 18, 22, 0.42);
+    border: 0.5px solid rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
+
+.widget__day {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.widget__weekday {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ff6b6b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.widget__date {
+    font-size: 54px;
+    font-weight: 300;
+    line-height: 1;
+}
+
+.widget__time {
+    align-self: flex-end;
+    font-size: 38px;
+    font-weight: 600;
+    letter-spacing: -1px;
+}
+
+.widget__month {
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.75;
+}
+
+.app-icon {
+    width: 74px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.app-icon .icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22), inset 0 0 0 0.5px rgba(255, 255, 255, 0.18);
+    transition: transform 0.15s;
+}
+
+.app-icon .icon {
+    position: relative;
+    overflow: visible;
+}
+
+.app-icon .icon img {
+    border-radius: inherit;
+}
+
+.badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--danger);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    text-shadow: none;
+}
+
+.app-icon:active .icon {
+    transform: scale(0.9);
+}
+
+.app-icon span {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.dock {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 22px;
+    height: 88px;
+    padding: 0 14px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+    border-radius: 34px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 0.5px solid rgba(255, 255, 255, 0.22);
+}
+
+.phone[data-theme='dark'] .dock {
+    background: rgba(30, 30, 34, 0.45);
+}
+
+.dock:empty {
+    display: none;
+}
+
+/* No names under the dock icons */
+.dock .app-icon > span:not(.icon) {
+    display: none;
+}
+
+.views {
+    z-index: 20;
+    pointer-events: none;
+}
+
+.view {
+    position: absolute;
+    inset: 0;
+    background: var(--ph-bg);
+    opacity: 0;
+    transform: scale(0.88);
+    transition: transform 0.35s var(--ease), opacity 0.3s;
+    pointer-events: none;
+}
+
+.view--active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.view iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: transparent;
+}
+
+.switcher {
+    z-index: 60;
+    padding: 90px 0 60px;
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.75);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+}
+
+.switcher--open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.switcher__cards {
+    width: 100%;
+    height: 100%;
+    padding: 0 60px;
+    display: flex;
+    gap: 22px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+}
+
+.switcher__cards::-webkit-scrollbar {
+    display: none;
+}
+
+.switcher__card {
+    flex: none;
+    width: 270px;
+    height: 100%;
+    scroll-snap-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.25s, opacity 0.25s;
+}
+
+.switcher__card--closing {
+    transform: translateY(-120%);
+    opacity: 0;
+}
+
+.switcher__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.switcher__title .icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+}
+
+.switcher__title button {
+    margin-left: auto;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.22);
+    font-size: 15px;
+}
+
+.switcher__preview {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    border-radius: 34px;
+    cursor: pointer;
+}
+
+.switcher__preview .icon {
+    width: 96px;
+    height: 96px;
+    border-radius: 24px;
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.switcher__empty {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #ffffff;
+    font-size: 15px;
+    opacity: 0.8;
+}
+
+.control {
+    z-index: 70;
+    padding: 70px 26px;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transform: translateY(-24px);
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.3s var(--ease);
+}
+
+.control--open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.control__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 76px;
+    gap: 14px;
+}
+
+.toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    border-radius: 22px;
+    background: var(--ph-glass-strong);
+    color: var(--ph-text);
+    font-size: 10px;
+    text-align: center;
+}
+
+.toggle svg {
+    width: 26px;
+    height: 26px;
+    fill: currentColor;
+}
+
+.toggle--on {
+    background: #ffffff;
+    color: #000000;
+}
+
+.toggle--dnd.toggle--on {
+    background: #5e5ce6;
+    color: #ffffff;
+}
+
+.toggle--silent.toggle--on {
+    background: var(--danger);
+    color: #ffffff;
+}
+
+.slider {
+    grid-row: span 2;
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    background: var(--ph-glass-strong);
+    cursor: ns-resize;
+}
+
+.slider__fill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ffffff;
+}
+
+.slider svg {
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    width: 26px;
+    height: 26px;
+    transform: translateX(-50%);
+    fill: #8e8e93;
+}
+
+.toasts {
+    position: fixed;
+    right: 48px;
+    bottom: 40px;
+    width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: var(--font, 'Inter'), 'Segoe UI', Arial, sans-serif;
+}
+
+.toast {
+    background: rgba(28, 28, 30, 0.92);
+    animation: toast-in 0.4s var(--ease, ease) both;
+}
+
+.toast--out {
+    animation: toast-out 0.35s ease both;
+}
+
+@keyframes toast-in {
+    from { opacity: 0; transform: translateY(30px); }
+}
+
+@keyframes toast-out {
+    to { opacity: 0; transform: translateX(40px); }
+}

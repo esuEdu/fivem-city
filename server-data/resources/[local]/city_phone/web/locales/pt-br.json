@@ -1,0 +1,45 @@
+{
+    "lock": {
+        "hint": "Deslize para cima para abrir"
+    },
+    "notifications": {
+        "now": "agora",
+        "clear": "Limpar tudo",
+        "action": "Abrir"
+    },
+    "switcher": {
+        "empty": "Nenhum app aberto"
+    },
+    "control": {
+        "silent": "Silencioso",
+        "dnd": "Foco",
+        "flashlight": "Lanterna",
+        "dark": "Modo Escuro"
+    },
+    "settings": {
+        "title": "Ajustes",
+        "wallpaper": "Papel de Parede",
+        "appearance": "Aparência",
+        "light": "Claro",
+        "dark": "Escuro",
+        "brightness": "Brilho",
+        "size": "Tamanho do Celular (ou arraste o canto de cima)",
+        "font": "Fonte",
+        "silent": "Modo Silencioso",
+        "dnd": "Não Perturbe",
+        "language": "Idioma",
+        "number": "Meu Número",
+        "version": "Versão",
+        "ringtone": "Toque"
+    },
+    "ringtones": {
+        "classic": "Clássico",
+        "marimba": "Marimba",
+        "chime": "Sinos",
+        "pulse": "Pulso"
+    },
+    "time": {
+        "days": ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],
+        "months": ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"]
+    }
+}

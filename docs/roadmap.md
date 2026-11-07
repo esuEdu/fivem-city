@@ -38,7 +38,7 @@ Everything players control (races, garage, tuning, leaderboards, events, profile
 
 **What goes where:**
 
-| City OS (tablet / car / hub) | Phone (npwd) |
+| City OS (tablet / car / hub) | Phone (city_phone) |
 |---|---|
 | Jobs, legal and illegal (clock in, tasks, job tools, boss tools) | Calls and messages |
 | Staff tools (admins only) | |
@@ -83,8 +83,12 @@ Restyle in the inventory's style (`city_ui` theme):
 - [ ] **Our own phone** (`city_phone`, from zero, replacing npwd), on the City OS platform:
   - [ ] Calls (with pma-voice) and messages, contacts, camera (screencapture), email
   - [ ] Social apps: dating ("Tinder"-style), photos ("Instagram"-style), Twitter-style
-  - [ ] Replace what uses npwd today: the `phone` item's on/off (`city_inventory/data/items.lua`), qbx_vehicleshop, the qbx_npwd bridge, and the npwd garage and mail apps (their features move to City OS / the new phone)
-  - [ ] Remove npwd, qbx_npwd and `[npwd-apps]` from `install-resources.sh` and `server.cfg`
+  - [x] Base (`city_phone`): lock screen, home, dynamic island, control center, multitask, Settings (theme, font, language, wallpaper), and an API for app resources (`exports.city_phone:RegisterApp`)
+  - [x] Phone app (`city_phone_calls`): calls with pma-voice (conference up to 4, mute, hidden number, ringtones others hear), contacts, favorites, recents, blocking, sharing your contact
+  - [x] Messages app (`city_phone_messages`): chats, groups, delivered/read, reactions, fixed and live location
+  - [x] Camera (`city_phone_camera`) and Photos (`city_phone_photos`): back camera, selfie, zoom, filters, clean HUD; photos in the database, favorites, photo wallpaper
+  - [x] Replace what uses npwd today: the `phone` item's on/off (`city_inventory/data/items.lua`), qbx_vehicleshop (falls back to an ox_lib dialog on its own), the qbx_npwd bridge, and the npwd garage and mail apps (their features move to City OS / the new phone)
+  - [x] Remove npwd, qbx_npwd and `[npwd-apps]` from `install-resources.sh` and `server.cfg`
 
 ## Phase 4: Maps and models
 

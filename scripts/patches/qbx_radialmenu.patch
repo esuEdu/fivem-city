@@ -1,5 +1,5 @@
 diff --git a/server-data/resources/[qbx]/qbx_radialmenu/config/client.lua b/server-data/resources/[qbx]/qbx_radialmenu/config/client.lua
-index f15f2e5..265f9f9 100644
+index f15f2e5..c03a103 100644
 --- a/server-data/resources/[qbx]/qbx_radialmenu/config/client.lua
 +++ b/server-data/resources/[qbx]/qbx_radialmenu/config/client.lua
 @@ -9,12 +9,7 @@ return {
@@ -12,7 +12,7 @@ index f15f2e5..265f9f9 100644
 -                    label = 'Give Contact Details',
 -                    event = 'qb-phone:client:GiveContactDetails'
 -                },
-+                -- fivem-city: removed Give Contact Details (qb-phone's event; we use npwd)
++                -- fivem-city: removed Give Contact Details (qb-phone's event; we use city_phone)
                  {
                      id = 'getintrunk',
                      icon = 'car',

@@ -22,7 +22,6 @@ FILES=(
   "$RES/[qbx]/qbx_properties/property.sql"
   "$RES/[qbx]/qbx_properties/decorations.sql"
   "$RES/[qbx]/qbx_properties/property_garages.sql"
-  "$RES/[npwd]/npwd/import.sql"
 )
 
 env_value() {

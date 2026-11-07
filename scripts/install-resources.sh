@@ -27,9 +27,6 @@ RELEASES=(
   "loadscreen|[standalone]|https://github.com/D4isDAVID/loadscreen/releases/latest/download/loadscreen.zip"
   "mana_audio|[standalone]|https://github.com/Manason/mana_audio/releases/latest/download/mana_audio.zip"
   "mm_radio|[voice]|https://github.com/qbox-project/mm_radio/releases/latest/download/mm_radio.zip"
-  "npwd|[npwd]|https://github.com/project-error/npwd/releases/download/3.16.0/npwd.zip"
-  "npwd_qbx_garages|[npwd-apps]|https://github.com/Qbox-project/npwd_qbx_garages/releases/latest/download/npwd_qbx_garages.zip"
-  "npwd_qbx_mail|[npwd-apps]|https://github.com/Qbox-project/npwd_qbx_mail/releases/latest/download/npwd_qbx_mail.zip"
 )
 
 # name|target group|git repo
@@ -42,14 +39,13 @@ REPOS=(
   "scully_emotemenu|[standalone]|https://github.com/Scullyy/scully_emotemenu.git"
   "ultra-voltlab|[standalone]|https://github.com/ultrahacx/ultra-voltlab.git"
   "MugShotBase64|[standalone]|https://github.com/BaziForYou/MugShotBase64.git"
-  "qbx_npwd|[npwd]|https://github.com/Qbox-project/qbx_npwd.git"
   "pillbox|[assets]|https://github.com/Lorenc95/pillbox.git"
 )
 
 # Qbox resources, all from github.com/Qbox-project/<name>, into [qbx]
 QBX_REPOS=(
   qbx_vehicles qbx_scoreboard qbx_vehiclesales qbx_vehicleshop qbx_houserobbery
-  qbx_hud qbx_seatbelt qbx_management qbx_weed qbx_lapraces qbx_garages qbx_ambulancejob
+  qbx_hud qbx_seatbelt qbx_management qbx_weed qbx_lapraces qbx_garages
   qbx_medical qbx_radialmenu qbx_police qbx_properties qbx_vehiclekeys qbx_mechanicjob
   qbx_vineyard qbx_scrapyard qbx_towjob qbx_streetraces qbx_storerobbery qbx_spawn
   qbx_smallresources qbx_recyclejob qbx_diving qbx_divegear qbx_cityhall qbx_truckrobbery
@@ -109,7 +105,6 @@ mv "$MUGSHOT/MugShotBase64" "$TMP/MugShotBase64"
 mv "$MUGSHOT/README.md" "$MUGSHOT/LICENSE.md" "$TMP/MugShotBase64/"
 rm -rf "$MUGSHOT"
 mv "$TMP/MugShotBase64" "$MUGSHOT"
-mv "$RES/[npwd]/qbx_npwd/config.json" "$RES/[npwd]/npwd/config.json"
 cp "$ROOT/server-data/logo.png" "$RES/[standalone]/loadscreen/html/assets/logo.png"
 
 # Item images from Qbox, added next to city_inventory's own (ours win on a name clash)
