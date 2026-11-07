@@ -1,0 +1,23 @@
+// Our own simple icons (no brand logos). Constant markup only.
+const svg = (path) => `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">${path}</svg>`;
+
+export const ICONS = {
+    app: svg('<rect x="4" y="4" width="16" height="16" rx="4"/>'),
+    settings: svg('<path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.6 7.6 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7.6 7.6 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/>'),
+    mail: svg('<path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5zm2.2.3 6.8 5 6.8-5z"/>'),
+    police: svg('<path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5zm0 5 1.4 2.9 3.1.4-2.3 2.2.6 3.1L12 14l-2.8 1.6.6-3.1-2.3-2.2 3.1-.4z"/>'),
+    races: svg('<path d="M5 3h2v18H5zm3 1h11l-2.5 4L19 12H8z"/>'),
+    bell: svg('<path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.8V3a1.5 1.5 0 0 0-3 0v1.2A7 7 0 0 0 5 11v5l-2 2v1h18v-1z"/>'),
+    silent: svg('<path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.8V3a1.5 1.5 0 0 0-3 0v1.2a7 7 0 0 0-2.3 1L19 17zM3.3 2.3 2 3.6l3.2 3.2A7 7 0 0 0 5 11v5l-2 2v1h14.2l3.2 3.2 1.3-1.3z"/>'),
+    moon: svg('<path d="M12.5 2a9.5 9.5 0 1 0 9.4 11.3A7.5 7.5 0 0 1 12.5 2z"/>'),
+    flashlight: svg('<path d="M7 2h10v4l-2 4v12H9V10L7 6zm5 10a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>'),
+    sun: svg('<path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm-1-6h2v4h-2zm0 18h2v4h-2zM1 11h4v2H1zm18 0h4v2h-4zM4.2 5.6l1.4-1.4 2.8 2.8-1.4 1.4zm11.4 11.4 1.4-1.4 2.8 2.8-1.4 1.4zM4.2 18.4l2.8-2.8 1.4 1.4-2.8 2.8zM15.6 7l2.8-2.8 1.4 1.4-2.8 2.8z"/>'),
+    contrast: svg('<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18V4a8 8 0 0 1 0 16z"/>'),
+    wallpaper: svg('<path d="M4 4h16v16H4zm2 12h12l-4-5-3 4-2-2z"/>'),
+    font: svg('<path d="M9 4h2l6 16h-2.3l-1.5-4.2H6.8L5.3 20H3zm-1.5 9.8h4.9L10 6.9z"/>'),
+    globe: svg('<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 9h-3a15 15 0 0 0-1.4-6A8 8 0 0 1 18.9 11zM12 4c.9 1.2 1.7 3.9 1.9 7h-3.8c.2-3.1 1-5.8 1.9-7zM9.5 5a15 15 0 0 0-1.4 6h-3A8 8 0 0 1 9.5 5zm-4.4 8h3a15 15 0 0 0 1.4 6A8 8 0 0 1 5.1 13zM12 20c-.9-1.2-1.7-3.9-1.9-7h3.8c-.2 3.1-1 5.8-1.9 7zm2.5-1a15 15 0 0 0 1.4-6h3a8 8 0 0 1-4.4 6z"/>'),
+    info: svg('<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-6h2zm0-8h-2V7h2z"/>'),
+    signal: '<svg viewBox="0 0 18 12" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>',
+    wifi: '<svg viewBox="0 0 16 12" xmlns="http://www.w3.org/2000/svg"><path d="M8 2.2a9.6 9.6 0 0 1 6.8 2.8L16 3.8A11.3 11.3 0 0 0 0 3.8L1.2 5A9.6 9.6 0 0 1 8 2.2zm0 3.4a6.2 6.2 0 0 1 4.4 1.8l1.2-1.2a7.9 7.9 0 0 0-11.2 0l1.2 1.2A6.2 6.2 0 0 1 8 5.6zm0 3.3a2.9 2.9 0 0 1 2 .8L8 12 6 9.7a2.9 2.9 0 0 1 2-.8z"/></svg>',
+    battery: '<svg viewBox="0 0 27 13" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity="0.4"/><rect x="2" y="2" width="20" height="9" rx="2"/><rect x="24.5" y="4.5" width="2" height="4" rx="1" opacity="0.4"/></svg>',
+};
