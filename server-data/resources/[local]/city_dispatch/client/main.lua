@@ -103,6 +103,11 @@ local function openCalls()
         return ExecuteCommand('emscalls')
     end
 
+    -- Police calls are in the MDT, with the robbery alerts
+    if QBX.PlayerData.job and QBX.PlayerData.job.type == Config.Services.police.jobType then
+        return exports.qbx_core:Notify(locale('use_mdt'), 'inform')
+    end
+
     local list = lib.callback.await('city_dispatch:calls', false)
     if not list then return exports.qbx_core:Notify(locale('not_responder'), 'error') end
     if #list == 0 then return exports.qbx_core:Notify(locale('no_calls'), 'inform') end

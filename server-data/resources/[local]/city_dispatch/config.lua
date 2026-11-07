@@ -1,14 +1,15 @@
 Config = {}
 
 -- The city services every phone has as fixed contacts. jobType is the qbx job type that answers the calls (on duty).
--- ems goes to city_hospital's own calls list, so EMS see these together with the SOS of downed players.
+-- ems goes to city_hospital's own calls list, so EMS see these together with the SOS of downed players; police goes to
+-- city_police's calls (the MDT on the tablet), together with robbery alerts.
 -- types are the kinds of call offered on the phone (the phone translates them; label is the in-game English text).
 Config.Services = {
     police = {
         number = '190',
         label = 'Police',
         jobType = 'leo',
-        blip = { sprite = 526, colour = 3 },
+        mdt = true,
         types = { 'robbery', 'shooting', 'fight', 'accident', 'suspect', 'other' },
     },
     ems = {

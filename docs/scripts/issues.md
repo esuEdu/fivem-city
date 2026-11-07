@@ -12,14 +12,14 @@ None known.
 
 - **EMS shops:** our **Medicine Cabinet** stood 3 m from the EMS **Armory** at Pillbox (now city_hospital's); it's removed from `data/shops.lua`.
 - **ox_fuel:** pays with the **"money" item**, which is the player's real cash (`server/cash.lua`, `server/cashflow.lua`, `Config.CashItem`).
-- **qbx_police** (radial **Search** and **Rob**, via `openNearbyInventory`) and the **Staff** app (**Inventory**, via `openInventory('player', id)`): player search (`server/searches.lua`).
+- **city_police** (ox_target and radial **Search**), the radial **Rob** (via `openNearbyInventory`) and the **Staff** app (**Inventory**, via `openInventory('player', id)`): player search (`server/searches.lua`).
 
 ### Already patched
 
 - **qbx_core:** uses `city_inventory` (`scripts/patches/qbx_core.patch`).
 - **qbx_medical:** tells the server when a revive is real (`qbx_medical:server:revived`), so city_hospital can keep a finished-off player down (`scripts/patches/qbx_medical.patch`).
-- **qbx_radialmenu:** the dead **Give Contact Details** button is removed (`scripts/patches/qbx_radialmenu.patch`).
-- **qbx_police:** registers its locker and trash stashes on start, and **Rob** accepts the hands-up key's animation (scully_emotemenu's `random@mugging3`), not only the emote's (`scripts/patches/qbx_police.patch`).
+- **qbx_radialmenu:** the dead **Give Contact Details** button is removed, and the police buttons fire city_police's events (Kidnap, Take Hostage and Revoke Drivers License are gone) (`scripts/patches/qbx_radialmenu.patch`).
+- **qbx_core:** BCSO and SASP are removed from `shared/jobs.lua` and police start off duty (they clock in at a station) (`scripts/patches/qbx_core.patch`).
 
 ### Working through the `ox_inventory` stand-in (nothing to do)
 
@@ -47,9 +47,9 @@ The stand-in has to stay: about 40 scripts call `exports.ox_inventory`, ox_fuel 
 | illenium-appearance (debit only) | Clothing store charges; it checks the result, so a refused charge means no purchase. |
 | The `money` item via `RemoveItem` (debit only, reason `inventory-cash-item`) | Lets ox_fuel charge cash. `AddItem('money')` stays blocked: any script could otherwise create cash. |
 
-Blocked until rewritten (they stop paying or charging): qbx_taxijob (also trusts the fare sent by the client), qbx_truckerjob, qbx_towjob, qbx_garbagejob, qbx_busjob, qbx_diving, qbx_pawnshop, qbx_storerobbery, qbx_truckrobbery, qbx_streetraces, qbx_properties, qbx_garages, qbx_customs, qbx_cityhall, qbx_carwash, qbx_vehicleshop, qbx_vehiclesales, qbx_drugs and qbx_police.
+Blocked until rewritten (they stop paying or charging): qbx_taxijob (also trusts the fare sent by the client), qbx_truckerjob, qbx_towjob, qbx_garbagejob, qbx_busjob, qbx_diving, qbx_pawnshop, qbx_storerobbery, qbx_truckrobbery, qbx_streetraces, qbx_properties, qbx_garages, qbx_customs, qbx_cityhall, qbx_carwash, qbx_vehicleshop, qbx_vehiclesales and qbx_drugs.
 
-Renewed-Banking was removed. qbx_police (fines, impound) and qbx_vehicleshop (society funds) still call `exports['Renewed-Banking']` and error when they reach that line, until job accounts exist in city_bank.
+Renewed-Banking was removed. qbx_vehicleshop (society funds) still calls `exports['Renewed-Banking']` and error when they reach that line, until job accounts exist in city_bank.
 
 ### Known limits of city_bank
 

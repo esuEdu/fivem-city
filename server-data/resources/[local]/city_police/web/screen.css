@@ -1,0 +1,29 @@
+/* The arrested player's screen and the security camera overlay. Colors come from city_ui/theme.lua (screen.js). */
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; font-family: var(--font, 'Poppins', sans-serif); color: var(--text, #eef0f3); }
+.hidden { display: none !important; }
+
+/* Arrested */
+.arrest { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(5, 6, 9, 0.82); animation: fade 0.4s ease; }
+.arrest-card { position: relative; width: min(520px, 90vw); padding: 36px 34px 30px; border-radius: var(--radius-large, 22px); background: rgba(16, 18, 24, 0.97); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); overflow: hidden; text-align: center; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); }
+.bars { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 44px, rgba(255, 255, 255, 0.035) 44px 52px); pointer-events: none; }
+.arrest h1 { position: relative; margin: 0 0 10px; font-size: 30px; letter-spacing: 1px; text-transform: uppercase; color: var(--danger, #e5484d); }
+.months { position: relative; margin: 0; font-size: 44px; font-weight: 700; }
+.fine { position: relative; margin: 2px 0 0; color: var(--muted, #7d8590); }
+.arrest h2 { position: relative; margin: 22px 0 8px; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted, #7d8590); }
+.arrest ul { position: relative; margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.arrest li { padding: 6px 12px; border-radius: 14px; background: var(--slot-hover, rgba(255, 255, 255, 0.07)); font-size: 13px; font-weight: 600; }
+.officer { position: relative; margin: 20px 0; font-size: 13px; color: var(--muted, #7d8590); }
+#arrest-ok { position: relative; height: 44px; padding: 0 34px; border: 0; border-radius: var(--radius, 10px); background: var(--accent, #f5c542); color: var(--accent-text, #15181d); font: inherit; font-weight: 700; cursor: pointer; }
+
+/* Camera */
+.camera { position: fixed; inset: 0; pointer-events: none; }
+.cam-top { position: absolute; top: 28px; left: 34px; right: 34px; display: flex; gap: 24px; align-items: center; font-family: var(--mono, monospace); font-size: 18px; text-shadow: 0 1px 3px #000; }
+.cam-top span:nth-child(2) { flex-grow: 1; }
+.rec { display: flex; align-items: center; gap: 8px; color: var(--danger, #e5484d); font-weight: 700; }
+.rec i { width: 12px; height: 12px; border-radius: 6px; background: var(--danger, #e5484d); animation: blink 1s steps(2) infinite; }
+.cam-offline { position: absolute; inset: 0; display: grid; place-items: center; background: repeating-linear-gradient(0deg, #111 0 2px, #1b1b1b 2px 4px); font-family: var(--mono, monospace); font-size: 28px; letter-spacing: 4px; }
+.cam-bottom { position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%); padding: 8px 16px; border-radius: var(--radius, 10px); background: var(--panel, rgba(12, 13, 18, 0.6)); font-size: 13px; color: var(--muted, #7d8590); }
+
+@keyframes blink { to { opacity: 0; } }
+@keyframes fade { from { opacity: 0; } }

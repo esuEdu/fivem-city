@@ -86,7 +86,7 @@ return {
     -- Server resources allowed to create bills with exports.city_bank:CreateBill: the bill kind, or { kind, job } to
     -- pay the whole bill into that job's account
     billers = {
-        qbx_police = 'fine',
+        city_police = 'fine',
         city_hospital = { kind = 'service', job = 'ambulance' },
     },
 }
