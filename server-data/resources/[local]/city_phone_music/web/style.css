@@ -1,0 +1,330 @@
+/* Music: what the kit (city_phone/web/kit/kit.css) doesn't already cover. Green accent like the app icon. */
+
+:root {
+    --music: #1ed760;
+}
+
+.page--tabs {
+    bottom: 82px;
+    padding-bottom: 84px;
+}
+
+.hint {
+    margin: 0 16px 22px;
+    font-size: 13px;
+    color: var(--text-2);
+}
+
+/* The hidden YouTube player (it must exist to play, but never shows) */
+#yt-player {
+    position: fixed;
+    left: -10000px;
+    top: 0;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+}
+
+/* Covers */
+.cover {
+    width: 48px;
+    height: 48px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--fill);
+    color: var(--music);
+    font-size: 22px;
+}
+
+.cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cover--big {
+    width: 140px;
+    height: 140px;
+    font-size: 54px;
+}
+
+.cover--full {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    margin: 6px 0 22px;
+    border-radius: 12px;
+    font-size: 90px;
+    box-shadow: var(--shadow);
+}
+
+.track--playing .k-item__title {
+    color: var(--music);
+}
+
+.track__more,
+.track__save {
+    width: 34px;
+    height: 34px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    color: var(--text-2);
+}
+
+.track__save {
+    color: var(--music);
+}
+
+/* Song menu */
+.menu__head {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+}
+
+.menu__title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.menu__artist {
+    color: var(--text-2);
+}
+
+/* Playlists */
+.playlist__icon,
+.playlist__art {
+    width: 48px;
+    height: 48px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #450af5, #8e8ee5);
+    color: #ffffff;
+}
+
+.playlist__head {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.playlist__art {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+}
+
+.playlist__art .k-icon {
+    width: 60px;
+    height: 60px;
+}
+
+.playlist__name {
+    margin: 6px 0 0;
+    font-size: 24px;
+    text-align: center;
+}
+
+.playlist__count {
+    color: var(--text-2);
+    font-size: 13px;
+}
+
+.playlist__buttons {
+    margin-top: 8px;
+    display: flex;
+    gap: 10px;
+}
+
+.pill {
+    height: 38px;
+    padding: 0 22px;
+    border-radius: 19px;
+    background: var(--fill);
+    font-weight: 600;
+}
+
+.pill--play {
+    background: var(--music);
+    color: #000000;
+}
+
+/* Mini player above the tabs */
+.mini {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 90px;
+    height: 58px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 10px;
+    background: #2a2a2e;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.mini[hidden] {
+    display: none;
+}
+
+.mini__progress {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.mini__progress span {
+    display: block;
+    height: 100%;
+    background: #ffffff;
+}
+
+.mini__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+}
+
+.mini__info .cover {
+    width: 40px;
+    height: 40px;
+}
+
+.mini__text,
+.full__text {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.mini__title,
+.mini__artist {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #ffffff;
+}
+
+.mini__title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.mini__artist {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.mini__toggle,
+.mini__next {
+    width: 38px;
+    height: 38px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+}
+
+/* Full player */
+.full__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.full__title {
+    font-size: 20px;
+    font-weight: 700;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.full__artist {
+    color: var(--text-2);
+}
+
+.full__save {
+    color: var(--music);
+}
+
+.full__seek,
+.full__volume {
+    width: 100%;
+    margin: 18px 0 4px;
+    accent-color: var(--music);
+}
+
+.full__times {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-2);
+}
+
+.full__controls {
+    margin: 14px 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.full__skip .k-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.full__play {
+    width: 66px;
+    height: 66px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #000000;
+}
+
+.full__play .k-icon {
+    width: 28px;
+    height: 28px;
+}
+
+.full__mode {
+    color: var(--text-2);
+}
+
+.full__mode--on {
+    color: var(--music);
+}
+
+.full__volume-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-2);
+}
+
+.full__volume-row .full__volume {
+    margin: 0;
+}

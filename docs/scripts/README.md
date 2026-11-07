@@ -112,6 +112,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_phone_dating** | Ours: Matchy, the dating app: a profile with up to 3 photos from Photos, name, bio, age from the character and who you want to see; cards to like or pass, matches with a notification, a private chat that never shows numbers, unmatch. |
 | **city_phone_darkchat** | Ours: DarkChat, anonymous chat rooms shown only on phones carrying the `darkchat_usb` item: rooms found only by exact name (optional password), a chosen alias, messages deleted after 24 h. |
 | **city_phone_news** | Ours: Weazel News: articles (headline, story, category) written by reporters on duty, breaking news that notifies every phone, likes and comments; the author, the paper's boss and mods delete. |
+| **city_phone_music** | Ours: the Music app: search YouTube by title (server key `youtube_api_key`) or paste a YouTube / https audio link, library and playlists, shuffle and repeat, mini player and the dynamic island; only the phone's owner hears it. |
 | **city_phone_calls** | Ours: the Phone app: calls through pma-voice (up to 4 people, mute, hidden number), contacts, favorites, recents, blocked numbers and sharing your contact with people nearby, and the city services (190 police, 192 EMS, mechanic) as fixed contacts that send a written call. |
 | **pma-voice** | Proximity voice chat. |
 | **mm_radio** | Radio item for police, EMS and other channels. |
