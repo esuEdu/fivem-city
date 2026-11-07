@@ -304,5 +304,7 @@
     "ui_goals_saved": "Goals saved",
     "ui_of_goal_short": "of %s",
     "action_setGoals": "set the report goals",
-    "label_setGoals": "Set goals"
+    "label_setGoals": "Set goals",
+    "ui_less": "Less",
+    "ui_more": "More"
 }

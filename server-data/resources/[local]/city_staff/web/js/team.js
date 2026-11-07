@@ -1,7 +1,7 @@
 // The Team tab (admins): every staff member's numbers for the period, and a page per person with their chart, what
 // they did, their ratings and their latest actions.
 
-import { el, L, run, icon, pill, segmented, initials, shortName, duration, ago, formatTime } from './ui.js';
+import { el, L, run, icon, pill, segmented, stepper, initials, shortName, duration, ago, formatTime } from './ui.js';
 import { go, can } from './main.js';
 import { ratingCard } from './dashboard.js';
 import { ACTION_LOOK } from './records.js';
@@ -49,7 +49,7 @@ function goalsEditor(goals) {
     const inputs = {};
     const field = (key) => {
         inputs[key] = el('input', { class: 'field', type: 'number', min: '1', max: '10000', value: String(goals[key]), id: `goal-${key}`, 'aria-label': L(`ui_goal_${key}`) });
-        return el('label', { class: 'goal-field', for: `goal-${key}` }, el('small', { text: L(`ui_goal_${key}`) }), inputs[key]);
+        return el('div', { class: 'goal-field' }, el('label', { for: `goal-${key}`, text: L(`ui_goal_${key}`) }), stepper(inputs[key]));
     };
 
     const save = async () => {

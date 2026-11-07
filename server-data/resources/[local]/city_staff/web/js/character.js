@@ -1,7 +1,7 @@
 // The "Character" card on a player's page: each value shown as it is now, Edit opens a small editor for that one row,
 // and nothing changes until the staff member confirms the "old → new" summary.
 
-import { el, L, icon } from './ui.js';
+import { el, L, icon, stepper } from './ui.js';
 import { app, can } from './main.js';
 
 const NO_GROUP = { job: 'unemployed', gang: 'none' };
@@ -178,7 +178,7 @@ export function characterCard(player, act) {
         });
 
         return el('div', { class: 'char-editor' },
-            el('div', { class: 'stat-edit' }, input, el('small', { class: 'muted', text: L('ui_bucket_help') })),
+            el('div', { class: 'stat-edit' }, stepper(input), el('small', { class: 'muted', text: L('ui_bucket_help') })),
             save,
         );
     };

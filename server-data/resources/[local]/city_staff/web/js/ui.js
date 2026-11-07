@@ -167,6 +167,23 @@ export function searchField(placeholder, oninput) {
         el('input', { type: 'text', placeholder, 'aria-label': placeholder, oninput: (event) => oninput(event.target.value.trim().toLowerCase()) }));
 }
 
+// A number box with our own − and + buttons (the browser's arrows are hidden in style.css)
+export function stepper(input) {
+    const min = Number(input.min || 0);
+    const max = Number(input.max || Infinity);
+    const step = (delta) => {
+        const current = Number(input.value) || 0;
+        input.value = String(Math.min(max, Math.max(min, Math.round(current) + delta)));
+        input.dispatchEvent(new Event('input'));
+    };
+
+    return el('div', { class: 'stepper' },
+        el('button', { type: 'button', class: 'step', 'aria-label': L('ui_less'), onclick: () => step(-1) }, '−'),
+        input,
+        el('button', { type: 'button', class: 'step', 'aria-label': L('ui_more'), onclick: () => step(1) }, '+'),
+    );
+}
+
 export function stars(count) {
     const n = Math.max(0, Math.min(5, Math.round(count || 0)));
     return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n);

@@ -144,7 +144,7 @@
 .goals { gap: 10px; flex: none; }
 .goal-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .goal-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.goal-field small { color: var(--muted2); font-size: 11px; }
+.goal-field label { color: var(--muted2); font-size: 11px; }
 .goal-field .field { width: 100%; }
 
 .rating-card { padding: 12px; border-radius: 12px; background: var(--field); display: flex; flex-direction: column; gap: 6px; }
@@ -232,6 +232,14 @@
 .stat-edit input[type='range'] { flex-grow: 1; accent-color: var(--accent); }
 .stat-number { width: 52px; text-align: right; font-size: 18px; }
 .editor-buttons { display: flex; align-items: center; gap: 8px; }
+/* Number boxes: the browser's up/down arrows hidden, our − / + buttons instead (ui.js stepper) */
+input[type='number'] { -moz-appearance: textfield; }
+input[type='number']::-webkit-inner-spin-button, input[type='number']::-webkit-outer-spin-button { margin: 0; -webkit-appearance: none; }
+.stepper { display: flex; align-items: center; min-width: 0; height: 38px; border-radius: 10px; background: var(--field); overflow: hidden; }
+.stepper .field { flex: 1 1 auto; width: 0; min-width: 28px; padding: 0 2px; border-radius: 0; background: transparent; text-align: center; font-weight: 600; }
+.stepper .step { flex: none; width: 30px; height: 100%; border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
+.stepper .step:hover { background: var(--hover); color: var(--fg); }
+.stat-edit .stepper { flex: none; width: 150px; }
 .kit-btn:disabled { opacity: 0.45; cursor: default; filter: none; }
 .change-summary { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 14px; border-radius: 12px; background: var(--group); }
 .change-summary .from { color: var(--muted); text-decoration: line-through; }
