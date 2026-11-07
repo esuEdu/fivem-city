@@ -22,7 +22,6 @@ RELEASES=(
   "screencapture|[standalone]|https://github.com/itschip/screencapture/releases/latest/download/screencapture.zip"
   "illenium-appearance|[standalone]|https://github.com/iLLeniumStudios/illenium-appearance/releases/latest/download/illenium-appearance.zip"
   "Renewed-Weathersync|[standalone]|https://github.com/Renewed-Scripts/Renewed-Weathersync/releases/latest/download/Renewed-Weathersync.zip"
-  "xt-prison|[standalone]|https://github.com/xT-Development/xt-prison/releases/latest/download/xt-prison.zip"
   "vehiclehandler|[standalone]|https://github.com/QuantumMalice/vehiclehandler/releases/latest/download/vehiclehandler.zip"
   "loadscreen|[standalone]|https://github.com/D4isDAVID/loadscreen/releases/latest/download/loadscreen.zip"
   "mana_audio|[standalone]|https://github.com/Manason/mana_audio/releases/latest/download/mana_audio.zip"

@@ -61,7 +61,6 @@ For each one, replacing `exports.ox_inventory` with `exports.city_inventory` (an
 | **qbx_vehiclekeys** | `RemoveItem` | 1 |
 | **qbx_vineyard** | `GetItem`, `RemoveItem`, `AddItem` | 1 |
 | **qbx_weed** | `AddItem` ×5, `RemoveItem` ×3, `GetSlot`, `Search` | 1 |
-| **xt-prison** | `GetInventoryItems`, `ClearInventory`, `ReturnInventory`, `AddItem`, `RemoveItem` | 2 |
 
 `qbx_properties` is the one to test hardest: `registerHook` currently gets its calling script passed on by the stand-in (`city_inventory/server/exports.lua`, `GetInvokingResource`); called directly, city_inventory sees qbx_properties itself, which is what we want.
 
