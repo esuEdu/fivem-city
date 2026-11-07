@@ -194,6 +194,16 @@ return {
         }
     },
 
+    ['tablet'] = {
+        label = 'iFruit Pad',
+        description = 'A tablet with apps for your job and the city. Opens with F2 while you carry it.',
+        category = 'electronics',
+        weight = 650,
+        stack = false,
+        close = true,
+        consume = 0,
+    },
+
     ['jammer'] = {
         label = 'Radio Jammer',
         category = 'electronics',

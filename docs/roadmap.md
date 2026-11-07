@@ -23,10 +23,12 @@ Everything players control (races, garage, tuning, leaderboards, events, profile
 | **Hub menu** | Full screen at the festival hub, and from the OS's Festival app | A racing game's festival menu: big event cards, rank, leaderboards |
 
 - [ ] Design pass: home screen, app layout, which apps show on which screen, keys
-- [ ] Platform: screens, home screen, notifications, and an API for other resources to register apps (`exports.city_os:RegisterApp`)
+  - Decided (2026-11-04): branded **iFruit** (the tablet is the iFruit Pad). Opened with the tablet item (use it, or a rebindable key while carrying it), so it can be lost, stolen or confiscated. Look: the **latest iPad layout** (widgets beside the app grid, floating dock, apps with a floating sidebar, home bar) in Apple's newest **liquid glass** style, drawn without `backdrop-filter` (translucent layers, light rims, top highlights over the tablet's own wallpaper) and in the `city_ui` colors. The **in-car dashboard waits** for the user's own ideas.
+  - Mockup: https://claude.ai/artifact/Pe7CCxaY8erYh6scZiXrBZ. Design for the build (app API, UI kit, tablet item and data): [city-os.md](city-os.md) (home, Profile, job app with Duty/Team/Boss, Staff, the hidden Burner app, placeholders for Garage/Races/Festival/Settings)
+- [ ] Platform (`city_os`, **the tablet only**): lock screen (swipe to unlock), home screen, dock, app switcher, notifications and dispatch alerts, the built-in **Settings** app (wallpaper, icon style, dock, notifications, display, privacy, about) and its config. No app logic lives here: every app is **its own resource** that registers with `exports.city_os:RegisterApp` (id, label, icon and colors, its own NUI page, who sees it: job/gang/grade, staff, hidden until unlocked; all checked again on the server)
 - [ ] Tablet item and animation (hold-tablet anim, `prop_cs_tablet`); in-car dashboard; hub menu
 - [ ] Tablet look: **iPad-style**: thin rounded bezel, app grid on a wallpaper, a dock, status bar (time, battery), the swipe-up home bar, smooth open/close animations. Branded with GTA's own **iFruit** (the in-game Apple parody) or our City OS name; no Apple names or logos
-- [ ] First apps:
+- [ ] First apps, each a separate `city_<feature>` resource on the platform:
   - [ ] **Profile**: character, rank, money
   - [ ] **Jobs (legal)**: one app per job (police, EMS, mechanic, taxi, …), shown only to players with that job: clock in/out, tasks, job tools; the boss also gets hire, fire, grades and the society account (today's qbx_management boss menu)
   - [ ] **Jobs (illegal)**: drugs, robberies, chop shop, …; hidden from the home screen until unlocked (an item, a contact or reputation), so a police search of the tablet doesn't show it; contacts, jobs on offer, reputation

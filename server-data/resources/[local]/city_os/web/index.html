@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Poppins:wght@200;300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="kit/kit.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="tablet" class="hidden">
+        <div id="screen" class="dark">
+            <div id="dim" class="layer dim hidden"></div>
+
+            <div id="status"><div><span id="status-time"></span><span id="status-date" class="date"></span></div><div id="status-icons"></div></div>
+
+            <section id="lock" class="layer hidden">
+                <div class="lock-date" id="lock-date"></div>
+                <div class="lock-time" id="lock-time"></div>
+                <div id="lock-notes"></div>
+                <button id="unlock-hint"><span id="unlock-text"></span><span class="home-line"></span></button>
+            </section>
+
+            <section id="passcode" class="layer hidden screen-in">
+                <div id="passcode-icon" style="margin-top: 70px;"></div>
+                <div class="title" id="passcode-title"></div>
+                <div class="dots" id="dots"></div>
+                <div id="code-message"></div>
+                <div id="keypad"></div>
+            </section>
+
+            <section id="home" class="layer hidden">
+                <div id="widgets">
+                    <div class="glass widget scalable">
+                        <div class="big" id="widget-time"></div>
+                        <div style="margin-top: 10px; font-size: 15px; font-weight: 500;" id="widget-date"></div>
+                        <div class="muted" style="margin-top: 4px; font-size: 13px;" id="widget-city"></div>
+                    </div>
+                </div>
+                <div id="grid" class="scalable"></div>
+                <div id="empty" class="glass hidden">
+                    <div style="font-size: 20px; font-weight: 600;" id="empty-title"></div>
+                    <div class="muted" style="margin-top: 8px; font-size: 14px; line-height: 1.6;" id="empty-text"></div>
+                </div>
+                <div id="dock" class="glass"></div>
+            </section>
+
+            <section id="apps" class="layer hidden">
+                <div id="unavailable" class="hidden">
+                    <div id="unavailable-icon"></div>
+                    <div style="font-size: 22px; font-weight: 700;" id="unavailable-title"></div>
+                    <div class="muted" style="font-size: 14px; line-height: 1.6;" id="unavailable-text"></div>
+                    <button class="kit-btn" id="unavailable-retry" style="margin-top: 8px;"></button>
+                </div>
+            </section>
+
+            <section id="settings" class="layer hidden kit-split scalable"></section>
+
+            <button id="status-tap" class="hidden" aria-label="Show notifications"></button>
+
+            <section id="nc" class="layer hidden">
+                <button id="nc-back" aria-label="Close notifications"></button>
+                <div id="nc-panel">
+                    <div id="nc-head"><span id="nc-title"></span><button class="btn" id="nc-clear"></button></div>
+                    <div id="nc-list"></div>
+                </div>
+            </section>
+
+            <button id="banner" class="glass note hidden"></button>
+
+            <button id="homebar" class="hidden" aria-label="Go to the home screen"><span></span></button>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
