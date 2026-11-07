@@ -35,6 +35,7 @@ Config.Permissions = {
     unban = 'admin',
     log = 'admin',
     team = 'admin',
+    goals = 'admin',      -- change the report goals (Team tab)
 
     -- on themselves
     noclip = 'mod',
@@ -67,7 +68,8 @@ Config.LogLimit = 200
 Config.RatingMinutes = 10
 Config.RatingTags = { 'Fast', 'Polite', 'Fixed it', "Didn't help" }
 
--- Dashboard: reports a staff member aims to close per period (the ring on "Your ..." card)
+-- Dashboard and Team: reports a staff member aims to close per period. These are the defaults; admins change them in
+-- the Team tab, which keeps its own values from then on.
 Config.Goals = { today = 5, week = 30, month = 120 }
 
 -- Highest routing bucket staff can put a player in

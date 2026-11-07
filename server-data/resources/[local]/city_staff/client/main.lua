@@ -6,7 +6,7 @@ local spectate = require 'client.spectate'
 
 -- Server callbacks the page may call (city_staff:<name>)
 local ACTIONS = {
-    app = true, dashboard = true, ratings = true, team = true, teamMember = true, players = true, player = true, log = true,
+    app = true, dashboard = true, ratings = true, team = true, teamMember = true, setGoals = true, players = true, player = true, log = true,
     ['goto'] = true, bring = true, heal = true, revive = true, freeze = true, kill = true, cuff = true,
     clothing = true, bucket = true, setJob = true, setGang = true, setStat = true, inventory = true, spectate = true,
     warn = true, kick = true, ban = true, bans = true, unban = true,

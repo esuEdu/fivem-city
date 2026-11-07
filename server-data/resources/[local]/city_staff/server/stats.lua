@@ -3,6 +3,7 @@
 local rules = require 'shared.rules'
 local staff = require 'server.staff'
 local metrics = require 'server.metrics'
+local goals = require 'server.goals'
 
 local CHART_DAYS = 7
 
@@ -20,11 +21,12 @@ staff.register('dashboard', function(src, data)
 
     local members = metrics.reportsByStaff(since)
     local myLicense = staff.who(src).license
-    local me = { closed = 0, goal = Config.Goals[period] }
+    local goal = goals.get()[period]
+    local me = { closed = 0, goal = goal }
 
     for rank, member in ipairs(members) do
         if member.license == myLicense then
-            me = { closed = member.closed, goal = Config.Goals[period], rank = rank, rating = member.rating, ratings = member.ratings, response = member.response }
+            me = { closed = member.closed, goal = goal, rank = rank, rating = member.rating, ratings = member.ratings, response = member.response }
         end
 
         -- Other staff's licenses stay on the server

@@ -3,6 +3,7 @@
 local rules = require 'shared.rules'
 local staff = require 'server.staff'
 local metrics = require 'server.metrics'
+local goals = require 'server.goals'
 
 local SANCTIONS = { warn = true, kick = true, ban = true }
 
@@ -65,7 +66,7 @@ end
 staff.register('team', function(_, data)
     local since, period = rules.periodStart(data.period, os.time())
 
-    return true, { period = period, members = members(since) }
+    return true, { period = period, members = members(since), goals = goals.get() }
 end)
 
 ---@param value unknown
@@ -106,6 +107,7 @@ staff.register('teamMember', function(_, data)
 
     return true, {
         period = period,
+        goal = goals.get()[period],
         member = summary,
         chart = metrics.daily(now, 14, license),
         breakdown = breakdown,

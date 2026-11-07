@@ -2,18 +2,20 @@
 // they did, their ratings and their latest actions.
 
 import { el, L, run, icon, pill, segmented, initials, shortName, duration, ago, formatTime } from './ui.js';
-import { go } from './main.js';
+import { go, can } from './main.js';
 import { ratingCard } from './dashboard.js';
 import { ACTION_LOOK } from './records.js';
 
 let period = 'week';
 let selected = null;
+let editingGoals = false;
 
 export async function renderTeam(args) {
     if (args && args.license) selected = args.license;
 
     const response = await run('team', { period });
     const members = response ? response.data.members : [];
+    const goal = response ? response.data.goals[period] : 0;
     if (!members.some((member) => member.license === selected)) selected = members.length ? members[0].license : null;
 
     const pick = (value) => {
@@ -23,16 +25,52 @@ export async function renderTeam(args) {
 
     return el('div', { class: 'split' },
         el('div', { class: 'split-list' },
-            el('div', { class: 'heading' }, el('h1', { text: L('ui_tab_team') }), pill(L('ui_staff_count', members.length))),
+            el('div', { class: 'heading' }, el('h1', { text: L('ui_tab_team') }), pill(L('ui_staff_count', members.length)), el('span', { class: 'spacer' }),
+                can('goals') ? el('button', { class: `kit-btn${editingGoals ? ' accent' : ''}`, text: L('ui_goals'), onclick: () => {
+                    editingGoals = !editingGoals;
+                    go('team');
+                } }) : null),
+            editingGoals && response ? goalsEditor(response.data.goals) : null,
             segmented([['today', L('ui_today')], ['week', L('ui_week')], ['month', L('ui_month')]], period, pick),
             el('div', { class: 'list' }, members.length ? members.map((member) => el('button', { class: `list-row${member.license === selected ? ' on' : ''}`, onclick: () => go('team', { license: member.license }) },
                 el('span', { class: 'avatar' }, initials(member.name), el('i', { class: `presence${member.online ? ' on' : ''}` })),
                 el('span', { class: 'who' }, el('strong', { text: shortName(member.name) }),
-                    el('small', { text: [member.level ? L(`level_${member.level}`) : null, member.online ? L('ui_online_now') : member.lastActive ? ago(member.lastActive) : null].filter(Boolean).join(' · ') })),
-                el('span', { class: 'team-nums' }, el('strong', { text: String(member.closed) }), el('small', { class: 'gold', text: member.rating ? `${member.rating} ★` : '—' })),
+                    el('small', { text: [member.level ? L(`level_${member.level}`) : null, member.online ? L('ui_online_now') : member.lastActive ? ago(member.lastActive) : null, member.rating ? `${member.rating} ★` : null].filter(Boolean).join(' · ') }),
+                    el('span', { class: 'meter goal' }, el('span', { class: member.closed >= goal ? 'ok' : 'gold-fill', style: `width: ${goal ? Math.min(100, Math.round((member.closed / goal) * 100)) : 0}%` }))),
+                el('span', { class: 'team-nums' }, el('strong', { text: String(member.closed) }), el('small', { text: L('ui_of_goal_short', goal) })),
             )) : el('div', { class: 'list-empty', text: L('ui_no_staff_activity') })),
         ),
         el('div', { class: 'split-detail' }, selected ? await memberPage(selected) : el('div', { class: 'empty', text: L('ui_no_staff_activity') })),
+    );
+}
+
+// Admins set how many reports staff should close per day, week and month
+function goalsEditor(goals) {
+    const inputs = {};
+    const field = (key) => {
+        inputs[key] = el('input', { class: 'field', type: 'number', min: '1', max: '10000', value: String(goals[key]), id: `goal-${key}`, 'aria-label': L(`ui_goal_${key}`) });
+        return el('label', { class: 'goal-field', for: `goal-${key}` }, el('small', { text: L(`ui_goal_${key}`) }), inputs[key]);
+    };
+
+    const save = async () => {
+        const values = Object.fromEntries(Object.entries(inputs).map(([key, input]) => [key, Number(input.value)]));
+        if (await run('setGoals', values, L('ui_goals_saved'))) {
+            editingGoals = false;
+            go('team');
+        }
+    };
+
+    return el('div', { class: 'card form goals' },
+        el('strong', { text: L('ui_goals_title') }),
+        el('small', { class: 'muted', text: L('ui_goals_help') }),
+        el('div', { class: 'goal-fields' }, field('today'), field('week'), field('month')),
+        el('div', { class: 'editor-buttons' },
+            el('button', { class: 'kit-btn', text: L('ui_cancel'), onclick: () => {
+                editingGoals = false;
+                go('team');
+            } }),
+            el('span', { class: 'spacer' }),
+            el('button', { class: 'kit-btn accent', text: L('ui_save'), onclick: save })),
     );
 }
 
@@ -77,7 +115,7 @@ async function memberPage(license) {
                 member.level ? el('div', { class: 'pills' }, pill(L(`level_${member.level}`), 'accent')) : null),
         ),
         el('div', { class: 'tiles' },
-            tile('check', 'green', L('ui_closed'), String(member.closed), L(`ui_period_${data.period}`)),
+            tile('check', 'green', L('ui_closed'), String(member.closed), `${L(`ui_period_${data.period}`)} · ${L('ui_of_goal', data.goal)}`),
             tile('star', 'gold', L('ui_rating'), member.rating ? `${member.rating} ★` : '—', L('ui_ratings_count', member.ratings)),
             tile('clock', 'blue', L('ui_first_reply'), duration(member.response), L('ui_average')),
             tile('log', 'grey', L('ui_actions'), String(member.actions), L('ui_sanctions_n', member.sanctions)),

@@ -293,5 +293,16 @@
     "label_godmode": "Godmode",
     "label_names": "Names",
     "label_blips": "Blips",
-    "label_spawnVehicle": "Spawn vehicle"
+    "label_spawnVehicle": "Spawn vehicle",
+    "ui_goals": "Goals",
+    "ui_goals_title": "Report goals",
+    "ui_goals_help": "How many reports each staff member should close. Used for the ring on the Dashboard and the progress in this list.",
+    "ui_goal_today": "Per day",
+    "ui_goal_week": "Per week",
+    "ui_goal_month": "Per month",
+    "ui_save": "Save",
+    "ui_goals_saved": "Goals saved",
+    "ui_of_goal_short": "of %s",
+    "action_setGoals": "set the report goals",
+    "label_setGoals": "Set goals"
 }
