@@ -1,0 +1,137 @@
+/* Notes: what the kit (city_phone/web/kit/kit.css) doesn't already cover */
+
+:root {
+    --note-accent: #ffcc00;
+}
+
+.notes-page {
+    bottom: 76px;
+}
+
+.note {
+    min-height: 62px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.note__main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.note__title {
+    font-weight: 600;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.note__sub {
+    display: flex;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--text-2);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.note__date {
+    flex: none;
+    color: var(--text);
+    opacity: 0.8;
+}
+
+.note__pin {
+    color: var(--note-accent);
+}
+
+.note__pin .k-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 76px;
+    padding: 0 18px 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bar);
+    border-top: 0.5px solid var(--separator);
+    font-size: 12px;
+    color: var(--text-2);
+}
+
+.compose {
+    position: absolute;
+    right: 18px;
+    top: 10px;
+    color: var(--note-accent);
+}
+
+.compose .k-icon {
+    width: 26px;
+    height: 26px;
+}
+
+.editor {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    padding: 54px 18px 30px;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.editor--open {
+    transform: translateX(0);
+}
+
+.editor .k-link {
+    color: var(--note-accent);
+}
+
+.editor .k-link--danger {
+    color: var(--red);
+}
+
+.editor__actions {
+    display: flex;
+    gap: 16px;
+}
+
+.editor__title {
+    margin: 8px 0;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.editor__body {
+    flex: 1;
+    width: 100%;
+    resize: none;
+    border: none;
+    outline: none;
+    background: none;
+    color: var(--text);
+    font: inherit;
+    font-size: 16px;
+    line-height: 1.45;
+    user-select: text;
+}
+
+.editor__title::placeholder,
+.editor__body::placeholder {
+    color: var(--text-3);
+}

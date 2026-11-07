@@ -64,6 +64,12 @@ RegisterNUICallback('notificationDismissed', function(data, cb)
     cb(true)
 end)
 
+---Plays (or stops) the alarm sound on this player's phone only; it rings even in silent and Do Not Disturb
+exports('SetAlarmSound', function(on)
+    local current = settings()
+    SendNUIMessage({ action = 'alarm', on = on == true, tone = current.ringtone })
+end)
+
 ---Shows (or updates) a live activity in the dynamic island; nil data removes it
 ---@param id string
 ---@param data? { icon?: string, text: string, detail?: string, color?: string }
