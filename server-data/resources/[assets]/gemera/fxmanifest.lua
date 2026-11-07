@@ -21,7 +21,10 @@ shared_scripts {
     '@qbx_core/modules/lib.lua',
 }
 
-client_script 'names.lua'
+client_scripts {
+    'names.lua',
+    'client.lua',
+}
 
 server_script 'server.lua'
 
