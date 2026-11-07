@@ -138,7 +138,7 @@ for index, coords in ipairs(Config.Armory) do
     zone(coords, { {
         name = 'city_hospital:armory', label = locale('target_armory'), icon = 'fas fa-briefcase-medical',
         canInteract = onDuty,
-        onSelect = function() exports.ox_inventory:openInventory('shop', { type = 'CityEmsArmory', id = index }) end,
+        onSelect = function() exports.city_inventory:openInventory('shop', { type = 'CityEmsArmory', id = index }) end,
     } })
 end
 
@@ -146,7 +146,7 @@ for _, coords in ipairs(Config.Lockers) do
     zone(coords, { {
         name = 'city_hospital:locker', label = locale('target_locker'), icon = 'fas fa-box-archive',
         canInteract = isEms,
-        onSelect = function() exports.ox_inventory:openInventory('stash', 'city_ems_locker') end,
+        onSelect = function() exports.city_inventory:openInventory('stash', 'city_ems_locker') end,
     } })
 end
 
