@@ -2,6 +2,7 @@
 import {
     state, call, t, h, button, icon, input, avatar, toast, openSheet, closeSheet, navBar, backButton, formatNumber,
 } from './lib.js';
+import { serviceRows } from './services.js';
 import { dial } from './tabs.js';
 
 let refresh = () => {};
@@ -137,6 +138,7 @@ export function contacts(render, search) {
             h('span', 'k-item__main', null, h('span', 'k-item__title', t('contacts.myCard')), h('span', 'k-item__subtitle', formatNumber(state.myNumber))),
             h('span', 'k-link', null, icon('share')),
         ),
+        serviceRows(),
         rows.length ? h('div', 'k-list', null, rows) : h('div', 'k-empty', null, icon('person'), h('span', '', t('contacts.empty'))),
     ];
 }

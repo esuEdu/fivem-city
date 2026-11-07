@@ -8,7 +8,7 @@ local function settings()
     return exports[cache.resource]:GetSettings() or {}
 end
 
----@param data { app?: string, title: string, text?: string, icon?: string, action?: { event: string, data: any }, force?: boolean }
+---@param data { app?: string, title: string, text?: string, icon?: string, action?: { event: string, data: any, label?: string }, force?: boolean }
 -- force: show the banner even in Do Not Disturb (an incoming call)
 local function notify(data)
     if type(data) ~= 'table' or type(data.title) ~= 'string' then return end
@@ -30,6 +30,7 @@ local function notify(data)
             text = data.text,
             icon = data.icon,
             hasAction = actions[nextId] ~= nil,
+            actionLabel = actions[nextId] and type(data.action.label) == 'string' and data.action.label:sub(1, 20) or nil,
         },
         quiet = current.dnd == true and data.force ~= true,
     })
