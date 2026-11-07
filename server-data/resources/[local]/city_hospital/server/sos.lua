@@ -148,7 +148,7 @@ RegisterNetEvent('hospital:server:emergencyAlert', function()
     create(src, 'emergency', locale('call_emergency', nameOf(src)))
 end)
 
--- qbx_police's "officer down" alert; the text comes from the client, so only the name is used
+-- city_police's panic button ("officer down"): EMS get it too
 RegisterNetEvent('hospital:server:ambulanceAlert', function()
     local src = source
     local player = exports.qbx_core:GetPlayer(src)

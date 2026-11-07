@@ -41,7 +41,7 @@ The **Staff** app on the iFruit tablet, and the staff commands around it. It rep
 - Spectate: the staff member joins the target's routing bucket, hides under them and follows every second so the target stays streamed in; Backspace stops and puts them back (place and bucket).
 - Noclip, invisible, godmode, names and blips run on the staff member's client after the server says yes and logs it. Blips: the server sends every player's position every `Config.BlipSeconds` to staff with blips on, and stops when nobody has them on.
 - Open inventory closes the tablet and opens city_inventory's player search; city_inventory checks `Config.SearchStaffAce` (`mod`) again.
-- Cuff uses qbx_police's own cuff event; clothing opens illenium-appearance's menu on the target.
+- Cuff uses city_police's `SetCuffed` export; clothing opens illenium-appearance's menu on the target.
 
 ## txAdmin
 

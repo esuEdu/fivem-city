@@ -185,10 +185,10 @@ end)
 staff.register('cuff', function(src, data)
     local target, reason = staff.target(src, data, { notSelf = true, outrank = true })
     if not target then return false, reason end
-    if GetResourceState('qbx_police') ~= 'started' then return false, 'unavailable' end
+    if GetResourceState('city_police') ~= 'started' then return false, 'unavailable' end
 
-    -- qbx_police's own handler cuffs or uncuffs, whichever the player isn't
-    TriggerClientEvent('police:client:GetCuffed', target, src, false)
+    -- Cuffs or uncuffs, whichever the player isn't
+    exports.city_police:SetCuffed(target)
     staff.log(src, 'cuff', target)
 
     return true
