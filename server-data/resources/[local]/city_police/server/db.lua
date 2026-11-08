@@ -65,6 +65,23 @@ local TABLES = {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ]],
     [[
+        CREATE TABLE IF NOT EXISTS `city_police_bolos` (
+            `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            `kind` VARCHAR(10) NOT NULL,
+            `title` VARCHAR(100) NOT NULL,
+            `description` TEXT NOT NULL,
+            `plate` VARCHAR(8) NULL,
+            `status` VARCHAR(10) NOT NULL DEFAULT 'active',
+            `created_by` VARCHAR(100) NOT NULL,
+            `created` INT UNSIGNED NOT NULL,
+            `expires` INT UNSIGNED NOT NULL,
+            `closed_by` VARCHAR(100) NULL,
+            `closed_at` INT UNSIGNED NULL,
+            PRIMARY KEY (`id`),
+            KEY `status` (`status`, `expires`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ]],
+    [[
         CREATE TABLE IF NOT EXISTS `city_police_warrants` (
             `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
             `citizenid` VARCHAR(50) NOT NULL,

@@ -60,6 +60,7 @@ local function setCuffed(target, on, soft, by)
     else
         cuffs[target] = nil
         stopEscort(target)
+        Player(target).state:set('zipTied', nil, true)
     end
 
     TriggerClientEvent('city_police:client:cuffed', target, on, soft == true, by or 0)

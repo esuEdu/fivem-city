@@ -23,6 +23,7 @@ export const ICONS = {
     weapons: 'M3 9h14l2 2h2v3h-6l-1 3h-3l-1-3H3zM7 9V7',
     reports: 'M6 3h9l4 4v14H6zM14 3v5h5M9 12h7M9 16h5',
     warrants: 'M12 3l9.5 17h-19zM12 10v4.5M12 17.5v.01',
+    bolos: 'M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
     charges: 'M12 3v18M5 7h14M7 7l-3 7a3.5 3.5 0 0 0 6 0zM17 7l-3 7a3.5 3.5 0 0 0 6 0zM8 21h8',
     impounds: 'M3 17h2l1-5h12l1 5h2M6 12l2-4h8l2 4M7 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM17 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z',
     licences: 'M4 6h16v12H4zM8 10h5M8 14h8M16 10h.01',
