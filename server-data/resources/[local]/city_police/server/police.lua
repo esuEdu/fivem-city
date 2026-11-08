@@ -59,6 +59,17 @@ function police.name(src)
     return player and police.fullName(player) or GetPlayerName(src) or '?'
 end
 
+---Cuffed, down or in last stand: a suspect who can't walk away.
+---@param src integer
+---@return boolean
+function police.restrained(src)
+    local player = exports.qbx_core:GetPlayer(src)
+    local data = player and player.PlayerData.metadata
+    if not data then return false end
+
+    return data.ishandcuffed == true or data.isdead == true or data.inlaststand == true
+end
+
 ---@param src integer
 ---@return string?
 function police.citizenid(src)

@@ -129,6 +129,7 @@
     "error_no_cuffs": "You need handcuffs",
     "error_in_vehicle": "They're in a vehicle",
     "error_not_restrained": "They need to be cuffed or down",
+    "error_not_at_station": "Book arrests at a police station or the prison",
     "error_escorted": "Someone else is escorting them",
     "error_no_vehicle": "No vehicle nearby",
     "error_vehicle_out": "You already have a vehicle out",

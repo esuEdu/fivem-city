@@ -31,6 +31,18 @@ local function bill(src, target, totals, charges)
     return exports.city_bank:CreateBill(target, totals.fine, label, issuer)
 end
 
+---@param src integer officer
+---@return boolean
+local function atBookingPlace(src)
+    if #settings.bookingPlaces == 0 then return true end
+
+    for _, place in ipairs(settings.bookingPlaces) do
+        if police.near(src, place.coords, place.radius) then return true end
+    end
+
+    return false
+end
+
 ---Takes the driver licence away once the points reach the limit.
 ---@param target integer
 ---@param citizenid string
@@ -63,6 +75,8 @@ mdt.register('charge', function(src, data)
 
     if kind == 'arrest' then
         if not police.reach(src, targetSrc, settings.chargeRange) then return false, 'too_far' end
+        if not police.restrained(targetSrc) then return false, 'not_restrained' end
+        if not atBookingPlace(src) then return false, 'not_at_station' end
 
         photo = photoOf(data.photo)
         fingerprint = target.PlayerData.metadata.fingerprint
