@@ -49,7 +49,6 @@ For each one, replacing `exports.ox_inventory` with `exports.city_inventory` (an
 | **qbx_houserobbery** | `Items` | 1 |
 | **qbx_idcard** | `AddItem`, `Search`, `GetSlot`, `SetMetadata` (server), `displayMetadata` (client) | 3 |
 | **qbx_jewelery** | `Items`, `Search`, `CanCarryItem`, `AddItem`, `CustomDrop` | 1 |
-| **qbx_mechanicjob** | `Items` ×9, `RegisterStash`, `Search`, `RemoveItem`, `openInventory` | 2 |
 | **qbx_pawnshop** | `Items` ×4, `GetPlayerItems` ×2 | 2 |
 | **qbx_properties** | `RegisterStash`, `registerHook`, `forceOpenInventory` | 1 |
 | **qbx_recyclejob** | `CanCarryItem`, `AddItem` | 1 |
@@ -86,7 +85,7 @@ Renaming the events to `city_inventory:*` is optional. If it's done, change the 
 
 1. **Rename in one place, not 24 patches.** Add a step to `scripts/install-resources.sh`, after the downloads and before the patches, that replaces `exports.ox_inventory` and `exports['ox_inventory']` with `exports.city_inventory` in every vendored `.lua` file. The rename then survives updates with no per-script patch, and group B is done.
 2. **Patch group A** (ox_fuel, ox_target, qbx_core; qbx_police is gone) with the `patch-script` skill. Rebuild existing patches with `bash scripts/make-patch.sh`, never a bare `git diff`.
-3. **Test in game** with the stand-in still running: fuel and petrol can, a target option that needs an item, police locker/trash/search/rob, radio, an ID card, a house stash, prison in and out, a bank robbery, drug corner selling, a jewellery store, the mechanic stash.
+3. **Test in game** with the stand-in still running: fuel and petrol can, a target option that needs an item, police locker/trash/search/rob, radio, an ID card, a house stash, prison in and out, a bank robbery, drug corner selling, a jewellery store.
 4. **Remove the stand-in:** delete `server-data/resources/[local]/ox_inventory`, remove `ensure ox_inventory` (and its comment) from `server.cfg`, and run the grep above; only comments and READMEs should be left.
 5. **Clean up city_inventory:** drop the stand-in case in `server/exports.lua` (`resource == 'ox_inventory'` and the `invoker` argument of `registerHook` / `removeHooks`).
 6. **Update the docs:** `CLAUDE.md` (the ox_inventory bullet and the `ensure` order), `docs/scripts/issues.md` and `README.md`, the `replace-script` skill (it uses the stand-in as its worked example), and `docs/standards/code-style.md` / `security.md` (they say "ox_inventory exports").

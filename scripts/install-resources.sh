@@ -45,12 +45,12 @@ REPOS=(
 QBX_REPOS=(
   qbx_vehicles qbx_scoreboard qbx_vehiclesales qbx_houserobbery
   qbx_hud qbx_seatbelt qbx_management qbx_weed qbx_lapraces
-  qbx_medical qbx_radialmenu qbx_properties qbx_vehiclekeys qbx_mechanicjob
+  qbx_medical qbx_radialmenu qbx_properties qbx_vehiclekeys
   qbx_vineyard qbx_scrapyard qbx_towjob qbx_streetraces qbx_storerobbery qbx_spawn
   qbx_smallresources qbx_recyclejob qbx_diving qbx_divegear qbx_cityhall qbx_truckrobbery
   qbx_pawnshop qbx_taxijob qbx_busjob qbx_newsjob qbx_jewelery qbx_bankrobbery qbx_truckerjob
   qbx_garbagejob qbx_drugs qbx_idcard qbx_binoculars qbx_carwash qbx_fireworks qbx_density
-  qbx_customs qbx_chat_theme
+  qbx_chat_theme
 )
 
 install_release() {
