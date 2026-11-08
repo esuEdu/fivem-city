@@ -6,7 +6,8 @@ local records = require 'server.records'
 local db = require 'server.db'
 local settings = require 'server.config'
 
-local KINDS = { driver = true, weapon = true }
+-- explosives: city_mining sells dynamite only to characters an officer granted it to
+local KINDS = { driver = true, weapon = true, explosives = true }
 
 mdt.register('licences', function(_, data)
     local citizenid = mdt.citizenid(data.citizenid)
@@ -32,7 +33,7 @@ mdt.register('setLicence', function(src, data)
     local kind = data.licence
 
     if not citizenid or not KINDS[kind] or type(data.on) ~= 'boolean' then return false, 'invalid' end
-    if kind == 'weapon' and not police.can(src, 'weaponLicence') then return false, 'no_permission' end
+    if (kind == 'weapon' or kind == 'explosives') and not police.can(src, 'weaponLicence') then return false, 'no_permission' end
 
     local person = mdt.person(citizenid)
     if not person then return false, 'not_found' end
