@@ -78,7 +78,10 @@ local function run(action, args)
     if reason then return { ok = false, reason = reason } end
 
     local ok, result = lib.callback.await(('city_police:mdt:%s'):format(action), false, args)
-    if not ok then return { ok = false, reason = result or 'failed' } end
+    if not ok then
+        lib.print.warn(('MDT %s refused: %s'):format(action, tostring(result)))
+        return { ok = false, reason = result or 'failed' }
+    end
 
     finish(action, result)
 

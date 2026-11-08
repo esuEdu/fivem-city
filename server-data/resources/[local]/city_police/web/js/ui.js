@@ -109,6 +109,7 @@ export async function run(action, args = {}, done) {
     const response = await window.CityOS.send('run', { action, args });
 
     if (!response || !response.ok) {
+        console.warn(`MDT ${action} failed: ${response ? response.reason : 'no reply from the client'}`);
         toast(L(`error_${(response && response.reason) || 'failed'}`), 'bad');
         return null;
     }

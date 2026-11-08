@@ -59,6 +59,7 @@ export function can(action) {
 }
 
 let drawing = 0;
+let started = false;
 
 // Each tab draws into the content area; `args` opens it on one item (a person, a call from a notification)
 export async function go(tab, args) {
@@ -137,10 +138,13 @@ async function start() {
     document.getElementById('status-card').addEventListener('click', () => pickStatus());
     setMyStatus(app.me.status);
 
+    started = true;
     go('dashboard');
 }
 
 window.CityOS.on('message', (message) => {
+    // the open tab needs app.me and the labels from the first call
+    if (!started) return;
     if (!message || message.type !== 'refresh' || !message.what) return;
 
     for (const [what, tabs] of Object.entries(LIVE)) {

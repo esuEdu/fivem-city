@@ -55,7 +55,7 @@ export async function renderDashboard() {
     );
 
     return el('div', { class: 'stack' },
-        heading(L('ui_good_shift', app.me.name.split(' ')[0])),
+        heading(L('ui_good_shift', (app.me.name || '').split(' ')[0])),
         el('div', { class: 'tiles' },
             tile('dispatch', 'red', L('ui_open_calls'), data.openCalls, null, can('dispatch') ? 'dispatch' : null),
             tile('units', 'blue', L('ui_units_on_duty'), data.units, null, 'units'),
