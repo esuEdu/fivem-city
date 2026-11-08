@@ -585,7 +585,7 @@ index 37bf435..bc4bd08 100644
      startupErrors, errorMessage = true, 'inventory:framework must be set to "qbx" in order to use qbx_core'
  elseif GetConvarInt('onesync_enableInfinity', 0) ~= 1 then
 diff --git a/server-data/resources/[qbx]/qbx_core/server/player.lua b/server-data/resources/[qbx]/qbx_core/server/player.lua
-index 9fb3dbc..44caa9f 100644
+index 9fb3dbc..f266bfa 100644
 --- a/server-data/resources/[qbx]/qbx_core/server/player.lua
 +++ b/server-data/resources/[qbx]/qbx_core/server/player.lua
 @@ -16,6 +16,30 @@ for i = 1, #accounts do
@@ -619,6 +619,15 @@ index 9fb3dbc..44caa9f 100644
  -- Numeric metadata mirrored from client statebags. Values are validated and
  -- clamped before being persisted, so a spoofed statebag can't corrupt or crash
  -- these stats. Add new bounded stats here rather than special-casing them below.
+@@ -712,7 +736,7 @@ function CheckPlayerData(source, playerData)
+     end
+ 
+     playerData.job = {
+-        name = playerData.job?.name or 'unemployed',
++        name = GetJob(playerData.job?.name) and playerData.job.name or 'unemployed', -- fivem-city: a removed job falls back to unemployed
+         label = job.label,
+         payment = job.grades[jobGrade].payment or 0,
+         type = job.type,
 @@ -910,7 +934,7 @@ function CreatePlayer(playerData, Offline)
      ---@return boolean success
      function self.Functions.AddItem(item, amount, slot, metadata)
@@ -807,7 +816,7 @@ index 9fb3dbc..44caa9f 100644
  
      if player.Offline then
 diff --git a/server-data/resources/[qbx]/qbx_core/shared/jobs.lua b/server-data/resources/[qbx]/qbx_core/shared/jobs.lua
-index d995d19..0134138 100644
+index d995d19..744b03a 100644
 --- a/server-data/resources/[qbx]/qbx_core/shared/jobs.lua
 +++ b/server-data/resources/[qbx]/qbx_core/shared/jobs.lua
 @@ -15,67 +15,7 @@ return {
@@ -879,6 +888,228 @@ index d995d19..0134138 100644
          offDutyPay = false,
          grades = {
              [0] = {
+@@ -132,221 +72,4 @@ return {
+             },
+         },
+     },
+-    ['realestate'] = {
+-        label = 'Real Estate',
+-        type = 'realestate',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Recruit',
+-                payment = 50
+-            },
+-            [1] = {
+-                name = 'House Sales',
+-                payment = 75
+-            },
+-            [2] = {
+-                name = 'Business Sales',
+-                payment = 100
+-            },
+-            [3] = {
+-                name = 'Broker',
+-                payment = 125
+-            },
+-            [4] = {
+-                name = 'Manager',
+-                isboss = true,
+-                bankAuth = true,
+-                payment = 150
+-            },
+-        },
+-    },
+-    ['taxi'] = {
+-        label = 'Taxi',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Recruit',
+-                payment = 50
+-            },
+-            [1] = {
+-                name = 'Driver',
+-                payment = 75
+-            },
+-            [2] = {
+-                name = 'Event Driver',
+-                payment = 100
+-            },
+-            [3] = {
+-                name = 'Sales',
+-                payment = 125
+-            },
+-            [4] = {
+-                name = 'Manager',
+-                isboss = true,
+-                bankAuth = true,
+-                payment = 150
+-            },
+-        },
+-    },
+-    ['bus'] = {
+-        label = 'Bus',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Driver',
+-                payment = 50
+-            },
+-        },
+-    },
+-    ['cardealer'] = {
+-        label = 'Vehicle Dealer',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Recruit',
+-                payment = 50
+-            },
+-            [1] = {
+-                name = 'Showroom Sales',
+-                payment = 75
+-            },
+-            [2] = {
+-                name = 'Business Sales',
+-                payment = 100
+-            },
+-            [3] = {
+-                name = 'Finance',
+-                payment = 125
+-            },
+-            [4] = {
+-                name = 'Manager',
+-                isboss = true,
+-                bankAuth = true,
+-                payment = 150
+-            },
+-        },
+-    },
+-    ['mechanic'] = {
+-        label = 'Mechanic',
+-        type = 'mechanic',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Recruit',
+-                payment = 50
+-            },
+-            [1] = {
+-                name = 'Novice',
+-                payment = 75
+-            },
+-            [2] = {
+-                name = 'Experienced',
+-                payment = 100
+-            },
+-            [3] = {
+-                name = 'Advanced',
+-                payment = 125
+-            },
+-            [4] = {
+-                name = 'Manager',
+-                isboss = true,
+-                bankAuth = true,
+-                payment = 150
+-            },
+-        },
+-    },
+-    ['judge'] = {
+-        label = 'Honorary',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Judge',
+-                payment = 100
+-            },
+-        },
+-    },
+-    ['lawyer'] = {
+-        label = 'Law Firm',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Associate',
+-                payment = 50
+-            },
+-        },
+-    },
+-    ['reporter'] = {
+-        label = 'Reporter',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Journalist',
+-                payment = 50
+-            },
+-        },
+-    },
+-    ['trucker'] = {
+-        label = 'Trucker',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Driver',
+-                payment = 50
+-            },
+-        },
+-    },
+-    ['tow'] = {
+-        label = 'Towing',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Driver',
+-                payment = 50
+-            },
+-        },
+-    },
+-    ['garbage'] = {
+-        label = 'Garbage',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Collector',
+-                payment = 50
+-            },
+-        },
+-    },
+-    ['vineyard'] = {
+-        label = 'Vineyard',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Picker',
+-                payment = 50
+-            },
+-        },
+-    },
+-    ['hotdog'] = {
+-        label = 'Hotdog',
+-        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Sales',
+-                payment = 50
+-            },
+-        },
+-    },
+ }
 diff --git a/server-data/resources/[qbx]/qbx_core/shared/vehicles.lua b/server-data/resources/[qbx]/qbx_core/shared/vehicles.lua
 index 996898b..c9778fd 100644
 --- a/server-data/resources/[qbx]/qbx_core/shared/vehicles.lua

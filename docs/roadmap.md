@@ -55,7 +55,7 @@ The phone will be **our own** (`city_phone`, built from zero to replace npwd; se
 
 Its screens (events, results, leaderboards, race creator) are City OS apps.
 
-Our own racing system, replacing `qbx_lapraces` and `qbx_streetraces`. Needs a design pass first (how each event type feels, rewards, rules).
+Our own racing system (qbx_lapraces and qbx_streetraces were removed). Needs a design pass first (how each event type feels, rewards, rules).
 
 - [ ] Event types: **circuit** and **sprint**
 - [ ] **Drift** events: points from angle × speed × combo, with a chain multiplier
@@ -69,7 +69,7 @@ Our own racing system, replacing `qbx_lapraces` and `qbx_streetraces`. Needs a d
 
 ## Phase 2: Car life
 
-- [ ] Dealership prices and classes; a ladder from starter cars to supercars
+- [ ] Dealership (our own; qbx_vehicleshop was removed): prices and classes, a ladder from starter cars to supercars
 - [ ] Tuning (qbx_customs) feeds into the car rating
 - [ ] Car meets
 - [ ] Street races are illegal (police alerts); hub races are legal

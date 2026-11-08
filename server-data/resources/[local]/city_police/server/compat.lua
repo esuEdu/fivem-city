@@ -25,7 +25,7 @@ local function alertFrom(text, src)
 end
 
 -- From a server script: TriggerEvent('police:server:policeAlert', text, camId, playerSource)
--- From a client (qbx_storerobbery, qbx_vehiclekeys): TriggerServerEvent('police:server:policeAlert', text)
+-- From a client (qbx_vehiclekeys): TriggerServerEvent('police:server:policeAlert', text)
 RegisterNetEvent('police:server:policeAlert', function(text, _, playerSource)
     local src = source
 

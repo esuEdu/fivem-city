@@ -17,12 +17,6 @@ return {
                     event = 'qb-trunk:client:GetIn'
                 },
                 {
-                    id = 'cornerselling',
-                    icon = 'cannabis',
-                    label = 'Corner Selling',
-                    event = 'qb-drugs:client:cornerselling'
-                },
-                {
                     id = 'interactions',
                     icon = 'exclamation-triangle',
                     label = 'Interaction',
@@ -334,48 +328,6 @@ return {
                 icon = 'bell',
                 label = 'Emergency Button',
                 serverEvent = 'hospital:server:emergencyAlert',
-            },
-        },
-        mechanic = {
-            {
-                id = 'towVehicle',
-                icon = 'truck-pickup',
-                label = 'Tow Vehicle',
-                event = 'qb-tow:client:TowVehicle',
-            },
-        },
-        taxi = {
-            {
-                id = 'togglemeter',
-                icon = 'eye-slash',
-                label = 'Show/Hide Meter',
-                event = 'qb-taxi:client:toggleMeter',
-            },
-            {
-                id = 'togglemouse',
-                icon = 'hourglass-start',
-                label = 'Start/Stop Meter',
-                event = 'qb-taxi:client:enableMeter',
-            },
-            {
-                id = 'npcMission',
-                icon = 'taxi',
-                label = 'NPC Mission',
-                event = 'qb-taxi:client:DoTaxiNpc',
-            },
-        },
-        tow = {
-            {
-                id = 'togglenpc',
-                icon = 'toggle-on',
-                label = 'Toggle NPC',
-                event = 'jobs:client:ToggleNpc',
-            },
-            {
-                id = 'towVehicle',
-                icon = 'truck-pickup',
-                label = 'Tow Vehicle',
-                event = 'qb-tow:client:TowVehicle',
             },
         },
     },

@@ -4,9 +4,7 @@ local MAIL_COOLDOWN_MS = 1000
 local lastMail = {}
 
 ---Mail buttons fire a client event on the player. Only these known ones are kept.
-local MAIL_ACTIONS = {
-    ['qb-drugs:client:setLocation'] = true,
-}
+local MAIL_ACTIONS = {}
 
 ---@param src integer
 ---@param mail unknown
@@ -40,7 +38,7 @@ RegisterNetEvent('qb-phone:server:sendNewMail', function(mail)
     sendMail(src, mail)
 end)
 
--- Server-only (qbx_vehiclesales): reaches the player if they are online; there is no mailbox to keep it in yet
+-- Server-only: reaches the player if they are online; there is no mailbox to keep it in yet
 AddEventHandler('qb-phone:server:sendNewMailToOffline', function(citizenid, mail)
     if type(citizenid) ~= 'string' then return end
 

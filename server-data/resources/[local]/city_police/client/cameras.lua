@@ -1,5 +1,5 @@
 -- Security cameras, opened from the MDT: a scripted camera at the spot, ← / → change camera, A / D turn the ones that
--- turn, Backspace leaves. Robberies cut cameras (qbx_bankrobbery fires police:client:SetCamera and friends).
+-- turn, Backspace leaves. Robbery scripts can cut cameras with qbx_police's police:client:SetCamera and friends.
 
 local job = require 'client.job'
 local theme = require '@city_ui.theme'
