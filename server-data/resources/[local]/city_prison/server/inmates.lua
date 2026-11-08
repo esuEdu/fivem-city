@@ -149,7 +149,7 @@ function inmates.reduce(src, months)
     db.save(row)
     sendTime(src, row)
 
-    if row.months == 0 then util.notify(src, 'notify_time_up', 'success') end
+    if row.months == 0 then inmates.release(src) end
 
     return taken
 end
@@ -172,13 +172,19 @@ function inmates.setTime(citizenid, months, actor)
 
     if src then
         sendTime(src, row)
-        util.notify(src, row.months == 0 and 'notify_released_by_police' or 'notify_time_changed', 'inform', row.months)
+
+        if row.months == 0 then
+            util.notify(src, 'notify_released_by_police', 'inform')
+            inmates.release(src)
+        else
+            util.notify(src, 'notify_time_changed', 'inform', row.months)
+        end
     end
 
     return true
 end
 
----Lets an inmate out at the release desk (time served). Gives belongings back.
+---Lets an inmate out once the time is served (automatically, or at the desk). Gives belongings back.
 ---@param src integer
 ---@return boolean ok
 ---@return string? reason
@@ -207,16 +213,11 @@ function inmates.escape(src)
     local row = inmates.serving(src)
     if not row then return end
 
+    -- Time already served: walking out is not an escape, just a release
+    if row.months == 0 then return inmates.release(src) end
+
     takeOut(src)
     TriggerClientEvent('city_prison:client:escaped', src)
-
-    -- Time already served: walking out without the desk is not an escape, the belongings wait in the locker
-    if row.months == 0 then
-        rows[row.citizenid] = nil
-        db.delete(row.citizenid)
-        db.log(row.citizenid, row.name, 'released', row.original)
-        return
-    end
 
     row.owed = math.min(math.ceil(row.months * settings.escapeMultiplier), settings.maxMonths)
     row.months = 0
@@ -263,14 +264,22 @@ end
 -- Logging in while serving: straight back inside
 function inmates.loaded(src)
     local row = inmates.serving(src)
-    if row then putInside(src, row, true) end
+    if not row then return end
+
+    if row.months == 0 then return inmates.release(src) end
+    putInside(src, row, true)
 end
 
 -- Resource restart: whoever is online and serving carries on where they are (the escape check catches the rest)
 function inmates.resume()
     for src in pairs(exports.qbx_core:GetQBPlayers()) do
         local row = inmates.serving(src)
-        if row then putInside(src, row, false) end
+
+        if row and row.months == 0 then
+            inmates.release(src)
+        elseif row then
+            putInside(src, row, false)
+        end
     end
 end
 
@@ -281,6 +290,7 @@ end
 -- One month per minute for inmates online and inside
 function inmates.tick()
     local changed = {}
+    local done = {}
 
     for src in pairs(inside) do
         local row = inmates.serving(src)
@@ -290,11 +300,14 @@ function inmates.tick()
             changed[#changed + 1] = row
             sendTime(src, row)
 
-            if row.months == 0 then util.notify(src, 'notify_time_up', 'success') end
+            if row.months == 0 then done[#done + 1] = src end
         end
     end
 
     db.saveMonths(changed)
+
+    -- Time served: straight out with the belongings, no trip to the desk
+    for _, src in ipairs(done) do inmates.release(src) end
 end
 
 -- Anyone serving who is outside the circle (after the grace period) has escaped
