@@ -57,6 +57,15 @@ Config.Garages = {
     shoreparking = { label = 'Shore Parking', kind = 'car', coords = vec4(1726.9, 3710.38, 34.26, 22.54), spawns = { vec4(1728.65, 3714.85, 34.18, 21.26) } },
     haanparking = { label = 'Bell Farms Parking', kind = 'car', coords = vec4(78.34, 6418.74, 31.28, 0.0), spawns = { vec4(70.71, 6425.16, 30.92, 68.5) } },
     dumbogarage = { label = 'Dumbo Private Parking', kind = 'car', coords = vec4(157.26, -3240.0, 7.0, 0.0), spawns = { vec4(165.32, -3236.1, 5.93, 268.5) } },
+    -- Premium Deluxe Motorsport lot: cars bought at city_dealership are delivered here
+    pdm = {
+        label = 'PDM Parking', kind = 'car', coords = vec4(-35.6, -1112.4, 26.44, 70.0),
+        blip = { name = 'PDM Parking', sprite = 357, color = 3 },
+        spawns = {
+            vec4(-61.35, -1110.31, 25.86, 71.01), vec4(-59.61, -1104.74, 25.85, 70.13), vec4(-52.96, -1113.49, 25.87, 71.53),
+            vec4(-52.34, -1107.93, 25.87, 71.63), vec4(-44.27, -1116.36, 25.87, 71.7), vec4(-41.75, -1111.49, 25.87, 71.5),
+        },
+    },
     pillboxgarage = { label = 'Pillbox Garage Parking', kind = 'car', coords = vec4(218.66, -804.08, 30.75, 65.69), spawns = { vec4(229.33, -805.01, 30.54, 156.79) } },
 
     intairport = { label = 'Airport Hangar', kind = 'air', coords = vec4(-1025.34, -3017.0, 13.95, 331.99), spawns = { vec4(-979.2, -2995.51, 13.95, 52.19) } },

@@ -8,7 +8,7 @@ local spectate = require 'client.spectate'
 local ACTIONS = {
     app = true, dashboard = true, ratings = true, team = true, teamMember = true, setGoals = true, players = true, player = true, log = true,
     ['goto'] = true, bring = true, heal = true, revive = true, freeze = true, kill = true, cuff = true,
-    clothing = true, bucket = true, setJob = true, setGang = true, setStat = true, inventory = true, spectate = true,
+    clothing = true, bucket = true, setJob = true, setGang = true, setStat = true, giveMoney = true, inventory = true, spectate = true,
     warn = true, kick = true, ban = true, bans = true, unban = true,
     reports = true, claimReport = true, replyReport = true, closeReport = true,
     noclip = true, invisible = true, godmode = true, names = true, blips = true,

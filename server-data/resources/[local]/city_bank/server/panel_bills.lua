@@ -136,6 +136,30 @@ exports('CreateBill', function(targetSrc, amount, label, issuerSrc)
     }) ~= nil
 end)
 
+---Bill for a character who may be offline (installments a business schedules). Only resources in settings.billers.
+---The issuer hears it was paid from the city_bank:server:billPaid event, matching the ref it gave.
+---@param citizenid string
+---@param amount integer
+---@param label string
+---@param dueSeconds integer how long until it is overdue
+---@param ref string
+---@return integer? billId
+exports('IssueBill', function(citizenid, amount, label, dueSeconds, ref)
+    local resource = GetInvokingResource()
+    local biller = settings.billers[resource]
+    local kind = type(biller) == 'table' and biller.kind or biller
+
+    if not kind or type(citizenid) ~= 'string' or type(label) ~= 'string' or type(ref) ~= 'string' then return end
+    if math.type(amount) ~= 'integer' or amount <= 0 or amount > settings.bills.maxAmount then return end
+    if math.type(dueSeconds) ~= 'integer' or dueSeconds <= 0 then return end
+
+    return bills.create({
+        citizenid = citizenid, kind = kind, label = label, issuer = resource, amount = amount,
+        due = os.time() + dueSeconds, ref = ref:sub(1, 32),
+        payees = type(biller) == 'table' and biller.job and { { job = biller.job, pct = 100 } } or payeesFor(kind),
+    })
+end)
+
 lib.addCommand('bill', {
     help = locale('command_bill'),
     params = {

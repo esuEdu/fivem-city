@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>city_dealership</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="app.js"></script>
+</head>
+<body>
+    <main id="shop" class="shop hidden">
+        <header class="shop__head">
+            <div class="shop__title">
+                <span id="kicker" class="shop__kicker"></span>
+                <h1 id="title"></h1>
+            </div>
+
+            <nav class="views">
+                <button id="view-catalog" class="views__tab is-active" data-view="catalog"></button>
+                <button id="view-finance" class="views__tab" data-view="finance"><span id="view-finance-label"></span><b id="finance-count" class="badge hidden"></b></button>
+            </nav>
+
+            <div class="wallet">
+                <div class="wallet__item"><span id="cash-label"></span><b id="cash"></b></div>
+                <div class="wallet__item"><span id="bank-label"></span><b id="bank"></b></div>
+            </div>
+
+            <button id="close" class="shop__close" aria-label="Close">&times;</button>
+        </header>
+
+        <section id="catalog" class="catalog">
+            <aside class="cats">
+                <ul id="cats" class="cats__list"></ul>
+            </aside>
+
+            <div class="browse">
+                <div class="browse__bar">
+                    <input id="search" class="input browse__search" type="text" autocomplete="off" spellcheck="false">
+                    <select id="sort" class="input browse__sort">
+                        <option value="price-asc" id="sort-price-asc"></option>
+                        <option value="price-desc" id="sort-price-desc"></option>
+                        <option value="name" id="sort-name"></option>
+                    </select>
+                    <span id="count" class="browse__count"></span>
+                </div>
+                <ul id="grid" class="grid"></ul>
+                <p id="empty" class="empty hidden"></p>
+            </div>
+
+            <section class="detail">
+                <p id="placeholder" class="empty"></p>
+
+                <div id="detail" class="detail__body hidden">
+                    <figure class="photo">
+                        <img id="photo" alt="">
+                        <svg id="photo-fallback" class="photo__fallback hidden" viewBox="0 0 64 32" aria-hidden="true">
+                            <path d="M6 22c0-3 1-5 4-6l6-6c2-2 4-3 7-3h14c3 0 5 1 7 3l6 6c4 1 8 2 8 6v3H6z" fill="currentColor"/>
+                            <circle cx="17" cy="25" r="5" fill="currentColor"/>
+                            <circle cx="47" cy="25" r="5" fill="currentColor"/>
+                        </svg>
+                    </figure>
+
+                    <div class="detail__name">
+                        <span id="d-brand" class="detail__brand"></span>
+                        <h2 id="d-name"></h2>
+                    </div>
+
+                    <div class="facts">
+                        <div class="fact"><span id="l-category"></span><b id="d-category"></b></div>
+                        <div class="fact"><span id="l-seats"></span><b id="d-seats"></b></div>
+                        <div class="fact"><span id="l-top"></span><b id="d-top"></b></div>
+                    </div>
+
+                    <div id="stats" class="stats"></div>
+
+                    <div class="price">
+                        <span id="l-price"></span>
+                        <b id="d-price"></b>
+                    </div>
+
+                    <button id="test" class="btn btn--ghost"><span id="test-label"></span><small id="test-hint"></small></button>
+
+                    <div class="pay">
+                        <div class="seg">
+                            <button id="plan-full" class="seg__btn is-active" data-plan="full"></button>
+                            <button id="plan-finance" class="seg__btn" data-plan="finance"></button>
+                        </div>
+
+                        <div class="seg seg--small">
+                            <button id="acc-bank" class="seg__btn is-active" data-account="bank"></button>
+                            <button id="acc-cash" class="seg__btn" data-account="cash"></button>
+                        </div>
+
+                        <div id="fin" class="fin hidden">
+                            <label class="fin__row">
+                                <span id="l-down"></span>
+                                <b id="down-value"></b>
+                            </label>
+                            <input id="down" class="range" type="range" step="5">
+
+                            <span id="l-installments" class="fin__label"></span>
+                            <div id="counts" class="chips"></div>
+
+                            <dl class="summary">
+                                <div><dt id="l-down2"></dt><dd id="s-down"></dd></div>
+                                <div><dt id="l-interest"></dt><dd id="s-interest"></dd></div>
+                                <div><dt id="l-inst"></dt><dd id="s-inst"></dd></div>
+                                <div><dt id="l-total"></dt><dd id="s-total"></dd></div>
+                            </dl>
+                            <p id="fin-note" class="note"></p>
+                        </div>
+
+                        <p id="garage-hint" class="note"></p>
+
+                        <div class="buy">
+                            <button id="cancel" class="btn btn--ghost hidden"></button>
+                            <button id="buy" class="btn btn--accent"></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <section id="finance" class="finance hidden">
+            <ul id="finance-list" class="finance__list"></ul>
+            <p id="finance-empty" class="empty hidden"></p>
+        </section>
+    </main>
+</body>
+</html>

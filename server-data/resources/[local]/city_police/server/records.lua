@@ -62,7 +62,8 @@ end
 function records.points(citizenid)
     local since = os.time() - settings.pointsDays * 86400
 
-    return MySQL.scalar.await('SELECT COALESCE(SUM(points), 0) FROM city_police_records WHERE citizenid = ? AND created >= ?', { citizenid, since }) or 0
+    -- SUM comes back from MySQL as a DECIMAL string
+    return tonumber(MySQL.scalar.await('SELECT COALESCE(SUM(points), 0) FROM city_police_records WHERE citizenid = ? AND created >= ?', { citizenid, since })) or 0
 end
 
 ---The last booking photo of a person, if any.

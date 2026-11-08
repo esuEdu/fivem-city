@@ -83,10 +83,11 @@ return {
 
     scheduled = { daily = DAY, weekly = 7 * DAY, biweekly = 14 * DAY, maxPerPlayer = 10 },
 
-    -- Server resources allowed to create bills with exports.city_bank:CreateBill: the bill kind, or { kind, job } to
-    -- pay the whole bill into that job's account
+    -- Server resources allowed to create bills with exports.city_bank:CreateBill (or IssueBill): the bill kind, or
+    -- { kind, job } to pay the whole bill into that job's account
     billers = {
         city_police = 'fine',
         city_hospital = { kind = 'service', job = 'ambulance' },
+        city_dealership = 'loan', -- financing installments (IssueBill)
     },
 }

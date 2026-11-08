@@ -66,3 +66,27 @@ staff.register('setStat', function(src, data)
 
     return true
 end, 'setStats')
+
+local MONEY_ACCOUNTS = { cash = true, bank = true }
+local REASON_LENGTH = { min = 3, max = 100 }
+
+-- Give money: cash or bank, with a reason. It goes through qbx_core into city_economy as 'staff-grant', which caps it
+-- per character per hour; the reason only goes to the staff log.
+staff.register('giveMoney', function(src, data)
+    local target, reason = staff.target(src, data)
+    if not target then return false, reason end
+
+    local account = data.account
+    local amount = type(data.amount) == 'number' and math.tointeger(data.amount)
+    if not MONEY_ACCOUNTS[account] or not amount or amount < 1 or amount > Config.MaxGiveMoney then return false, 'invalid' end
+
+    local why = type(data.reason) == 'string' and data.reason:gsub('%s+', ' '):match('^%s*(.-)%s*$') or ''
+    if #why < REASON_LENGTH.min then return false, 'no_reason' end
+    why = why:sub(1, REASON_LENGTH.max)
+
+    if not exports.qbx_core:AddMoney(target, account, amount, 'staff-grant') then return false, 'money_refused' end
+
+    staff.log(src, 'giveMoney', target, ('$%d %s: %s'):format(amount, account, why))
+
+    return true
+end)

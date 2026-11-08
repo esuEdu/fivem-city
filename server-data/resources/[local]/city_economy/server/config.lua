@@ -35,9 +35,20 @@ return {
             { reason = '^garage%-depot$', debit = true },
             { reason = '^garage%-refund$', credit = true, perHour = 50000 },
         },
+        -- Dealership: buying a car (in full or the down payment), paying a financing off, and the refund when the car
+        -- can't be registered
+        city_dealership = {
+            { reason = '^dealership%-buy$', debit = true },
+            { reason = '^dealership%-payoff$', debit = true },
+            { reason = '^dealership%-refund$', credit = true, perHour = 5000000 },
+        },
         -- Phone Market: the fee to publish or renew an ad
         city_phone_market = {
             { reason = '^market%-ad$', debit = true },
+        },
+        -- Staff app: Give money (admins, a reason is required and written to the staff log)
+        city_staff = {
+            { reason = '^staff%-grant$', credit = true, perHour = 1000000 },
         },
         ['illenium-appearance'] = {
             { reason = '^unknown$', debit = true },

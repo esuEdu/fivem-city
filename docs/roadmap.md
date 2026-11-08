@@ -69,7 +69,8 @@ Our own racing system (qbx_lapraces and qbx_streetraces were removed). Needs a d
 
 ## Phase 2: Car life
 
-- [ ] Dealership (our own; qbx_vehicleshop was removed): prices and classes, a ladder from starter cars to supercars
+- [x] Dealership: city_dealership replaces qbx_vehicleshop (catalogue computer with photos and stats, test drives, financing through bank bills)
+- [ ] Dealership prices and classes; a ladder from starter cars to supercars
 - [ ] Tuning (qbx_customs) feeds into the car rating
 - [ ] Car meets
 - [ ] Street races are illegal (police alerts); hub races are legal
