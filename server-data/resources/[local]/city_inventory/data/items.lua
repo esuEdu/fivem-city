@@ -1377,4 +1377,15 @@ return {
         weight = 20,
         description = 'Found in a fishing chest.',
     },
+
+    ['militech_tuning'] = {
+        label = 'Militech Tuning',
+        description = 'Military-grade tuning module. Use it from the driver seat of a stopped car to tune its handling.',
+        category = 'electronics',
+        weight = 900,
+        stack = false,
+        close = true,
+        consume = 0,
+        client = { image = 'tunerchip.png' },
+    },
 }
