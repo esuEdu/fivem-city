@@ -1388,4 +1388,15 @@ return {
         consume = 0,
         client = { image = 'tunerchip.png' },
     },
+
+    ['staff_militech'] = {
+        label = 'Staff Militech',
+        description = 'Staff-only handling editor. Sets every handling value of the car you are driving.',
+        category = 'electronics',
+        weight = 900,
+        stack = false,
+        close = true,
+        consume = 0,
+        client = { image = 'tunerchip.png' },
+    },
 }

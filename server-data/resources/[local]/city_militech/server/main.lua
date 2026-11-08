@@ -52,6 +52,9 @@ exports.qbx_core:CreateUseableItem(Config.Item, function(source)
     if not vehicle then return exports.qbx_core:Notify(src, locale('error_not_driver'), 'error') end
     if not stopped(vehicle) then return exports.qbx_core:Notify(src, locale('error_moving'), 'error') end
 
+    -- a staff setup (city_militech_staff) replaces the player's one, so tuning under it would change nothing
+    if Entity(vehicle).state.militechStaff then return exports.qbx_core:Notify(src, locale('error_staff'), 'error') end
+
     local id = vehicleId(vehicle)
     local settings = Entity(vehicle).state.militech
 
