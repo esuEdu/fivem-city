@@ -68,6 +68,46 @@ export function round(value, digits = 3) {
     return Math.round(value * factor) / factor;
 }
 
+// Puts text on the clipboard (FiveM's browser allows execCommand from a page with focus)
+export function copyText(text) {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.append(area);
+    area.select();
+
+    let copied = false;
+    try {
+        copied = document.execCommand('copy');
+    } catch {
+        copied = false;
+    }
+
+    area.remove();
+    return copied;
+}
+
+// A message over the editor with an OK button and optional extra buttons
+export function infoBox(text, extra = []) {
+    const dialog = document.getElementById('dialog');
+    dialog.replaceChildren();
+
+    const box = el('div', 'box');
+    const message = el('div', 'text', text);
+    message.style.whiteSpace = 'pre-line';
+    box.append(message);
+
+    const actions = el('div', 'actions');
+    actions.append(el('div', 'grow'));
+    for (const [label, onClick] of extra) actions.append(button(label, '', onClick));
+    actions.append(button(t('ok'), 'accent', () => dialog.classList.add('hidden')));
+    box.append(actions);
+
+    dialog.append(box);
+    dialog.classList.remove('hidden');
+}
+
 // A yes/no box over the editor; resolves true when confirmed
 export function confirmBox(text, fields = []) {
     const dialog = document.getElementById('dialog');

@@ -42,6 +42,7 @@ function groupSelect(current) {
     select.append(none);
 
     for (const group of state.groups) {
+        if (group.ungrouped) continue;
         const option = el('option', '', group.name);
         option.value = String(group.id);
         if (group.id === current) option.selected = true;

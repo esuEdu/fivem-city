@@ -176,6 +176,41 @@ function store.deleteGroup(id)
     return ids
 end
 
+---Deletes every prop that has no group.
+---@return integer[] ids of the deleted props
+function store.deleteUngrouped()
+    local ids = {}
+
+    for propId, prop in pairs(store.props) do
+        if not prop.group then ids[#ids + 1] = propId end
+    end
+
+    if #ids == 0 then return ids end
+
+    MySQL.query.await('DELETE FROM `city_builder_props` WHERE `group_id` IS NULL')
+
+    for _, propId in ipairs(ids) do
+        store.props[propId] = nil
+        store.count = store.count - 1
+    end
+
+    return ids
+end
+
+---The props of a group (0 = the ones without a group), sorted by id.
+---@return table[]
+function store.groupProps(id)
+    local list = {}
+
+    for _, prop in pairs(store.props) do
+        if (id == 0 and not prop.group) or (id ~= 0 and prop.group == id) then list[#list + 1] = prop end
+    end
+
+    table.sort(list, function(a, b) return a.id < b.id end)
+
+    return list
+end
+
 ---Moves every prop of a group by an offset.
 ---@return table[]? props after the move
 function store.moveGroup(id, dx, dy, dz, by)

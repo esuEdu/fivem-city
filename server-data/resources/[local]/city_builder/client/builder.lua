@@ -23,9 +23,13 @@ local function sendHistory()
 end
 
 local function groupList()
-    local counts = {}
+    local counts, ungrouped = {}, 0
     for _, prop in pairs(world.props) do
-        if prop.group then counts[prop.group] = (counts[prop.group] or 0) + 1 end
+        if prop.group then
+            counts[prop.group] = (counts[prop.group] or 0) + 1
+        else
+            ungrouped = ungrouped + 1
+        end
     end
 
     local list = {}
@@ -34,6 +38,11 @@ local function groupList()
     end
 
     table.sort(list, function(a, b) return a.name:lower() < b.name:lower() end)
+
+    -- Props without a group can be exported together too (id 0)
+    if ungrouped > 0 then
+        list[#list + 1] = { id = 0, name = locale('no_group'), enabled = true, count = ungrouped, ungrouped = true }
+    end
 
     return list
 end
@@ -449,6 +458,12 @@ RegisterNUICallback('group', function(data, cb)
         ok = history.op('groupUpdate', { id = data.id, name = data.name, enabled = data.enabled })
     elseif action == 'delete' then
         ok = history.op('groupDelete', data.id)
+    elseif action == 'export' then
+        editor.cancel()
+        sendTarget()
+
+        local success, result = history.op('groupExport', data.id)
+        return cb({ ok = success, export = success and result or nil, groups = groupList() })
     elseif action == 'move' then
         ok = history.op('groupMove', { id = data.id, x = tonumber(data.x), y = tonumber(data.y), z = tonumber(data.z) })
     elseif action == 'goto' then

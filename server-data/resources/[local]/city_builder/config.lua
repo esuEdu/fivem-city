@@ -45,5 +45,12 @@ Config.MaxGroupOffset = 100.0
 -- Server-side rate limit: changes per player per second
 Config.OpsPerSecond = 8
 
+-- Exporting a group to a ymap: the file is saved in this folder of the resource (and copied to the clipboard), then
+-- the group's props are removed from the game. Each prop is drawn up to lodDist metres away in the ymap.
+Config.Export = {
+    folder = 'exports',
+    lodDist = 150.0,
+}
+
 -- The placed props list shows this many, nearest first
 Config.ListLimit = 200

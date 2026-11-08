@@ -3,6 +3,7 @@
 local validate = require 'shared.validate'
 local store = require 'server.store'
 local streams = require 'server.streams'
+local ymap = require 'shared.ymap'
 
 local ready = false
 local rates = {}
@@ -225,6 +226,38 @@ function actions.groupMove(src, by, data)
     log(src, 'builder_group', ('moved #%d by %.2f, %.2f, %.2f'):format(id, dx, dy, dz))
 
     return true, #moved
+end
+
+---Writes a group (0 = props without a group) to a ymap XML file in Config.Export.folder, then removes its props from
+---the game: from now on they belong in the map file. The XML also goes back to the client for the clipboard.
+function actions.groupExport(src, _, id)
+    id = math.tointeger(id)
+    if id ~= 0 then id = groupId(id) end
+    if not id then return false, 'unknown' end
+
+    local props = store.groupProps(id)
+    if #props == 0 then return false, 'empty' end
+
+    local name = ymap.fileName(id == 0 and 'ungrouped' or store.groups[id].name)
+    local xml = ymap.build(name, props, {
+        lodDist = Config.Export.lodDist,
+        exportedBy = GetPlayerName(src),
+        time = os.date('%Y-%m-%d %H:%M:%S'),
+    })
+
+    local file = ('%s/%s_%s.ymap.xml'):format(Config.Export.folder, name, os.date('%Y%m%d-%H%M%S'))
+    if not SaveResourceFile(cache.resource, file, xml, -1) then
+        lib.print.error(('city_builder: could not write %s (does the %s folder exist?)'):format(file, Config.Export.folder))
+        return false, 'save_failed'
+    end
+
+    local ids = id == 0 and store.deleteUngrouped() or store.deleteGroup(id)
+    if ids and #ids > 0 then TriggerClientEvent('city_builder:client:removeProps', -1, ids) end
+    if id ~= 0 then TriggerClientEvent('city_builder:client:removeGroup', -1, id) end
+
+    log(src, 'builder_export', ('%s with %d props to %s'):format(name, #props, file))
+
+    return true, { name = name, file = ('%s/%s'):format(cache.resource, file), count = #props, xml = xml }
 end
 
 lib.callback.register('city_builder:world', function()

@@ -1,5 +1,5 @@
 // The Placed, Groups and Hidden tabs.
-import { t, post, el, button, confirmBox } from './util.js';
+import { t, post, el, button, confirmBox, infoBox, copyText } from './util.js';
 import { setGroups as inspectorGroups } from './inspector.js';
 
 let groups = [];
@@ -47,6 +47,21 @@ async function groupAction(data) {
     return result && result.ok;
 }
 
+async function exportGroup(group) {
+    if (!(await confirmBox(t('export_confirm', group.name, group.count)))) return;
+
+    const result = await post('group', { action: 'export', id: group.id });
+    if (result && result.groups) setGroups(result.groups);
+    if (!result || !result.ok || !result.export) return;
+
+    const done = result.export;
+    const copied = copyText(done.xml);
+
+    infoBox([t('export_done', done.count, done.name), t('export_file', done.file), t(copied ? 'export_copied' : 'export_not_copied'), t('export_next')].join('\n\n'), [
+        [t('export_copy'), () => copyText(done.xml)],
+    ]);
+}
+
 function renderGroups() {
     const list = document.getElementById('groups');
     list.replaceChildren();
@@ -61,6 +76,14 @@ function renderGroups() {
         const actions = el('div', 'actions');
         actions.style.width = '100%';
         actions.style.marginTop = '4px';
+
+        if (group.ungrouped) {
+            actions.append(button(t('group_export'), 'small accent', () => exportGroup(group)));
+            item.append(actions);
+            list.append(item);
+            continue;
+        }
+
         actions.append(
             button(t('group_show'), group.enabled ? 'small on' : 'small', () => groupAction({ action: 'update', id: group.id, name: group.name, enabled: !group.enabled })),
             button(t('group_goto'), 'small', () => groupAction({ action: 'goto', id: group.id })),
@@ -76,6 +99,7 @@ function renderGroups() {
                 ]);
                 if (values) groupAction({ action: 'move', id: group.id, x: Number(values[0]) || 0, y: Number(values[1]) || 0, z: Number(values[2]) || 0 });
             }),
+            button(t('group_export'), 'small accent', () => exportGroup(group)),
             button(t('group_delete'), 'small danger', async () => {
                 if (await confirmBox(t('group_delete_confirm', group.name, group.count))) groupAction({ action: 'delete', id: group.id });
             }),
