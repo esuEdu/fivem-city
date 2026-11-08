@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>city_character</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="js/main.js"></script>
+</head>
+<body>
+    <div id="stage" class="stage hidden"></div>
+
+    <section id="select" class="select hidden">
+        <aside class="select__list panel">
+            <header class="brand">
+                <span class="brand__dot"></span>
+                <div>
+                    <p class="brand__kicker">Welcome back</p>
+                    <h1 class="brand__title">Your characters</h1>
+                </div>
+            </header>
+            <div id="slots" class="slots"></div>
+            <div class="select__actions">
+                <button id="play" class="btn btn--accent btn--big" type="button">Play</button>
+                <button id="delete" class="btn btn--ghost btn--danger" type="button">Delete</button>
+            </div>
+        </aside>
+
+        <aside id="details" class="select__details panel"></aside>
+    </section>
+
+    <section id="creator" class="creator hidden">
+        <nav id="steps" class="steps"></nav>
+
+        <aside class="creator__panel panel">
+            <header class="creator__head">
+                <p id="step-kicker" class="kicker"></p>
+                <h2 id="step-title" class="creator__title"></h2>
+                <p id="step-hint" class="muted creator__hint"></p>
+            </header>
+            <div id="step-body" class="creator__body"></div>
+        </aside>
+
+        <div class="toolbar panel">
+            <div id="shots" class="toolbar__group"></div>
+            <span class="toolbar__sep"></span>
+            <div id="lights" class="toolbar__group"></div>
+            <span class="toolbar__sep"></span>
+            <div class="toolbar__group">
+                <button id="undo" class="tool" type="button" title="Undo"></button>
+                <button id="redo" class="tool" type="button" title="Redo"></button>
+                <button id="random" class="tool" type="button" title="Randomize face"></button>
+            </div>
+        </div>
+
+        <div id="points" class="points"></div>
+
+        <footer class="creator__footer">
+            <button id="back" class="btn btn--ghost" type="button">Back</button>
+            <span class="rotate-hint muted">Drag to turn · Scroll to zoom</span>
+            <button id="next" class="btn btn--accent" type="button">Next</button>
+        </footer>
+    </section>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal__card panel">
+            <h3 id="modal-title"></h3>
+            <p id="modal-text" class="muted"></p>
+            <div class="modal__actions">
+                <button id="modal-cancel" class="btn btn--ghost" type="button">Cancel</button>
+                <button id="modal-ok" class="btn btn--accent" type="button">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+</body>
+</html>

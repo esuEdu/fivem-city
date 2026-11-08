@@ -1,3 +1,18 @@
+diff --git a/server-data/resources/[qbx]/qbx_properties/server/apartmentselect.lua b/server-data/resources/[qbx]/qbx_properties/server/apartmentselect.lua
+index 77cf873..5a3c719 100644
+--- a/server-data/resources/[qbx]/qbx_properties/server/apartmentselect.lua
++++ b/server-data/resources/[qbx]/qbx_properties/server/apartmentselect.lua
+@@ -70,9 +70,7 @@ RegisterNetEvent('qbx_properties:server:apartmentSelect', function(apartmentInde
+         SetEntityCoords(ped, spawnCoord.x, spawnCoord.y, spawnCoord.z, false, false, false, false)
+         if spawnCoord.w then SetEntityHeading(ped, spawnCoord.w) end
+     end
+-
+-    Wait(200)
+-    TriggerClientEvent('qb-clothes:client:CreateFirstCharacter', playerSource)
++    -- city_character saves the first look before the apartment is picked
+ end)
+ 
+ local startingApartment = require '@qbx_core.config.client'.characters.startingApartment
 diff --git a/server-data/resources/[qbx]/qbx_properties/server/property.lua b/server-data/resources/[qbx]/qbx_properties/server/property.lua
 index c525ca6..6f912e5 100644
 --- a/server-data/resources/[qbx]/qbx_properties/server/property.lua
