@@ -60,6 +60,7 @@ staff.register('app', function(src)
         banLengths = Config.BanLengths,
         maxBanHours = Config.MaxBanHours,
         maxBucket = Config.MaxBucket,
+        maxGiveMoney = Config.MaxGiveMoney,
         jobs = permissions.setJob and groupList(exports.qbx_core:GetJobs()) or nil,
         gangs = permissions.setGang and groupList(exports.qbx_core:GetGangs()) or nil,
     }

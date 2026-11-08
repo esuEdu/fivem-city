@@ -46,6 +46,7 @@ The stand-in has to stay: about 40 scripts call `exports.ox_inventory`, ox_fuel 
 | qbx_core `paycheck` | Salary, capped at $20,000/hour per character. |
 | city_inventory shops and trades | Our own code, already validated on the server. |
 | city_garages (impound lot fee `garage-depot`, refund `garage-refund`) | Our own code; the fee is worked out on the server. |
+| city_staff Give money (credit, `staff-grant`, $1,000,000 per character per hour) | Admins only, with a reason written to the staff log. |
 | illenium-appearance (debit only) | Clothing store charges; it checks the result, so a refused charge means no purchase. |
 | The `money` item via `RemoveItem` (debit only, reason `inventory-cash-item`) | Lets ox_fuel charge cash. `AddItem('money')` stays blocked: any script could otherwise create cash. |
 

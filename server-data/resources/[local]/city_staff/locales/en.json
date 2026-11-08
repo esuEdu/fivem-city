@@ -251,6 +251,7 @@
     "ui_thirst": "Thirst",
     "ui_bucket_help": "0 is the normal world; other numbers are separate copies of it",
     "action_setStat": "changed",
+    "action_giveMoney": "gave money to",
     "ui_tab_team": "Team",
     "ui_staff_count": "%s staff",
     "ui_online_now": "Online now",
@@ -279,6 +280,7 @@
     "label_setJob": "Set job",
     "label_setGang": "Set gang",
     "label_setStat": "Armor / needs",
+    "label_giveMoney": "Give money",
     "label_inventory": "Inventory",
     "label_spectate": "Spectate",
     "label_warn": "Warn",
@@ -306,5 +308,12 @@
     "action_setGoals": "set the report goals",
     "label_setGoals": "Set goals",
     "ui_less": "Less",
-    "ui_more": "More"
+    "ui_more": "More",
+
+    "error_money_refused": "The economy refused it (the hourly limit for staff grants?)",
+    "ui_give_money": "Give money",
+    "ui_amount": "Amount",
+    "ui_to_bank": "to the bank account",
+    "ui_to_cash": "in cash",
+    "ui_money_given": "Money given"
 }

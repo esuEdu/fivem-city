@@ -1,6 +1,7 @@
 import { el, L, run, icon, pill, confirmButton, searchField, formatTime, duration, money, healthKind } from './ui.js';
 import { app, can, go } from './main.js';
 import { characterCard } from './character.js';
+import { moneyCard } from './money.js';
 
 let filter = '';
 let selected = null;
@@ -114,6 +115,7 @@ async function playerDetail(id) {
         ),
         actions.length ? el('div', { class: 'card actions' }, actions) : null,
         characterCard(player, act),
+        moneyCard(player, act),
         sanctions(player, act),
     );
 }
