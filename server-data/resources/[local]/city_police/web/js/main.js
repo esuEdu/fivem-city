@@ -1,4 +1,4 @@
-import { el, L, setLabels, run, icon } from './ui.js';
+import { el, L, setLabels, icon } from './ui.js';
 import { renderDashboard } from './dashboard.js';
 import { renderDispatch } from './dispatch.js';
 import { renderMap } from './map.js';
@@ -59,6 +59,8 @@ export function can(action) {
 }
 
 let drawing = 0;
+let started = false;
+let starting = 0;
 
 // Each tab draws into the content area; `args` opens it on one item (a person, a call from a notification)
 export async function go(tab, args) {
@@ -119,28 +121,50 @@ function drawNav() {
     nav.replaceChildren(...children);
 }
 
+// Opened off duty, the MDT shows a lock; clocking in (a 'duty' message from the client) starts it again
 async function start() {
-    const response = await run('app');
-    if (!response) {
-        content.replaceChildren(el('div', { class: 'empty' }, icon('lock', 40), el('p', { text: L('error_off_duty') })));
+    started = false;
+    const ticket = ++starting;
+    const response = await window.CityOS.send('run', { action: 'app' });
+    if (ticket !== starting) return;
+
+    if (response && response.labels) setLabels(response.labels);
+
+    if (!response || !response.ok) {
+        const reason = (response && response.reason) || 'failed';
+        if (reason !== 'off_duty') console.warn(`MDT app failed: ${reason}`);
+
+        nav.replaceChildren();
+        content.replaceChildren(el('div', { class: 'empty' }, icon('lock', 40), el('p', { text: L(`error_${reason}`) })));
         return;
     }
 
     Object.assign(app, response.data);
-    setLabels(response.data.labels);
 
-    document.getElementById('logo').append(icon('shield', 22, 2));
+    document.getElementById('logo').replaceChildren(icon('shield', 22, 2));
     document.getElementById('title').textContent = L('ui_title');
     document.getElementById('me').textContent = app.me.callsign ? `${app.me.callsign} · ${app.me.name}` : app.me.name;
     document.getElementById('rank').textContent = app.me.gradeLabel;
     document.getElementById('status-label').textContent = L('ui_my_status');
-    document.getElementById('status-card').addEventListener('click', () => pickStatus());
     setMyStatus(app.me.status);
 
+    started = true;
+    content.replaceChildren();
     go('dashboard');
 }
 
+document.getElementById('status-card').addEventListener('click', () => {
+    if (started) pickStatus();
+});
+
 window.CityOS.on('message', (message) => {
+    if (message && message.type === 'duty') {
+        start();
+        return;
+    }
+
+    // the open tab needs app.me and the labels from the first call
+    if (!started) return;
     if (!message || message.type !== 'refresh' || !message.what) return;
 
     for (const [what, tabs] of Object.entries(LIVE)) {

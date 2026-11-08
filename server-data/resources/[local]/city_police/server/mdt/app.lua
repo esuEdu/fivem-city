@@ -126,7 +126,7 @@ mdt.register('dashboard', function(src)
         fined = tonumber(counts.fined) or 0,
         notices = notices,
     }
-end)
+end, 'app')
 
 mdt.register('calls', function(src)
     local list = {}

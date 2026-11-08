@@ -78,7 +78,10 @@ local function run(action, args)
     if reason then return { ok = false, reason = reason } end
 
     local ok, result = lib.callback.await(('city_police:mdt:%s'):format(action), false, args)
-    if not ok then return { ok = false, reason = result or 'failed' } end
+    if not ok then
+        lib.print.warn(('MDT %s refused: %s'):format(action, tostring(result)))
+        return { ok = false, reason = result or 'failed' }
+    end
 
     finish(action, result)
 
@@ -91,9 +94,10 @@ RegisterNUICallback('run', function(data, cb)
 
     local response = run(action, type(data.args) == 'table' and data.args or {})
 
-    if action == 'app' and response.ok then
-        response.data.labels = lib.getLocales()
-        response.data.cameraStates = cameras.states()
+    if action == 'app' then
+        -- sent even when refused, so the off-duty screen is translated too
+        response.labels = lib.getLocales()
+        if response.ok then response.data.cameraStates = cameras.states() end
     end
 
     cb(response)
@@ -116,6 +120,14 @@ RegisterNUICallback('openMap', function(_, cb)
     Wait(300)
     ActivateFrontendMenu(`FE_MENU_VERSION_MP_PAUSE`, false, -1)
 end)
+
+-- Clocking in or out (or a job change) restarts an MDT that is already open
+local function dutyChanged()
+    exports.city_os:SendAppMessage(Config.App.id, { type = 'duty' })
+end
+
+RegisterNetEvent('QBCore:Client:SetDuty', dutyChanged)
+RegisterNetEvent('QBCore:Client:OnJobUpdate', dutyChanged)
 
 RegisterNetEvent('city_police:client:mdtRefresh', function(what)
     if GetInvokingResource() then return end
