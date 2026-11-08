@@ -25,7 +25,7 @@ None known.
 
 ### Working through the `ox_inventory` stand-in (nothing to do)
 
-illenium-appearance, mm_radio, ox_doorlock, ox_target, qbx_bankrobbery, qbx_houserobbery, qbx_jewelery, qbx_storerobbery, qbx_truckrobbery, qbx_drugs, qbx_weed, qbx_mechanicjob, qbx_taxijob, qbx_vineyard, qbx_recyclejob, qbx_scrapyard, qbx_diving, qbx_divegear, qbx_idcard, qbx_pawnshop, qbx_seatbelt, qbx_vehiclekeys, qbx_fireworks, qbx_smallresources.
+illenium-appearance, mm_radio, ox_doorlock, ox_target, qbx_bankrobbery, qbx_houserobbery, qbx_jewelery, qbx_storerobbery, qbx_truckrobbery, qbx_drugs, qbx_weed, qbx_taxijob, qbx_vineyard, qbx_recyclejob, qbx_scrapyard, qbx_diving, qbx_divegear, qbx_idcard, qbx_pawnshop, qbx_seatbelt, qbx_vehiclekeys, qbx_fireworks, qbx_smallresources.
 
 The stand-in has to stay: about 40 scripts call `exports.ox_inventory`, ox_fuel checks for ox_inventory 2.30.0 by name, and ox_fuel lists it as a dependency. What it takes to remove it: [ox-inventory-removal.md](ox-inventory-removal.md).
 
@@ -48,11 +48,12 @@ The stand-in has to stay: about 40 scripts call `exports.ox_inventory`, ox_fuel 
 | city_inventory shops and trades | Our own code, already validated on the server. |
 | city_garages (impound lot fee `garage-depot`, refund `garage-refund`) | Our own code; the fee is worked out on the server. |
 | city_dealership (debit `dealership-buy`, `dealership-payoff`; refund `dealership-refund`) | Our own code; prices come from qbx_core's vehicle list on the server. Installments are city_bank bills. |
+| city_mechanic (through city_bank `ChargeJob`, reason `bank-job-purchase`) | Parts fitted in the tuning bay are paid from the mechanic job's account, never a player's; the server prices the cart from its own config and only resources in city_bank `settings.jobPurchases` may charge a job. |
 | city_staff Give money (credit, `staff-grant`, $1,000,000 per character per hour) | Admins only, with a reason written to the staff log. |
 | illenium-appearance (debit only) | Clothing store charges; it checks the result, so a refused charge means no purchase. |
 | The `money` item via `RemoveItem` (debit only, reason `inventory-cash-item`) | Lets ox_fuel charge cash. `AddItem('money')` stays blocked: any script could otherwise create cash. |
 
-Blocked until rewritten (they stop paying or charging): qbx_taxijob (also trusts the fare sent by the client), qbx_truckerjob, qbx_towjob, qbx_garbagejob, qbx_busjob, qbx_diving, qbx_pawnshop, qbx_storerobbery, qbx_truckrobbery, qbx_streetraces, qbx_properties, qbx_customs, qbx_cityhall, qbx_carwash, qbx_vehiclesales and qbx_drugs. qbx_vehicleshop was replaced by city_dealership.
+Blocked until rewritten (they stop paying or charging): qbx_taxijob (also trusts the fare sent by the client), qbx_truckerjob, qbx_towjob, qbx_garbagejob, qbx_busjob, qbx_diving, qbx_pawnshop, qbx_storerobbery, qbx_truckrobbery, qbx_streetraces, qbx_properties, qbx_cityhall, qbx_carwash, qbx_vehiclesales and qbx_drugs. qbx_vehicleshop was replaced by city_dealership and qbx_customs by city_mechanic.
 
 Renewed-Banking was removed.
 

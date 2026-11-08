@@ -51,7 +51,6 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_garages** | Ours, replaces qbx_garages: unified garages (park in one, take out in any other of the same kind: cars, air, boats), gang and house garages, impound lots with a fee, a list with search and favorites, and the car's picture and condition before taking it out. |
 | **qbx_vehiclekeys** | Car keys, locking and unlocking, lockpicking and hotwiring. |
 | **ox_fuel** | Fuel, gas stations and jerry cans. |
-| **qbx_customs** | Benny's / LS Customs: tuning, paint, repair. |
 | **qbx_carwash** | Car wash. |
 | **vehiclehandler** | More realistic damage and handling. |
 | **qbx_density** | How many local (NPC) cars and pedestrians are on the streets. |
@@ -63,7 +62,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 |---|---|
 | **city_police** | Ours, replaces qbx_police: the LSPD job (duty, armory, lockers, garage and helipad, cuff/escort/search, objects and spike strips, evidence, security cameras, ankle monitors, speed cameras, impounds) and the **MDT** tablet app (dispatch, live map, units, people, vehicles, weapons, reports, warrants, charges, impounds, licences, evidence, cameras, certifications, management). See [city-police.md](../city-police.md). |
 | **city_hospital** | Ours, replaces qbx_ambulancejob: EMS job (duty, garage, armory, locker, Pillbox elevator, calls, examine/revive/treat/bill), downed screen, `/finalizado`, hospital respawn, beds, NPC reception and the NPC ambulance. |
-| **qbx_mechanicjob** | Mechanic: repairs and parts, with the job's stash. |
+| **city_mechanic** | Ours, replaces qbx_mechanicjob and qbx_customs: the mechanic job at LS Customs (Burton): clock in, the shop storage, work vehicles (flatbed, tow truck) and the **tuning bay**: a mechanic on duty drives the car in and presses E to open the tuning menu (performance, body parts, paint, wheels, lights, extras, full repair), previewed live on the car with an orbiting camera; the parts are paid from the mechanic job's bank account. Repair kits and the cleaning kit work anywhere (mechanics on duty fix more). |
 | **city_dispatch** | Ours: calls to the city services from the phone (type, text, anonymous, location): mechanics on duty get a phone notification, a blip and `/calls`; 190 goes to city_police's calls (the MDT) and 192 to city_hospital's EMS calls. The caller only hears that someone is on the way. |
 | **qbx_taxijob** | Taxi with NPC fares. |
 | **qbx_busjob** | Bus routes. |
