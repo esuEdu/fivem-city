@@ -28,7 +28,7 @@ return {
     -- Shots by anyone but police on duty, inside these areas, become a call. A suppressed shot is reported only with
     -- suppressedChance; after a call, the same shooter makes no new one for cooldown seconds.
     shots = {
-        cooldown = 45,
+        cooldown = 20,
         suppressedChance = 0.2,
         suppressors = { at_suppressor_light = true, at_suppressor_heavy = true },
         areas = {
