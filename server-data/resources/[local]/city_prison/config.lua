@@ -11,14 +11,15 @@ Config.Prison = {
     blip = { coords = vec3(1845.9, 2585.9, 45.67), sprite = 285, color = 3, scale = 0.75 },
 }
 
--- Where a new inmate appears (one at random) and where a downed inmate wakes up
+-- Where a new inmate appears (one at random), out in the yard: the cell blocks have no interior without a prison MLO
 Config.Spawns = {
-    vec4(1770.72, 2479.98, 45.74, 31.66),
-    vec4(1761.07, 2474.92, 49.69, 33.12),
-    vec4(1745.03, 2479.21, 45.74, 323.07),
-    vec4(1768.13, 2481.68, 45.74, 33.28),
+    vec4(1661.05, 2524.68, 45.56, 260.0),
+    vec4(1650.81, 2540.58, 45.56, 230.0),
+    vec4(1697.11, 2525.56, 45.56, 20.0),
+    vec4(1673.08, 2519.82, 45.56, 90.0),
+    vec4(1691.23, 2509.64, 45.56, 0.0),
 }
-Config.Infirmary = vec4(1745.9, 2469.2, 45.85, 180.0) -- check
+Config.Infirmary = vec4(1765.67, 2565.91, 45.56, 1.5) -- where a downed inmate wakes up (the yard, no infirmary interior)
 
 -- Where a released inmate is let out
 Config.Freedom = vec4(1842.58, 2573.43, 45.89, 357.77)
@@ -43,7 +44,7 @@ Config.Uniform = {
 }
 
 -- Jobs: the board gives one spot at a time; finishing it takes months off (server/config.lua)
-Config.JobBoard = vec3(1772.9, 2494.7, 45.74) -- check
+Config.JobBoard = vec3(1693.33, 2569.51, 45.55) -- the middle of the yard
 Config.Jobs = {
     cleaning = {
         icon = 'fas fa-broom',
@@ -87,10 +88,10 @@ Config.Tray = vec3(1778.31, 2560.56, 45.62)
 
 -- Hidden spots where parts for contraband turn up
 Config.Contraband = {
-    vec3(1773.7, 2492.0, 45.74),
+    vec3(1666.03, 2511.37, 45.56),
     vec3(1648.8, 2541.5, 45.56),
     vec3(1709.0, 2569.5, 45.56),
-    vec3(1752.4, 2476.9, 45.74),
+    vec3(1770.59, 2536.06, 45.56),
     vec3(1691.2, 2470.3, 45.56),
 }
 
