@@ -94,5 +94,13 @@
     "action_released": "Released",
     "action_escaped": "Escaped",
     "action_set_time": "Time set",
-    "action_cleared": "Escape cleared"
+    "action_cleared": "Escape cleared",
+
+    "command_testjail": "Test: send a player (you by default) to prison",
+    "param_id": "Player id (empty = you)",
+    "param_months": "Months (default 5)",
+    "test_no_player": "No such player",
+    "test_bad_months": "Months must be between 1 and %s",
+    "test_failed": "Could not send them to prison",
+    "test_jailed": "%s is in prison for %s months"
 }

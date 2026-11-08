@@ -26,6 +26,7 @@ server_scripts {
     'server/life.lua',
     'server/escape.lua',
     'server/computer.lua',
+    'server/commands.lua',
 }
 
 ui_page 'web/index.html'
