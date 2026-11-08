@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="power" class="power hidden">
+        <div class="power__fill" id="power-fill"></div>
+    </div>
+
+    <div id="bite" class="bite hidden">!</div>
+
+    <div id="game" class="game hidden">
+        <div class="game__label" id="game-label"></div>
+        <div class="game__body">
+            <div class="track" id="track">
+                <div class="track__bar" id="bar"></div>
+                <div class="track__chest hidden" id="chest">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16v10H4zM4 9l2-4h12l2 4M10 13h4"/></svg>
+                    <div class="track__chest-fill" id="chest-fill"></div>
+                </div>
+                <div class="track__fish" id="fish">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c3-4 7-6 11-6 3 0 5 2 7 6-2 4-4 6-7 6-4 0-8-2-11-6zM3 12l-1.5-3M3 12l-1.5 3M16 10.5h.01"/></svg>
+                    <svg class="crown hidden" id="crown" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18l-2-10-5 4-2-6-2 6-5-4z"/></svg>
+                </div>
+            </div>
+            <div class="meter"><div class="meter__fill" id="progress"></div></div>
+        </div>
+        <div class="game__lives hidden" id="lives"></div>
+    </div>
+
+    <script type="module" src="minigame.js"></script>
+</body>
+</html>
