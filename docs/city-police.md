@@ -55,7 +55,7 @@ Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuff
 
 - 190 calls: `city_dispatch` calls `exports.city_police:PhoneCall(src, kind, text, caller)`; when the first unit attaches, city_police fires `city_police:server:callAccepted` and the caller hears the police are on the way.
 - Scripts: `exports.city_police:Alert({ title, text, coords, code, priority })`, server only.
-- Shots fired (`server/alerts.lua`, from the shot reports that also drop casings): anyone but police on duty shooting inside `shots.areas` makes a 10-71 call; with a suppressor attached only `suppressedChance` (20%) of reported shots do. After a call the same shooter makes no new one for `shots.cooldown` seconds.
+- Shots fired (`server/alerts.lua`, from the shot reports that also drop casings): anyone but police on duty shooting inside `shots.areas` makes a 10-71 call; with a suppressor attached only `suppressedChance` (20%) of reported shots do. After a call the same shooter makes no new one for `shots.cooldown` seconds (20).
 - Officer down: an officer on duty whose `qbx_medical:deathState` stops being alive makes a high-priority 10-99 call.
 - Old qbx_police events still work, for the vendored robbery scripts: `police:server:policeAlert`, `evidence:server:CreateFingerDrop`, `evidence:server:CreateBloodDrop`, and on the client `evidence:client:SetStatus` and `police:client:SendPoliceEmergencyAlert` (`server/compat.lua`, `client/compat.lua`). `police:SetCopCount` is still sent to everyone when the number on duty changes.
 
