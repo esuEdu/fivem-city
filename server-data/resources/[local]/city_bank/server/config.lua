@@ -77,7 +77,12 @@ return {
 
     shared = { maxPerPlayer = 1, memberDailyLimit = 20000 },
 
-    jobs = { withdrawPerHour = 50000 },
+    jobs = { withdrawPerHour = 50000, purchaseMax = 500000 },
+
+    -- Resources allowed to pay for things out of a job account (exports.city_bank:ChargeJob), and which jobs
+    jobPurchases = {
+        city_mechanic = { 'mechanic' }, -- parts fitted by mechanics
+    },
 
     loans = { minAmount = 1000, maxActive = 1, every = 7 * DAY },
 

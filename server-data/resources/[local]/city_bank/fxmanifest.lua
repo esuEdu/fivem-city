@@ -31,6 +31,7 @@ server_scripts {
     'server/scheduler.lua',
     'server/devtools.lua',
     'server/app.lua',
+    'server/jobs.lua',
 }
 
 ui_page 'web/index.html'
