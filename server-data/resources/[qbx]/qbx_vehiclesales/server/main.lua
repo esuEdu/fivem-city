@@ -40,8 +40,8 @@ lib.callback.register('qbx_vehiclesales:server:checkVehicleOwner', function(sour
     local result = MySQL.single.await('SELECT * FROM player_vehicles WHERE plate = ? AND citizenid = ?', {plate, player.PlayerData.citizenid})
 
     if result and result.id then
-        local financeRow = MySQL.single.await('SELECT * FROM vehicle_financing WHERE vehicleId = ?', {result.id})
-        return true, financeRow?.balance or 0
+        local balance = GetResourceState('city_dealership') == 'started' and exports.city_dealership:FinanceBalance(result.id) or 0
+        return true, balance
     end
 
     return false
