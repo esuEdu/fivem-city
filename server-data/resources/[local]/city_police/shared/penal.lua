@@ -22,6 +22,7 @@ return {
         { id = 'harassment', category = 'misdemeanor', title = 'Harassment', months = 5, fine = 1000, points = 0 },
         { id = 'assault', category = 'misdemeanor', title = 'Assault', months = 15, fine = 2000, points = 0 },
         { id = 'vandalism', category = 'misdemeanor', title = 'Vandalism', months = 5, fine = 1000, points = 0 },
+        { id = 'fishing_no_licence', category = 'misdemeanor', title = 'Fishing without a licence', months = 0, fine = 500, points = 0 },
         { id = 'petty_theft', category = 'misdemeanor', title = 'Petty theft', months = 10, fine = 1500, points = 0 },
         { id = 'drug_possession', category = 'misdemeanor', title = 'Possession of drugs', months = 10, fine = 2000, points = 0 },
         { id = 'weapon_no_licence', category = 'misdemeanor', title = 'Carrying a weapon without a licence', months = 15, fine = 3000, points = 0 },

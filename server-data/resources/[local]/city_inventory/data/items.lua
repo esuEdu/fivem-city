@@ -803,4 +803,578 @@ return {
         description = 'Unknown number. Contacts and messages only.',
         client = { image = 'samsungphone.png' },
     },
+
+    -- Fishing (city_fishing): licence, rods, bait, tackle, crab pots, the catch and what comes up with it
+    ['fishing_license'] = {
+        label = 'Fishing Licence',
+        category = 'document',
+        weight = 10,
+        stack = false,
+        description = 'Lets you sell fish at the market. Bought at the fishing shop.',
+        client = { image = 'driver_license.png' },
+    },
+
+    ['fishing_rod_starter'] = {
+        label = 'Starter Rod',
+        category = 'tool',
+        weight = 1200,
+        stack = false,
+        description = 'A simple rod. Use it to start fishing.',
+        client = { image = 'fishingrod.png' },
+    },
+
+    ['fishing_rod_fiberglass'] = {
+        label = 'Fiberglass Rod',
+        category = 'tool',
+        weight = 1300,
+        stack = false,
+        description = 'Takes bait. Use it to start fishing.',
+        client = { image = 'fishingrod.png' },
+    },
+
+    ['fishing_rod_carbon'] = {
+        label = 'Carbon Rod',
+        category = 'tool',
+        weight = 1100,
+        stack = false,
+        description = 'Takes bait and one tackle. Use it to start fishing.',
+        client = { image = 'fishingrod.png' },
+    },
+
+    ['fishing_rod_pro'] = {
+        label = 'Pro Rod',
+        category = 'tool',
+        weight = 1000,
+        stack = false,
+        description = 'Takes bait and two tackles. Use it to start fishing.',
+        client = { image = 'fishingrod.png' },
+    },
+
+    ['bait_worm'] = {
+        label = 'Worms',
+        category = 'tool',
+        weight = 10,
+        description = 'Fish bite sooner. Use it to put it on your rods.',
+        client = { image = 'fishbait.png' },
+    },
+
+    ['bait_deluxe'] = {
+        label = 'Deluxe Bait',
+        category = 'tool',
+        weight = 15,
+        description = 'Fish bite much sooner and the catch bar is bigger. Use it to put it on your rods.',
+        client = { image = 'fishbait.png' },
+    },
+
+    ['bait_magnet'] = {
+        label = 'Magnet Bait',
+        category = 'tool',
+        weight = 30,
+        description = 'More treasure. Use it to put it on your rods.',
+        client = { image = 'fishbait.png' },
+    },
+
+    ['bait_wild'] = {
+        label = 'Wild Bait',
+        category = 'tool',
+        weight = 15,
+        description = 'Sometimes two fish bite at once. Use it to put it on your rods.',
+        client = { image = 'fishbait.png' },
+    },
+
+    ['bait_challenge'] = {
+        label = 'Challenge Bait',
+        category = 'tool',
+        weight = 15,
+        description = 'A perfect catch gives three fish; three escapes lose it. Use it to put it on your rods.',
+        client = { image = 'fishbait.png' },
+    },
+
+    ['tackle_spinner'] = {
+        label = 'Spinner',
+        category = 'tool',
+        weight = 40,
+        description = 'Fish bite sooner. Use it to fit it on a rod with a free slot (20 bites).',
+    },
+
+    ['tackle_trap'] = {
+        label = 'Trap Bobber',
+        category = 'tool',
+        weight = 40,
+        description = 'The catch meter drops slower. Use it to fit it on a rod with a free slot (20 bites).',
+    },
+
+    ['tackle_lead'] = {
+        label = 'Lead Bobber',
+        category = 'tool',
+        weight = 40,
+        description = 'The catch bar stops bouncing. Use it to fit it on a rod with a free slot (20 bites).',
+    },
+
+    ['tackle_sonar'] = {
+        label = 'Sonar Bobber',
+        category = 'tool',
+        weight = 40,
+        description = 'Shows which fish took the bait. Use it to fit it on a rod with a free slot (20 bites).',
+    },
+
+    ['tackle_cork'] = {
+        label = 'Cork Bobber',
+        category = 'tool',
+        weight = 40,
+        description = 'A bigger catch bar. Use it to fit it on a rod with a free slot (20 bites).',
+    },
+
+    ['tackle_treasure'] = {
+        label = 'Treasure Hook',
+        category = 'tool',
+        weight = 40,
+        description = 'More treasure chests. Use it to fit it on a rod with a free slot (20 bites).',
+    },
+
+    ['tackle_barbed'] = {
+        label = 'Barbed Hook',
+        category = 'tool',
+        weight = 40,
+        description = 'The catch bar sticks to the fish. Use it to fit it on a rod with a free slot (20 bites).',
+    },
+
+    ['tackle_quality'] = {
+        label = 'Quality Bobber',
+        category = 'tool',
+        weight = 40,
+        description = 'Better fish. Use it to fit it on a rod with a free slot (20 bites).',
+    },
+
+    ['tackle_curiosity'] = {
+        label = 'Curiosity Lure',
+        category = 'tool',
+        weight = 40,
+        description = 'Rare fish bite more often. Use it to fit it on a rod with a free slot (20 bites).',
+    },
+
+    ['crab_pot'] = {
+        label = 'Crab Pot',
+        category = 'tool',
+        weight = 3000,
+        description = 'Use it at the water with bait in your pockets.',
+    },
+
+    ['fish_anchovy'] = {
+        label = 'Anchovy',
+        category = 'food',
+        weight = 30,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_sardine'] = {
+        label = 'Sardine',
+        category = 'food',
+        weight = 60,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_mackerel'] = {
+        label = 'Mackerel',
+        category = 'food',
+        weight = 500,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_seabass'] = {
+        label = 'Sea Bass',
+        category = 'food',
+        weight = 2500,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_rockfish'] = {
+        label = 'Rockfish',
+        category = 'food',
+        weight = 1500,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_red_snapper'] = {
+        label = 'Red Snapper',
+        category = 'food',
+        weight = 3000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_halibut'] = {
+        label = 'Halibut',
+        category = 'food',
+        weight = 6000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_yellowtail'] = {
+        label = 'Yellowtail',
+        category = 'food',
+        weight = 6000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_squid'] = {
+        label = 'Squid',
+        category = 'food',
+        weight = 800,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_octopus'] = {
+        label = 'Octopus',
+        category = 'food',
+        weight = 4000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_leopard_shark'] = {
+        label = 'Leopard Shark',
+        category = 'food',
+        weight = 12000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_bluefin_tuna'] = {
+        label = 'Bluefin Tuna',
+        category = 'food',
+        weight = 40000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_mahi_mahi'] = {
+        label = 'Mahi-Mahi',
+        category = 'food',
+        weight = 10000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_swordfish'] = {
+        label = 'Swordfish',
+        category = 'food',
+        weight = 45000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_blue_marlin'] = {
+        label = 'Blue Marlin',
+        category = 'food',
+        weight = 60000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_mako_shark'] = {
+        label = 'Mako Shark',
+        category = 'food',
+        weight = 50000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_tilapia'] = {
+        label = 'Tilapia',
+        category = 'food',
+        weight = 800,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_mullet'] = {
+        label = 'Mullet',
+        category = 'food',
+        weight = 1200,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_pupfish'] = {
+        label = 'Desert Pupfish',
+        category = 'food',
+        weight = 5,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_rainbow_trout'] = {
+        label = 'Rainbow Trout',
+        category = 'food',
+        weight = 1500,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_steelhead'] = {
+        label = 'Steelhead',
+        category = 'food',
+        weight = 4000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_chinook_salmon'] = {
+        label = 'Chinook Salmon',
+        category = 'food',
+        weight = 9000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_smallmouth_bass'] = {
+        label = 'Smallmouth Bass',
+        category = 'food',
+        weight = 1200,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_sturgeon'] = {
+        label = 'White Sturgeon',
+        category = 'food',
+        weight = 30000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_largemouth_bass'] = {
+        label = 'Largemouth Bass',
+        category = 'food',
+        weight = 2000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_bluegill'] = {
+        label = 'Bluegill',
+        category = 'food',
+        weight = 150,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_crappie'] = {
+        label = 'Crappie',
+        category = 'food',
+        weight = 400,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_perch'] = {
+        label = 'Yellow Perch',
+        category = 'food',
+        weight = 300,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_walleye'] = {
+        label = 'Walleye',
+        category = 'food',
+        weight = 2500,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_catfish'] = {
+        label = 'Channel Catfish',
+        category = 'food',
+        weight = 5000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_carp'] = {
+        label = 'Common Carp',
+        category = 'food',
+        weight = 4000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_eel'] = {
+        label = 'American Eel',
+        category = 'food',
+        weight = 1500,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_bullhead'] = {
+        label = 'Brown Bullhead',
+        category = 'food',
+        weight = 700,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_ghost_sturgeon'] = {
+        label = 'Ghost Sturgeon',
+        category = 'food',
+        weight = 60000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_golden_marlin'] = {
+        label = 'Golden Marlin',
+        category = 'food',
+        weight = 80000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_king_salmon'] = {
+        label = 'King of Zancudo',
+        category = 'food',
+        weight = 15000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_chiliad_rainbow'] = {
+        label = 'Chiliad Rainbow',
+        category = 'food',
+        weight = 6000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_canal_leviathan'] = {
+        label = 'Canal Leviathan',
+        category = 'food',
+        weight = 45000,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['fish_jellyfish'] = {
+        label = 'Jellyfish',
+        category = 'food',
+        weight = 500,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['crab_lobster'] = {
+        label = 'Lobster',
+        category = 'food',
+        weight = 800,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['crab_crab'] = {
+        label = 'Dungeness Crab',
+        category = 'food',
+        weight = 700,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['crab_shrimp'] = {
+        label = 'Shrimp',
+        category = 'food',
+        weight = 30,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['crab_oyster'] = {
+        label = 'Oyster',
+        category = 'food',
+        weight = 100,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['crab_mussel'] = {
+        label = 'Mussel',
+        category = 'food',
+        weight = 40,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['crab_clam'] = {
+        label = 'Clam',
+        category = 'food',
+        weight = 60,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['crab_crayfish'] = {
+        label = 'Crayfish',
+        category = 'food',
+        weight = 60,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['crab_snail'] = {
+        label = 'Freshwater Snail',
+        category = 'food',
+        weight = 20,
+        description = 'Sell it at the fish market.',
+        client = { image = 'fish.png' },
+    },
+
+    ['seaweed'] = {
+        label = 'Seaweed',
+        category = 'material',
+        weight = 100,
+        description = 'Sell it at the fish market.',
+    },
+
+    ['junk_can'] = {
+        label = 'Soda Can',
+        category = 'misc',
+        weight = 50,
+        client = { image = 'trash_can.png' },
+    },
+
+    ['junk_boot'] = {
+        label = 'Old Boot',
+        category = 'misc',
+        weight = 800,
+        client = { image = 'trash.png' },
+    },
+
+    ['junk_tire'] = {
+        label = 'Tire',
+        category = 'misc',
+        weight = 8000,
+        client = { image = 'trash.png' },
+    },
+
+    ['junk_newspaper'] = {
+        label = 'Soggy Newspaper',
+        category = 'misc',
+        weight = 200,
+        client = { image = 'trash.png' },
+    },
+
+    ['fishing_pearl'] = {
+        label = 'Pearl',
+        category = 'valuable',
+        weight = 20,
+        description = 'Found in a fishing chest.',
+    },
 }

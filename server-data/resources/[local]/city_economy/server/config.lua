@@ -42,6 +42,19 @@ return {
             { reason = '^dealership%-payoff$', debit = true },
             { reason = '^dealership%-refund$', credit = true, perHour = 5000000 },
         },
+        -- Fishing: selling the catch, tournament prizes, the shop (licence, gear, repairs, skill reset) and the boat
+        -- rental (fee, deposit, and the deposit back)
+        city_fishing = {
+            { reason = '^fishing%-sell$', credit = true, perHour = 150000 },
+            { reason = '^fishing%-tournament$', credit = true, perHour = 50000 },
+            { reason = '^fishing%-boat%-refund$', credit = true, perHour = 20000 },
+            { reason = '^fishing%-shop$', debit = true },
+            { reason = '^fishing%-licence$', debit = true },
+            { reason = '^fishing%-repair$', debit = true },
+            { reason = '^fishing%-respec$', debit = true },
+            { reason = '^fishing%-boat%-rent$', debit = true },
+            { reason = '^fishing%-boat%-deposit$', debit = true },
+        },
         -- Phone Market: the fee to publish or renew an ad
         city_phone_market = {
             { reason = '^market%-ad$', debit = true },
