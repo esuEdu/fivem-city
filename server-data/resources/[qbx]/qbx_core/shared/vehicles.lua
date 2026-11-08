@@ -2970,6 +2970,16 @@ return {
         type = 'automobile',
         hash = `gburrito2`,
     },
+    -- Add-on car from [assets]/gemera
+    gemera = {
+        name = 'Gemera',
+        brand = 'Koenigsegg',
+        model = 'gemera',
+        price = 2000000,
+        category = 'super',
+        type = 'automobile',
+        hash = `gemera`,
+    },
     glendale = {
         name = 'Glendale',
         brand = 'Benefactor',

@@ -18,6 +18,7 @@ None known.
 
 - **qbx_core:** uses `city_inventory` (`scripts/patches/qbx_core.patch`).
 - **qbx_medical:** tells the server when a revive is real (`qbx_medical:server:revived`), so city_hospital can keep a finished-off player down (`scripts/patches/qbx_medical.patch`).
+- **qbx_core** and **qbx_vehicleshop:** the `gemera` add-on car is in qbx_core's vehicle list and on the dealership's blocklist, so it can be spawned but isn't sold (`scripts/patches/qbx_core.patch`, `scripts/patches/qbx_vehicleshop.patch`).
 - **qbx_radialmenu:** the dead **Give Contact Details** button is removed, and the police buttons fire city_police's events (Kidnap, Take Hostage and Revoke Drivers License are gone) (`scripts/patches/qbx_radialmenu.patch`).
 - **qbx_core:** BCSO and SASP are removed from `shared/jobs.lua` and police start off duty (they clock in at a station) (`scripts/patches/qbx_core.patch`).
 
