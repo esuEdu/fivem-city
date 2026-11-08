@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>city_mechanic</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="app.js"></script>
+</head>
+<body>
+    <div id="stage" class="stage hidden">
+        <aside class="menu">
+            <header class="menu__head">
+                <span id="kicker" class="menu__kicker"></span>
+                <h1 id="title"></h1>
+                <div class="menu__car">
+                    <span id="model"></span>
+                    <b id="plate" class="plate"></b>
+                </div>
+            </header>
+
+            <nav class="crumbs">
+                <button id="back" class="crumbs__back hidden" aria-label="Back">&#8249;</button>
+                <span id="crumb"></span>
+            </nav>
+
+            <div id="search-row" class="search hidden">
+                <input id="search" type="text" autocomplete="off" spellcheck="false">
+            </div>
+
+            <ul id="list" class="list"></ul>
+        </aside>
+
+        <section class="order">
+            <header class="order__head">
+                <h2 id="order-title"></h2>
+                <div class="account">
+                    <span id="account-label"></span>
+                    <b id="balance"></b>
+                </div>
+            </header>
+
+            <label id="repair" class="repair">
+                <input id="repair-check" type="checkbox">
+                <span id="repair-label"></span>
+                <b id="repair-price"></b>
+            </label>
+
+            <ul id="cart" class="cart"></ul>
+            <p id="cart-empty" class="cart__empty"></p>
+
+            <footer class="order__foot">
+                <div class="total"><span id="total-label"></span><b id="total"></b></div>
+                <div class="order__buttons">
+                    <button id="reset" class="btn btn--ghost"></button>
+                    <button id="confirm" class="btn btn--accent"></button>
+                </div>
+                <button id="close" class="btn btn--ghost btn--wide"></button>
+            </footer>
+        </section>
+
+        <p id="hint" class="hint"></p>
+    </div>
+</body>
+</html>

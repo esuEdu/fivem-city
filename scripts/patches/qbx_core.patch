@@ -816,7 +816,7 @@ index 9fb3dbc..f266bfa 100644
  
      if player.Offline then
 diff --git a/server-data/resources/[qbx]/qbx_core/shared/jobs.lua b/server-data/resources/[qbx]/qbx_core/shared/jobs.lua
-index d995d19..744b03a 100644
+index d995d19..c3c4ebe 100644
 --- a/server-data/resources/[qbx]/qbx_core/shared/jobs.lua
 +++ b/server-data/resources/[qbx]/qbx_core/shared/jobs.lua
 @@ -15,67 +15,7 @@ return {
@@ -888,7 +888,7 @@ index d995d19..744b03a 100644
          offDutyPay = false,
          grades = {
              [0] = {
-@@ -132,221 +72,4 @@ return {
+@@ -132,105 +72,6 @@ return {
              },
          },
      },
@@ -991,36 +991,13 @@ index d995d19..744b03a 100644
 -            },
 -        },
 -    },
--    ['mechanic'] = {
--        label = 'Mechanic',
--        type = 'mechanic',
--        defaultDuty = true,
--        offDutyPay = false,
--        grades = {
--            [0] = {
--                name = 'Recruit',
--                payment = 50
--            },
--            [1] = {
--                name = 'Novice',
--                payment = 75
--            },
--            [2] = {
--                name = 'Experienced',
--                payment = 100
--            },
--            [3] = {
--                name = 'Advanced',
--                payment = 125
--            },
--            [4] = {
--                name = 'Manager',
--                isboss = true,
--                bankAuth = true,
--                payment = 150
--            },
--        },
--    },
+     ['mechanic'] = {
+         label = 'Mechanic',
+         type = 'mechanic',
+@@ -261,92 +102,4 @@ return {
+             },
+         },
+     },
 -    ['judge'] = {
 -        label = 'Honorary',
 -        defaultDuty = true,

@@ -344,6 +344,7 @@
     "reason_bank_loan_payment": "Loan installment",
     "reason_bank_savings_yield": "Savings yield",
     "reason_bank_cashback": "Cashback",
+    "reason_bank_job_purchase": "Business purchase",
     "reason_other": "Other",
     "bank_name": "Los Santos Bank",
     "refresh": "Refresh",
