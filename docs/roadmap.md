@@ -69,6 +69,7 @@ Our own racing system, replacing `qbx_lapraces` and `qbx_streetraces`. Needs a d
 
 ## Phase 2: Car life
 
+- [x] Dealership: city_dealership replaces qbx_vehicleshop (catalogue computer with photos and stats, test drives, financing through bank bills)
 - [ ] Dealership prices and classes; a ladder from starter cars to supercars
 - [ ] Tuning (qbx_customs) feeds into the car rating
 - [ ] Car meets

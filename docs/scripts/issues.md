@@ -18,7 +18,8 @@ None known.
 
 - **qbx_core:** uses `city_inventory` (`scripts/patches/qbx_core.patch`).
 - **qbx_medical:** tells the server when a revive is real (`qbx_medical:server:revived`), so city_hospital can keep a finished-off player down (`scripts/patches/qbx_medical.patch`).
-- **qbx_core** and **qbx_vehicleshop:** the `gemera` add-on car is in qbx_core's vehicle list and on the dealership's blocklist, so it can be spawned but isn't sold (`scripts/patches/qbx_core.patch`, `scripts/patches/qbx_vehicleshop.patch`).
+- **qbx_core** and **city_dealership:** the `gemera` add-on car is in qbx_core's vehicle list and on the dealership's `Config.Blocklist`, so it can be spawned but isn't sold (`scripts/patches/qbx_core.patch`).
+- **qbx_vehiclesales:** asks city_dealership (`FinanceBalance`) whether a car is still being paid off, instead of qbx_vehicleshop's `vehicle_financing` table (`scripts/patches/qbx_vehiclesales.patch`).
 - **qbx_radialmenu:** the dead **Give Contact Details** button is removed, and the police buttons fire city_police's events (Kidnap, Take Hostage and Revoke Drivers License are gone) (`scripts/patches/qbx_radialmenu.patch`).
 - **qbx_core:** BCSO and SASP are removed from `shared/jobs.lua` and police start off duty (they clock in at a station) (`scripts/patches/qbx_core.patch`).
 
@@ -46,13 +47,14 @@ The stand-in has to stay: about 40 scripts call `exports.ox_inventory`, ox_fuel 
 | qbx_core `paycheck` | Salary, capped at $20,000/hour per character. |
 | city_inventory shops and trades | Our own code, already validated on the server. |
 | city_garages (impound lot fee `garage-depot`, refund `garage-refund`) | Our own code; the fee is worked out on the server. |
+| city_dealership (debit `dealership-buy`, `dealership-payoff`; refund `dealership-refund`) | Our own code; prices come from qbx_core's vehicle list on the server. Installments are city_bank bills. |
 | city_staff Give money (credit, `staff-grant`, $1,000,000 per character per hour) | Admins only, with a reason written to the staff log. |
 | illenium-appearance (debit only) | Clothing store charges; it checks the result, so a refused charge means no purchase. |
 | The `money` item via `RemoveItem` (debit only, reason `inventory-cash-item`) | Lets ox_fuel charge cash. `AddItem('money')` stays blocked: any script could otherwise create cash. |
 
-Blocked until rewritten (they stop paying or charging): qbx_taxijob (also trusts the fare sent by the client), qbx_truckerjob, qbx_towjob, qbx_garbagejob, qbx_busjob, qbx_diving, qbx_pawnshop, qbx_storerobbery, qbx_truckrobbery, qbx_streetraces, qbx_properties, qbx_customs, qbx_cityhall, qbx_carwash, qbx_vehicleshop, qbx_vehiclesales and qbx_drugs.
+Blocked until rewritten (they stop paying or charging): qbx_taxijob (also trusts the fare sent by the client), qbx_truckerjob, qbx_towjob, qbx_garbagejob, qbx_busjob, qbx_diving, qbx_pawnshop, qbx_storerobbery, qbx_truckrobbery, qbx_streetraces, qbx_properties, qbx_customs, qbx_cityhall, qbx_carwash, qbx_vehiclesales and qbx_drugs. qbx_vehicleshop was replaced by city_dealership.
 
-Renewed-Banking was removed. qbx_vehicleshop (society funds) still calls `exports['Renewed-Banking']` and error when they reach that line, until job accounts exist in city_bank.
+Renewed-Banking was removed.
 
 ### Known limits of city_bank
 
