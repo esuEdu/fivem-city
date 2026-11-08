@@ -39,6 +39,10 @@ return {
         city_phone_market = {
             { reason = '^market%-ad$', debit = true },
         },
+        -- Staff app: Give money (admins, a reason is required and written to the staff log)
+        city_staff = {
+            { reason = '^staff%-grant$', credit = true, perHour = 1000000 },
+        },
         ['illenium-appearance'] = {
             { reason = '^unknown$', debit = true },
         },

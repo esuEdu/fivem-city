@@ -30,6 +30,7 @@ Config.Permissions = {
     setJob = 'admin',
     setGang = 'admin',
     setStats = 'admin',   -- armor, hunger, thirst
+    giveMoney = 'admin',  -- cash or bank, with a reason (city_economy caps it per character per hour)
 
     -- ban list, staff log, and the Team tab (how each staff member is doing)
     unban = 'admin',
@@ -47,6 +48,9 @@ Config.Permissions = {
     -- vehicles
     spawnVehicle = 'admin',
 }
+
+-- Most one Give money can add (the economy also caps staff grants at $1,000,000 per character per hour)
+Config.MaxGiveMoney = 1000000
 
 -- Longest ban (hours) for staff without banLong
 Config.MaxBanHours = 168
