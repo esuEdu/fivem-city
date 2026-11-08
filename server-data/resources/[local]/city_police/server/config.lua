@@ -7,6 +7,14 @@ return {
     maxFine = 100000, -- cap on one fine (also city_bank's bill cap)
     chargeRange = 10.0, -- an arrest needs the suspect this close; a fine doesn't
 
+    -- An arrest is booked only with the suspect cuffed or down, and the officer inside one of these places
+    -- (an empty list allows anywhere). Fines are not limited.
+    bookingPlaces = {
+        { label = 'Mission Row', coords = vec3(441.0, -981.0, 30.7), radius = 60.0 },
+        { label = 'Paleto Bay', coords = vec3(-448.4, 6011.8, 31.7), radius = 40.0 },
+        { label = 'Bolingbroke', coords = vec3(1699.86, 2605.15, 45.56), radius = 200.0 }, -- city_prison's circle
+    },
+
     -- Licences: points counted over this many days; at maxPoints the driver licence goes
     pointsDays = 30,
     maxPoints = 20,
