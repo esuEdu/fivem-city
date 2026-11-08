@@ -198,7 +198,8 @@ Config.Cameras = {
 
 Config.Ranges = {
     place = 2.5, -- station places
-    player = 3.0, -- cuffing, escorting, searching
+    cuff = 2.0, -- cuffing and soft cuffing
+    player = 3.0, -- escorting, searching, the other actions on a player
     vehicle = 6.0, -- putting someone in a car, impounding
 }
 
