@@ -15,7 +15,6 @@ FILES=(
   "$RES/[qbx]/qbx_core/qbx_core.sql"
   "$RES/[qbx]/qbx_vehicles/vehicles.sql"
   "$RES/[qbx]/qbx_vehiclesales/qbx_vehiclesales.sql"
-  "$RES/[qbx]/qbx_vehicleshop/vehshop.sql"
   "$RES/[qbx]/qbx_weed/sql/qbx_weed.sql"
   "$RES/[qbx]/qbx_lapraces/qbx_lapraces.sql"
   "$RES/[qbx]/qbx_drugs/qbx_drugs.sql"
