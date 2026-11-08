@@ -135,10 +135,10 @@ end
 ---@return integer? target
 ---@return string? reason
 local function reach(callerSrc, callerNumber, number)
-    local target = exports.qbx_core:GetPlayerByPhone(number)
+    local src = common.online(number)
+    local target = src and exports.qbx_core:GetPlayer(src)
     if not target then return nil, 'unavailable' end
 
-    local src = target.PlayerData.source
     if src == callerSrc then return nil, 'self' end
     if not common.hasPhone(src) or Player(src).state.isDead then return nil, 'unavailable' end
     if inCall[src] then return nil, 'busy' end
@@ -187,7 +187,7 @@ lib.callback.register('city_phone_calls:dial', function(source, number, hidden)
     nextId = nextId + 1
 
     local call = { id = nextId, members = {}, ringing = {}, active = false }
-    call.members[src] = { number = myNumber, hidden = hidden == true, since = os.time(), dialed = number, answered = false }
+    call.members[src] = { number = myNumber, hidden = hidden == true or common.isBurner(src), since = os.time(), dialed = number, answered = false }
 
     active[call.id] = call
     inCall[src] = call.id

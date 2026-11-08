@@ -1,0 +1,21 @@
+{
+    "anonymous": "Anonymous",
+    "caller": "%s (%s)",
+    "ems_call": "192 · %s · %s: %s",
+    "on_the_way_police": "The police are on the way",
+    "on_the_way_ems": "EMS are on the way",
+    "on_the_way_mechanic": "A mechanic is on the way",
+    "respond": "Respond",
+    "responding": "Route set to the call",
+    "call_gone": "That call is no longer open",
+    "call_closed": "Call closed",
+    "no_calls": "No open calls",
+    "menu_title": "Calls · %s",
+    "menu_desc": "%s ago · %s · %s",
+    "menu_responders": "%s responding",
+    "menu_respond": "Respond (set GPS)",
+    "menu_close": "Close call",
+    "not_responder": "You are not on duty for a service",
+    "command_help": "Open calls for your service",
+    "use_mdt": "Police calls are in the MDT on your tablet"
+}

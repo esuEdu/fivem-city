@@ -270,6 +270,11 @@ function shops.buy(src, inventory, shopSlot, toSlot, count)
         return false, 'inventory_full'
     end
 
+    -- city_police registers every weapon bought in a shop by its serial
+    if Items[item.name].weapon then
+        TriggerEvent('city_inventory:server:boughtWeapon', src, item.name, metadata, shop.label)
+    end
+
     if left[shopSlot] then
         left[shopSlot] = left[shopSlot] - count
 

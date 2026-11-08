@@ -3,6 +3,10 @@ Config = {}
 -- The item that opens the phone (used from the inventory). The phone always shows its user's own data.
 Config.Item = 'phone'
 
+-- A burner phone (city_prison contraband): its own number, calls always hidden, and only these apps
+Config.BurnerItem = 'burner_phone'
+Config.BurnerApps = { calls = true, messages = true }
+
 -- Choices in Settings. The first of each list is the default.
 Config.Themes = { 'dark', 'light' }
 Config.Languages = { 'en', 'pt-br' }

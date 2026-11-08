@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="screen.css">
+</head>
+<body>
+    <section id="arrest" class="arrest hidden" role="dialog" aria-modal="true" aria-labelledby="arrest-title">
+        <div class="arrest-card">
+            <div class="bars" aria-hidden="true"></div>
+            <h1 id="arrest-title"></h1>
+            <p class="months" id="arrest-months"></p>
+            <p class="fine" id="arrest-fine"></p>
+            <h2 id="arrest-charges-label"></h2>
+            <ul id="arrest-charges"></ul>
+            <p class="officer" id="arrest-officer"></p>
+            <button type="button" id="arrest-ok"></button>
+        </div>
+    </section>
+
+    <section id="camera" class="camera hidden" aria-live="polite">
+        <div class="cam-top">
+            <span class="rec"><i></i>REC</span>
+            <span id="cam-label"></span>
+            <span id="cam-time"></span>
+        </div>
+        <div class="cam-offline hidden" id="cam-offline"></div>
+        <div class="cam-bottom" id="cam-help"></div>
+    </section>
+
+    <script src="screen.js"></script>
+</body>
+</html>

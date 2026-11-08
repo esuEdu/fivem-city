@@ -34,6 +34,7 @@ Everything players control (races, garage, tuning, leaderboards, events, profile
   - [ ] **Jobs (illegal)**: drugs, robberies, chop shop, …; hidden from the home screen until unlocked (an item, a contact or reputation), so a police search of the tablet doesn't show it; contacts, jobs on offer, reputation
   - [ ] **Staff**: only for staff (`group.support`/`mod`/`admin`): player list, spectate, teleport to/bring, heal/revive, freeze, open a player's inventory, warn/kick/ban, and reports from players
     - Built as `city_staff` ([city-staff.md](city-staff.md)), replacing qbx_adminmenu and txAdmin's in-game menu; waiting for the in-game test.
+  - [ ] **MDT** (police): built as `city_police` ([city-police.md](city-police.md)) with the whole police job, replacing qbx_police; waiting for the in-game test. Arrests send the suspect to `city_prison` ([city-prison.md](city-prison.md)).
 - [ ] Every app action is checked again on the server (job, grade, illegal unlock, staff group + `IsOptin`): hiding an app is only UX
 
 **What goes where:**
@@ -85,7 +86,15 @@ Restyle in the inventory's style (`city_ui` theme):
   - [ ] Social apps: dating ("Tinder"-style), photos ("Instagram"-style), Twitter-style
   - [x] Base (`city_phone`): lock screen, home, dynamic island, control center, multitask, Settings (theme, font, language, wallpaper), and an API for app resources (`exports.city_phone:RegisterApp`)
   - [x] Phone app (`city_phone_calls`): calls with pma-voice (conference up to 4, mute, hidden number, ringtones others hear), contacts, favorites, recents, blocking, sharing your contact
-  - [x] Messages app (`city_phone_messages`): chats, groups, delivered/read, reactions, fixed and live location
+  - [x] City services (`city_dispatch`): 190 police, 192 EMS and mechanic as fixed contacts; a written call with type, location and an anonymous option goes to whoever is on duty (notification, blip, `/calls`; EMS in the hospital's list)
+  - [x] Messages app (`city_phone_messages`): chats, groups, delivered/read, reactions, fixed and live location, and the route set on your map
+  - [x] Maps app (`city_phone_gps`): opens the game map (route, your position) and shows or clears the route you have set
+  - [x] Market app (`city_phone_market`): classified ads with a fee, expiry, limit, photo, favorites, contact through Messages, staff removal
+  - [x] InstaPic (`city_phone_social`): photo posts, likes, comments, follows and feed, explore, 24-hour stories, notifications, staff removal
+  - [x] Matchy (`city_phone_dating`): dating profiles with photos, like or pass, matches, private chat, unmatch
+  - [x] DarkChat (`city_phone_darkchat`): anonymous rooms by name and password with an alias, only with the encrypted USB, messages gone after 24 h
+  - [x] Weazel News (`city_phone_news`): articles by reporters on duty, breaking news to every phone, likes and comments
+  - [x] Music (`city_phone_music`): YouTube search and links, audio links, library, playlists, shuffle/repeat, mini player and island
   - [x] Camera (`city_phone_camera`) and Photos (`city_phone_photos`): back camera, selfie, zoom, filters, clean HUD; photos in the database, favorites, photo wallpaper
   - [x] Replace what uses npwd today: the `phone` item's on/off (`city_inventory/data/items.lua`), qbx_vehicleshop (falls back to an ox_lib dialog on its own), the qbx_npwd bridge, and the npwd garage and mail apps (their features move to City OS / the new phone)
   - [x] Remove npwd, qbx_npwd and `[npwd-apps]` from `install-resources.sh` and `server.cfg`

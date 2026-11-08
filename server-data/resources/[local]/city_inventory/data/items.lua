@@ -561,6 +561,14 @@ return {
         weight = 100,
     },
 
+    ['darkchat_usb'] = {
+        label = 'Encrypted USB',
+        category = 'electronics',
+        weight = 50,
+        description = 'Opens DarkChat on your phone while you carry it',
+        client = { image = 'usb_black.png' },
+    },
+
     ['trojan_usb'] = {
         label = 'Trojan USB',
         category = 'electronics',
@@ -738,5 +746,61 @@ return {
         label = 'Handcuffs',
         category = 'tool',
         weight = 200,
+    },
+
+    -- Prison contraband (city_prison): parts found in hidden spots, combined into the three below
+    ['prison_scrap'] = {
+        label = 'Scrap Metal',
+        category = 'material',
+        weight = 150,
+        description = 'A sharp piece of metal from somewhere it should not be',
+        client = { image = 'scrapmetal.png' },
+    },
+
+    ['prison_cloth'] = {
+        label = 'Cloth Strip',
+        category = 'material',
+        weight = 50,
+        description = 'Torn from a prison uniform',
+        client = { image = 'rubber.png' },
+    },
+
+    ['prison_wire'] = {
+        label = 'Copper Wire',
+        category = 'material',
+        weight = 80,
+        client = { image = 'copper.png' },
+    },
+
+    ['prison_battery'] = {
+        label = 'Small Battery',
+        category = 'electronics',
+        weight = 60,
+        client = { image = 'lighter.png' },
+    },
+
+    ['prison_circuit'] = {
+        label = 'Circuit Board',
+        category = 'electronics',
+        weight = 80,
+        client = { image = 'tunerchip.png' },
+    },
+
+    ['prison_jammer'] = {
+        label = 'Improvised Jammer',
+        category = 'electronics',
+        weight = 300,
+        description = 'Opens a prison gate terminal, if your hands are steady',
+        client = { image = 'radiojammer.png' },
+    },
+
+    ['burner_phone'] = {
+        label = 'Burner Phone',
+        category = 'electronics',
+        weight = 150,
+        stack = false,
+        consume = 0,
+        description = 'Unknown number. Contacts and messages only.',
+        client = { image = 'samsungphone.png' },
     },
 }

@@ -19,11 +19,21 @@ local function send(action, data)
     SendNUIMessage(data)
 end
 
+-- A burner phone shows only Config.BurnerApps
+local burnerOnly = false
+
+---@param value boolean
+function apps.setBurner(value)
+    burnerOnly = value == true
+end
+
 ---@return table[]
 function apps.list()
     local list = {}
 
-    for _, app in pairs(registered) do list[#list + 1] = app end
+    for _, app in pairs(registered) do
+        if not burnerOnly or Config.BurnerApps[app.id] then list[#list + 1] = app end
+    end
     table.sort(list, function(a, b) return a.order < b.order end)
 
     return list

@@ -16,6 +16,8 @@ GetPlayerPed = function() return 1 end
 GetEntityCoords = function() return pos end
 local sent = {}
 TriggerClientEvent = function(name, src, data) sent[#sent + 1] = { name = name, src = src, data = data } end
+local events = {}
+TriggerEvent = function(name, ...) events[#events + 1] = { name = name, args = { ... } } end
 GetInvokingResource = function() return 'test' end
 local money = { cash = 100, bank = 1000 }
 local player = { PlayerData = { job = { name = 'police', grade = { level = 1 } }, gang = { name = 'none', grade = { level = 0 } }, metadata = { licences = { weapon = false } }, charinfo = { firstname = 'Ana', lastname = 'Silva' } } }
@@ -79,6 +81,9 @@ assert(shops.buy(1, inv, 3, nil, 5))  -- weapons one at a time
 local pistols = search.slots(inv.items, 'WEAPON_PISTOL'); assert(#pistols == 1)
 local m = inv.items[pistols[1]].metadata
 assert(m.registered == 'Ana Silva' and m.serial:sub(1, 3) == 'POL' and #m.serial > 3)
+-- city_police registers the weapon by its serial
+assert(#events == 1 and events[1].name == 'city_inventory:server:boughtWeapon' and events[1].args[1] == 1)
+assert(events[1].args[2] == 'WEAPON_PISTOL' and events[1].args[3].serial == m.serial)
 -- grade
 assert(select(2, shops.buy(1, inv, 4)) == 'no_access')
 player.PlayerData.job.grade.level = 2

@@ -1,7 +1,7 @@
 -- Client events scripts still send to the old QBCore phone (qb-phone): they become phone notifications.
 local notify = exports[cache.resource]
 
--- qbx_police / qbx_truckrobbery alerts (tracker, robbery)
+-- qbx_truckrobbery alerts (robbery)
 RegisterNetEvent('qb-phone:client:addPoliceAlert', function(alert)
     if type(alert) ~= 'table' then return end
 
