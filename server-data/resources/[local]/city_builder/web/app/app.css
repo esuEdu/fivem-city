@@ -1,0 +1,5 @@
+.wrap { max-width: 640px; margin: 0 auto; padding: 32px 28px 40px; display: flex; flex-direction: column; gap: 14px; }
+.intro { margin: 0 4px; color: var(--muted); line-height: 1.5; }
+.start { height: 46px; font-size: 15px; }
+.keys-head { margin-top: 12px; padding-left: 4px; }
+.kit-row .key { font-size: 13px; }

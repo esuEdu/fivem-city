@@ -120,3 +120,4 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_phone** | See Communication above. |
 | **city_os** | The iFruit Pad tablet (item + F2): lock screen, home, notifications, Settings, and the platform other scripts add their apps to. See [city-os.md](../city-os.md). |
 | **city_staff** | The **Staff** tablet app (replaced qbx_adminmenu): players and actions, `/report` reports, warnings, bans, staff log, noclip and other staff tools, vehicles. See [city-staff.md](../city-staff.md). |
+| **city_builder** | The **Builder** tablet app for admins: a freecam editor to place props from every GTA prop (plus the ones other resources stream), with a 3D preview, moving/rotating/snapping, groups, duplicate, undo/redo, and hiding map props. Saved in the database and seen by everyone. |
