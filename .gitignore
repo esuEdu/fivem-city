@@ -8,6 +8,9 @@ artifacts/*
 
 # FXServer / txAdmin runtime data
 /server-data/cache/
+/server-data/db/
+/server-data/.replxx_history
+*.bkp
 txData/
 *.log
 crashes/

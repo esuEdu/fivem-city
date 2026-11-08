@@ -73,7 +73,8 @@ AddEventHandler('QBCore:Server:SetDuty', function(src, onDuty)
     util.notify(src, 'notify_no_duty', 'error')
 end)
 
-AddEventHandler('QBCore:Server:OnPlayerLoaded', function()
+-- qbx_core's client fires this once the character has spawned (a net event, so it must be registered as one)
+RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
     local src = source
     -- qbx_core's own handler sets isLoggedIn first; give it a moment
     SetTimeout(1000, function() inmates.loaded(src) end)

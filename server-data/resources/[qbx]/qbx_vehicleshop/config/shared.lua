@@ -219,6 +219,7 @@ return {
             'police2',
             'police3',
             'police4',
+            'gemera', -- add-on car, spawn only
         }
     },
 
