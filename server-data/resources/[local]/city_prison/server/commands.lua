@@ -30,3 +30,33 @@ lib.addCommand('testjail', {
     lib.print.info(('city_prison: %s sent %s to prison for %d months (testjail)'):format(source == 0 and 'console' or GetPlayerName(source), GetPlayerName(target), months))
     reply(locale('test_jailed', GetPlayerName(target), months))
 end)
+
+-- Test command: lets a player out (yourself by default), with their belongings, or clears an escape
+lib.addCommand('testrelease', {
+    help = locale('command_testrelease'),
+    params = {
+        { name = 'id', type = 'playerId', help = locale('param_id'), optional = true },
+    },
+    restricted = 'group.admin',
+}, function(source, args)
+    local target = args.id or (source ~= 0 and source or nil)
+
+    local function reply(text)
+        if source == 0 then return lib.print.info(text) end
+        exports.qbx_core:Notify(source, text, 'inform')
+    end
+
+    local player = target and exports.qbx_core:GetPlayer(target)
+    if not player then return reply(locale('test_no_player')) end
+
+    local citizenid = player.PlayerData.citizenid
+    local row = inmates.row(citizenid)
+    if not row then return reply(locale('test_not_inmate', GetPlayerName(target))) end
+
+    -- setTime to 0 releases an online inmate straight away (inmates.setTime)
+    local done = row.status == 'escaped' and inmates.clearEscape(citizenid, 'Staff test') or inmates.setTime(citizenid, 0, 'Staff test')
+    if not done then return reply(locale('test_failed')) end
+
+    lib.print.info(('city_prison: %s let %s out (testrelease)'):format(source == 0 and 'console' or GetPlayerName(source), GetPlayerName(target)))
+    reply(locale('test_released', GetPlayerName(target)))
+end)

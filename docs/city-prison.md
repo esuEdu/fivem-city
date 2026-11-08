@@ -25,14 +25,14 @@ Bolingbroke Penitentiary. Replaces xt-prison. Decisions were made with the serve
 
 ## Getting out
 
-- When the time is up the counter says so; the inmate goes to the release desk. Whatever was made or found inside is taken (cash stays), the locker comes back and the player is let out at the gate with their own clothes. What doesn't fit stays in the locker; "Collect belongings" at the same desk gives it back later.
-- Police can set the time to zero on the prison computer; the inmate still walks out through the desk.
+- When the time is up the inmate is let out on their own, with no trip to the desk: whatever was made or found inside is taken (cash stays), the locker comes back and the player appears at the gate (`Config.Freedom`) with their own clothes. What doesn't fit stays in the locker; "Collect belongings" at the release desk gives it back later.
+- Police can set the time to zero on the prison computer; an inmate who is online is let out the same way at once.
 
 ## Escapes
 
 - Gate terminals (`Config.Terminals`) need a jammer or a trojan USB, a progress bar and a skill check. Success opens the gate (an ox_doorlock door, created by name on start if missing) for `openSeconds`. The alarm and losing the item are chances (`hack` in `server/config.lua`); the alarm sounds around the prison and the police get a call. Anyone can hack, from inside or outside.
 - The server checks every few seconds whether an inmate is outside the prison circle (`Config.Prison`). That is the escape: the time left times `escapeMultiplier` is owed, the police get a call and an MDT warrant (`exports.city_police:IssueWarrant`) for `warrantDays`. The next arrest serves the warrant and adds the debt.
-- Walking out with the time already served is not an escape; the belongings wait at the desk.
+- Walking out with the time already served is not an escape, just a release (belongings back).
 
 ## Prison computer
 
@@ -42,7 +42,7 @@ At the front desk, for police on duty. Grades per action are `Config.ComputerGra
 |---|---|
 | view | Inmates serving (time left, sentence, reduced, online) and escapees (months owed), and the log |
 | setTime | Change the time left (works offline) |
-| release | Time left to zero; the inmate leaves through the desk |
+| release | Time left to zero; the inmate is let out with their belongings |
 | clearEscape | Forget an escape debt |
 
 ## Data
@@ -53,4 +53,4 @@ At the front desk, for police on duty. Grades per action are `Config.ComputerGra
 
 ## Coordinates to check in game
 
-Infirmary, job board, job spots, fountains, contraband spots and the gate doors were placed without the game open (`-- check` in `config.lua`). The spawns, desk, computer, terminals and the circle come from xt-prison.
+Job spots, fountains, three contraband spots and the gate doors were placed without the game open. The spawns, infirmary, job board and two contraband spots are qb-prison's yard positions (xt-prison's were inside the cell blocks, which have no interior without a prison MLO). The desk, computer, terminals and the circle come from xt-prison. Admins test with `/testjail [id] [months]` and `/testrelease [id]`, and place points with `/coords` (city_base), which copies the position as a vec4.

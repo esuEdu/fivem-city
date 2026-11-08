@@ -2,15 +2,14 @@
     "locker": "Prison locker",
 
     "welcome_title": "Bolingbroke Penitentiary",
-    "welcome_text": "You are serving %s months. Work at the job board to cut your time; when it is up, go to the release desk.",
+    "welcome_text": "You are serving %s months. Work at the job board to cut your time; when it is up you are let out with your belongings.",
     "counter_label": "Sentence",
     "counter_months": "%s months left",
-    "counter_done": "Time served: go to the release desk",
+    "counter_done": "Time served",
 
     "notify_seized": "Illegal items were seized and sent to the evidence locker",
-    "notify_time_up": "Your time is up. Go to the release desk.",
     "notify_time_changed": "Your sentence was changed: %s months left",
-    "notify_released_by_police": "You are being released. Go to the release desk.",
+    "notify_released_by_police": "You were released",
     "notify_belongings_back": "Your belongings were given back",
     "notify_belongings_partial": "Not everything fit; collect the rest at the prison release desk",
     "notify_escaped": "You escaped! The police have a warrant for you.",
@@ -102,5 +101,8 @@
     "test_no_player": "No such player",
     "test_bad_months": "Months must be between 1 and %s",
     "test_failed": "Could not send them to prison",
-    "test_jailed": "%s is in prison for %s months"
+    "test_jailed": "%s is in prison for %s months",
+    "command_testrelease": "Test: let a player (you by default) out of prison with their belongings",
+    "test_not_inmate": "%s is not in prison",
+    "test_released": "%s was let out"
 }
