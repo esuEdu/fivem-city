@@ -15,24 +15,27 @@
       <animConvRoofName>null</animConvRoofName>
       <animConvRoofWindowsAffected />
       <ptfxAssetName>null</ptfxAssetName>
-      <audioNameHash>zentorno</audioNameHash>
-      <layout>LAYOUT_STANDARD</layout>
-      <coverBoundOffsets>ZENTORNO_COVER_OFFSET_INFO</coverBoundOffsets>
+      <!-- entity3 = Överflöd Entity MT, GTA's Koenigsegg Jesko: Koenigsegg twin-turbo V8 like the Gemera HV8 -->
+      <audioNameHash>entity3</audioNameHash>
+      <!-- 2 seats, low supercar posture: the Entity MT's layout (GTA's Koenigsegg Jesko). The model's
+           seat bones are placed with the Entity MT's measured seat/steering-wheel/roof spacing. -->
+      <layout>LAYOUT_LOW_ENTITY3</layout>
+      <coverBoundOffsets>GEMERA_COVER_OFFSET_INFO</coverBoundOffsets>
       <explosionInfo>EXPLOSION_INFO_DEFAULT</explosionInfo>
       <scenarioLayout />
       <cameraName>FOLLOW_CHEETAH_CAMERA</cameraName>
       <aimCameraName>DEFAULT_THIRD_PERSON_VEHICLE_AIM_CAMERA</aimCameraName>
-      <bonnetCameraName>VEHICLE_BONNET_CAMERA_LOW</bonnetCameraName>
-      <povCameraName>DEFAULT_POV_CAMERA</povCameraName>
-      <FirstPersonDriveByIKOffset x="0.000000" y="-0.060000" z="-0.065000" />
-      <FirstPersonDriveByUnarmedIKOffset x="0.000000" y="-0.100000" z="0.000000" />
+      <bonnetCameraName>VEHICLE_BONNET_CAMERA_LOW_CALICO</bonnetCameraName>
+      <povCameraName>REDUCED_NEAR_CLIP_POV_CAMERA_NO_REVERSE</povCameraName>
+      <FirstPersonDriveByIKOffset x="0.010000" y="-0.170000" z="-0.030000" />
+      <FirstPersonDriveByUnarmedIKOffset x="-0.020000" y="-0.140000" z="-0.020000" />
       <FirstPersonProjectileDriveByIKOffset x="0.000000" y="0.000000" z="0.000000" />
       <FirstPersonProjectileDriveByPassengerIKOffset x="0.000000" y="0.000000" z="0.000000" />
       <FirstPersonDriveByRightPassengerIKOffset x="0.000000" y="-0.060000" z="-0.065000" />
       <FirstPersonDriveByRightPassengerUnarmedIKOffset x="0.000000" y="-0.100000" z="0.000000" />
-      <FirstPersonMobilePhoneOffset x="0.155000" y="0.208000" z="0.480000" />
+      <FirstPersonMobilePhoneOffset x="0.130000" y="0.213000" z="0.510000" />
       <FirstPersonPassengerMobilePhoneOffset x="0.136000" y="0.223000" z="0.425000" />
-      <PovCameraOffset x="0.000000" y="-0.200000" z="0.585000" />
+      <PovCameraOffset x="0.000000" y="-0.210000" z="0.625000" />
       <PovCameraVerticalAdjustmentForRollCage value="0.000000" />
       <PovPassengerCameraOffset x="0.000000" y="0.000000" z="0.000000" />
       <PovRearPassengerCameraOffset x="0.000000" y="0.000000" z="0.000000" />
@@ -65,7 +68,7 @@
         500.000000
         500.000000
       </lodDistances>
-      <minSeatHeight value="0.850000" />
+      <minSeatHeight value="0.659" />
       <identicalModelSpawnDistance value="20" />
       <maxNumOfSameColor value="10" />
       <defaultBodyHealth value="1000.000000" />
@@ -76,7 +79,7 @@
       <frequency value="10" />
       <swankness>SWANKNESS_5</swankness>
       <maxNum value="2" />
-      <flags>FLAG_SPORTS FLAG_SPAWN_ON_TRAILER FLAG_RICH_CAR</flags>
+      <flags>FLAG_SPORTS FLAG_SPAWN_ON_TRAILER FLAG_PARKING_SENSORS FLAG_RICH_CAR FLAG_NO_BROKEN_DOWN_SCENARIO</flags>
       <type>VEHICLE_TYPE_CAR</type>
       <plateType>VPT_BACK_PLATES</plateType>
       <dashboardType>VDT_RACE</dashboardType>
@@ -103,14 +106,14 @@
       <buoyancySphereSizeScale value="1.000000" />
       <pOverrideRagdollThreshold type="NULL" />
       <firstPersonDrivebyData>
-        <Item>STD_ZENTORNO_FRONT_LEFT</Item>
-        <Item>STD_ZENTORNO_FRONT_RIGHT</Item>
+        <Item>LOW_GEMERA_FRONT_LEFT</Item>
+        <Item>LOW_GEMERA_FRONT_RIGHT</Item>
       </firstPersonDrivebyData>
     </Item>
   </InitDatas>
   <txdRelationships>
     <Item>
-      <parent>vehicles_supercar_interior</parent>
+      <parent>vehicles_supergt_interior</parent>
       <child>gemera</child>
     </Item>
   </txdRelationships>
