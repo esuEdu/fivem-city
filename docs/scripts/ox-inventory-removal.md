@@ -15,11 +15,11 @@ grep -rn "ox_inventory" server-data/resources --include=*.lua | grep -v "\[local
 | Group | Scripts | Work |
 |---|---|---|
 | A. Break without a resource named ox_inventory | 4 | Hand-written patch each |
-| B. Only call `exports.ox_inventory:*` | 24 | Rename to `exports.city_inventory` |
+| B. Only call `exports.ox_inventory:*` | 7 | Rename to `exports.city_inventory` |
 | C. Only listen to `ox_inventory:*` events | 2 | Nothing (rename optional) |
 | D. ox_inventory code that never runs here | 2 | Nothing |
 
-32 vendored scripts in all. None needs a full rewrite: city_inventory already has every export they use, with the same names and arguments.
+15 vendored scripts in all. None needs a full rewrite: city_inventory already has every export they use, with the same names and arguments.
 
 ## A. Break without a resource named ox_inventory
 
@@ -40,26 +40,11 @@ For each one, replacing `exports.ox_inventory` with `exports.city_inventory` (an
 |---|---|---|
 | **mm_radio** | `GetSlotWithItem`, `GetSlotIdWithItem`, `GetSlot`, `SetMetadata`, `AddItem`, `RemoveItem`, `Search` (+ the `updateInventory` event) | 3 |
 | **ox_doorlock** | `RemoveItem`, `Search` (through `local ox_inventory`) | 1 |
-| **qbx_bankrobbery** | `AddItem` ×14, `Search` ×11, `RemoveItem` ×4 | 4 |
 | **qbx_consumables** (in qbx_smallresources) | `RemoveItem` ×4. Its `resource == 'ox_inventory'` branches handle ox's QB bridge and never run here. | 1 |
-| **qbx_divegear** | `RemoveItem` | 1 |
-| **qbx_diving** | `GetItemCount`, `RemoveItem`, `AddItem` | 1 |
-| **qbx_drugs** | `Items` ×5, `AddItem`, `RemoveItem`, `GetItemCount`, `Search` | 4 |
-| **qbx_fireworks** | `Search`, `GetItemCount`, `RemoveItem` | 1 |
-| **qbx_houserobbery** | `Items` | 1 |
 | **qbx_idcard** | `AddItem`, `Search`, `GetSlot`, `SetMetadata` (server), `displayMetadata` (client) | 3 |
-| **qbx_jewelery** | `Items`, `Search`, `CanCarryItem`, `AddItem`, `CustomDrop` | 1 |
-| **qbx_pawnshop** | `Items` ×4, `GetPlayerItems` ×2 | 2 |
 | **qbx_properties** | `RegisterStash`, `registerHook`, `forceOpenInventory` | 1 |
-| **qbx_recyclejob** | `CanCarryItem`, `AddItem` | 1 |
-| **qbx_scrapyard** | `AddItem` | 1 |
 | **qbx_seatbelt** | `GetSlot`, `RemoveItem`, `SetMetadata` | 1 |
-| **qbx_storerobbery** | `Search`, `RemoveItem`, `AddItem` | 1 |
-| **qbx_taxijob** | `Items` | 1 |
-| **qbx_truckrobbery** | `RemoveItem`, `CanCarryItem`, `AddItem`, `CustomDrop`, `Search` (+ the `disarm` event) | 2 |
 | **qbx_vehiclekeys** | `RemoveItem` | 1 |
-| **qbx_vineyard** | `GetItem`, `RemoveItem`, `AddItem` | 1 |
-| **qbx_weed** | `AddItem` ×5, `RemoveItem` ×3, `GetSlot`, `Search` | 1 |
 
 `qbx_properties` is the one to test hardest: `registerHook` currently gets its calling script passed on by the stand-in (`city_inventory/server/exports.lua`, `GetInvokingResource`); called directly, city_inventory sees qbx_properties itself, which is what we want.
 
@@ -72,7 +57,7 @@ city_inventory fires and handles these events itself, so these keep working with
 | **qbx_hud** | `ox_inventory:openedInventory`, `closedInventory`, `currentWeapon` |
 | **qbx_medical** | triggers `ox_inventory:disarm` (city_inventory listens) |
 
-Renaming the events to `city_inventory:*` is optional. If it's done, change the senders in `city_inventory/client/compat.lua`, `client/main.lua` and `server/actions.lua`, and every listener: these two, mm_radio, ox_target, ox_fuel, qbx_truckrobbery, and our `city_phone`, `city_phone_calls` (`ox_inventory:itemCount`).
+Renaming the events to `city_inventory:*` is optional. If it's done, change the senders in `city_inventory/client/compat.lua`, `client/main.lua` and `server/actions.lua`, and every listener: these two, mm_radio, ox_target, ox_fuel, and our `city_phone`, `city_phone_calls` (`ox_inventory:itemCount`).
 
 ## D. ox_inventory code that never runs here
 

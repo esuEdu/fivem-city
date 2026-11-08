@@ -736,7 +736,7 @@ function CheckPlayerData(source, playerData)
     end
 
     playerData.job = {
-        name = playerData.job?.name or 'unemployed',
+        name = GetJob(playerData.job?.name) and playerData.job.name or 'unemployed', -- fivem-city: a removed job falls back to unemployed
         label = job.label,
         payment = job.grades[jobGrade].payment or 0,
         type = job.type,

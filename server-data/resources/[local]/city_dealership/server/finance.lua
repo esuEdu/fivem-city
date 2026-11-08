@@ -256,7 +256,7 @@ CreateThread(function()
     end
 end)
 
----What is still owed on a car's financing (billed or not), 0 when it isn't financed. qbx_vehiclesales checks it.
+---What is still owed on a car's financing (billed or not), 0 when it isn't financed.
 ---@param vehicleId integer
 ---@return integer
 exports('FinanceBalance', function(vehicleId)

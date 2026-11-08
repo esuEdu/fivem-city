@@ -1,8 +1,8 @@
 diff --git a/server-data/resources/[qbx]/qbx_radialmenu/config/client.lua b/server-data/resources/[qbx]/qbx_radialmenu/config/client.lua
-index f15f2e5..b012e70 100644
+index f15f2e5..ccdfc8e 100644
 --- a/server-data/resources/[qbx]/qbx_radialmenu/config/client.lua
 +++ b/server-data/resources/[qbx]/qbx_radialmenu/config/client.lua
-@@ -9,12 +9,7 @@ return {
+@@ -9,70 +9,28 @@ return {
              icon = 'user',
              label = 'Citizen',
              items = {
@@ -16,7 +16,17 @@ index f15f2e5..b012e70 100644
                  {
                      id = 'getintrunk',
                      icon = 'car',
-@@ -32,47 +27,16 @@ return {
+                     label = 'Get In Trunk',
+                     event = 'qb-trunk:client:GetIn'
+                 },
+-                {
+-                    id = 'cornerselling',
+-                    icon = 'cannabis',
+-                    label = 'Corner Selling',
+-                    event = 'qb-drugs:client:cornerselling'
+-                },
+                 {
+                     id = 'interactions',
                      icon = 'exclamation-triangle',
                      label = 'Interaction',
                      items = {
@@ -70,7 +80,7 @@ index f15f2e5..b012e70 100644
                          },
                      },
                  },
-@@ -227,12 +191,7 @@ return {
+@@ -227,12 +185,7 @@ return {
                  label = 'Reset House Lock',
                  event = 'qb-houses:client:ResetHouse',
              },
@@ -84,7 +94,7 @@ index f15f2e5..b012e70 100644
              {
                  id = 'policeInteractions',
                  icon = 'list-check',
-@@ -244,23 +203,54 @@ return {
+@@ -244,23 +197,54 @@ return {
                          label = 'Check Health Status',
                          event = 'hospital:client:CheckStatus',
                      },
@@ -145,7 +155,7 @@ index f15f2e5..b012e70 100644
                      },
                  },
              },
-@@ -273,48 +263,49 @@ return {
+@@ -273,48 +257,49 @@ return {
                          id = 'cone',
                          icon = 'triangle-exclamation',
                          label = 'Cone',
@@ -202,7 +212,7 @@ index f15f2e5..b012e70 100644
                      },
                  },
              },
-@@ -344,12 +335,6 @@ return {
+@@ -344,54 +329,6 @@ return {
                  label = 'Emergency Button',
                  serverEvent = 'hospital:server:emergencyAlert',
              },
@@ -212,6 +222,48 @@ index f15f2e5..b012e70 100644
 -                label = 'Escort',
 -                event = 'police:client:EscortPlayer',
 -            },
+-        },
+-        mechanic = {
+-            {
+-                id = 'towVehicle',
+-                icon = 'truck-pickup',
+-                label = 'Tow Vehicle',
+-                event = 'qb-tow:client:TowVehicle',
+-            },
+-        },
+-        taxi = {
+-            {
+-                id = 'togglemeter',
+-                icon = 'eye-slash',
+-                label = 'Show/Hide Meter',
+-                event = 'qb-taxi:client:toggleMeter',
+-            },
+-            {
+-                id = 'togglemouse',
+-                icon = 'hourglass-start',
+-                label = 'Start/Stop Meter',
+-                event = 'qb-taxi:client:enableMeter',
+-            },
+-            {
+-                id = 'npcMission',
+-                icon = 'taxi',
+-                label = 'NPC Mission',
+-                event = 'qb-taxi:client:DoTaxiNpc',
+-            },
+-        },
+-        tow = {
+-            {
+-                id = 'togglenpc',
+-                icon = 'toggle-on',
+-                label = 'Toggle NPC',
+-                event = 'jobs:client:ToggleNpc',
+-            },
+-            {
+-                id = 'towVehicle',
+-                icon = 'truck-pickup',
+-                label = 'Tow Vehicle',
+-                event = 'qb-tow:client:TowVehicle',
+-            },
          },
-         mechanic = {
-             {
+     },
+ 

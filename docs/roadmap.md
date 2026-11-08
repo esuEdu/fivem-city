@@ -55,7 +55,7 @@ The phone will be **our own** (`city_phone`, built from zero to replace npwd; se
 
 Its screens (events, results, leaderboards, race creator) are City OS apps.
 
-Our own racing system, replacing `qbx_lapraces` and `qbx_streetraces`. Needs a design pass first (how each event type feels, rewards, rules).
+Our own racing system (qbx_lapraces and qbx_streetraces were removed). Needs a design pass first (how each event type feels, rewards, rules).
 
 - [ ] Event types: **circuit** and **sprint**
 - [ ] **Drift** events: points from angle × speed × combo, with a chain multiplier

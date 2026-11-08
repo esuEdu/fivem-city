@@ -21,15 +21,12 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **illenium-appearance** | Character creator, clothing stores, barbers, tattoos, saved outfits. |
 | **qbx_spawn** | Spawn location picker when you join. |
 | **qbx_idcard** | ID card, driver's licence and weapon licence items. |
-| **qbx_cityhall** | City hall: get licences and pick civilian jobs. |
 | **qbx_hud** | Health, armour, hunger, thirst, stress, speedometer. |
 | **qbx_medical** | Injuries, bleeding, dying and last stand. |
 | **qbx_seatbelt** | Seatbelt (B) and getting thrown through the windshield. |
 | **scully_emotemenu** | Emote and animation menu. |
 | **qbx_radialmenu** | Radial quick menu (F1): vehicle, job and personal actions. |
-| **qbx_scoreboard** | Online players list and which robberies are possible. |
-| **qbx_binoculars** | Binoculars item. |
-| **qbx_fireworks** | Firework items. |
+| **qbx_scoreboard** | Online players list. |
 | **MugShotBase64** | Takes character photos (used by ID cards and police records). |
 
 ## Money
@@ -39,7 +36,6 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_economy** | Ours: the money ledger. Owns cash and bank (qbx_core only mirrors them); scripts that pay or charge must be on its allowlist. |
 | **city_bank** | Ours: bank branches (banker NPC, fingerprint, panel with accounts, cards, transfers, loans, bills, history and a staff tab for bankers), ATMs, the card machine item and the `bank_card` item. |
 | **qbx_management** | Boss menu: hire, fire, promote, society money. |
-| **qbx_pawnshop** | Sell stolen and valuable items for cash. |
 
 ## Vehicles
 
@@ -47,14 +43,11 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 |---|---|
 | **qbx_vehicles** | Owned cars data (used by garages, keys and trunks). |
 | **city_dealership** | Ours, replaces qbx_vehicleshop: Premium Deluxe Motorsport. A computer in the showroom opens the catalogue (every civilian car by category, search, sort, photo, stats), test drives, buying in full (cash or bank) or financed (down payment, then one bank bill per installment; the car is taken back when bills go overdue). Bought cars wait at the PDM garage outside. |
-| **qbx_vehiclesales** | Used-car lot where players sell cars to each other. |
 | **city_garages** | Ours, replaces qbx_garages: unified garages (park in one, take out in any other of the same kind: cars, air, boats), gang and house garages, impound lots with a fee, a list with search and favorites, and the car's picture and condition before taking it out. |
 | **qbx_vehiclekeys** | Car keys, locking and unlocking, lockpicking and hotwiring. |
 | **ox_fuel** | Fuel, gas stations and jerry cans. |
-| **qbx_carwash** | Car wash. |
 | **vehiclehandler** | More realistic damage and handling. |
 | **qbx_density** | How many local (NPC) cars and pedestrians are on the streets. |
-| **qbx_lapraces / qbx_streetraces** | Race tracks and street races with bets. |
 
 ## Jobs (legal)
 
@@ -64,29 +57,12 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_hospital** | Ours, replaces qbx_ambulancejob: EMS job (duty, garage, armory, locker, Pillbox elevator, calls, examine/revive/treat/bill), downed screen, `/finalizado`, hospital respawn, beds, NPC reception and the NPC ambulance. |
 | **city_mechanic** | Ours, replaces qbx_mechanicjob and qbx_customs: the mechanic job at LS Customs (Burton): clock in, the shop storage, work vehicles (flatbed, tow truck) and the **tuning bay**: a mechanic on duty drives the car in and presses E to open the tuning menu (performance, body parts, paint, wheels, lights, extras, full repair), previewed live on the car with an orbiting camera; the parts are paid from the mechanic job's bank account. Repair kits and the cleaning kit work anywhere (mechanics on duty fix more). |
 | **city_dispatch** | Ours: calls to the city services from the phone (type, text, anonymous, location): mechanics on duty get a phone notification, a blip and `/calls`; 190 goes to city_police's calls (the MDT) and 192 to city_hospital's EMS calls. The caller only hears that someone is on the way. |
-| **qbx_taxijob** | Taxi with NPC fares. |
-| **qbx_busjob** | Bus routes. |
-| **qbx_truckerjob** | Delivery trucker. |
-| **qbx_garbagejob** | Garbage collector. |
-| **qbx_towjob** | Tow truck driver. |
-| **qbx_newsjob** | News reporter (camera, mic). |
-| **qbx_recyclejob** | Recycling centre: sort materials. |
-| **qbx_scrapyard** | Scrap stolen cars for materials. |
-| **qbx_vineyard** | Pick grapes and make wine. |
-| **qbx_diving / qbx_divegear** | Diving for coral, and the dive gear. |
 | **city_prison** | Ours, replaces xt-prison: Bolingbroke sentences (an arrest in the MDT sends the suspect straight in; one month = one minute played), belongings in a locker (illegal items to the police evidence locker), jobs that cut the time, contraband crafting (shank, gate jammer, burner phone), escapes with a gate hack, alarm and an MDT warrant, and the prison computer for the police. See [city-prison.md](../city-prison.md). |
 
 ## Crime
 
 | Script | What it does |
 |---|---|
-| **qbx_storerobbery** | Rob registers and safes at 24/7 stores. |
-| **qbx_houserobbery** | Break into houses and steal items. |
-| **qbx_jewelery** | Vangelico jewelry store heist. |
-| **qbx_bankrobbery** | Fleeca, Paleto and Pacific bank heists. |
-| **qbx_truckrobbery** | Armored truck robbery. |
-| **qbx_drugs** | Selling drugs to locals and corner selling. |
-| **qbx_weed** | Growing weed in houses. |
 | **safecracker / mhacking / ultra-voltlab** | Minigames for the heists (safes, hacking, voltage puzzle). |
 
 ## Houses

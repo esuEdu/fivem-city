@@ -19,13 +19,13 @@ None known.
 - **qbx_core:** uses `city_inventory` (`scripts/patches/qbx_core.patch`).
 - **qbx_medical:** tells the server when a revive is real (`qbx_medical:server:revived`), so city_hospital can keep a finished-off player down (`scripts/patches/qbx_medical.patch`).
 - **qbx_core** and **city_dealership:** the `gemera` add-on car is in qbx_core's vehicle list and on the dealership's `Config.Blocklist`, so it can be spawned but isn't sold (`scripts/patches/qbx_core.patch`).
-- **qbx_vehiclesales:** asks city_dealership (`FinanceBalance`) whether a car is still being paid off, instead of qbx_vehicleshop's `vehicle_financing` table (`scripts/patches/qbx_vehiclesales.patch`).
-- **qbx_radialmenu:** the dead **Give Contact Details** button is removed, and the police buttons fire city_police's events (Kidnap, Take Hostage and Revoke Drivers License are gone) (`scripts/patches/qbx_radialmenu.patch`).
-- **qbx_core:** BCSO and SASP are removed from `shared/jobs.lua` and police start off duty (they clock in at a station) (`scripts/patches/qbx_core.patch`).
+- **qbx_scoreboard:** lists no robberies, since the robbery scripts were removed (`scripts/patches/qbx_scoreboard.patch`).
+- **qbx_radialmenu:** the dead **Give Contact Details** button is removed, the police buttons fire city_police's events (Kidnap, Take Hostage and Revoke Drivers License are gone), and the mechanic, taxi and tow job buttons and Corner Selling are gone with their scripts (`scripts/patches/qbx_radialmenu.patch`).
+- **qbx_core:** `shared/jobs.lua` keeps only `unemployed`, `police` (which starts off duty; officers clock in at a station), `ambulance` and `mechanic` (city_mechanic); every other upstream job is removed, and a character saved with a removed job loads as unemployed (`scripts/patches/qbx_core.patch`).
 
 ### Working through the `ox_inventory` stand-in (nothing to do)
 
-illenium-appearance, mm_radio, ox_doorlock, ox_target, qbx_bankrobbery, qbx_houserobbery, qbx_jewelery, qbx_storerobbery, qbx_truckrobbery, qbx_drugs, qbx_weed, qbx_taxijob, qbx_vineyard, qbx_recyclejob, qbx_scrapyard, qbx_diving, qbx_divegear, qbx_idcard, qbx_pawnshop, qbx_seatbelt, qbx_vehiclekeys, qbx_fireworks, qbx_smallresources.
+illenium-appearance, mm_radio, ox_doorlock, ox_target, qbx_idcard, qbx_seatbelt, qbx_vehiclekeys, qbx_smallresources.
 
 The stand-in has to stay: about 40 scripts call `exports.ox_inventory`, ox_fuel checks for ox_inventory 2.30.0 by name, and ox_fuel lists it as a dependency. What it takes to remove it: [ox-inventory-removal.md](ox-inventory-removal.md).
 
@@ -53,7 +53,7 @@ The stand-in has to stay: about 40 scripts call `exports.ox_inventory`, ox_fuel 
 | illenium-appearance (debit only) | Clothing store charges; it checks the result, so a refused charge means no purchase. |
 | The `money` item via `RemoveItem` (debit only, reason `inventory-cash-item`) | Lets ox_fuel charge cash. `AddItem('money')` stays blocked: any script could otherwise create cash. |
 
-Blocked until rewritten (they stop paying or charging): qbx_taxijob (also trusts the fare sent by the client), qbx_truckerjob, qbx_towjob, qbx_garbagejob, qbx_busjob, qbx_diving, qbx_pawnshop, qbx_storerobbery, qbx_truckrobbery, qbx_streetraces, qbx_properties, qbx_cityhall, qbx_carwash, qbx_vehiclesales and qbx_drugs. qbx_vehicleshop was replaced by city_dealership and qbx_customs by city_mechanic.
+Blocked until rewritten (they stop paying or charging): qbx_properties. qbx_vehicleshop was replaced by city_dealership and qbx_customs by city_mechanic.
 
 Renewed-Banking was removed.
 
@@ -64,3 +64,24 @@ Renewed-Banking was removed.
 - **Test commands** (admin on duty): `/posdemo [amount]` opens the card machine's customer screen with a charge to yourself; `/bankwarp [id] [days]` moves a character's bank dates back (bills, installments, card cycle, scheduled transfers, pending limits) and runs the scheduler at once. Both are written to `bank_audit`.
 - **Staff can't act on themselves**: approving their own loan, changing ceilings of their own cards (or cards on accounts they can use) and freezing/unfreezing those accounts is refused and flagged. Only admins lift fraud and staff freezes; bankers lift debt freezes.
 - **Cash item**: `money` is the player's cash. Every move (ground, trade, stash/trunk, another player, death drop) goes through city_economy's ledger; cash on the ground lives in the `CASH_GROUND` account and is written off when a drop expires or the resource restarts, cash in storage lives in `CASH_STORED`. Trades no longer have a typed cash field: drag the money item into the offer.
+
+## 4. Jobs we don't have yet
+
+Only `unemployed`, `police`, `ambulance` and `mechanic` (city_mechanic) exist; the upstream jobs (taxi, bus, trucker, tow, garbage, reporter, realestate, cardealer, judge, lawyer, vineyard, hotdog) and their scripts (qbx_taxijob, qbx_busjob, qbx_truckerjob, qbx_towjob, qbx_garbagejob, qbx_recyclejob, qbx_vineyard, qbx_newsjob, qbx_mechanicjob) were removed. Until we make our own:
+
+- **city_phone_news**: nobody can write articles (`Config.Jobs` is `reporter`); reading still works.
+- **qbx_properties**: `/createproperty` needs the `realestate` job, so new properties can't be made; existing ones still work.
+- **illenium-appearance**: its job outfits for removed jobs are never shown.
+- Items those scripts used (news camera, mechanic parts, grapes, recycling materials, …) stay in `city_inventory/data/items.lua`, so players keep what they have.
+- Characters saved with a removed job load as unemployed; their `player_groups` rows for those jobs are skipped with a warning by qbx_core and left in the database.
+
+## 5. Features removed with their scripts
+
+These qbx scripts were removed and have no replacement yet: qbx_bankrobbery, qbx_jewelery, qbx_storerobbery, qbx_truckrobbery, qbx_houserobbery, qbx_drugs, qbx_weed, qbx_pawnshop, qbx_scrapyard, qbx_lapraces, qbx_streetraces, qbx_diving, qbx_divegear, qbx_fireworks, qbx_binoculars, qbx_carwash, qbx_vehiclesales and qbx_cityhall (qbx_vehicleshop was replaced by city_dealership).
+
+- **No selling cars to other players** (qbx_vehiclesales); new cars are bought at city_dealership.
+- **No car wash.**
+- **No city hall**: licences and replacement ID cards can't be bought. New characters still get their ID and driver's licence from qbx_core's starting items (qbx_idcard).
+- **No robberies, drugs, weed, pawn shop, scrapyard, diving or races.** Their items stay in `city_inventory/data/items.lua`, so players keep what they have, but most no longer do anything.
+- Their tables (`vehicle_financing`, `occasion_vehicles`, `weed_plants`, `lapraces`, `dealers`) stay in the database; `scripts/import-sql.sh` no longer creates them.
+- city_police still handles qbx_police's camera events (`police:client:SetCamera`), and city_phone the old `qb-phone` mail and alert events, for scripts added later.
