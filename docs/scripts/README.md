@@ -46,7 +46,6 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_garages** | Ours, replaces qbx_garages: unified garages (park in one, take out in any other of the same kind: cars, air, boats), gang and house garages, impound lots with a fee, a list with search and favorites, and the car's picture and condition before taking it out. |
 | **qbx_vehiclekeys** | Car keys, locking and unlocking, lockpicking and hotwiring. |
 | **ox_fuel** | Fuel, gas stations and jerry cans. |
-| **qbx_customs** | Benny's / LS Customs: tuning, paint, repair. |
 | **vehiclehandler** | More realistic damage and handling. |
 | **qbx_density** | How many local (NPC) cars and pedestrians are on the streets. |
 

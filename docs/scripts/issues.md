@@ -52,7 +52,7 @@ The stand-in has to stay: about 40 scripts call `exports.ox_inventory`, ox_fuel 
 | illenium-appearance (debit only) | Clothing store charges; it checks the result, so a refused charge means no purchase. |
 | The `money` item via `RemoveItem` (debit only, reason `inventory-cash-item`) | Lets ox_fuel charge cash. `AddItem('money')` stays blocked: any script could otherwise create cash. |
 
-Blocked until rewritten (they stop paying or charging): qbx_properties and qbx_customs.
+Blocked until rewritten (they stop paying or charging): qbx_properties.
 
 Renewed-Banking was removed.
 
@@ -77,10 +77,10 @@ Only `unemployed`, `police` and `ambulance` exist; the upstream jobs (taxi, bus,
 
 ## 5. Features removed with their scripts
 
-These qbx scripts were removed and have no replacement yet: qbx_bankrobbery, qbx_jewelery, qbx_storerobbery, qbx_truckrobbery, qbx_houserobbery, qbx_drugs, qbx_weed, qbx_pawnshop, qbx_scrapyard, qbx_lapraces, qbx_streetraces, qbx_diving, qbx_divegear, qbx_fireworks, qbx_binoculars, qbx_carwash, qbx_vehiclesales and qbx_cityhall (qbx_vehicleshop was replaced by city_dealership).
+These qbx scripts were removed and have no replacement yet: qbx_bankrobbery, qbx_jewelery, qbx_storerobbery, qbx_truckrobbery, qbx_houserobbery, qbx_drugs, qbx_weed, qbx_pawnshop, qbx_scrapyard, qbx_lapraces, qbx_streetraces, qbx_diving, qbx_divegear, qbx_fireworks, qbx_binoculars, qbx_carwash, qbx_vehiclesales, qbx_customs and qbx_cityhall (qbx_vehicleshop was replaced by city_dealership).
 
 - **No selling cars to other players** (qbx_vehiclesales); new cars are bought at city_dealership.
-- **No car wash.**
+- **No car tuning, paint or repair shop** (qbx_customs) and no car wash.
 - **No city hall**: licences and replacement ID cards can't be bought. New characters still get their ID and driver's licence from qbx_core's starting items (qbx_idcard).
 - **No robberies, drugs, weed, pawn shop, scrapyard, diving or races.** Their items stay in `city_inventory/data/items.lua`, so players keep what they have, but most no longer do anything.
 - Their tables (`vehicle_financing`, `occasion_vehicles`, `weed_plants`, `lapraces`, `dealers`) stay in the database; `scripts/import-sql.sh` no longer creates them.

@@ -45,7 +45,7 @@ REPOS=(
 QBX_REPOS=(
   qbx_vehicles qbx_scoreboard qbx_hud qbx_seatbelt qbx_management
   qbx_medical qbx_radialmenu qbx_properties qbx_vehiclekeys qbx_spawn
-  qbx_smallresources qbx_idcard qbx_density qbx_chat_theme qbx_customs
+  qbx_smallresources qbx_idcard qbx_density qbx_chat_theme
 )
 
 install_release() {
