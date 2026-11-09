@@ -7,6 +7,21 @@ Config.Features = {
     chargeJob = false, -- off: parts fitted in the tuning bay are free (nothing taken from the mechanic job's account)
 }
 
+-- The Mechanic tablet app (city_os): dashboard, 555 calls, team and the tuning bay's service history
+Config.App = {
+    id = 'mechanic',
+    label = 'Mechanic',
+    order = 30,
+    icon = {
+        glyph = 'M15 4a5 5 0 0 0-4.6 6.9L3 18.3 5.7 21l7.4-7.4A5 5 0 0 0 20 9l-3 1-2-2 1-3z',
+        colors = { '#ffb070', '#ff7a1a', '#b5480b' },
+        glyphColor = '#ffffff',
+        tint = '#ffb070',
+    },
+    service = 'mechanic', -- city_dispatch service whose calls the app shows
+    historyLimit = 60, -- services listed in the Services tab
+}
+
 -- Staff with this ACE (support < mod < admin) may use the tuning bay without the mechanic job; always free, written
 -- to the staff log. nil turns it off.
 Config.StaffAce = 'support'

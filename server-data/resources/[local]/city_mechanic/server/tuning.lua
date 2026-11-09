@@ -3,6 +3,8 @@
 -- account (only with Config.Features.chargeJob, never for staff) and writes the changes into the car's saved props.
 local catalog = require 'shared.catalog'
 local mechanic = require 'server.mechanic'
+local services = require 'server.app.services'
+local appCore = require 'server.app.core'
 
 local sessions = {}
 local lastBuy = {}
@@ -118,6 +120,16 @@ lib.callback.register('city_mechanic:buy', function(source, cart, repair)
     end
 
     save(session.vehicle, cart, repairCost > 0)
+
+    services.record({
+        plate = plate,
+        citizenid = player.PlayerData.citizenid,
+        name = appCore.fullName(player),
+        parts = services.describe(cart),
+        total = total,
+        repaired = repairCost > 0,
+        staff = staff == true,
+    })
 
     lib.print.info(('city_mechanic: %s (%s) fitted %s worth $%d%s'):format(player.PlayerData.citizenid, src, plate, total,
         charged(staff) and '' or ' (free)'))

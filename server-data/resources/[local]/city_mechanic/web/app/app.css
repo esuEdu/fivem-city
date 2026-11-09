@@ -1,0 +1,51 @@
+/* Mechanic app: the WorkApp shell (city_os/web/kit/workapp.css) in LS Customs orange, plus this app's own rows. */
+:root {
+    --app-accent: #ff7a1a; --app-accent-soft: rgba(255, 122, 26, 0.16); --app-accent-text: #fff;
+    --app-logo: linear-gradient(160deg, #ffb070, #ff7a1a 55%, #b5480b);
+}
+
+.banner { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 14px; background: var(--app-accent-soft); color: var(--app-accent); font-weight: 600; font-size: 13px; }
+.kit-btn.big { height: 44px; padding: 0 18px; border-radius: 13px; font-size: 14px; }
+
+.plate { justify-self: start; padding: 4px 9px; border-radius: 7px; background: #f3f1e6; color: #1b2a5a; font-family: var(--mono, monospace); font-size: 12px; font-weight: 700; letter-spacing: 1px; box-shadow: inset 0 0 0 1.5px #1b2a5a; white-space: nowrap; }
+.value { justify-self: end; font-variant-numeric: tabular-nums; }
+.chip.tint-chip { background: var(--app-accent-soft); color: var(--app-accent); }
+.chip.blue-chip { background: var(--blue-soft); color: var(--blue); }
+.chip.muted { color: var(--muted2); }
+
+/* Dashboard */
+.service-cols { grid-template-columns: 96px minmax(0, 1.2fr) minmax(0, 2fr) 90px; }
+.duty-list { display: flex; flex-direction: column; gap: 12px; max-height: 210px; overflow-y: auto; }
+
+/* Calls */
+.call-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.call-card { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 14px; border: 1px solid transparent; background: var(--group); color: var(--fg); font: inherit; text-align: left; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+.call-card:hover { background: var(--hover); }
+.call-card.on { background: var(--field); border-color: var(--app-accent); }
+.call-top { display: flex; align-items: center; gap: 10px; }
+.call-top small, .call-place { font-size: 12px; color: var(--muted2); }
+.call-place { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.call-icon { flex: none; width: 30px; height: 30px; border-radius: 9px; background: var(--app-accent-soft); color: var(--app-accent); display: grid; place-items: center; }
+.empty-card { align-items: center; text-align: center; padding: 36px 18px; gap: 8px; }
+
+/* Team */
+.team-cols { grid-template-columns: minmax(0, 2fr) minmax(0, 1.1fr) 110px 80px 118px; }
+.table-row.me { background: var(--row); }
+.grade { display: flex; align-items: center; gap: 6px; color: var(--fg2); }
+.grade svg { color: var(--accent-ink); }
+.row-actions { display: flex; justify-content: flex-end; gap: 6px; }
+.icon-btn { width: 32px; height: 32px; padding: 0; border: 0; border-radius: 10px; background: var(--chip); color: var(--fg); display: grid; place-items: center; cursor: pointer; font: inherit; font-size: 11px; font-weight: 700; }
+.icon-btn:hover:not(:disabled) { background: var(--hover); }
+.icon-btn:disabled { opacity: 0.35; cursor: default; }
+.icon-btn.danger { width: auto; min-width: 32px; padding: 0 8px; background: var(--red-soft); color: var(--bad); }
+.hire .form-row .field { flex: 0 1 220px; }
+
+/* Services */
+.history-cols { grid-template-columns: 96px minmax(0, 1.1fr) minmax(0, 2.4fr) 90px; }
+.price-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.card.price { flex-direction: row; align-items: center; gap: 12px; padding: 14px 16px; }
+.card.price .who { flex-grow: 1; }
+.perf-row { grid-template-columns: 120px minmax(0, 1fr); }
+.levels { display: flex; gap: 8px; flex-wrap: wrap; }
+.level { min-width: 84px; padding: 8px 10px; border-radius: 10px; background: var(--field); display: flex; flex-direction: column; gap: 2px; }
+.level small { font-size: 11px; color: var(--muted2); }

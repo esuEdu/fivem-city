@@ -136,6 +136,18 @@ exports('Services', function()
     return list
 end)
 
+-- How many calls of a service are open (job apps show it as a badge)
+exports('OpenCount', function(serviceId)
+    purge()
+
+    local count = 0
+    for _, call in pairs(calls) do
+        if call.service == serviceId then count = count + 1 end
+    end
+
+    return count
+end)
+
 ---A call from a player's phone. Returns false and a reason ('invalid', 'cooldown', 'no_units') when it isn't sent.
 ---@param src integer
 ---@param serviceId string
@@ -189,6 +201,9 @@ exports('Report', function(src, serviceId, kind, text, anonymous)
         for i = 1, #list do
             TriggerClientEvent('city_dispatch:client:newCall', list[i], view(call, list[i], call.at))
         end
+
+        -- Job apps on the tablet (city_mechanic) notify and update their badge
+        TriggerEvent('city_dispatch:server:callsChanged', serviceId, call.id)
     end
 
     lastCall[src] = lastCall[src] or {}
@@ -271,6 +286,7 @@ lib.callback.register('city_dispatch:close', function(source, id)
 
     calls[call.id] = nil
     toResponders(call, 'city_dispatch:client:closed', call.id)
+    TriggerEvent('city_dispatch:server:callsChanged', call.service)
 
     return true
 end)
