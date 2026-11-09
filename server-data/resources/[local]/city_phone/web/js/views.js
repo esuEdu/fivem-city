@@ -4,6 +4,7 @@ import { allApps, findApp } from './home.js';
 import { label } from './i18n.js';
 import { openSettings } from './settings.js';
 import { state, on, emit } from './state.js';
+import { setFrameTyping, resetFrameTyping } from './typing.js';
 import { $, el, post } from './util.js';
 
 const FONTS = { inter: 'Inter', poppins: 'Poppins', roboto: 'Roboto', nunito: 'Nunito' };
@@ -61,6 +62,7 @@ function create(app) {
 
 function setActive(id) {
     active = id;
+    resetFrameTyping();
 
     for (const [key, entry] of running) entry.view.classList.toggle('view--active', key === id);
 
@@ -97,6 +99,7 @@ export function closeApp(id) {
 
     running.delete(id);
     entry.view.remove();
+    resetFrameTyping();
     if (!entry.app.builtin) post('appState', { app: id, open: false });
     if (active === id) setActive(null);
 }
@@ -114,6 +117,7 @@ window.addEventListener('message', (event) => {
 
     if (event.data.type === 'city_phone:home') goHome();
     if (event.data.type === 'city_phone:close') emit('requestClose');
+    if (event.data.type === 'city_phone:typing') setFrameTyping(entry.frame, event.data.on === true);
 });
 
 export function initViews() {

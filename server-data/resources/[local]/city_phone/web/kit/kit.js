@@ -46,6 +46,18 @@ export function applyContext(context) {
     }
 }
 
+// The player walks while the phone is open; the phone gives the keys to the page only while a text field here has focus
+const NOT_TEXT = new Set(['button', 'checkbox', 'radio', 'range', 'submit', 'reset', 'color', 'file', 'image']);
+
+function reportTyping() {
+    const node = document.activeElement;
+    const on = !!node && (node.isContentEditable || node.tagName === 'TEXTAREA' || (node.tagName === 'INPUT' && !NOT_TEXT.has(node.type)));
+    if (window.parent !== window) window.parent.postMessage({ type: 'city_phone:typing', on }, '*');
+}
+
+document.addEventListener('focusin', reportTyping);
+document.addEventListener('focusout', () => setTimeout(reportTyping));
+
 // 5551234567 -> (555) 123-4567
 export function formatNumber(number) {
     if (!number) return '';

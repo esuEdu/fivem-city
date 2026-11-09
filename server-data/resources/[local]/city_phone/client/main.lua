@@ -31,10 +31,21 @@ local function clock()
     }
 end
 
+-- While the phone is open the game still gets the keys (walking); only the controls in Config.BlockedControls are off
+local function blockControls()
+    local controls = Config.BlockedControls
+
+    while isOpen do
+        for i = 1, #controls do DisableControlAction(0, controls[i], true) end
+        Wait(0)
+    end
+end
+
 local function close()
     if not isOpen then return end
 
     isOpen = false
+    SetNuiFocusKeepInput(false)
     SetNuiFocus(false, false)
     SendNUIMessage({ action = 'close' })
     hold.stop()
@@ -50,6 +61,8 @@ local function open()
     isOpen = true
     SendNUIMessage({ action = 'open', profile = profile, apps = apps.list(), clock = clock() })
     SetNuiFocus(true, true)
+    SetNuiFocusKeepInput(true)
+    CreateThread(blockControls)
     hold.start()
     CreateThread(loadWallpaper)
 
@@ -81,6 +94,12 @@ end)
 
 RegisterNUICallback('close', function(_, cb)
     close()
+    cb(true)
+end)
+
+-- A text field on the phone has focus: the keys write instead of moving the player
+RegisterNUICallback('typing', function(data, cb)
+    if isOpen then SetNuiFocusKeepInput(data.on ~= true) end
     cb(true)
 end)
 
@@ -149,6 +168,9 @@ exports('GetSettings', function() return profile and profile.settings end)
 AddEventHandler('onResourceStop', function(resource)
     if resource ~= cache.resource then return end
 
-    if isOpen then SetNuiFocus(false, false) end
+    if isOpen then
+        SetNuiFocusKeepInput(false)
+        SetNuiFocus(false, false)
+    end
     hold.stop()
 end)
