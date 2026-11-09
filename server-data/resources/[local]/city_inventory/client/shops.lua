@@ -14,9 +14,52 @@ local zones = {}
 ---@type { models: integer[], name: string }[]
 local models = {}
 
+-- Shopkeepers are local peds, spawned only while the player is near
+local PED_DISTANCE = 60.0
+
+---@type table<table, integer> point -> ped
+local peds = {}
+
+---@param point table lib.points point with model and coords (vec4)
+local function spawnPed(point)
+    lib.requestModel(point.model)
+
+    local ped = CreatePed(4, point.model, point.coords.x, point.coords.y, point.coords.z - 1.0, point.heading, false, true)
+    SetModelAsNoLongerNeeded(point.model)
+    SetEntityInvincible(ped, true)
+    FreezeEntityPosition(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+
+    peds[point] = ped
+end
+
+---@param point table
+local function removePed(point)
+    local ped = peds[point]
+    if ped and DoesEntityExist(ped) then DeleteEntity(ped) end
+
+    peds[point] = nil
+end
+
+for _, shop in pairs(shopData) do
+    if shop.ped then
+        for _, coords in ipairs(shop.locations or {}) do
+            lib.points.new({
+                coords = coords.xyz,
+                distance = PED_DISTANCE,
+                model = shop.ped,
+                heading = type(coords) == 'vector4' and coords.w or 0.0,
+                onEnter = spawnPed,
+                onExit = removePed,
+            })
+        end
+    end
+end
+
 ---@param coords vector3
 ---@param shop table
 local function addBlip(coords, shop)
+    coords = coords.xyz
     local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
 
     SetBlipSprite(blip, shop.blip.id)
@@ -45,7 +88,7 @@ local function addTargets()
 
         for id, coords in ipairs(shop.locations or {}) do
             zones[#zones + 1] = exports.ox_target:addSphereZone({
-                coords = coords,
+                coords = coords.xyz,
                 radius = TARGET_RADIUS,
                 options = {
                     {
@@ -86,6 +129,7 @@ AddEventHandler('onResourceStop', function(resource)
     if resource ~= cache.resource then return end
 
     for _, blip in ipairs(blips) do RemoveBlip(blip) end
+    for point in pairs(peds) do removePed(point) end
     for _, zone in ipairs(zones) do exports.ox_target:removeZone(zone) end
     for _, entry in ipairs(models) do exports.ox_target:removeModel(entry.models, entry.name) end
 end)

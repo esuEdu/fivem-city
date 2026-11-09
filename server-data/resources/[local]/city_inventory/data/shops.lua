@@ -2,7 +2,24 @@
 -- name: panel title. blip: map blip on each location. groups: job/gang -> lowest grade (nil = everyone).
 -- inventory: { name, price, count? (stock, nil = unlimited), metadata?, license? (qbx licence), grade?, currency? (an item
 -- paid with instead of money) }. locations: where the player can open it (ox_target zone). model: props that open it.
+-- ped: a shopkeeper model standing at each location (locations are then vec4, the w is the heading).
 return {
+    -- The basics a new character needs, almost free, outside by the Legion Square ATMs. Coordinates placed without the
+    -- game open: check them in game with /coords (city_base).
+    Essentials = {
+        name = 'City Essentials',
+        blip = { id = 52, colour = 5, scale = 0.8 },
+        ped = `a_m_y_business_02`,
+        inventory = {
+            { name = 'phone', price = 1 },
+            { name = 'tablet', price = 1 },
+            { name = 'radio', price = 1 },
+        },
+        locations = {
+            vec4(150.26, -1037.47, 29.34, 340.0),
+        },
+    },
+
     General = {
         name = '24/7',
         blip = { id = 59, colour = 69, scale = 0.8 },
