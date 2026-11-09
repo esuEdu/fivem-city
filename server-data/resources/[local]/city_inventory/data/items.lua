@@ -628,6 +628,14 @@ return {
         weight = 1000,
     },
 
+    ['c4'] = {
+        label = 'C4',
+        category = 'tool',
+        weight = 1000,
+        description = 'Plastic explosive. Blows an ATM open.',
+        client = { image = 'weapon_stickybomb.png' },
+    },
+
     ['diving_gear'] = {
         label = 'Diving Gear',
         category = 'tool',

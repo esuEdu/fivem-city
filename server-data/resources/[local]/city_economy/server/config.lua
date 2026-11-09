@@ -55,6 +55,11 @@ return {
             { reason = '^fishing%-boat%-rent$', debit = true },
             { reason = '^fishing%-boat%-deposit$', debit = true },
         },
+        -- Robberies: picking up the cash bag of a blown ATM or a robbed 24/7 (anyone may pick it up)
+        city_robbery = {
+            { reason = '^robbery%-atm$', credit = true, perHour = 1000000 },
+            { reason = '^robbery%-store$', credit = true, perHour = 2000000 },
+        },
         -- Mining: selling ore and ingots, gems and jewellery at Vangelico, the crime buyer; the shop (licences, tools,
         -- repairs, skill reset), smelter fees, coal, dynamite, opening geodes and the jeweller's work
         city_mining = {

@@ -68,6 +68,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 
 | Script | What it does |
 |---|---|
+| **city_robbery** | Ours, the first robberies (in place of qbx_storerobbery): blowing an ATM open with C4 (15 s planting, 15 s fuse, $15,000 plus 20% per officer on duty, 2 minutes before the same ATM again) and robbing a 24/7 register (60 s, $200,000, needs 2 officers on duty unless staff, 10 minutes per store). The cash falls in a bag on the floor that anyone can pick up, and the police get an "ATM Robbery" / "Store Robbery" call. |
 | **safecracker / mhacking / ultra-voltlab** | Minigames for the heists (safes, hacking, voltage puzzle). |
 
 ## Houses

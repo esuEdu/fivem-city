@@ -77,7 +77,7 @@ Only `unemployed`, `police`, `ambulance` and `mechanic` (city_mechanic) exist; t
 
 ## 5. Features removed with their scripts
 
-These qbx scripts were removed and have no replacement yet: qbx_bankrobbery, qbx_jewelery, qbx_storerobbery, qbx_truckrobbery, qbx_houserobbery, qbx_drugs, qbx_weed, qbx_pawnshop, qbx_scrapyard, qbx_lapraces, qbx_streetraces, qbx_diving, qbx_divegear, qbx_fireworks, qbx_binoculars, qbx_carwash, qbx_vehiclesales and qbx_cityhall (qbx_vehicleshop was replaced by city_dealership).
+These qbx scripts were removed and have no replacement yet: qbx_bankrobbery, qbx_jewelery, qbx_storerobbery (city_robbery now robs 24/7 registers and ATMs), qbx_truckrobbery, qbx_houserobbery, qbx_drugs, qbx_weed, qbx_pawnshop, qbx_scrapyard, qbx_lapraces, qbx_streetraces, qbx_diving, qbx_divegear, qbx_fireworks, qbx_binoculars, qbx_carwash, qbx_vehiclesales and qbx_cityhall (qbx_vehicleshop was replaced by city_dealership).
 
 - **No selling cars to other players** (qbx_vehiclesales); new cars are bought at city_dealership.
 - **No car wash.**
