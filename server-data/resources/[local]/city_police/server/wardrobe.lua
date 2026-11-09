@@ -49,14 +49,18 @@ local function hasBackup(citizenid)
 end
 
 ---Keeps the officer's own clothes, once: switching between uniforms doesn't overwrite them.
----@param citizenid string
+---@param src integer
 ---@param current table { components, props } from the client
 ---@return boolean
-local function keepOwnClothes(citizenid, current)
+local function keepOwnClothes(src, current)
+    local citizenid = police.citizenid(src)
     if hasBackup(citizenid) then return true end
 
     local components, props = outfit.check(type(current) == 'table' and current.components, type(current) == 'table' and current.props)
-    if not components then return false end
+    if not components then
+        police.warn(src, ('own clothes refused: %s'):format(props))
+        return false
+    end
 
     MySQL.insert.await('INSERT INTO city_police_wardrobe (citizenid, components, props, saved) VALUES (?, ?, ?, ?)', {
         citizenid, json.encode(components), json.encode(props), os.time(),
@@ -83,7 +87,7 @@ lib.callback.register('city_police:wardrobe:wear', function(source, id, current)
 
     local uniform = findUniform(id)
     if not uniform then return false, 'not_found' end
-    if not keepOwnClothes(police.citizenid(src), current) then return false, 'invalid' end
+    if not keepOwnClothes(src, current) then return false, 'invalid' end
 
     return true, { components = uniform.components, props = uniform.props }
 end)
@@ -108,7 +112,7 @@ lib.callback.register('city_police:wardrobe:startDesign', function(source, curre
     local src = source
     if not police.can(src, 'uniforms') or not atWardrobe(src) then return false, 'no_permission' end
 
-    return keepOwnClothes(police.citizenid(src), current), 'invalid'
+    return keepOwnClothes(src, current), 'invalid'
 end)
 
 lib.callback.register('city_police:wardrobe:create', function(source, data)
@@ -122,7 +126,10 @@ lib.callback.register('city_police:wardrobe:create', function(source, data)
     local label = police.clean(data.label, LABEL_MAX)
     local sex = outfit.sex(data.sex)
     local components, props = outfit.check(data.components, data.props)
+    if not components then police.warn(src, ('uniform refused: %s'):format(props)) end
     if label == '' or not sex or not components then return false, 'invalid' end
+
+    components = outfit.uniformOnly(components)
 
     local count = MySQL.scalar.await('SELECT COUNT(*) FROM city_police_uniforms') or 0
     if count >= Config.MaxUniforms then return false, 'too_many' end

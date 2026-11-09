@@ -73,15 +73,18 @@ assert(records.reduce(40, { kind = 'months', value = settings.maxMonths + 1 }) =
 assert(records.reduce(40, { kind = 'other', value = 5 }) == nil)
 assert(records.reduce(40, 'half') == nil)
 
--- Clothes from a client: known slots, whole numbers in range, no slot twice; props may be -1 (none)
+-- Clothes from a client: known slots kept (others left out), whole numbers in range, numbers as text or 55.0 accepted
 local outfit = require 'server.outfit'
-local comps, props = outfit.check({ { component_id = 11, drawable = 55, texture = 0 }, { component_id = 4, drawable = 35, texture = 0 } }, { { prop_id = 0, drawable = -1, texture = -1 } })
-assert(#comps == 2 and comps[1].drawable == 55 and #props == 1 and props[1].drawable == -1)
-assert(outfit.check({ { component_id = 12, drawable = 1, texture = 0 } }, {}) == nil)
+local comps, props = outfit.check({ { component_id = 11, drawable = 55, texture = 0 }, { component_id = 4, drawable = '35', texture = 0.0 } }, { { prop_id = 0, drawable = -1, texture = -1 } })
+assert(#comps == 2 and comps[1].component_id == 4 and comps[1].drawable == 35 and comps[2].drawable == 55 and #props == 1 and props[1].drawable == -1)
+local full = {}
+for id = 0, 11 do full[#full + 1] = { component_id = id, drawable = 15, texture = 3 } end
+assert(#outfit.check(full, {}) == 12)
+assert(#outfit.uniformOnly(outfit.check(full, {})) == 10)
+assert(#outfit.check({ { component_id = 12, drawable = 1, texture = 0 }, { component_id = 1, drawable = 1, texture = 0 } }, {}) == 1)
 assert(outfit.check({ { component_id = 11, drawable = 1.5, texture = 0 } }, {}) == nil)
-assert(outfit.check({ { component_id = 11, drawable = -1, texture = 0 } }, {}) == nil)
-assert(outfit.check({ { component_id = 11, drawable = 1, texture = 0 }, { component_id = 11, drawable = 2, texture = 0 } }, {}) == nil)
-assert(outfit.check({ { component_id = 1, drawable = 1, texture = 0 } }, { { prop_id = 3, drawable = 0, texture = 0 } }) == nil)
+assert(outfit.check({ { component_id = 11, drawable = 5000, texture = 0 } }, {}) == nil)
+assert(outfit.check({ { component_id = 12, drawable = 1, texture = 0 } }, {}) == nil)
 assert(outfit.check('shirt', {}) == nil)
 assert(outfit.sex('female') == 'female' and outfit.sex('other') == nil)
 
