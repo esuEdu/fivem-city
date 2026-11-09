@@ -97,7 +97,7 @@ function criminalCard(entry, person) {
     return el('div', { class: 'card case-box' },
         el('div', { class: 'card-head' },
             el('strong', { text: person.name }), el('span', { class: 'spacer' }),
-            can('charge') && hasCharges && person.id ? confirmButton(el('span', {}, L('ui_fine_button', money(sum.fine))), fine, 'accent') : null,
+            can('charge') && hasCharges ? confirmButton(el('span', {}, L('ui_fine_button', money(sum.fine))), fine, 'accent') : null,
             can('charge') ? el('button', { class: 'kit-btn danger', onclick: () => go('prison', { person: { citizenid: person.citizenid, name: person.name, id: person.id }, caseId: entry.id }) }, L('ui_jail')) : null),
         ...chargeRows(counts, null),
         hasCharges ? el('small', { class: 'muted', text: L('ui_case_totals', sum.months, money(sum.fine)) }) : null,

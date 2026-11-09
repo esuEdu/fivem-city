@@ -123,6 +123,17 @@ kbd { padding: 1px 5px; border-radius: 4px; background: rgba(255, 255, 255, 0.12
 .wardrobe-mine { display: flex; flex-direction: column; gap: 8px; }
 .wardrobe-mine p, .wardrobe-none { margin: 0 0 4px; font-size: 13px; color: var(--muted, #9aa1ad); }
 
+/* Police badge shown to the people around */
+.badge-card { position: fixed; top: 50%; right: 34px; width: 340px; transform: translateY(-50%); display: flex; gap: 14px; align-items: center; padding: 16px 18px 18px; border-radius: var(--radius-large, 18px); background: linear-gradient(140deg, rgba(20, 30, 58, 0.97), rgba(10, 14, 26, 0.97)); border: 1px solid rgba(236, 190, 72, 0.35); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); overflow: hidden; pointer-events: none; animation: fade 0.25s ease; }
+.badge-star { flex: none; width: 86px; height: 86px; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5)); }
+.badge-info { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.badge-info small { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #ecbe48; }
+.badge-info strong { font-size: 19px; color: #fff; }
+.badge-info dl { margin: 6px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; font-size: 12px; }
+.badge-info dt { color: rgba(255, 255, 255, 0.55); }
+.badge-info dd { margin: 0; color: #fff; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge-bar { position: absolute; left: 0; bottom: 0; height: 3px; width: 100%; background: #ecbe48; transform-origin: left; }
+
 /* Head bag: nothing to see */
 .head-bag { position: fixed; inset: 0; background: #000; }
 

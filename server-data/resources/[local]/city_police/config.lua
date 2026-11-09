@@ -114,6 +114,12 @@ Config.Stations = {
 
 Config.Blip = { sprite = 60, colour = 29, scale = 0.8 }
 
+-- The police badge item: shown to everyone within `range` metres for `seconds`
+Config.Badge = { item = 'police_badge', department = 'Los Santos Police Department', range = 4.0, seconds = 6, cooldown = 5, prop = `prop_fib_badge` }
+
+-- The other officers on duty on the map: refreshed every `seconds`; sprite on foot, carSprite in a vehicle
+Config.UnitBlips = { seconds = 3, sprite = 1, carSprite = 56, colour = 38, scale = 0.85 }
+
 -- Uniforms everyone on the job can put on at a wardrobe; the chief adds more in game (saved in the database). Numbers
 -- are GTA freemode drawables { component_id, drawable, texture } (3 arms, 4 legs, 6 shoes, 8 undershirt, 11 jacket;
 -- only clothes count: 1 and 3 to 11)

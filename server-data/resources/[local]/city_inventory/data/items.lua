@@ -183,6 +183,16 @@ return {
         category = 'document',
     },
 
+    -- city_police: using it shows the officer's badge (name, rank, callsign) to whoever is close
+    ['police_badge'] = {
+        label = 'Police Badge',
+        category = 'document',
+        weight = 100,
+        stack = false,
+        close = true,
+        description = 'Show it to the people around you',
+    },
+
     ['radio'] = {
         label = 'Radio',
         category = 'electronics',
