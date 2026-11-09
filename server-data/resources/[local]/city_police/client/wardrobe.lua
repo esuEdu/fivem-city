@@ -15,17 +15,45 @@ local function mySex()
     return GetEntityModel(cache.ped) == `mp_f_freemode_01` and 'female' or 'male'
 end
 
+-- Only clothes: mask, arms, legs, bag, shoes, accessories, undershirt, armour, decals, jacket and the hat. The face,
+-- hair, glasses, ears, watch and bracelets are never read or changed (server/outfit.lua keeps the same list).
+local COMPONENT_IDS = { 1, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+local HAT = 0
+
+---What the ped wears now, read straight from the game, in illenium-appearance's format.
 ---@return { components: table[], props: table[] }
 local function currentClothes()
-    return { components = appearance:getPedComponents(cache.ped), props = appearance:getPedProps(cache.ped) }
+    local ped = cache.ped
+    local components = {}
+
+    for _, id in ipairs(COMPONENT_IDS) do
+        components[#components + 1] = { component_id = id, drawable = GetPedDrawableVariation(ped, id), texture = GetPedTextureVariation(ped, id) }
+    end
+
+    return { components = components, props = { { prop_id = HAT, drawable = GetPedPropIndex(ped, HAT), texture = GetPedPropTextureIndex(ped, HAT) } } }
 end
 
+---Puts on a uniform or the officer's own clothes. A uniform without a hat takes the hat off.
 ---@param clothes { components: table[], props: table[] }?
 local function dress(clothes)
     if not clothes then return end
 
-    appearance:setPedComponents(cache.ped, clothes.components or {})
-    if clothes.props and #clothes.props > 0 then appearance:setPedProps(cache.ped, clothes.props) end
+    local ped = cache.ped
+    local hat = nil
+
+    for _, entry in ipairs(clothes.components or {}) do
+        SetPedComponentVariation(ped, entry.component_id, entry.drawable, math.max(entry.texture, 0), 0)
+    end
+
+    for _, entry in ipairs(clothes.props or {}) do
+        if entry.prop_id == HAT then hat = entry end
+    end
+
+    if hat and hat.drawable >= 0 then
+        SetPedPropIndex(ped, HAT, hat.drawable, math.max(hat.texture, 0), true)
+    else
+        ClearPedProp(ped, HAT)
+    end
 end
 
 local function close()
@@ -83,8 +111,10 @@ local function design()
         })
 
         if input and input[1] then
+            -- What the ped wears now is what was confirmed in the editor
+            local clothes = currentClothes()
             local created, why = lib.callback.await('city_police:wardrobe:create', false, {
-                label = input[1], sex = mySex(), components = result.components, props = result.props,
+                label = input[1], sex = mySex(), components = clothes.components, props = clothes.props,
             })
 
             if created then exports.qbx_core:Notify(locale('wardrobe_saved', input[1]), 'success') else job.fail(why) end
@@ -95,7 +125,7 @@ local function design()
         ped = false, headBlend = false, faceFeatures = false, headOverlays = false, tattoos = false,
         components = true, props = true, enableExit = true,
         componentConfig = { masks = true, upperBody = true, lowerBody = true, bags = true, shoes = true, scarfAndChains = true, bodyArmor = true, shirts = true, decals = true, jackets = true },
-        propConfig = { hats = true, glasses = true, ear = true, watches = true, bracelets = true },
+        propConfig = { hats = true, glasses = false, ear = false, watches = false, bracelets = false },
     })
 end
 

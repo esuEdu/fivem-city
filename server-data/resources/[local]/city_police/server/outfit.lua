@@ -1,58 +1,80 @@
--- Checks a list of clothes from a client (illenium-appearance's format) before it is saved: known slots, whole numbers
--- in range, no slot twice. Used for uniforms and for an officer's own clothes kept while in uniform.
+-- Clothes from a client (illenium-appearance's format), for uniforms and for an officer's own clothes kept while in
+-- uniform. Only clothing slots count, so a uniform never touches the face, hair, glasses, ears, watch or bracelets:
+-- components 1 (mask), 3 (arms) and 4 to 11, and prop 0 (hat). Other slots and bad entries are left out (and named,
+-- for the server log) instead of refusing the whole outfit.
 
 local outfit = {}
 
-local COMPONENTS = { [0] = true, true, true, true, true, true, true, true, true, true, true, true } -- 0..11
-local PROPS = { [0] = true, [1] = true, [2] = true, [6] = true, [7] = true }
-local MAX_DRAWABLE = 2000
-local MAX_TEXTURE = 100
+outfit.COMPONENTS = { 1, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+outfit.PROPS = { 0 }
+
+local COMPONENT_SET, PROP_SET = {}, {}
+for _, id in ipairs(outfit.COMPONENTS) do COMPONENT_SET[id] = true end
+for _, id in ipairs(outfit.PROPS) do PROP_SET[id] = true end
+
+local MAX_DRAWABLE = 4095
+local MAX_TEXTURE = 255
+local MAX_ENTRIES = 32
 
 ---@param value unknown
 ---@param min integer
 ---@param max integer
 ---@return integer?
 local function int(value, min, max)
-    value = math.tointeger(value)
-    if not value or value < min or value > max then return end
+    value = tonumber(value)
+    if not value or value ~= math.floor(value) then return end
+
+    value = math.floor(value)
+    if value < min or value > max then return end
 
     return value
 end
 
 ---@param list unknown
 ---@param idKey string 'component_id' | 'prop_id'
----@param ids table<integer, true>
----@param minDrawable integer
----@return table[]?
-local function clean(list, idKey, ids, minDrawable)
-    if type(list) ~= 'table' or #list > 16 then return end
+---@param allowed table<integer, true>
+---@param skipped string[] filled with what was left out
+---@return table[]
+local function clean(list, idKey, allowed, skipped)
+    local out, seen, count = {}, {}, 0
+    if type(list) ~= 'table' then return out end
 
-    local out, seen = {}, {}
+    for _, entry in pairs(list) do
+        count = count + 1
+        if count > MAX_ENTRIES then break end
 
-    for _, entry in ipairs(list) do
-        if type(entry) ~= 'table' then return end
+        local id = type(entry) == 'table' and int(entry[idKey], 0, 11) or nil
 
-        local id = int(entry[idKey], 0, 11)
-        local drawable = int(entry.drawable, minDrawable, MAX_DRAWABLE)
-        local texture = int(entry.texture, -1, MAX_TEXTURE)
-        if not id or not ids[id] or seen[id] or not drawable or not texture then return end
+        if id and allowed[id] and not seen[id] then
+            local drawable = int(entry.drawable, -1, MAX_DRAWABLE)
+            local texture = int(entry.texture, -1, MAX_TEXTURE)
 
-        seen[id] = true
-        out[#out + 1] = { [idKey] = id, drawable = drawable, texture = texture }
+            if drawable and texture then
+                seen[id] = true
+                out[#out + 1] = { [idKey] = id, drawable = drawable, texture = texture }
+            else
+                skipped[#skipped + 1] = ('%s %d (%s/%s)'):format(idKey, id, tostring(entry.drawable), tostring(entry.texture))
+            end
+        end
     end
+
+    table.sort(out, function(a, b) return a[idKey] < b[idKey] end)
 
     return out
 end
 
 ---@param components unknown
 ---@param props unknown
----@return table[]? components, table[]? props (both nil when anything is wrong)
+---@return table[]? components, table[]? props, string? skipped (nil components: nothing usable at all)
 function outfit.check(components, props)
-    local cleanComponents = clean(components, 'component_id', COMPONENTS, 0)
-    local cleanProps = clean(props or {}, 'prop_id', PROPS, -1)
-    if not cleanComponents or not cleanProps then return end
+    local skipped = {}
+    local cleanComponents = clean(components, 'component_id', COMPONENT_SET, skipped)
+    local cleanProps = clean(props, 'prop_id', PROP_SET, skipped)
+    local why = #skipped > 0 and table.concat(skipped, ', ') or nil
 
-    return cleanComponents, cleanProps
+    if #cleanComponents == 0 then return nil, nil, why or 'no clothes' end
+
+    return cleanComponents, cleanProps, why
 end
 
 ---@param value unknown

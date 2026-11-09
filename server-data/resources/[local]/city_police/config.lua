@@ -115,8 +115,9 @@ Config.Stations = {
 Config.Blip = { sprite = 60, colour = 29, scale = 0.8 }
 
 -- Uniforms everyone on the job can put on at a wardrobe; the chief adds more in game (saved in the database). Numbers
--- are GTA freemode drawables { component_id, drawable, texture } (3 arms, 4 legs, 6 shoes, 8 undershirt, 11 jacket)
--- and props { prop_id, drawable, texture } (-1 = none). Check them in game and adjust.
+-- are GTA freemode drawables { component_id, drawable, texture } (3 arms, 4 legs, 6 shoes, 8 undershirt, 11 jacket;
+-- only clothes count: 1 and 3 to 11)
+-- and the hat as props { prop_id = 0, drawable, texture } (none = the hat comes off). Check them in game.
 Config.Uniforms = {
     {
         id = 'lspd_short', label = 'LSPD short sleeve', sex = 'male',
