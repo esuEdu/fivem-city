@@ -1,5 +1,5 @@
-import { el, L, run, heading, duration, empty, pill } from './ui.js';
-import { app, go, refresh, setMyStatus } from './main.js';
+import { el, L, run, heading, duration, empty, pill, icon } from './ui.js';
+import { app, can, go, refresh, setMyStatus } from './main.js';
 
 function gradeName(level) {
     const grade = (app.grades || []).find((entry) => entry.level === level);
@@ -45,7 +45,7 @@ export async function renderUnits() {
     const table = el('div', { class: 'card flush' },
         el('div', { class: 'table-head unit-cols' },
             el('span', { text: L('ui_unit') }), el('span', { text: L('ui_rank') }), el('span', { text: L('ui_status') }),
-            el('span', { text: L('ui_call') }), el('span', { text: L('ui_vehicle') }), el('span', { text: L('ui_on_duty_for') })),
+            el('span', { text: L('ui_call') }), el('span', { text: L('ui_vehicle') }), el('span', { text: L('ui_on_duty_for') }), el('span')),
         units.length ? units.map((unit) => el('div', { class: 'table-row unit-cols' },
             el('span', { class: 'person' }, el('span', { class: 'callsign', text: unit.callsign || '—' }), el('strong', { text: unit.name })),
             el('span', { class: 'muted', text: gradeName(unit.grade) }),
@@ -53,6 +53,9 @@ export async function renderUnits() {
             el('span', {}, unit.call ? el('button', { class: 'link', text: `#${unit.call}`, onclick: () => go('dispatch', { id: unit.call }) }) : '—'),
             el('span', { class: 'muted', text: unit.vehicle || '—' }),
             el('span', { class: 'muted', text: duration(now - unit.since) }),
+            el('span', {}, unit.id !== app.me.id && can('bodycam')
+                ? el('button', { class: 'icon-btn', title: L('ui_bodycam'), 'aria-label': L('ui_bodycam'), onclick: () => run('bodycam', { id: unit.id }) }, icon('cameras', 16))
+                : null),
         )) : empty(L('ui_no_units')),
     );
 

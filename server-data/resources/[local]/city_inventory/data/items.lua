@@ -748,6 +748,32 @@ return {
         weight = 200,
     },
 
+    -- city_police: used on a player with their hands up, cuffed or down
+    ['zipties'] = {
+        label = 'Zip Ties',
+        category = 'tool',
+        weight = 20,
+        description = 'Ties the hands of someone who has given up. Cut with a knife.',
+        client = { image = 'ziptie.png' },
+    },
+
+    ['head_bag'] = {
+        label = 'Head Bag',
+        category = 'tool',
+        weight = 150,
+        description = 'Goes over the head of someone who has given up.',
+        client = { image = 'paperbag.png' },
+    },
+
+    -- city_police: forces a locked car open (police on duty)
+    ['crowbar'] = {
+        label = 'Crowbar',
+        category = 'tool',
+        weight = 1500,
+        description = 'Police issue. Forces locked car doors.',
+        client = { image = 'weapon_crowbar.png' },
+    },
+
     -- Prison contraband (city_prison): parts found in hidden spots, combined into the three below
     ['prison_scrap'] = {
         label = 'Scrap Metal',

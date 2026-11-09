@@ -62,6 +62,8 @@ return {
             { name = 'repairkit', price = 250 },
             { name = 'jerry_can', price = 200 },
             { name = 'binoculars', price = 300 },
+            { name = 'zipties', price = 40 },
+            { name = 'head_bag', price = 60 },
             { name = 'pos_terminal', price = 3000 },
         },
         locations = {

@@ -18,6 +18,30 @@ return {
     -- Searching someone who isn't cuffed, down or hands up asks them first: seconds to answer, seconds between asks
     search = { seconds = 15, cooldown = 10 },
 
+    -- Seconds between two tackles by one officer
+    tackleCooldown = 10,
+
+    -- Zip ties are cut with any of these; a head bag falls off by itself after this many minutes
+    zipCutters = { 'weapon_knife', 'weapon_switchblade', 'weapon_dagger', 'weapon_machete', 'weapon_bottle' },
+    headBagMinutes = 10,
+
+    -- Shots by anyone but police on duty, inside these areas, become a call. A suppressed shot is reported only with
+    -- suppressedChance; after a call, the same shooter makes no new one for cooldown seconds.
+    shots = {
+        cooldown = 20,
+        suppressedChance = 0.2,
+        suppressors = { at_suppressor_light = true, at_suppressor_heavy = true },
+        areas = {
+            { label = 'Los Santos', coords = vec3(-300.0, -900.0, 30.0), radius = 2600.0 },
+            { label = 'Sandy Shores', coords = vec3(1850.0, 3700.0, 33.0), radius = 600.0 },
+            { label = 'Grapeseed', coords = vec3(1700.0, 4800.0, 42.0), radius = 400.0 },
+            { label = 'Paleto Bay', coords = vec3(-200.0, 6300.0, 31.0), radius = 600.0 },
+        },
+    },
+
+    -- BOLOs (be on the lookout) last this many hours unless the officer picks fewer
+    boloHours = 48,
+
     -- Licences: points counted over this many days; at maxPoints the driver licence goes
     pointsDays = 30,
     maxPoints = 20,
@@ -48,6 +72,8 @@ return {
     -- Armory (a city_inventory shop; police gear is free, ammo almost)
     armory = {
         { name = 'handcuffs', price = 0 },
+        { name = 'zipties', price = 0 },
+        { name = 'crowbar', price = 0 },
         { name = 'radio', price = 0 },
         { name = 'empty_evidence_bag', price = 0 },
         { name = 'armour', price = 0 },

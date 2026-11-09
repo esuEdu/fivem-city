@@ -100,6 +100,24 @@ function police.reach(src, target, distance)
     return target
 end
 
+---The closest other player within distance (for usable items, which only know who used them).
+---@param src integer
+---@param distance number
+---@return integer?
+function police.closest(src, distance)
+    local coords = GetEntityCoords(GetPlayerPed(src))
+    local best, bestDistance = nil, distance
+
+    for target in pairs(exports.qbx_core:GetQBPlayers()) do
+        if target ~= src then
+            local gap = #(GetEntityCoords(GetPlayerPed(target)) - coords)
+            if gap <= bestDistance then best, bestDistance = target, gap end
+        end
+    end
+
+    return best
+end
+
 ---Server ids of officers on duty.
 ---@return integer[]
 function police.onDutyList()
