@@ -271,11 +271,14 @@ exports('Close', close)
 exports('OpenApp', function(appId, args)
     if type(appId) ~= 'string' or (args ~= nil and type(args) ~= 'table') then return false end
 
+    -- Read before open() waits on the server: after a yield GetInvokingResource no longer names the caller
+    local invoker = GetInvokingResource()
+
     if not isOpen then open() end
     if not isOpen then return false end
 
     local app = apps[appId]
-    if not app or app.resource ~= GetInvokingResource() then return false end
+    if not app or app.resource ~= invoker then return false end
 
     SendNUIMessage({ action = 'openApp', app = appId, args = args })
 
