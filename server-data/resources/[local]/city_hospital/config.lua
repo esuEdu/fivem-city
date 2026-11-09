@@ -3,6 +3,22 @@ Config = {}
 Config.Job = 'ambulance'
 Config.JobType = 'ems'
 
+-- The EMS tablet app (city_os): dashboard, calls, management and the records of revives and bills
+Config.App = {
+    id = 'ems',
+    label = 'EMS',
+    order = 31,
+    icon = {
+        glyph = 'M12 20.3S3.8 15.6 3.8 9.4A4.2 4.2 0 0 1 12 7.2a4.2 4.2 0 0 1 8.2 2.2c0 6.2-8.2 10.9-8.2 10.9zM7 12.2h2.6l1.4-2.4 2.1 4.6 1.3-2.2H17',
+        colors = { '#ff7b7b', '#e5383b', '#9d1c20' },
+        glyphColor = '#ffffff',
+        tint = '#ff7b7b',
+    },
+    employer = 'Pillbox Medical',
+    historyLimit = 60, -- records listed in the Records tab
+    offerSeconds = 60, -- how long a job offer from the boss stays on the player's screen
+}
+
 -- Keys while down: E (hold) respawn, G send SOS, H desperate prayer (NPC ambulance). Control ids, not key names.
 Config.Keys = { respawn = 38, sos = 47, pray = 74, dropBody = 73 }
 Config.RespawnHoldMs = 2000

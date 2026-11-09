@@ -1,6 +1,6 @@
 # Work apps (job and gang tablet apps)
 
-The tablet apps for a job or a gang (Mechanic now; EMS and gangs next) share one look with the Staff app and the MDT: a sidebar with the logo, the user's name and grade, the tabs (with red badges) and a footer card, and the content on the right with tiles, cards, tables and list + detail views. The **Mechanic** app (`city_mechanic`) is the first one and the template for the others.
+The tablet apps for a job or a gang (Mechanic and EMS now; gangs next) share one look with the Staff app and the MDT: a sidebar with the logo, the user's name and grade, the tabs (with red badges) and a footer card, and the content on the right with tiles, cards, tables and list + detail views. The **Mechanic** app (`city_mechanic`) is the first one and the template for the others.
 
 ## Shared shell: `city_os/web/kit/workapp.*`
 
@@ -27,3 +27,7 @@ Each app picks its color on `:root` in its own CSS: `--app-accent`, `--app-accen
 - **Services**: the tuning bay's history (`city_mechanic_services`: plate, mechanic, parts, value, repaired, staff), searchable by plate or mechanic, and the reference price list from `Config.Prices` to charge customers.
 
 The MDT (`city_police`) has the same Management tab: every officer sees it, the chief (`Config.Permissions.management`) sends job offers by server id (`Config.OfferSeconds`), changes ranks and fires.
+
+## EMS app (`city_hospital`)
+
+A copy of the Mechanic app in red: Dashboard (on duty, open calls, revives today and amount billed, the viewer's records this week, 7-day chart), Calls (SOS, 192, emergency button and officer down from `server/sos.lua`; accept sets the GPS and tells a downed patient who is coming, whoever accepted closes it), Management (the same job offers, grade changes and firing) and Records (`city_hospital_records`: every revive and bill by an EMS, searchable by patient or EMS, plus the reference prices in `server/config.lua` `billing`).

@@ -21,6 +21,38 @@ local calls = {}
 local nextId = 0
 local lastCall = {}
 
+---@type fun(id: integer?)[] told when a call opens (id) or closes (nil): the EMS app's notification and badge
+local listeners = {}
+
+---@param fn fun(id: integer?)
+function sos.onChange(fn)
+    listeners[#listeners + 1] = fn
+end
+
+---@param id integer?
+local function changed(id)
+    for i = 1, #listeners do listeners[i](id) end
+end
+
+local function purge()
+    local now = os.time()
+
+    for id, call in pairs(calls) do
+        if now - call.at > settings.times.callExpire or not GetPlayerName(call.src) then calls[id] = nil end
+    end
+end
+
+---Open calls.
+---@return integer
+function sos.count()
+    purge()
+
+    local count = 0
+    for _ in pairs(calls) do count = count + 1 end
+
+    return count
+end
+
 ---@param src integer
 ---@return Call?
 function sos.of(src)
@@ -60,17 +92,24 @@ local function create(src, kind, text)
         TriggerClientEvent('city_hospital:client:newCall', ems[i], { id = call.id, text = text, coords = call.coords })
     end
 
+    changed(call.id)
+
     return call
 end
 
 ---@param src integer
 function sos.closeFor(src)
+    local closed = false
+
     for id, call in pairs(calls) do
         if call.src == src then
             if call.acceptedSrc then TriggerClientEvent('city_hospital:client:callClosed', call.acceptedSrc, id) end
             calls[id] = nil
+            closed = true
         end
     end
+
+    if closed then changed(nil) end
 end
 
 -- Sending an SOS while down. Finished-off players can't call anyone.
@@ -98,16 +137,18 @@ local function ems(src)
 end
 
 lib.callback.register('city_hospital:calls', function(source)
-    if not ems(source) then return {} end
+    local src = source
+    if not ems(src) then return {} end
+
+    purge()
 
     local list, now = {}, os.time()
 
     for id, call in pairs(calls) do
-        if now - call.at > settings.times.callExpire or not GetPlayerName(call.src) then
-            calls[id] = nil
-        else
-            list[#list + 1] = { id = id, text = call.text, ago = now - call.at, acceptedBy = call.acceptedBy, coords = call.coords }
-        end
+        list[#list + 1] = {
+            id = id, kind = call.kind, text = call.text, ago = now - call.at, acceptedBy = call.acceptedBy, coords = call.coords,
+            mine = call.acceptedSrc == src,
+        }
     end
 
     table.sort(list, function(a, b) return a.id > b.id end)
@@ -126,6 +167,7 @@ lib.callback.register('city_hospital:acceptCall', function(source, id)
 
     call.acceptedBy = nameOf(src)
     call.acceptedSrc = src
+    changed(nil)
 
     if call.kind == 'sos' then
         exports.qbx_core:Notify(call.src, locale('notify_ems_coming', call.acceptedBy), 'success')
@@ -135,6 +177,20 @@ lib.callback.register('city_hospital:acceptCall', function(source, id)
     end
 
     return call.coords
+end)
+
+-- Closing a call (EMS app): only the EMS who accepted it
+lib.callback.register('city_hospital:closeCall', function(source, id)
+    local src = source
+    local call = ems(src) and math.type(id) == 'integer' and calls[id]
+
+    if not call or call.acceptedSrc ~= src then return false end
+
+    calls[id] = nil
+    TriggerClientEvent('city_hospital:client:callClosed', src, id)
+    changed(nil)
+
+    return true
 end)
 
 -- qbx_radialmenu's emergency button (police and EMS on duty)

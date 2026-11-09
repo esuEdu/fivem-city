@@ -2,6 +2,8 @@
 -- Every action checks the job on duty, the distance and the patient's state here; the client only asks.
 local settings = require 'server.config'
 local state = require 'server.state'
+local records = require 'server.app.records'
+local appCore = require 'server.app.core'
 
 local spawned = {}
 local actions = {}
@@ -63,6 +65,7 @@ lib.callback.register('city_hospital:duty', function(source)
     local onDuty = not player.PlayerData.job.onduty
 
     exports.qbx_core:SetJobDuty(src, onDuty)
+    appCore.setBadge(src, onDuty and appCore.openCalls() or 0)
 
     return onDuty
 end)
@@ -168,6 +171,7 @@ lib.callback.register('city_hospital:finishAction', function(source)
 
     if action.kind == 'revive' then
         exports.qbx_medical:Revive(action.target)
+        records.add('revive', src, action.target)
     else
         exports.qbx_medical:HealPartially(action.target)
     end
@@ -190,7 +194,10 @@ lib.callback.register('city_hospital:bill', function(source, target, amount, not
 
     local label = type(note) == 'string' and #note > 0 and ('EMS: %s'):format(note:sub(1, 60)) or 'EMS treatment'
 
-    return exports.city_bank:CreateBill(target, amount, label, src)
+    local ok, result = exports.city_bank:CreateBill(target, amount, label, src)
+    if ok then records.add('bill', src, target, amount, type(note) == 'string' and note or nil) end
+
+    return ok, result
 end)
 
 AddEventHandler('playerDropped', function()
