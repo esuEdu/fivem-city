@@ -121,6 +121,8 @@
 .list-row .who { flex-grow: 1; }
 
 .profile { flex-direction: row; align-items: center; gap: 18px; }
+.vehicle-photo { padding: 12px; align-items: center; }
+.vehicle-photo img { width: 100%; max-height: 240px; object-fit: contain; }
 .pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
 
 .info-row { display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 16px; border-bottom: 1px solid var(--sep); color: var(--fg); }

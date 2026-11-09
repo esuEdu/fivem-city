@@ -62,6 +62,8 @@ mdt.register('vehicle', function(_, data)
     -- A plate nobody owns (a local's car) can still be flagged
     local result = row and brief(row) or { plate = plate }
     result.garage = row and row.garage
+    local model = row and type(row.vehicle) == 'string' and row.vehicle:lower()
+    result.image = model and model:match('^[%w_]+$') and settings.vehicleImageUrl:format(model) or nil
     result.registered = row ~= nil
     result.flag = flag and { status = flag.status, reason = flag.reason, by = flag.by_name, at = flag.created } or nil
     result.impounds = impounds

@@ -8,6 +8,9 @@ return {
     chargeRange = 10.0, -- an arrest needs the suspect this close; a fine doesn't
     offlineFineDays = 7, -- a fine for someone not in the city is a bank bill due in this many days
 
+    -- Picture of a car on its MDT page, from the model name (the same catalogue city_garages uses)
+    vehicleImageUrl = 'https://docs.fivem.net/vehicles/%s.webp',
+
     -- An arrest is booked only with the suspect cuffed or down, and the officer inside one of these places
     -- (an empty list allows anywhere). Fines are not limited.
     bookingPlaces = {

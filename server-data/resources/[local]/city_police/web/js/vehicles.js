@@ -40,6 +40,19 @@ export async function renderVehicles(args) {
     );
 }
 
+// The model's catalogue picture; addon cars have none, so the card goes away when it fails to load
+function vehiclePhoto(src, model) {
+    const card = el('div', { class: 'card vehicle-photo hidden' });
+    const img = el('img', { alt: model || '' });
+
+    img.onload = () => card.classList.remove('hidden');
+    img.onerror = () => card.remove();
+    img.src = src;
+    card.append(img);
+
+    return card;
+}
+
 async function vehiclePage(plate) {
     const response = await run('vehicle', { plate });
     if (!response) return empty(L('error_not_found'));
@@ -94,5 +107,6 @@ async function vehiclePage(plate) {
                 el('span', { class: 'grow' }, el('strong', { text: row.reason }), el('small', { class: 'block muted', text: `${row.officer} · ${money(row.fee)}` })),
                 el('span', { class: 'value', text: row.released_at ? L('ui_released') : L('ui_held') }))) : el('p', { class: 'muted padded', text: L('ui_none') }),
         ),
+        vehicle.image ? vehiclePhoto(vehicle.image, vehicle.model) : null,
     );
 }
