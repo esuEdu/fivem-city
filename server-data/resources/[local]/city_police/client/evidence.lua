@@ -97,7 +97,7 @@ local function watchGround()
 end
 
 lib.onCache('weapon', function(weapon)
-    if weapon == `weapon_flashlight` and job.onDuty() then SetTimeout(0, watchGround) end
+    if Config.Features.evidence and weapon == `weapon_flashlight` and job.onDuty() then SetTimeout(0, watchGround) end
 end)
 
 RegisterNetEvent('city_police:client:evidenceAdded', function(item)
@@ -114,7 +114,7 @@ end)
 
 AddEventHandler('city_police:client:dutyChanged', function(onDuty)
     ground = {}
-    if not onDuty then return end
+    if not onDuty or not Config.Features.evidence then return end
 
     for _, item in ipairs(lib.callback.await('city_police:evidenceList', false) or {}) do
         ground[item.id] = { id = item.id, kind = item.kind, coords = vec3(item.coords.x, item.coords.y, item.coords.z), label = item.label }

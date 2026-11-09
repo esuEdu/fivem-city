@@ -28,7 +28,7 @@ local function openGarage(kind)
     local grade = job.grade()
 
     for _, entry in ipairs(Config.Vehicles[kind]) do
-        local allowed = grade >= entry.grade and (not entry.cert or certs[entry.cert])
+        local allowed = grade >= entry.grade and (not entry.cert or not Config.Features.certs or certs[entry.cert])
 
         options[#options + 1] = {
             title = entry.label,

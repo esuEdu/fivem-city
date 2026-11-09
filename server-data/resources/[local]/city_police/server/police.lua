@@ -34,10 +34,19 @@ function police.grade(src)
     return job and job.grade.level or -1
 end
 
+-- Config.Permissions keys that belong to a part of the job in Config.Features
+local FEATURE_OF = {
+    map = 'map', bodycam = 'bodycam', cameras = 'cameras', evidence = 'evidence', certs = 'certs', grantCert = 'certs',
+    anklet = 'anklet',
+}
+
 ---@param src integer
 ---@param action string a Config.Permissions key
 ---@return boolean
 function police.can(src, action)
+    local feature = FEATURE_OF[action]
+    if feature and not Config.Features[feature] then return false end
+
     local lowest = Config.Permissions[action]
 
     return lowest ~= nil and police.onDuty(src) and police.grade(src) >= lowest

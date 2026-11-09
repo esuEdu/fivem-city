@@ -80,7 +80,9 @@ lib.callback.register('city_police:spawnVehicle', function(source, kind, model)
 
     local allowed
     for _, entry in ipairs(Config.Vehicles[kind]) do
-        if entry.model == model and police.grade(src) >= entry.grade and (not entry.cert or roster.hasCert(src, entry.cert)) then
+        local certified = not entry.cert or not Config.Features.certs or roster.hasCert(src, entry.cert)
+
+        if entry.model == model and police.grade(src) >= entry.grade and certified then
             allowed = entry
         end
     end

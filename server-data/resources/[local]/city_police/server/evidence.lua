@@ -35,6 +35,8 @@ end
 ---@param coords vector3
 ---@param data table
 local function drop(kind, coords, data)
+    if not Config.Features.evidence then return end
+
     nextId = nextId + 1
 
     local item = { id = nextId, kind = kind, coords = coords, at = os.time(), data = data }
@@ -121,7 +123,7 @@ end)
 
 -- An officer coming on duty gets what's on the ground now
 lib.callback.register('city_police:evidenceList', function(source)
-    if not police.onDuty(source) then return {} end
+    if not Config.Features.evidence or not police.onDuty(source) then return {} end
 
     local list, now = {}, os.time()
 
@@ -138,7 +140,7 @@ end)
 
 lib.callback.register('city_police:collectEvidence', function(source, id, place)
     local src = source
-    if not police.onDuty(src) then return false end
+    if not police.can(src, 'evidence') then return false, 'feature_off' end
 
     local item = math.type(id) == 'integer' and ground[id]
     if not item then return false, 'gone' end

@@ -190,7 +190,7 @@ end)
 
 lib.callback.register('city_police:anklet', function(source, target)
     local src = source
-    if not police.onDuty(src) then return false end
+    if not police.can(src, 'anklet') then return false, 'feature_off' end
 
     target = police.reach(src, target)
     if not target then return false, 'too_far' end
