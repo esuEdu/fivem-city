@@ -1,6 +1,15 @@
 Config = {}
 
 Config.Job = 'mechanic'
+
+-- Parts of the job switched on for this version
+Config.Features = {
+    chargeJob = false, -- off: parts fitted in the tuning bay are free (nothing taken from the mechanic job's account)
+}
+
+-- Staff with this ACE (support < mod < admin) may use the tuning bay without the mechanic job; always free, written
+-- to the staff log. nil turns it off.
+Config.StaffAce = 'support'
 Config.Label = 'Los Santos Customs'
 
 Config.Blip = { coords = vector3(-337.4, -136.0, 39.0), sprite = 446, color = 5, scale = 0.8 }

@@ -10,6 +10,18 @@ function mechanic.onDuty(src)
     if job and job.name == Config.Job and job.onduty then return player end
 end
 
+---Who may use the tuning bay: a mechanic on duty, or staff with Config.StaffAce (staff = true).
+---@param src integer
+---@return table? player
+---@return boolean? staff
+function mechanic.tuner(src)
+    local player = mechanic.onDuty(src)
+    if player then return player, false end
+
+    player = exports.qbx_core:GetPlayer(src)
+    if player and Config.StaffAce and IsPlayerAceAllowed(src, Config.StaffAce) then return player, true end
+end
+
 ---@param src integer
 ---@param coords vector3
 ---@param distance number

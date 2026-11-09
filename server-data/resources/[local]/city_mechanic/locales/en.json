@@ -51,6 +51,7 @@
     "ui_cart_empty": "Pick parts on the left; the car shows each one as you go.",
     "ui_total": "Total",
     "ui_confirm": "Fit and pay",
+    "ui_confirm_free": "Fit parts",
     "ui_reset": "Undo all",
     "ui_close": "Close",
     "ui_repair": "Full repair",

@@ -272,6 +272,7 @@ function tuning.open()
         plate = props.plate,
         model = GetLabelText(GetDisplayNameFromVehicleModel(GetEntityModel(vehicle))),
         balance = info.balance,
+        free = info.free == true,
         repair = info.repair,
         categories = build(vehicle, props),
     })
