@@ -35,11 +35,11 @@ lib.callback.register('city_robbery:pickBag', function(source, id)
 
     id = math.tointeger(tonumber(id))
     local bag = id and list[id]
-    if not bag then return false, 'bag_gone' end
+    if not bag then return common.deny(src, 'bag_gone') end
 
     -- The bag's point is where the robber stood; the prop lies on the floor below it
-    if not common.near(src, bag.coords, Config.Bag.pickDistance + 1.5) then return false, 'too_far' end
-    if common.isDown(src) then return false, 'cant_now' end
+    if not common.near(src, bag.coords, Config.Bag.pickDistance + 1.5) then return common.deny(src, 'too_far') end
+    if common.isDown(src) then return common.deny(src, 'cant_now') end
 
     -- Off the floor first, so two players can't both be paid
     list[id] = nil
@@ -48,7 +48,7 @@ lib.callback.register('city_robbery:pickBag', function(source, id)
     if not exports.qbx_core:AddMoney(src, 'cash', bag.amount, bag.reason) then
         list[id] = bag
         publish()
-        return false, 'cash_refused'
+        return common.deny(src, 'cash_refused')
     end
 
     lib.print.info(('city_robbery: player %s picked up a %s bag of $%d'):format(src, bag.reason, bag.amount))

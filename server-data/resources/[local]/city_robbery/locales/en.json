@@ -19,6 +19,8 @@
     "busy": "You are already in the middle of a robbery.",
     "too_far": "You are too far away.",
     "cant_now": "You can't do that now.",
+    "cancelled": "Cancelled.",
+    "failed": "That didn't work. Try again.",
     "alert_atm": "ATM Robbery",
     "alert_atm_text": "An ATM was blown open with explosives.",
     "alert_store": "Store Robbery",

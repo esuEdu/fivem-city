@@ -10,7 +10,7 @@ local function rob(id)
 
     local ok, result = lib.callback.await('city_robbery:startStore', false, id)
     if not ok then
-        if result then lib.notify({ description = locale(result), type = 'error' }) end
+        lib.notify({ description = locale(result or 'failed'), type = 'error' })
         return
     end
 
@@ -30,6 +30,7 @@ local function rob(id)
     })
 
     if not done then
+        lib.notify({ description = locale('cancelled'), type = 'error' })
         lib.callback.await('city_robbery:cancel', false)
         busy = false
         return
@@ -40,8 +41,8 @@ local function rob(id)
 
     if finished then
         lib.notify({ description = locale('bag_dropped'), type = 'success' })
-    elseif reason then
-        lib.notify({ description = locale(reason), type = 'error' })
+    else
+        lib.notify({ description = locale(reason or 'failed'), type = 'error' })
     end
 end
 
