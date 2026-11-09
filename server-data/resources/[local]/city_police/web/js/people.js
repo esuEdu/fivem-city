@@ -116,10 +116,10 @@ async function personFile(citizenid) {
         el('div', { class: 'two-cols even' },
             section(L('ui_tab_vehicles'), person.vehicles.map((vehicle) => el('button', { class: 'info-row link-row', onclick: () => go('vehicles', { plate: vehicle.plate }) },
                 icon('vehicles', 18), el('strong', { text: vehicle.plate }), el('span', { class: 'value', text: vehicle.vehicle }))), L('ui_none')),
-            section(L('ui_tab_weapons'), person.weapons.map((weapon) => el('button', { class: 'info-row link-row', onclick: () => go('weapons', { serial: weapon.serial }) },
+            can('weapons') && section(L('ui_tab_weapons'), person.weapons.map((weapon) => el('button', { class: 'info-row link-row', onclick: () => go('weapons', { serial: weapon.serial }) },
                 icon('weapons', 18), el('strong', { text: weapon.label }), el('span', { class: 'value', text: `${weapon.serial} · ${L(`weapon_${weapon.status}`)}` }))), L('ui_none')),
         ),
-        section(L('ui_tab_reports'), person.reports.map((report) => el('button', { class: 'info-row link-row', onclick: () => go('reports', { id: report.id }) },
+        can('reports') && section(L('ui_tab_reports'), person.reports.map((report) => el('button', { class: 'info-row link-row', onclick: () => go('reports', { id: report.id }) },
             icon('reports', 18), el('strong', { text: `#${report.id} ${report.title}` }), el('span', { class: 'value', text: formatTime(report.created) }))), L('ui_none')),
     );
 }

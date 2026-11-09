@@ -52,9 +52,10 @@ local function members()
     return list
 end
 
+-- Both the Certifications and the Management tab list the members
 mdt.register('members', function()
     return true, members()
-end, 'certs')
+end, { 'certs', 'management' })
 
 mdt.register('setCert', function(src, data)
     local citizenid = mdt.citizenid(data.citizenid)
