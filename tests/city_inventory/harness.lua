@@ -43,6 +43,7 @@ end
 local serials = 0
 
 vec3 = function(x, y, z) return { x = x, y = y, z = z } end
+vec4 = function(x, y, z, w) return { x = x, y = y, z = z, w = w } end
 
 Config = { MaxClip = 100, ReserveMagazines = 8, MaxGunAmmo = 250, Categories = {} }
 
