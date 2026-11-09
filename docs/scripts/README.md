@@ -63,6 +63,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 
 | Script | What it does |
 |---|---|
+| **city_drugs** | Ours, replaces qbx_drugs and qbx_weed: three drugs for gangs, cheapest and safest first: weed, cocaine, meth. Pick cannabis (inside the weed farm), coca leaves and chemicals at fixed spots (each regrows after a few minutes), process them in the biker-business labs (drug gang only: dry and bag, cut, cook, press bricks), sell on corners to locals ("Offer drugs" on a ped: they may refuse) or take a bulk order from the dealer at Vespucci (drug gang only) and deliver it to a drop-off named on the phone. Pays in `black_money`. Every pick, batch and sale may call the police: each drug has its own base chance, and a sale adds a point per so many dollars, so the more it pays the riskier it is. Prices, chances and cooldowns are in `server/config.lua`; the Gang app shows the whole chain (`exports.city_drugs:Guide()`). |
 | **safecracker / mhacking / ultra-voltlab** | Minigames for the heists (safes, hacking, voltage puzzle). |
 
 ## Houses
@@ -116,6 +117,8 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_economy**, **city_bank** | See Money above. Design and rules: `PROMPT_ECONOMIA_FIVEM.md`, `BANCO_DESIGN.md`. |
 | **city_hospital**, **city_police** | See Jobs above. |
 | **city_garages**, **city_dealership** | See Vehicles above. |
+| **city_drugs** | See Crime above. |
+| **city_gangs** | The drug gang's tablet app (**Cartel**), seen only by members of the gangs in `Config.Gangs` (default `cartel`): a dashboard with the gang's money, sales, production and active members per period, a daily chart, per drug and a ranking of members; members with each one's own performance page (place and share in the gang, chart, activity) and promote, demote, kick out for those below you; recruiting a nearby player without a gang (they accept on their screen); the drugs guide from city_drugs with GPS; and the gang log (`city_gangs_log`). What each rank may do is `Config.Permissions`. |
 | **city_phone** | See Communication above. |
 | **city_os** | The iFruit Pad tablet (item + F2): lock screen, home, notifications, Settings, and the platform other scripts add their apps to. See [city-os.md](../city-os.md). |
 | **city_staff** | The **Staff** tablet app (replaced qbx_adminmenu): players and actions, `/report` reports, warnings, bans, staff log, noclip and other staff tools, vehicles. See [city-staff.md](../city-staff.md). |

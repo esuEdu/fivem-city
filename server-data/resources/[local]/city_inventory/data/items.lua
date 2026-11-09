@@ -458,6 +458,28 @@ return {
         client = { image = 'weed_baggy_empty.png' },
     },
 
+    -- city_drugs raw materials, picked at its fields and processed in its labs
+    ['cannabis'] = {
+        label = 'Cannabis Bud',
+        category = 'drug',
+        weight = 50,
+        client = { image = 'weed.png' },
+    },
+
+    ['coca_leaf'] = {
+        label = 'Coca Leaves',
+        category = 'drug',
+        weight = 50,
+        client = { image = 'cocaineleaf.png' },
+    },
+
+    ['meth_chemicals'] = {
+        label = 'Chemicals',
+        category = 'drug',
+        weight = 500,
+        client = { image = 'hydrochloricacid.png' },
+    },
+
     ['firstaid'] = {
         label = 'First Aid',
         category = 'medical',

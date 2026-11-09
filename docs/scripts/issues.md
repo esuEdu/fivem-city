@@ -77,11 +77,11 @@ Only `unemployed`, `police`, `ambulance` and `mechanic` (city_mechanic) exist; t
 
 ## 5. Features removed with their scripts
 
-These qbx scripts were removed and have no replacement yet: qbx_bankrobbery, qbx_jewelery, qbx_storerobbery, qbx_truckrobbery, qbx_houserobbery, qbx_drugs, qbx_weed, qbx_pawnshop, qbx_scrapyard, qbx_lapraces, qbx_streetraces, qbx_diving, qbx_divegear, qbx_fireworks, qbx_binoculars, qbx_carwash, qbx_vehiclesales and qbx_cityhall (qbx_vehicleshop was replaced by city_dealership).
+These qbx scripts were removed and have no replacement yet: qbx_bankrobbery, qbx_jewelery, qbx_storerobbery, qbx_truckrobbery, qbx_houserobbery, qbx_pawnshop, qbx_scrapyard, qbx_lapraces, qbx_streetraces, qbx_diving, qbx_divegear, qbx_fireworks, qbx_binoculars, qbx_carwash, qbx_vehiclesales and qbx_cityhall (qbx_vehicleshop was replaced by city_dealership, qbx_drugs and qbx_weed by city_drugs).
 
 - **No selling cars to other players** (qbx_vehiclesales); new cars are bought at city_dealership.
 - **No car wash.**
 - **No city hall**: licences and replacement ID cards can't be bought. New characters still get their ID and driver's licence from qbx_core's starting items (qbx_idcard).
-- **No robberies, drugs, weed, pawn shop, scrapyard, diving or races.** Their items stay in `city_inventory/data/items.lua`, so players keep what they have, but most no longer do anything.
+- **No robberies, pawn shop, scrapyard, diving or races.** city_drugs uses its own items (`cannabis`, `coca_leaf`, `meth_chemicals`) plus the old bags and bricks; weed seeds, other strains, crack, ecstasy and oxy do nothing for now. Their items stay in `city_inventory/data/items.lua`, so players keep what they have, but most no longer do anything.
 - Their tables (`vehicle_financing`, `occasion_vehicles`, `weed_plants`, `lapraces`, `dealers`) stay in the database; `scripts/import-sql.sh` no longer creates them.
 - city_police still handles qbx_police's camera events (`police:client:SetCamera`), and city_phone the old `qb-phone` mail and alert events, for scripts added later.
