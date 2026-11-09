@@ -20,7 +20,7 @@ assert(rules.can(ADMIN, 'banLong') and rules.can(ADMIN, 'log') and rules.can(ADM
 assert(not rules.can(0, 'app') and not rules.can(0, 'goto'))
 
 -- An action missing from the config is off for everyone
-assert(not rules.can(ADMIN, 'giveMoney'))
+assert(not rules.can(ADMIN, 'notAnAction'))
 
 local permissions = rules.permissions(MOD)
 assert(permissions.kick == true and permissions.log == false and permissions.app == true)
