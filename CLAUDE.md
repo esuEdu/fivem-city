@@ -61,6 +61,7 @@ Custom code lives in `server-data/resources/[local]/` (`city_base` is the starte
 - Staff tools go in the Staff app (`city_staff`), not in-game commands. Test/dev commands that remain use `restricted = 'group.admin'` (the `IsOptin` check they still call is always true now that admin duty is off), with `source == 0` allowed for the server console.
 - Net events are namespaced `<resource>:client:<name>` / `<resource>:server:<name>`. The player-loaded hook is `QBCore:Client:OnPlayerLoaded` (via the Qbox bridge).
 - Qbox scripts (`qbx_*`) go in `[qbx]/`, framework-independent third-party scripts in `[standalone]/`, MLOs/map edits in `[maps]/`.
+- Parts of a resource left out of the current version are `Config.Features` flags in its `config.lua` (shared): off, the client hides them (menus, zones, tablet tabs) and every server handler for them returns early, so a modified client gets nothing either. city_police, city_prison, city_fishing and city_mining have them; the V1 test also stops qbx_properties, city_builder and the Militech tuners at the end of `server.cfg`. `bash scripts/wipe-db.sh` empties player data between test rounds (`docs/docker.md`).
 
 ## Standards
 
