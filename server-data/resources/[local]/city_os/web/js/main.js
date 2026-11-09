@@ -48,6 +48,7 @@ function open(message) {
         clock: message.clock,
         unlocked: !message.tablet.hasCode,
         notesOpen: false,
+        pendingApp: null,
     });
 
     applyTheme(state.theme);
@@ -95,6 +96,12 @@ window.addEventListener('message', (event) => {
             return render();
         case 'notify': return notes.add(message.note);
         case 'appMessage': return apps.forward(message.app, message.data);
+        case 'openApp':
+            // locked with a passcode: opens after unlocking (lock.js)
+            if (state.tablet && !state.tablet.hasCode) state.unlocked = true;
+            if (state.unlocked) return apps.openApp(message.app, message.args);
+            state.pendingApp = { id: message.app, args: message.args };
+            return;
     }
 });
 

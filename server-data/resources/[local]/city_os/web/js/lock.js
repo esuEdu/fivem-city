@@ -1,6 +1,7 @@
 import { el, post, svg, GLYPHS } from './util.js';
 import { state, L, go, onRender, render, timeText, dateText } from './state.js';
 import { noteCard } from './notes.js';
+import { openApp } from './apps.js';
 
 const UNLOCK_DISTANCE = 140;
 const lockScreen = document.getElementById('lock');
@@ -14,10 +15,19 @@ function setShift(px) {
     lockScreen.style.opacity = String(Math.max(0, 1 - px / 300));
 }
 
+// Past the lock: the app a script asked for (exports.city_os:OpenApp), or home
+function enter() {
+    const pending = state.pendingApp;
+    state.pendingApp = null;
+
+    if (pending) return openApp(pending.id, pending.args);
+    go('home');
+}
+
 function afterSwipe() {
     setShift(0);
 
-    if (state.unlocked) return go('home');
+    if (state.unlocked) return enter();
 
     code = '';
     renderPasscode('');
@@ -69,7 +79,7 @@ async function press(digit) {
         state.unlocked = true;
         state.apps = result.apps || [];
         state.badges = result.badges || {};
-        return go('home');
+        return enter();
     }
 
     const message = result && result.reason === 'wait' ? L('wait_code', result.wait) : L('wrong_code');
