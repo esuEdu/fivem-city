@@ -4,6 +4,7 @@
 
 local police = require 'server.police'
 local status = require 'server.status'
+local alerts = require 'server.alerts'
 
 ---@class GroundEvidence
 ---@field id integer
@@ -91,6 +92,8 @@ RegisterNetEvent('city_police:server:shot', function(coords)
         weapon = weapon.name,
         serial = weapon.metadata.serial,
     })
+
+    alerts.shot(src, point, weapon)
 end)
 
 -- qbx_medical: a wounded player bleeds

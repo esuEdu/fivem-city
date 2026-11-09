@@ -15,6 +15,7 @@
 ::-webkit-scrollbar-button { display: none; }
 .spacer, .grow { flex-grow: 1; }
 .muted { color: var(--muted2); }
+.pre { white-space: pre-wrap; }
 .good { color: var(--ok); }
 .bad { color: var(--bad); }
 .gold { color: var(--accent-ink); }
@@ -218,7 +219,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .legend .anklet { background: #c79bff; }
 
 /* Units */
-.unit-cols { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) 60px minmax(0, 1fr) minmax(0, 1fr); }
+.unit-cols { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) 60px minmax(0, 1fr) minmax(0, 1fr) 36px; }
 .callsign { flex: none; min-width: 44px; height: 24px; padding: 0 6px; border-radius: 7px; background: var(--chip); font-size: 12px; font-weight: 700; display: grid; place-items: center; }
 .status-picker { display: flex; gap: 6px; flex-wrap: wrap; }
 .status-btn { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--field); color: var(--fg); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
