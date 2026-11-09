@@ -27,3 +27,6 @@ Thumbs.db
 
 # Builder ymap exports (made on the server, kept off git)
 server-data/resources/[[]local]/city_builder/exports/*.xml
+
+# Database dumps from scripts/wipe-db.sh
+backups/
