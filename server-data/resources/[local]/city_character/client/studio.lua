@@ -27,9 +27,23 @@ local function playIdle()
     RemoveAnimDict(idle.dict)
 end
 
+-- How long to wait for the room's collision around a new ped before freezing it anyway
+local COLLISION_WAIT_MS = 1500
+
 local function placePed()
-    local ped = cache.ped
+    -- After SetPlayerModel the player has a new ped; cache.ped only follows it on ox_lib's next tick
+    local ped = PlayerPedId()
+    cache.ped = ped
     local spot = Config.Studio.ped
+
+    -- A ped frozen in the same frame it was created, before the room's collision is there, ends up pushed up into the
+    -- ceiling: place it unfrozen, wait for the collision, then place it again and freeze it
+    FreezeEntityPosition(ped, false)
+    RequestCollisionAtCoord(spot.x, spot.y, spot.z)
+    SetEntityCoords(ped, spot.x, spot.y, spot.z, false, false, false, false)
+
+    local deadline = GetGameTimer() + COLLISION_WAIT_MS
+    repeat Wait(0) until HasCollisionLoadedAroundEntity(ped) or GetGameTimer() > deadline
 
     SetEntityCoords(ped, spot.x, spot.y, spot.z, false, false, false, false)
     SetEntityHeading(ped, spot.w)
