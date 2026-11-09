@@ -9,6 +9,17 @@ Config.Fov = { min = 15.0, max = 70.0, default = 50.0, step = 4.0 }
 Config.LookSpeed = 6.0
 Config.Pitch = { min = -70.0, max = 70.0 }
 
+-- Selfie: a camera at arm's length in front of the face (meters from the head), so the player can still walk. The
+-- phone prop goes in the right hand; the arm animation plays only if the game has it.
+Config.Selfie = {
+    distance = 0.75,
+    side = 0.15,
+    height = 0.05,
+    fov = 55.0,
+    prop = { model = `prop_npc_phone_02`, bone = 28422 },
+    anim = { dict = 'cellphone@self', clip = 'selfie' },
+}
+
 -- Filters: the game's own timecycle modifiers (tune the names here if one looks off)
 Config.Filters = {
     { key = 'original' },
