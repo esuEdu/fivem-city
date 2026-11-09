@@ -285,6 +285,7 @@ Config.Keys = {
     radarLock = 'F9', -- freeze the readings
     carMenu = 'F6', -- the patrol car menu: radio codes and the radar
     megaphone = 'Y', -- hold in a police car
+    stopEscort = 'H', -- while escorting: the escorted player has no collision, so Alt can't reach them
 }
 
 -- Panic button: the chat command (/p, or "p" in F8), also bindable in the game's key bindings

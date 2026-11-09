@@ -22,6 +22,8 @@
     "target_cuff": "Cuff / uncuff",
     "target_softcuff": "Soft cuff",
     "target_escort": "Escort",
+    "stop_escort_hint": "[%s] Stop escorting",
+    "keybind_stop_escort": "Police: stop escorting",
     "target_put_in": "Put in vehicle",
     "target_take_out": "Take out of vehicle",
     "target_search": "Search",

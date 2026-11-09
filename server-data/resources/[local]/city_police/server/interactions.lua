@@ -126,7 +126,7 @@ lib.callback.register('city_police:escort', function(source, target)
 
     escorts[target] = src
     TriggerClientEvent('city_police:client:escorted', target, true, src)
-    TriggerClientEvent('city_police:client:escorting', src, true)
+    TriggerClientEvent('city_police:client:escorting', src, true, target)
 
     return true, true
 end)
