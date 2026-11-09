@@ -30,9 +30,32 @@
     </section>
 
     <section id="radar" class="radar hidden" aria-live="off">
-        <div class="radar-cell"><small id="radar-front-label"></small><strong id="radar-front-speed">--</strong><span id="radar-front-plate"></span></div>
-        <div class="radar-cell"><small id="radar-rear-label"></small><strong id="radar-rear-speed">--</strong><span id="radar-rear-plate"></span></div>
-        <div class="radar-cell own"><small id="radar-own-label"></small><strong id="radar-own-speed">--</strong><span id="radar-lock" class="hidden"></span></div>
+        <div class="radar-head"><span>PATROL RADAR</span><span id="radar-lock" class="radar-locked hidden"></span></div>
+        <div class="radar-row">
+            <div class="radar-cell"><small id="radar-own-label"></small><strong class="digits green" id="radar-own-speed">000</strong></div>
+            <div class="radar-cell"><small id="radar-front-label"></small><strong class="digits orange" id="radar-front-speed">000</strong></div>
+            <div class="radar-cell"><small id="radar-rear-label"></small><strong class="digits red" id="radar-rear-speed">000</strong></div>
+            <div class="radar-plates">
+                <div class="plate"><small>San Andreas</small><strong id="radar-front-plate">--------</strong></div>
+                <div class="plate rear"><strong id="radar-rear-plate">--------</strong></div>
+            </div>
+        </div>
+    </section>
+
+    <div id="popups" class="popups" aria-live="polite"></div>
+
+    <section id="radial" class="radial-wrap hidden" role="dialog" aria-modal="true">
+        <div class="radial" id="radial-ring"></div>
+    </section>
+
+    <section id="car-menu" class="car-menu hidden" role="dialog" aria-labelledby="car-title">
+        <div class="car-head">
+            <div><h2 id="car-title"></h2><small id="car-subtitle"></small></div>
+            <button type="button" class="car-close" id="car-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="car-radar" id="car-radar"></div>
+        <h3 id="car-codes-label"></h3>
+        <div class="car-codes" id="car-codes"></div>
     </section>
 
     <div id="head-bag" class="head-bag hidden" aria-hidden="true"></div>

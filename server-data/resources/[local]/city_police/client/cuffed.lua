@@ -110,11 +110,17 @@ RegisterNetEvent('city_police:client:escorting', function(on)
     TriggerEvent('hospital:client:SetEscortingState', on == true)
 end)
 
-RegisterNetEvent('city_police:client:enterVehicle', function(netId)
+RegisterNetEvent('city_police:client:enterVehicle', function(netId, seat)
     if GetInvokingResource() or not NetworkDoesEntityExistWithNetworkId(netId) then return end
 
     local vehicle = NetToVeh(netId)
     stopEscorted()
+
+    -- The seat the officer picked, if it's a passenger seat and still free
+    if math.type(seat) == 'integer' and seat >= 0 and IsVehicleSeatFree(vehicle, seat) then
+        TaskWarpPedIntoVehicle(cache.ped, vehicle, seat)
+        return
+    end
 
     -- Back seats first, then any free one
     for seat = GetVehicleMaxNumberOfPassengers(vehicle) - 1, 0, -1 do

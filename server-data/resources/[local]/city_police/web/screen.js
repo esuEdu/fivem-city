@@ -1,5 +1,5 @@
-// The arrested player's screen and the security camera overlay (this resource's ui_page). Game data goes in with
-// textContent only.
+// This resource's ui_page: the arrested player's screen, the camera overlay, the patrol radar, call popups, the
+// round action menu and the patrol car menu. Game data goes in with textContent only.
 
 const RESOURCE = typeof GetParentResourceName === 'function' ? GetParentResourceName() : 'city_police';
 const $ = (id) => document.getElementById(id);
@@ -42,10 +42,12 @@ function closeArrest() {
     post('arrestClose');
 }
 
+const digits = (value) => String(Math.max(0, Math.min(999, value || 0))).padStart(3, '0');
+
 function radarCell(side, reading, label) {
     $(`radar-${side}-label`).textContent = label || '';
-    $(`radar-${side}-speed`).textContent = reading ? String(reading.speed) : '--';
-    $(`radar-${side}-plate`).textContent = reading ? reading.plate : '';
+    $(`radar-${side}-speed`).textContent = reading ? digits(reading.speed) : '---';
+    $(`radar-${side}-plate`).textContent = reading ? reading.plate : '--------';
 }
 
 function showRadar(message) {
@@ -54,7 +56,7 @@ function showRadar(message) {
     radarCell('front', message.front, labels.front);
     radarCell('rear', message.rear, labels.rear);
     $('radar-own-label').textContent = labels.own || '';
-    $('radar-own-speed').textContent = String(message.own);
+    $('radar-own-speed').textContent = digits(message.own);
     $('radar-lock').textContent = labels.locked || '';
     $('radar').classList.remove('hidden');
 }
@@ -97,4 +99,164 @@ window.addEventListener('message', (event) => {
     } else if (message.action === 'headBag') {
         $('head-bag').classList.toggle('hidden', !message.on);
     }
+});
+
+// Icons for the round menu and the car menu (24x24 strokes)
+const ICONS = {
+    tablet: 'M6 3h12v18H6zM11 18h2',
+    cuff: 'M8 9a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM16 9a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 13h0M8 9V6h8v3',
+    link: 'M10 14a4 4 0 0 0 5.6 0l3-3a4 4 0 0 0-5.6-5.6l-1 1M14 10a4 4 0 0 0-5.6 0l-3 3a4 4 0 0 0 5.6 5.6l1-1',
+    escort: 'M9 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7 21l2-8-2-3 4-2 3 3 3 1M15 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+    car: 'M5 16h14v-4l-2-5H7l-2 5zM5 16v2M19 16v2M8 13h.01M16 13h.01',
+    search: 'M11 4.5a6.5 6.5 0 1 1 0 13a6.5 6.5 0 1 1 0-13zM16 16l4.5 4.5',
+    bill: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6',
+    eye: 'M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
+    anklet: 'M12 2v4M5 8a7 7 0 0 0 14 0M8 18a4 4 0 0 0 8 0M12 12v6',
+    exit: 'M14 4h6v16h-6M4 12h11M11 8l4 4-4 4',
+    tow: 'M3 17h2l1-5h12l1 5h2M6 12l2-4h8l2 4M7 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM17 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z',
+    seat: 'M7 4h5l1 9h5v4H8zM8 17v3M17 17v3',
+    radar: 'M12 12l7-7M12 3a9 9 0 1 0 9 9M12 7a5 5 0 1 0 5 5',
+    lock: 'M6 11h12v9H6zM8 11V7a4 4 0 0 1 8 0v4',
+};
+
+function svgIcon(name, size = 22) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', String(size));
+    svg.setAttribute('height', String(size));
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', ICONS[name] || ICONS.eye);
+    svg.append(path);
+    return svg;
+}
+
+function node(tag, className, text) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (text !== undefined && text !== null) element.textContent = String(text);
+    return element;
+}
+
+// Call popups: newest at the bottom; Lua removes them (time out, F10, F11, a full stack)
+function showPopup(popup, labels) {
+    const card = node('div', `popup${popup.urgent ? ' urgent' : ''}${popup.kind === 'code' ? ' code' : ''}`);
+    card.dataset.key = popup.key;
+
+    const head = node('div', 'popup-head');
+    head.append(node('i', 'popup-dot'), node('span', 'popup-label', labels.header), node('span', 'popup-time', popup.time));
+
+    const body = node('div', 'popup-body');
+    const titleRow = node('div', 'popup-title');
+    titleRow.append(node('span', 'popup-code', popup.code), node('strong', null, popup.title));
+    body.append(titleRow);
+    if (popup.text) body.append(node('p', 'popup-text', popup.text));
+    if (popup.place) body.append(node('p', 'popup-place', popup.place));
+
+    const keys = node('div', 'popup-keys');
+    const gps = node('span', 'popup-key');
+    gps.append(node('kbd', null, labels.gpsKey), document.createTextNode(` ${labels.gps}`));
+    const dismiss = node('span', 'popup-key');
+    dismiss.append(node('kbd', null, labels.dismissKey), document.createTextNode(` ${labels.dismiss}`));
+    keys.append(gps, dismiss);
+
+    const bar = node('div', 'popup-bar');
+    bar.style.animationDuration = `${popup.seconds}s`;
+
+    card.append(head, body, keys, bar);
+    $('popups').append(card);
+}
+
+function removePopup(key) {
+    const card = [...$('popups').children].find((child) => child.dataset.key === key);
+    if (!card) return;
+
+    card.classList.add('leaving');
+    setTimeout(() => card.remove(), 250);
+}
+
+// The round menu: items around a center label; disabled ones show but can't be picked
+function showRadial(menu, labels) {
+    const ring = $('radial-ring');
+    const items = menu.items || [];
+    const radius = items.length > 6 ? 150 : 125;
+
+    const center = node('button', 'radial-center');
+    center.type = 'button';
+    center.append(node('strong', null, menu.title), node('small', null, menu.subtitle || ''), node('em', null, labels.close));
+    center.addEventListener('click', () => post('radialClose'));
+
+    const buttons = items.map((item, index) => {
+        const angle = (index / items.length) * Math.PI * 2 - Math.PI / 2;
+        const button = node('button', `radial-item${item.disabled ? ' disabled' : ''}`);
+        button.type = 'button';
+        button.disabled = item.disabled === true;
+        button.style.left = `calc(50% + ${Math.round(Math.cos(angle) * radius)}px)`;
+        button.style.top = `calc(50% + ${Math.round(Math.sin(angle) * radius)}px)`;
+        button.append(svgIcon(item.icon), node('span', null, item.label));
+        if (item.hint) button.append(node('small', null, item.hint));
+        button.addEventListener('click', () => post('radialPick', { id: item.id }));
+        return button;
+    });
+
+    ring.replaceChildren(center, ...buttons);
+    $('radial').classList.remove('hidden');
+}
+
+$('radial').addEventListener('click', (event) => {
+    if (event.target === $('radial')) post('radialClose');
+});
+$('radial').addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+    post('radialClose');
+});
+
+// The patrol car menu
+function showCarMenu(message) {
+    const labels = message.labels || {};
+    $('car-title').textContent = labels.title || '';
+    $('car-subtitle').textContent = labels.subtitle || '';
+    $('car-codes-label').textContent = labels.codes || '';
+
+    const radarButton = (text, icon, on, data) => {
+        const button = node('button', `car-btn${on ? ' on' : ''}`);
+        button.type = 'button';
+        button.append(svgIcon(icon, 18), node('span', null, text));
+        button.addEventListener('click', () => post('carMenuRadar', data));
+        return button;
+    };
+
+    $('car-radar').replaceChildren(
+        radarButton(labels.radar, 'radar', message.radar.on, { lock: false }),
+        radarButton(labels.lock, 'lock', message.radar.locked, { lock: true }),
+    );
+
+    $('car-codes').replaceChildren(...(message.codes || []).map((entry) => {
+        const button = node('button', `car-btn code${entry.urgent ? ' urgent' : ''}`);
+        button.type = 'button';
+        button.append(node('strong', null, entry.code), node('small', null, entry.label));
+        button.addEventListener('click', () => post('carMenuCode', { index: entry.index }));
+        return button;
+    }));
+
+    $('car-menu').classList.remove('hidden');
+}
+
+$('car-close').addEventListener('click', () => post('carMenuClose'));
+
+document.addEventListener('keydown', (event) => {
+    if (!$('radial').classList.contains('hidden') && event.key === 'Escape') post('radialClose');
+    if (!$('car-menu').classList.contains('hidden') && (event.key === 'Escape' || event.key === 'F6')) post('carMenuClose');
+});
+
+window.addEventListener('message', (event) => {
+    const message = event.data;
+    if (!message || typeof message.action !== 'string') return;
+
+    if (message.action === 'popup') showPopup(message.popup, message.labels || {});
+    else if (message.action === 'popupOff') removePopup(message.key);
+    else if (message.action === 'radial') showRadial(message.menu, message.labels || {});
+    else if (message.action === 'radialOff') $('radial').classList.add('hidden');
+    else if (message.action === 'carMenu') showCarMenu(message);
+    else if (message.action === 'carMenuOff') $('car-menu').classList.add('hidden');
 });

@@ -173,6 +173,9 @@ Config.Radars = {
 -- Calls: blip per kind of alert, and how long a call stays
 Config.Dispatch = {
     minutes = 20,
+    -- The popup on screen for each new call or radio code: gone after `seconds`, at most `max` at once (the oldest
+    -- makes room). gpsKey attaches to the newest one and sets the GPS, dismissKey closes it.
+    popup = { seconds = 10, max = 4, gpsKey = 'F10', dismissKey = 'F11' },
     blip = { sprite = 161, colour = 1, scale = 1.2 },
     panicBlip = { sprite = 161, colour = 1, scale = 1.6 },
 }
@@ -240,9 +243,29 @@ Config.Ranges = {
 Config.Keys = {
     tackle = 'G',
     radar = 'F7', -- turn the patrol car radar on or off
-    radarLock = 'F6', -- freeze the readings
+    radarLock = 'F9', -- freeze the readings
+    carMenu = 'F6', -- the patrol car menu: radio codes and the radar
     megaphone = 'Y', -- hold in a police car
 }
+
+-- Panic button: the chat command (/p, or "p" in F8), also bindable in the game's key bindings
+Config.PanicCommand = 'p'
+
+-- Radio codes in the patrol car menu (F6). call = true opens a dispatch call (blip and popup, F10 attaches) for
+-- every unit; the others only show a popup. status changes the sender's status on the Units tab.
+Config.RadioCodes = {
+    { code = '10-4', label = 'Acknowledged' },
+    { code = '10-6', label = 'Busy', status = 'busy' },
+    { code = '10-7', label = 'Out of service', status = 'break' },
+    { code = '10-8', label = 'In service', status = 'available' },
+    { code = '10-9', label = 'Repeat, please' },
+    { code = '10-20', label = 'My location' },
+    { code = '10-97', label = 'On scene', status = 'onscene' },
+    { code = 'Code 4', label = 'No further help needed' },
+    { code = 'Code 6', label = 'Out of the car, investigating', status = 'busy' },
+    { code = 'Code 99', label = 'Officer needs help now', call = true, priority = 2 },
+}
+Config.RadioCooldown = 5 -- seconds between two codes from one officer
 
 -- Tackling: both fall; the suspect stays down longer
 Config.Tackle = { suspectMs = 3500, officerMs = 1200 }
