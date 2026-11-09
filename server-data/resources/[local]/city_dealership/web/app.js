@@ -95,10 +95,12 @@ function renderCategories() {
     }
 }
 
+// Waiting images stay in the layout (opacity, not display: none) so loading="lazy" still fetches them.
 function photo(img, fallback, car) {
-    img.classList.add('hidden');
+    img.classList.remove('hidden');
+    img.classList.add('is-loading');
     fallback.classList.add('hidden');
-    img.onload = () => img.classList.remove('hidden');
+    img.onload = () => img.classList.remove('is-loading');
     img.onerror = () => {
         img.classList.add('hidden');
         fallback.classList.remove('hidden');
