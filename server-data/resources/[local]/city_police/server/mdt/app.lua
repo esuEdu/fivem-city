@@ -85,6 +85,7 @@ mdt.register('app', function(src)
         maxMonths = settings.maxMonths,
         impound = { fee = settings.impoundFee, maxFee = settings.maxImpoundFee, maxHours = settings.maxHoldHours },
         warrantDays = settings.warrantDays,
+        boloHours = settings.boloHours,
         maxPoints = settings.maxPoints,
         pointsDays = settings.pointsDays,
     }
@@ -120,6 +121,7 @@ mdt.register('dashboard', function(src)
         calls = latest,
         units = units,
         warrants = warrants,
+        bolos = mdt.activeBolos(),
         impounds = impounds,
         arrests = tonumber(counts.arrests) or 0,
         fines = tonumber(counts.fines) or 0,

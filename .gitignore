@@ -24,3 +24,6 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# Builder ymap exports (made on the server, kept off git)
+server-data/resources/[[]local]/city_builder/exports/*.xml

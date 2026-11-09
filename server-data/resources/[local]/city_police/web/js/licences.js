@@ -26,7 +26,7 @@ async function licencePage(citizenid) {
 
     const toggle = (kind) => {
         const on = data.licences[kind] === true;
-        const allowed = kind === 'weapon' ? can('weaponLicence') : can('licences');
+        const allowed = kind === 'weapon' || kind === 'explosives' ? can('weaponLicence') : can('licences');
 
         return el('div', { class: 'info-row tall' },
             icon('licences', 18),
@@ -43,7 +43,7 @@ async function licencePage(citizenid) {
                 el('button', { class: 'link big', text: data.name, onclick: () => go('people', { citizenid }) }),
                 el('small', { text: citizenid })),
         ),
-        el('div', { class: 'card flush' }, toggle('driver'), toggle('weapon')),
+        el('div', { class: 'card flush' }, toggle('driver'), toggle('weapon'), toggle('explosives')),
         el('div', { class: 'card' },
             el('div', { class: 'card-head' }, el('strong', { text: L('ui_driving_points') }), el('span', { class: 'spacer' }),
                 el('strong', { class: percent >= 100 ? 'bad' : '', text: `${data.points} / ${app.maxPoints}` })),

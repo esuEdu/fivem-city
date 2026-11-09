@@ -72,6 +72,7 @@ async function personFile(citizenid) {
         person.anklet ? pill(L('ui_anklet'), 'gold') : null,
         licences.driver ? pill(L('licence_driver'), 'blue') : pill(L('ui_no_driver'), 'muted-pill'),
         licences.weapon ? pill(L('licence_weapon'), 'blue') : null,
+        licences.explosives ? pill(L('licence_explosives'), 'blue') : null,
     ];
 
     const actions = el('div', { class: 'button-row' },

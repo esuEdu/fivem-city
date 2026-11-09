@@ -3,6 +3,7 @@
 
 local job = require 'client.job'
 local cameras = require 'client.cameras'
+local bodycam = require 'client.bodycam'
 
 local ACTIONS = {
     app = true, dashboard = true, calls = true, callAttach = true, callDetach = true, callNote = true, callClose = true,
@@ -10,7 +11,7 @@ local ACTIONS = {
     searchPeople = true, person = true, searchVehicles = true, vehicle = true, flagPlate = true, clearPlate = true,
     searchWeapons = true, weapon = true, setWeaponStatus = true,
     reports = true, report = true, saveReport = true,
-    warrants = true, issueWarrant = true, closeWarrant = true,
+    warrants = true, issueWarrant = true, closeWarrant = true, bolos = true, saveBolo = true, closeBolo = true, bodycam = true,
     charge = true, nearby = true,
     impounds = true, impound = true, release = true,
     licences = true, setLicence = true,
@@ -20,7 +21,7 @@ local ACTIONS = {
 }
 
 -- Tools that need the game view
-local CLOSES_TABLET = { viewCamera = true }
+local CLOSES_TABLET = { viewCamera = true, bodycam = true }
 
 ---@param coords table
 local function waypoint(coords)
@@ -63,6 +64,9 @@ local function finish(action, result)
     elseif action == 'viewCamera' then
         Wait(300)
         cameras.open(result)
+    elseif action == 'bodycam' then
+        Wait(300)
+        bodycam.start(result)
     elseif action == 'calls' then
         addPlaces(result)
     elseif action == 'dashboard' then

@@ -25,5 +25,17 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: transparent;
 .cam-offline { position: absolute; inset: 0; display: grid; place-items: center; background: repeating-linear-gradient(0deg, #111 0 2px, #1b1b1b 2px 4px); font-family: var(--mono, monospace); font-size: 28px; letter-spacing: 4px; }
 .cam-bottom { position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%); padding: 8px 16px; border-radius: var(--radius, 10px); background: var(--panel, rgba(12, 13, 18, 0.6)); font-size: 13px; color: var(--muted, #7d8590); }
 
+/* Patrol car radar */
+.radar { position: fixed; right: 28px; bottom: 220px; display: flex; gap: 6px; padding: 8px; border-radius: var(--radius, 10px); background: var(--panel, rgba(12, 13, 18, 0.85)); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); pointer-events: none; }
+.radar-cell { display: flex; flex-direction: column; align-items: center; min-width: 84px; padding: 6px 8px; border-radius: var(--radius-small, 6px); background: var(--slot, rgba(255, 255, 255, 0.04)); }
+.radar-cell small { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted, #7d8590); }
+.radar-cell strong { font-family: var(--mono, monospace); font-size: 28px; color: var(--accent, #f5c542); }
+.radar-cell span { min-height: 16px; font-family: var(--mono, monospace); font-size: 12px; }
+.radar-cell.own strong { color: var(--text, #eef0f3); }
+#radar-lock { color: var(--danger, #e5484d); font-weight: 700; }
+
+/* Head bag: nothing to see */
+.head-bag { position: fixed; inset: 0; background: #000; }
+
 @keyframes blink { to { opacity: 0; } }
 @keyframes fade { from { opacity: 0; } }

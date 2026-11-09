@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="strikes" class="panel hidden">
+        <div class="panel__head">
+            <span id="strikes-label"></span>
+            <span class="pips" id="strikes-pips"></span>
+        </div>
+        <div class="track" id="strikes-track">
+            <div class="track__zone" id="strikes-zone"><div class="track__perfect" id="strikes-perfect"></div></div>
+            <div class="track__marker" id="strikes-marker"></div>
+        </div>
+        <div class="panel__hint" id="strikes-hint"></div>
+    </div>
+
+    <div id="pan" class="panel hidden">
+        <div class="panel__head">
+            <span id="pan-label"></span>
+            <span class="time" id="pan-time"></span>
+        </div>
+        <div class="track" id="pan-track">
+            <div class="track__band" id="pan-band"></div>
+            <div class="track__marker" id="pan-marker"></div>
+        </div>
+        <div class="meter"><div class="meter__fill" id="pan-kept"></div></div>
+        <div class="panel__hint" id="pan-hint"></div>
+    </div>
+
+    <script type="module" src="minigame.js"></script>
+</body>
+</html>

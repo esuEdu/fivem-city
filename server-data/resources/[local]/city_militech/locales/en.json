@@ -1,0 +1,10 @@
+{
+    "error_not_driver": "You need to be in the driver seat",
+    "error_moving": "Stop the car first",
+    "error_no_item": "You need the Militech module",
+    "error_wait": "Wait a moment",
+    "error_failed": "The tuner couldn't apply that",
+    "error_staff": "This car runs a locked staff setup",
+    "applied": "Setup uploaded to the car",
+    "restored": "Factory handling restored"
+}

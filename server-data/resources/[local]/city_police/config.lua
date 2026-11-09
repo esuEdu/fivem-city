@@ -38,6 +38,8 @@ Config.Permissions = {
     grantCert = 3,
     notices = 3,
     management = 4,
+    bolos = 0,
+    bodycam = 0,
 }
 
 -- Certifications lieutenants give in the MDT; they unlock vehicles and forensic analysis
@@ -198,9 +200,38 @@ Config.Cameras = {
 
 Config.Ranges = {
     place = 2.5, -- station places
-    player = 3.0, -- cuffing, escorting, searching
+    cuff = 2.0, -- cuffing and soft cuffing
+    player = 3.0, -- escorting, searching, the other actions on a player
     vehicle = 6.0, -- putting someone in a car, impounding
+    tackle = 2.5, -- the suspect in front of a sprinting officer
 }
+
+-- Keys (players can change them in the game's key bindings)
+Config.Keys = {
+    tackle = 'G',
+    radar = 'F7', -- turn the patrol car radar on or off
+    radarLock = 'F6', -- freeze the readings
+    megaphone = 'Y', -- hold in a police car
+}
+
+-- Tackling: both fall; the suspect stays down longer
+Config.Tackle = { suspectMs = 3500, officerMs = 1200 }
+
+-- Patrol car radar (km/h): how far it looks ahead and behind, and how often it reads
+Config.PatrolRadar = { range = 60.0, everyMs = 250 }
+
+-- Megaphone: the voice range while the key is held in a police car
+Config.Megaphone = { range = 40.0 }
+
+-- Zip ties and the head bag: anyone may use them on a player with their hands up, cuffed or down
+Config.Restraints = {
+    zipTies = 'zipties',
+    headBag = 'head_bag',
+    headBagProp = `prop_money_bag_01`,
+}
+
+-- Forcing a locked car open: police on duty with the crowbar item
+Config.Crowbar = { item = 'crowbar', seconds = 8 }
 
 -- Things a cuffed player can't do (controls)
 Config.CuffedControls = { 21, 22, 23, 24, 25, 26, 36, 37, 44, 45, 47, 58, 59, 71, 72, 73, 75, 140, 141, 142, 143, 199, 257, 263, 264, 288, 289, 170, 167 }

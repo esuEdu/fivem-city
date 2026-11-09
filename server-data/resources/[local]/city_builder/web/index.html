@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app" class="hidden">
+        <div id="stage"></div>
+        <div id="crosshair" class="hidden"></div>
+        <div id="looking" class="hidden"></div>
+
+        <header id="bar" class="panel">
+            <div class="brand" id="title"></div>
+            <div class="count" id="count"></div>
+            <div class="spacer"></div>
+            <button class="btn" id="undo"></button>
+            <button class="btn" id="redo"></button>
+            <button class="btn" id="helpBtn"></button>
+            <button class="btn danger" id="exit"></button>
+        </header>
+
+        <div id="help" class="panel hidden"></div>
+
+        <aside id="side" class="panel">
+            <nav class="tabs" id="tabs"></nav>
+            <section id="tab-catalog" class="tab">
+                <input id="search" class="input" type="text" spellcheck="false" autocomplete="off">
+                <div class="chips" id="chips"></div>
+                <div class="preview-info" id="previewInfo"></div>
+                <div class="list" id="catalog"></div>
+                <div class="note" id="catalogNote"></div>
+            </section>
+            <section id="tab-placed" class="tab hidden">
+                <div class="list" id="placed"></div>
+            </section>
+            <section id="tab-groups" class="tab hidden">
+                <div class="row-form">
+                    <input id="groupName" class="input" type="text" maxlength="40" spellcheck="false">
+                    <button class="btn accent" id="groupCreate"></button>
+                </div>
+                <div class="list" id="groups"></div>
+            </section>
+            <section id="tab-hidden" class="tab hidden">
+                <div class="list" id="hidden"></div>
+            </section>
+        </aside>
+
+        <div id="inspector" class="panel hidden"></div>
+        <div id="picked" class="panel hidden"></div>
+        <div id="dialog" class="hidden"></div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
