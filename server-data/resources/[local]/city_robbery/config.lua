@@ -36,6 +36,7 @@ Config.Bag = {
     model = `prop_money_bag_01`,
     minutes = 10,
     pickDistance = 2.5,
+    targetRadius = 0.6,
     -- Clients only spawn the prop within this many metres
     spawnDistance = 80.0,
 }
