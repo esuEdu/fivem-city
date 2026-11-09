@@ -8,7 +8,7 @@ local bodycam = require 'client.bodycam'
 local ACTIONS = {
     app = true, dashboard = true, calls = true, callAttach = true, callDetach = true, callNote = true, callClose = true,
     callGps = true, units = true, setStatus = true, setCallsign = true, map = true,
-    searchPeople = true, person = true, searchVehicles = true, vehicle = true, flagPlate = true, clearPlate = true,
+    searchPeople = true, person = true, searchVehicles = true, vehicle = true, vehicleOwner = true, flagPlate = true, clearPlate = true,
     searchWeapons = true, weapon = true, setWeaponStatus = true,
     reports = true, report = true, saveReport = true,
     warrants = true, issueWarrant = true, closeWarrant = true, bolos = true, saveBolo = true, closeBolo = true, bodycam = true,
