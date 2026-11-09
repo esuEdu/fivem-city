@@ -1,4 +1,4 @@
-import { call, h, label, money, dateTime, panel, kpi, table, chip, button, iconButton, field, input, select, whole, modal, report, empty, actions } from '../util.js';
+import { call, h, label, money, dateTime, panel, kpi, table, chip, button, iconButton, field, input, select, whole, modal, report, empty, actions, state } from '../util.js';
 
 function receiverBox() {
     return h('div', { className: 'receiver', text: label('receiver_unknown') });
@@ -53,6 +53,7 @@ export default async function render(container, ctx) {
 
     key.addEventListener('change', () => lookup(key.value, box));
 
+    const scheduling = state.features.scheduled !== false;
     const active = scheduled.scheduled.filter((s) => s.status === 'active');
     const weekly = active.reduce((sum, s) => sum + s.amount * (s.frequency === 'daily' ? 7 : s.frequency === 'weekly' ? 1 : 0.5), 0);
 
@@ -60,7 +61,7 @@ export default async function render(container, ctx) {
         h('div', { className: 'kpis' },
             kpi(label('limit_per_tx'), money(scheduled.limits.perTx), label('limit_per_day_is', money(scheduled.limits.perDay)), 'accent'),
             kpi(label('night_limit'), money(scheduled.limits.night), label('night_hours', scheduled.limits.nightFrom, scheduled.limits.nightTo)),
-            kpi(label('scheduled_active'), String(active.length), label('per_week_is', money(Math.round(weekly))))),
+            scheduling ? kpi(label('scheduled_active'), String(active.length), label('per_week_is', money(Math.round(weekly)))) : null),
 
         h('div', { className: 'grid grid--two' },
             panel(label('send_money'), h('div', { className: 'form' },
@@ -73,7 +74,7 @@ export default async function render(container, ctx) {
                         if (report(reply, 'sent')) ctx.refresh();
                     }, 'primary', false, 'send')))),
 
-            panel(label('scheduled'), table([
+            scheduling ? panel(label('scheduled'), table([
                 { title: label('col_amount'), render: (s) => h('span', { className: 'num strong', text: money(s.amount) }) },
                 { title: label('frequency'), render: (s) => label(`freq_${s.frequency}`) },
                 { title: label('col_to'), render: (s) => h('span', { className: 'num muted', text: s.to_number || '-' }) },
@@ -87,6 +88,6 @@ export default async function render(container, ctx) {
                         }),
                         iconButton('trash', label('delete'), async () => { if (report(await call('scheduleState', s.id, 'delete'), 'done')) ctx.refresh(); }, 'bad')),
                 },
-            ], scheduled.scheduled, 'no_scheduled'), button(label('new_schedule'), () => scheduleDialog(options, ctx), 'primary', false, 'plus'))),
+            ], scheduled.scheduled, 'no_scheduled'), button(label('new_schedule'), () => scheduleDialog(options, ctx), 'primary', false, 'plus')) : null),
     );
 }

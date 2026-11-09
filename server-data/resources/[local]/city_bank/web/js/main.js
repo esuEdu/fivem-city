@@ -16,7 +16,7 @@ const TABS = [
     { id: 'accounts', render: accounts },
     { id: 'cards', render: cards },
     { id: 'transfers', render: transfers },
-    { id: 'loans', render: loans },
+    { id: 'loans', render: loans, feature: 'loans' },
     { id: 'billing', render: billing },
     { id: 'history', render: history },
     { id: 'staff', render: staff, staffOnly: true },
@@ -37,7 +37,9 @@ function show(view) {
 }
 
 function renderNav() {
-    $('nav').replaceChildren(...TABS.filter((tab) => !tab.staffOnly || bank.staff).map((tab) => h('button', {
+    const shown = (tab) => (!tab.staffOnly || bank.staff) && (!tab.feature || state.features[tab.feature] !== false);
+
+    $('nav').replaceChildren(...TABS.filter(shown).map((tab) => h('button', {
         className: `side__item ${tab.id === bank.tab ? 'is-active' : ''}`,
         type: 'button',
         title: label(`nav_${tab.id}`),
@@ -108,6 +110,7 @@ window.addEventListener('message', ({ data: message }) => {
             applyTheme(message.theme);
             state.labels = message.labels || {};
             state.currency = message.currency || '$';
+            state.features = message.features || {};
             applyLabels();
             break;
 

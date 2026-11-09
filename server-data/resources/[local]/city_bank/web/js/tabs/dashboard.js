@@ -1,4 +1,4 @@
-import { call, h, label, money, dateTime, reasonLabel, panel, kpi, table, amountCell, chip, button, report } from '../util.js';
+import { call, h, label, money, dateTime, reasonLabel, panel, kpi, table, amountCell, chip, button, report, state } from '../util.js';
 import { lastDays, cashFlow, balanceLine } from '../charts.js';
 
 // Movements as a compact table (used by the dashboard, history and staff client file)
@@ -44,7 +44,7 @@ export default async function render(container, ctx) {
                 fact('status', chip(label(data.frozen ? 'status_frozen' : 'status_active'), data.frozen ? 'bad' : 'good')),
                 fact('tier', data.tier),
                 fact('bills_open', `${data.billsCount} · ${money(data.billsTotal)}`),
-                fact('loan_left', money(data.loanLeft)),
+                state.features.loans !== false ? fact('loan_left', money(data.loanLeft)) : null,
                 h('div', { className: 'facts__actions' }, button(label('cash_desk'), ctx.openTeller, 'primary', false, 'cash'))))),
     );
 }

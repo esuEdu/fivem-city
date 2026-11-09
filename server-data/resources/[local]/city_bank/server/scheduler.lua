@@ -42,7 +42,7 @@ local function daily()
     if now - lastRun('daily') < DAY then return end
 
     markRun('daily', now)
-    paySavings()
+    if Config.Features.savings then paySavings() end
     bills.daily()
 end
 
@@ -51,8 +51,8 @@ local function tick()
 
     bills.processDue(credit.carry)
     credit.closeCycles(createBill)
-    loans.runDue()
-    transfers.runDue()
+    if Config.Features.loans then loans.runDue() end
+    if Config.Features.scheduled then transfers.runDue() end
     daily()
 end
 
