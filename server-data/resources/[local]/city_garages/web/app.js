@@ -36,6 +36,11 @@ function isAvailable(vehicle) {
     return garage.depot ? vehicle.state === 'depot' : vehicle.state === 'garaged';
 }
 
+// Waiting at the impound lot while the player is at a garage: the button sets the GPS route there instead
+function canRoute(vehicle) {
+    return !garage.depot && Boolean(garage.lot) && vehicle.state === 'depot';
+}
+
 function el(tag, className, text) {
     const node = document.createElement(tag);
     if (className) node.className = className;
@@ -141,14 +146,16 @@ function select(vehicle) {
     setStat('fuel', vehicle.fuel);
 
     const available = isAvailable(vehicle);
+    const routable = canRoute(vehicle);
     const hint = $('hint');
     const hintKey = available ? null : vehicle.state === 'garaged' ? 'hint_garaged' : `hint_${vehicle.state}`;
-    hint.textContent = hintKey ? labels[hintKey] : '';
+    hint.textContent = routable ? format(labels.hint_depot_at, garage.lot) : hintKey ? labels[hintKey] : '';
     hint.classList.toggle('hidden', !hintKey);
 
     const take = $('take');
-    take.disabled = !available;
-    take.textContent = available && vehicle.fee ? format(labels.ui_pay_take_out, money(vehicle.fee)) : labels.ui_take_out;
+    take.disabled = !available && !routable;
+    if (routable) take.textContent = format(labels.ui_route, garage.lot);
+    else take.textContent = available && vehicle.fee ? format(labels.ui_pay_take_out, money(vehicle.fee)) : labels.ui_take_out;
 
     renderList();
 }
@@ -205,6 +212,7 @@ $('tab-fav').addEventListener('click', () => setTab('fav'));
 $('close').addEventListener('click', () => post('close'));
 
 $('take').addEventListener('click', async () => {
+    if (selected && !busy && canRoute(selected)) return post('route');
     if (!selected || busy || !isAvailable(selected)) return;
 
     busy = true;
@@ -212,7 +220,7 @@ $('take').addEventListener('click', async () => {
     const ok = await post('takeOut', { id: selected.id });
     busy = false;
 
-    if (!ok && selected) $('take').disabled = !isAvailable(selected);
+    if (!ok && selected) $('take').disabled = !isAvailable(selected) && !canRoute(selected);
 });
 
 window.addEventListener('keydown', (event) => {
