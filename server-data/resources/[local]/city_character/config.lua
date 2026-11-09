@@ -4,9 +4,11 @@ Config = {}
 -- out of everyone's way (players are also in a solo session until they spawn)
 Config.Studio = {
     ped = vector4(402.87, -996.55, -99.0, 180.0),
+    -- Plain standing idles. The GTA Online creator's own (mp_character_creation@customise) are made for a scene placed
+    -- on the floor and lift the body about a metre when played on the ped, putting its head in the ceiling.
     idle = {
-        m = { dict = 'mp_character_creation@customise@male_a', anim = 'loop' },
-        f = { dict = 'mp_character_creation@customise@female_a', anim = 'loop' },
+        m = { dict = 'anim@heists@heist_corona@team_idles@male_a', anim = 'idle' },
+        f = { dict = 'anim@heists@heist_corona@team_idles@female_a', anim = 'idle' },
     },
 }
 
