@@ -1,16 +1,15 @@
 -- Cash bags on the floor, from GlobalState.robberyBags: a local prop with an ox_target option, only while near
 local bag = Config.Bag
 
--- id -> { point, object }
+-- id -> { point, object, zone }
 local shown = {}
 
 local function deleteObject(entry)
-    if entry.object and DoesEntityExist(entry.object) then
-        exports.ox_target:removeLocalEntity(entry.object, 'city_robbery:bag')
-        DeleteEntity(entry.object)
-    end
+    if entry.zone then exports.ox_target:removeZone(entry.zone) end
+    if entry.object and DoesEntityExist(entry.object) then DeleteEntity(entry.object) end
 
     entry.object = nil
+    entry.zone = nil
 end
 
 local function pickUp(id)
@@ -37,17 +36,21 @@ local function spawnObject(id, entry, coords)
     SetModelAsNoLongerNeeded(bag.model)
     PlaceObjectOnGroundProperly(object)
     FreezeEntityPosition(object, true)
-    SetEntityCollision(object, false, false)
 
     entry.object = object
 
-    exports.ox_target:addLocalEntity(object, {
-        {
-            name = 'city_robbery:bag',
-            label = locale('pick_bag'),
-            icon = 'fas fa-sack-dollar',
-            distance = bag.pickDistance,
-            onSelect = function() pickUp(id) end,
+    -- A zone round the bag rather than the entity: ox_target's ray misses a small prop on the floor
+    entry.zone = exports.ox_target:addSphereZone({
+        coords = GetEntityCoords(object) + vec3(0.0, 0.0, 0.2),
+        radius = bag.targetRadius,
+        options = {
+            {
+                name = 'city_robbery:bag',
+                label = locale('pick_bag'),
+                icon = 'fas fa-sack-dollar',
+                distance = bag.pickDistance,
+                onSelect = function() pickUp(id) end,
+            },
         },
     })
 end
