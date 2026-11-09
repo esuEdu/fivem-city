@@ -39,11 +39,15 @@ function gear.catalogue()
     local list = {}
 
     for name, data in pairs(gear.pickaxes) do
-        list[#list + 1] = { item = name, price = data.price, level = data.level, kind = 'pickaxe', order = data.tier }
+        if data.tier <= Config.Features.maxTier then
+            list[#list + 1] = { item = name, price = data.price, level = data.level, kind = 'pickaxe', order = data.tier }
+        end
     end
 
-    list[#list + 1] = { item = gear.pan.item, price = gear.pan.price, level = gear.pan.level, kind = 'pan', order = 10 }
-    list[#list + 1] = { item = gear.sluice.item, price = gear.sluice.price, level = 1, kind = 'sluice', order = 11 }
+    if Config.Features.panning then
+        list[#list + 1] = { item = gear.pan.item, price = gear.pan.price, level = gear.pan.level, kind = 'pan', order = 10 }
+        list[#list + 1] = { item = gear.sluice.item, price = gear.sluice.price, level = 1, kind = 'sluice', order = 11 }
+    end
 
     local order = 20
     for _, name in ipairs({ 'mining_helmet', 'mining_gloves', 'mining_boots' }) do
@@ -51,7 +55,9 @@ function gear.catalogue()
         order = order + 1
     end
 
-    list[#list + 1] = { item = gear.furnace.item, price = gear.furnace.price, level = gear.furnace.level, kind = 'furnace', order = 30 }
+    if Config.Features.furnace then
+        list[#list + 1] = { item = gear.furnace.item, price = gear.furnace.price, level = gear.furnace.level, kind = 'furnace', order = 30 }
+    end
 
     table.sort(list, function(a, b) return a.order < b.order end)
 

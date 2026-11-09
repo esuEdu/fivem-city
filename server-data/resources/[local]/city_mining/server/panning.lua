@@ -21,6 +21,7 @@ local function ctxFor(profile)
 end
 
 lib.callback.register('city_mining:panStart', function(source, id)
+    if not Config.Features.panning then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end
@@ -47,6 +48,7 @@ lib.callback.register('city_mining:panStart', function(source, id)
 end)
 
 lib.callback.register('city_mining:panFinish', function(source, sessionId, kept)
+    if not Config.Features.panning then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end
@@ -95,6 +97,7 @@ end)
 
 -- The sluice box: placed at an active gravel spot by its owner, one cycle every sluice.cycleSeconds
 exports.qbx_core:CreateUseableItem(gear.sluice.item, function(source)
+    if not Config.Features.panning then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end

@@ -51,12 +51,25 @@ end
 
 veins.publish = publish
 
+---Whether a region is open in this version (Config.Features): gravel needs panning, veins a tier up to maxTier.
+---@param region table Config.Regions entry
+---@return boolean
+function veins.enabled(region)
+    if region.kind == 'gravel' then return Config.Features.panning end
+
+    for tier, share in ipairs(region.tiers or { 1 }) do
+        if share > 0 and tier <= Config.Features.maxTier then return true end
+    end
+
+    return false
+end
+
 ---@param region table Config.Regions entry
 ---@return integer tier
 local function pickTier(region)
     local list = {}
     for tier, share in ipairs(region.tiers or { 1 }) do
-        if share > 0 then list[#list + 1] = { weight = share, tier = tier } end
+        if share > 0 and tier <= Config.Features.maxTier then list[#list + 1] = { weight = share, tier = tier } end
     end
 
     local pick = rolls.weighted(list, math.random)
@@ -67,6 +80,8 @@ end
 ---@param region table
 ---@return integer how many veins it keeps at once
 local function target(region)
+    if not veins.enabled(region) then return 0 end
+
     local kind = region.kind == 'gravel' and 'gravel' or 'vein'
     local count = #points.of(region.id, kind)
 
@@ -181,6 +196,8 @@ end
 
 ---Maybe a super rock appears in each region that has them and has none. Called every superRocks.checkMinutes.
 function veins.rollSuperRocks()
+    if not Config.Features.dynamite then return end
+
     for _, region in ipairs(Config.Regions) do
         if region.superRocks and not veins.super[region.id] and math.random() < settings.superRocks.chance then
             local point = freePoint(region)

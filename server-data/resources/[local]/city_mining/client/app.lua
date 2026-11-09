@@ -17,7 +17,7 @@ end)
 
 -- What the page needs once: its texts and the skill tree layout
 RegisterNUICallback('setup', function(_, cb)
-    cb({ labels = lib.getLocales(), branches = levels.branches })
+    cb({ labels = lib.getLocales(), branches = levels.branches, features = Config.Features })
 end)
 
 RegisterNUICallback('track', function(_, cb)

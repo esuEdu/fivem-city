@@ -52,6 +52,7 @@ local function profileCtx(profile)
 end
 
 lib.callback.register('city_mining:jewelerInfo', function(source)
+    if not Config.Features.jeweler then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player or not atJeweler(src) then return false end
@@ -88,6 +89,7 @@ lib.callback.register('city_mining:jewelerInfo', function(source)
 end)
 
 lib.callback.register('city_mining:openGeode', function(source, name)
+    if not Config.Features.jeweler then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end
@@ -115,6 +117,7 @@ lib.callback.register('city_mining:openGeode', function(source, name)
 end)
 
 lib.callback.register('city_mining:cut', function(source, rough, count)
+    if not Config.Features.jeweler then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end
@@ -136,6 +139,7 @@ lib.callback.register('city_mining:cut', function(source, rough, count)
 end)
 
 lib.callback.register('city_mining:craft', function(source, name)
+    if not Config.Features.jeweler then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end
@@ -182,6 +186,7 @@ lib.callback.register('city_mining:craft', function(source, name)
 end)
 
 lib.callback.register('city_mining:jewelerCollect', function(source)
+    if not Config.Features.jeweler then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end
@@ -233,6 +238,7 @@ lib.callback.register('city_mining:jewelerCollect', function(source)
 end)
 
 lib.callback.register('city_mining:jewelerSell', function(source)
+    if not Config.Features.jeweler then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end

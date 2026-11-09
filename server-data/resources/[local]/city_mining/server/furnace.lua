@@ -66,6 +66,7 @@ local function atFurnace(src, player)
 end
 
 exports.qbx_core:CreateUseableItem(gear.furnace.item, function(source, item)
+    if not Config.Features.furnace then return false end
     local src = source
     local player = util.player(src)
     if not player then return false end
@@ -95,6 +96,7 @@ end)
 
 -- Where the furnace of the property the player is in stands, for the client to draw it
 lib.callback.register('city_mining:furnaceHere', function(source)
+    if not Config.Features.furnace then return false end
     local player = util.player(source)
     if not player then return false end
 
@@ -108,6 +110,7 @@ lib.callback.register('city_mining:furnaceHere', function(source)
 end)
 
 lib.callback.register('city_mining:furnaceInfo', function(source)
+    if not Config.Features.furnace then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end
@@ -132,6 +135,7 @@ lib.callback.register('city_mining:furnaceInfo', function(source)
 end)
 
 lib.callback.register('city_mining:furnaceSmelt', function(source, name, count)
+    if not Config.Features.furnace then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end
@@ -143,6 +147,7 @@ lib.callback.register('city_mining:furnaceSmelt', function(source, name, count)
 end)
 
 lib.callback.register('city_mining:furnaceCollect', function(source)
+    if not Config.Features.furnace then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end
@@ -157,6 +162,7 @@ lib.callback.register('city_mining:furnaceCollect', function(source)
 end)
 
 lib.callback.register('city_mining:furnacePickUp', function(source)
+    if not Config.Features.furnace then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end

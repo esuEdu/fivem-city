@@ -2,6 +2,18 @@ lib.locale()
 
 Config = {}
 
+-- Parts of mining switched on for this version. Off: hidden in the shops, smelter and tablet app, refused by the server.
+Config.Features = {
+    maxTier = 2, -- highest vein tier; regions with only higher tiers stay empty and their pickaxes aren't sold
+    skills = false, -- the skill tree and the skill reset (points still add up for later)
+    geodes = false, -- geodes from veins
+    jeweler = false, -- Vangelico: opening geodes, gem cutting, jewellery and selling them
+    panning = false, -- gold pan and sluice box in the rivers
+    dynamite = false, -- explosives licence, dynamite, super rocks, the blocked passage and cave-ins
+    furnace = false, -- the home furnace (needs a house)
+    crime = false, -- the crime buyer
+}
+
 -- NPCs. Coordinates were placed without the game open: check them in game with /coords (city_base).
 Config.Ped = `s_m_y_construct_01`
 Config.JewelerPed = `u_f_y_jewelass_01`
