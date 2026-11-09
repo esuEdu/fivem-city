@@ -601,7 +601,7 @@ index 37bf435..bc4bd08 100644
      startupErrors, errorMessage = true, 'inventory:framework must be set to "qbx" in order to use qbx_core'
  elseif GetConvarInt('onesync_enableInfinity', 0) ~= 1 then
 diff --git a/server-data/resources/[qbx]/qbx_core/server/player.lua b/server-data/resources/[qbx]/qbx_core/server/player.lua
-index 9fb3dbc..f266bfa 100644
+index 9fb3dbc..d9aca9c 100644
 --- a/server-data/resources/[qbx]/qbx_core/server/player.lua
 +++ b/server-data/resources/[qbx]/qbx_core/server/player.lua
 @@ -16,6 +16,30 @@ for i = 1, #accounts do
@@ -714,7 +714,39 @@ index 9fb3dbc..f266bfa 100644
                  return false
              end
          end
-@@ -1244,6 +1268,12 @@ exports('SaveOffline', SaveOffline)
+@@ -1188,7 +1212,10 @@ function Save(source)
+     local playerData = QBX.Players[source].PlayerData
+     local playerState = Player(source)?.state
+     local pcoords = playerData.position
+-    if not playerState.inApartment and not playerState.inProperty then
++    -- On a drop or a server stop the ped can already be gone: reading it then saves 0 health (the character joins
++    -- dead) and the map origin, so the stored values are kept instead
++    local hasPed = ped ~= 0 and DoesEntityExist(ped)
++    if hasPed and not playerState.inApartment and not playerState.inProperty then
+         local coords = GetEntityCoords(ped)
+         pcoords = vec4(coords.x, coords.y, coords.z, GetEntityHeading(ped))
+     end
+@@ -1200,11 +1227,14 @@ function Save(source)
+     if playerState.isLoggedIn then
+         -- Before spawning, this ped is only a preview and does not have the
+         -- character's saved health. Keep stored vitals if selection is aborted.
+-        playerData.metadata.health = GetEntityHealth(ped)
+-        playerData.metadata.armor = GetPedArmour(ped)
+-        playerData.metadata.hunger = playerState.hunger or 0
+-        playerData.metadata.thirst = playerState.thirst or 0
+-        playerData.metadata.stress = playerState.stress or 0
++        if hasPed then
++            playerData.metadata.health = GetEntityHealth(ped)
++            playerData.metadata.armor = GetPedArmour(ped)
++        end
++        -- A state bag already cleared must not save 0 hunger/thirst (health drains away right after joining)
++        playerData.metadata.hunger = playerState.hunger or playerData.metadata.hunger or 100
++        playerData.metadata.thirst = playerState.thirst or playerData.metadata.thirst or 100
++        playerData.metadata.stress = playerState.stress or playerData.metadata.stress or 0
+     end
+ 
+     CreateThread(function()
+@@ -1244,6 +1274,12 @@ exports('SaveOffline', SaveOffline)
  function SetPlayerData(identifier, key, value)
      if type(key) ~= 'string' then return end
  
@@ -727,7 +759,7 @@ index 9fb3dbc..f266bfa 100644
      local player = resolvePlayer(identifier)
  
      if not player then return end
-@@ -1393,7 +1423,7 @@ exports('SetCharInfo', SetCharInfo)
+@@ -1393,7 +1429,7 @@ exports('SetCharInfo', SetCharInfo)
  ---@param actionType 'add' | 'remove' | 'set'
  ---@param reason? string
  ---@param difference? number
@@ -736,7 +768,7 @@ index 9fb3dbc..f266bfa 100644
      local isSet = actionType == 'set'
      local isRemove = actionType == 'remove'
  
-@@ -1407,11 +1437,43 @@ local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionTyp
+@@ -1407,11 +1443,43 @@ local function emitMoneyEvents(source, playerMoney, moneyType, amount, actionTyp
  
      local oxMoneyType = toOxAccountName(moneyType)
  
@@ -745,9 +777,9 @@ index 9fb3dbc..f266bfa 100644
 +    -- skipItems: the inventory itself already moved the cash item (dropping, giving, storing it)
 +    if accountsAsItems[oxMoneyType] and not skipItems then
 +        exports.city_inventory:SetItem(source, oxMoneyType, playerMoney[moneyType])
-+    end
-+end
-+
+     end
+ end
+ 
 +---city_economy pushes the real balances here (when a character loads, or after it moves money itself)
 +---@param source Source
 +---@param balances { cash?: integer, bank?: integer }
@@ -770,19 +802,19 @@ index 9fb3dbc..f266bfa 100644
 +            player.PlayerData.money[moneyType] = value
 +            emitMoneyEvents(source, player.PlayerData.money, moneyType, value, 'set', 'sync', value - (old or 0), skipItems == true)
 +        end
-     end
++    end
 +
 +    UpdatePlayerData(source)
 +
 +    return true
- end
- 
++end
++
 +exports('SyncEconomyMoney', syncEconomyMoney)
 +
  ---@param value unknown
  ---@return number?
  local function validateMoneyAmount(value)
-@@ -1446,7 +1508,15 @@ function AddMoney(identifier, moneyType, amount, reason)
+@@ -1446,7 +1514,15 @@ function AddMoney(identifier, moneyType, amount, reason)
          amount = amount
      }) then return false end
  
@@ -799,7 +831,7 @@ index 9fb3dbc..f266bfa 100644
  
      if player.Offline then
          SaveOffline(player.PlayerData)
-@@ -1505,7 +1575,15 @@ function RemoveMoney(identifier, moneyType, amount, reason)
+@@ -1505,7 +1581,15 @@ function RemoveMoney(identifier, moneyType, amount, reason)
          end
      end
  
@@ -816,7 +848,7 @@ index 9fb3dbc..f266bfa 100644
  
      if player.Offline then
          SaveOffline(player.PlayerData)
-@@ -1557,6 +1635,14 @@ function SetMoney(identifier, moneyType, amount, reason)
+@@ -1557,6 +1641,14 @@ function SetMoney(identifier, moneyType, amount, reason)
          amount = amount
      }) then return false end
  

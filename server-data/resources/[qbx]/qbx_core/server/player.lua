@@ -1212,7 +1212,10 @@ function Save(source)
     local playerData = QBX.Players[source].PlayerData
     local playerState = Player(source)?.state
     local pcoords = playerData.position
-    if not playerState.inApartment and not playerState.inProperty then
+    -- On a drop or a server stop the ped can already be gone: reading it then saves 0 health (the character joins
+    -- dead) and the map origin, so the stored values are kept instead
+    local hasPed = ped ~= 0 and DoesEntityExist(ped)
+    if hasPed and not playerState.inApartment and not playerState.inProperty then
         local coords = GetEntityCoords(ped)
         pcoords = vec4(coords.x, coords.y, coords.z, GetEntityHeading(ped))
     end
@@ -1224,11 +1227,14 @@ function Save(source)
     if playerState.isLoggedIn then
         -- Before spawning, this ped is only a preview and does not have the
         -- character's saved health. Keep stored vitals if selection is aborted.
-        playerData.metadata.health = GetEntityHealth(ped)
-        playerData.metadata.armor = GetPedArmour(ped)
-        playerData.metadata.hunger = playerState.hunger or 0
-        playerData.metadata.thirst = playerState.thirst or 0
-        playerData.metadata.stress = playerState.stress or 0
+        if hasPed then
+            playerData.metadata.health = GetEntityHealth(ped)
+            playerData.metadata.armor = GetPedArmour(ped)
+        end
+        -- A state bag already cleared must not save 0 hunger/thirst (health drains away right after joining)
+        playerData.metadata.hunger = playerState.hunger or playerData.metadata.hunger or 100
+        playerData.metadata.thirst = playerState.thirst or playerData.metadata.thirst or 100
+        playerData.metadata.stress = playerState.stress or playerData.metadata.stress or 0
     end
 
     CreateThread(function()
