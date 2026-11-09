@@ -70,9 +70,7 @@ RegisterNetEvent('qbx_properties:server:apartmentSelect', function(apartmentInde
         SetEntityCoords(ped, spawnCoord.x, spawnCoord.y, spawnCoord.z, false, false, false, false)
         if spawnCoord.w then SetEntityHeading(ped, spawnCoord.w) end
     end
-
-    Wait(200)
-    TriggerClientEvent('qb-clothes:client:CreateFirstCharacter', playerSource)
+    -- city_character saves the first look before the apartment is picked
 end)
 
 local startingApartment = require '@qbx_core.config.client'.characters.startingApartment

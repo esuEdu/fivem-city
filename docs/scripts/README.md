@@ -18,7 +18,8 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 
 | Script | What it does |
 |---|---|
-| **illenium-appearance** | Character creator, clothing stores, barbers, tattoos, saved outfits. |
+| **city_character** | Ours, replaces qbx_core's character menus: the character select screen and the creator for new characters (heritage with the parents' portraits, a face you sculpt by dragging points on the character's face or dots in 2D pads, skin, hair, makeup, starter looks and pieces, identity with an ID card preview), in a lit studio with face/body/shoes cameras and light presets. Saves the look in illenium-appearance's format. |
+| **illenium-appearance** | Clothing stores, barbers, tattoos, plastic surgeon, saved outfits (the first look is made in city_character). |
 | **qbx_spawn** | Spawn location picker when you join. |
 | **qbx_idcard** | ID card, driver's licence and weapon licence items. |
 | **qbx_hud** | Health, armour, hunger, thirst, stress, speedometer. |
