@@ -55,6 +55,23 @@ return {
             { reason = '^fishing%-boat%-rent$', debit = true },
             { reason = '^fishing%-boat%-deposit$', debit = true },
         },
+        -- Mining: selling ore and ingots, gems and jewellery at Vangelico, the crime buyer; the shop (licences, tools,
+        -- repairs, skill reset), smelter fees, coal, dynamite, opening geodes and the jeweller's work
+        city_mining = {
+            { reason = '^mining%-sell$', credit = true, perHour = 150000 },
+            { reason = '^mining%-jeweler%-sell$', credit = true, perHour = 150000 },
+            { reason = '^mining%-crime$', credit = true, perHour = 100000 },
+            { reason = '^mining%-shop$', debit = true },
+            { reason = '^mining%-licence$', debit = true },
+            { reason = '^mining%-explosives%-licence$', debit = true },
+            { reason = '^mining%-repair$', debit = true },
+            { reason = '^mining%-respec$', debit = true },
+            { reason = '^mining%-smelter$', debit = true },
+            { reason = '^mining%-coal$', debit = true },
+            { reason = '^mining%-dynamite$', debit = true },
+            { reason = '^mining%-geode$', debit = true },
+            { reason = '^mining%-jeweler$', debit = true },
+        },
         -- Phone Market: the fee to publish or renew an ad
         city_phone_market = {
             { reason = '^market%-ad$', debit = true },
