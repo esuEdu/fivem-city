@@ -11,8 +11,10 @@ const status = document.getElementById('status');
 let closing;
 
 function fit() {
-    const scale = Math.min((window.innerHeight * 0.9) / 768, (window.innerWidth * 0.92) / 1068);
-    document.documentElement.style.setProperty('--scale', String(Math.max(scale, 0.4)));
+    const scale = Math.max(Math.min((window.innerHeight * 0.9) / 768, (window.innerWidth * 0.92) / 1068), 0.4);
+    // zoom, not a scale transform: clicks inside the app iframes only land right when the browser lays the page out
+    // at that size (style.css #tablet)
+    document.documentElement.style.zoom = String(scale);
 }
 
 function renderStatus() {

@@ -50,7 +50,9 @@ export async function renderDashboard() {
             el('div', { class: 'mini' }, el('strong', { text: duration(data.shiftSeconds) }), el('small', { text: L('ui_on_duty_for') })),
             el('div', { class: 'mini' }, el('strong', { text: me.callsign || '—' }), el('small', { text: L('ui_callsign') })),
             el('div', { class: 'mini' }, el('strong', { text: L(`status_${me.status || 'available'}`) }), el('small', { text: L('ui_status') })),
-            el('div', { class: 'mini' }, el('strong', { text: String(me.certs.length) }), el('small', { text: L('ui_certifications') })),
+            can('certs')
+                ? el('div', { class: 'mini' }, el('strong', { text: String(me.certs.length) }), el('small', { text: L('ui_certifications') }))
+                : el('div', { class: 'mini' }, el('strong', { text: String(data.units) }), el('small', { text: L('ui_units_on_duty') })),
         ),
     );
 

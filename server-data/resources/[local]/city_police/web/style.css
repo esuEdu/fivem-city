@@ -49,13 +49,16 @@
 .who small { color: var(--muted2); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .card { padding: 18px; border-radius: 18px; background: var(--group); display: flex; flex-direction: column; gap: 14px; }
+/* The card's gap does the spacing; the browser's paragraph margins doubled it */
+.card p { margin: 0; }
 .card.flush { padding: 6px 0; gap: 0; }
 .card-head { display: flex; align-items: center; gap: 14px; }
 .card-head.padded { padding: 12px 20px; }
 .card-head strong, .card-title { font-size: 16px; }
 .link { border: 0; background: none; color: var(--accent); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 
-.pill { height: 26px; padding: 0 11px; border-radius: 13px; background: var(--chip); font-size: 12px; font-weight: 600; display: inline-grid; place-items: center; white-space: nowrap; }
+/* inline-flex so an icon and a number sit side by side (inline-grid stacked them) */
+.pill { flex: none; height: 26px; padding: 0 11px; border-radius: 13px; background: var(--chip); font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; }
 .pill.accent { background: var(--accent); color: var(--accent-text); }
 .pill.blue { background: var(--blue-soft); color: var(--blue); }
 .pill.bad { background: var(--danger); color: #fff; }
@@ -80,7 +83,8 @@
 .meter .gold-fill { background: var(--accent); }
 
 /* Dashboard */
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+/* Narrow enough for all the V1 tiles on one row of the tablet */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
 .tile { gap: 10px; padding: 18px; }
 .tile-head { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
 .tile-icon { flex: none; width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; }
@@ -290,3 +294,11 @@ select.field { appearance: none; padding-right: 28px; background-image: linear-g
 .tile:hover { background: var(--hover); }
 .empty p { margin: 12px 0 0; }
 .summary .mini strong { font-size: 15px; white-space: nowrap; }
+.summary .mini small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile-value { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile-head { font-size: 12px; line-height: 1.25; }
+.tile-head span:last-child { min-width: 0; }
+
+/* A call's title row: the code and kind stay on one line, a long title is cut */
+.call-head .heading { flex-wrap: nowrap; }
+.call-head .heading h2 { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

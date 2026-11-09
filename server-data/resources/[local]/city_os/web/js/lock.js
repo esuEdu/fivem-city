@@ -106,13 +106,13 @@ export function init() {
 
     lockScreen.addEventListener('pointermove', (event) => {
         if (dragStart === null) return;
-        setShift(Math.max(0, (dragStart - event.clientY) / parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--scale') || '1')));
+        setShift(Math.max(0, dragStart - event.clientY));
     });
 
     const release = (event) => {
         if (dragStart === null) return;
 
-        const distance = (dragStart - event.clientY) / parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--scale') || '1');
+        const distance = dragStart - event.clientY;
         dragStart = null;
 
         if (distance > UNLOCK_DISTANCE) afterSwipe();
