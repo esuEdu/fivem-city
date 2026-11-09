@@ -6,6 +6,7 @@ return {
     maxMonths = 120, -- cap on one sentence
     maxFine = 100000, -- cap on one fine (also city_bank's bill cap)
     chargeRange = 10.0, -- an arrest needs the suspect this close; a fine doesn't
+    offlineFineDays = 7, -- a fine for someone not in the city is a bank bill due in this many days
 
     -- An arrest is booked only with the suspect cuffed or down, and the officer inside one of these places
     -- (an empty list allows anywhere). Fines are not limited.
@@ -75,6 +76,7 @@ return {
         { name = 'zipties', price = 0 },
         { name = 'crowbar', price = 0 },
         { name = 'radio', price = 0 },
+        { name = 'police_badge', price = 0 },
         { name = 'empty_evidence_bag', price = 0 },
         { name = 'armour', price = 0 },
         { name = 'weapon_flashlight', price = 0 },

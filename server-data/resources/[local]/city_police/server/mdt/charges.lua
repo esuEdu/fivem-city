@@ -58,9 +58,48 @@ local function checkPoints(target, citizenid)
     police.notify(target, 'licence_suspended', 'error')
 end
 
+---A fine for someone who isn't in the city: a bank bill they find when they come back (city_bank IssueBill works
+---offline), and the record. Licence points count, the licence itself is checked at their next fine.
+---@param src integer officer
+---@param citizenid string
+---@param data table
+---@return boolean, any
+local function fineOffline(src, citizenid, data)
+    local person = mdt.person(citizenid)
+    if not person then return false, 'not_found' end
+    if citizenid == police.citizenid(src) then return false, 'self' end
+
+    local charges, totals = records.total(data.charges)
+    if not charges then return false, 'invalid' end
+
+    local caseId = mdt.id(data.caseId)
+    if caseId and not MySQL.scalar.await('SELECT id FROM city_police_reports WHERE id = ?', { caseId }) then return false, 'not_found' end
+
+    if totals.fine > 0 then
+        local titles = {}
+        for _, charge in ipairs(charges) do titles[#titles + 1] = charge.title end
+
+        local label = locale('fine_bill', police.name(src), table.concat(titles, ', ')):sub(1, 120)
+        local ref = caseId and ('case:%d'):format(caseId) or 'mdt-fine'
+        if not exports.city_bank:IssueBill(citizenid, totals.fine, label, settings.offlineFineDays * 86400, ref) then return false, 'bill_failed' end
+    end
+
+    local notes = police.clean(data.notes, settings.text.line)
+    local id = records.add({
+        citizenid = citizenid, name = person.name, kind = 'fine', charges = charges, months = 0, fine = totals.fine,
+        points = totals.points, notes = notes ~= '' and notes or nil, officer = police.name(src), officerCid = police.citizenid(src),
+        caseId = caseId,
+    })
+
+    return true, { id = id, months = 0, fine = totals.fine, offline = true }
+end
+
 mdt.register('charge', function(src, data)
     local citizenid = mdt.citizenid(data.citizenid)
     local target = citizenid and exports.qbx_core:GetPlayerByCitizenId(citizenid)
+
+    -- Only an arrest needs the suspect here; a fine reaches them later
+    if not target and citizenid and data.kind ~= 'arrest' then return fineOffline(src, citizenid, data) end
     if not target then return false, 'offline' end
 
     local targetSrc = target.PlayerData.source

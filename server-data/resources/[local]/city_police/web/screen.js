@@ -373,3 +373,33 @@ window.addEventListener('message', (event) => {
     if (message.action === 'wardrobe') showWardrobe(message);
     else if (message.action === 'wardrobeOff') $('wardrobe').classList.add('hidden');
 });
+
+// A police badge someone close showed (or our own), for a few seconds
+let badgeTimer = null;
+
+function showBadge(message) {
+    const card = message.card || {};
+    const labels = message.labels || {};
+
+    $('badge-dept').textContent = card.department || '';
+    $('badge-name').textContent = card.name || '';
+
+    const rows = [[labels.rank, card.rank], [labels.callsign, card.callsign], [labels.number, card.number]]
+        .filter(([, value]) => value)
+        .flatMap(([label, value]) => [node('dt', null, label), node('dd', null, value)]);
+    $('badge-rows').replaceChildren(...rows);
+
+    const bar = $('badge-bar');
+    bar.style.animation = 'none';
+    void bar.offsetWidth;
+    bar.style.animation = `shrink ${message.seconds || 6}s linear forwards`;
+
+    $('badge').classList.remove('hidden');
+    clearTimeout(badgeTimer);
+    badgeTimer = setTimeout(() => $('badge').classList.add('hidden'), (message.seconds || 6) * 1000);
+}
+
+window.addEventListener('message', (event) => {
+    const message = event.data;
+    if (message && message.action === 'badge') showBadge(message);
+});

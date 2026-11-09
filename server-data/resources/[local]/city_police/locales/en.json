@@ -579,5 +579,9 @@
     "wardrobe_name": "Uniform name",
     "wardrobe_saved": "Uniform \"%s\" saved",
     "error_no_clothes": "Couldn't read your clothes; the server log says which piece",
-    "error_no_name": "Give the uniform a name"
+    "error_no_name": "Give the uniform a name",
+    "badge_not_yours": "Only police officers can show a badge",
+    "badge_rank": "Rank",
+    "badge_callsign": "Callsign",
+    "badge_number": "Badge no."
 }
