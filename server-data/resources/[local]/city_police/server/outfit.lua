@@ -1,11 +1,17 @@
--- Checks a list of clothes from a client (illenium-appearance's format) before it is saved: known slots only (others
--- are left out), whole numbers in range (numbers that arrive as text or 55.0 are accepted), no slot twice. Used for
--- uniforms and for an officer's own clothes kept while in uniform. A refusal says why, for the server log.
+-- Clothes from a client (illenium-appearance's format), for uniforms and for an officer's own clothes kept while in
+-- uniform. Only clothing slots count, so a uniform never touches the face, hair, glasses, ears, watch or bracelets:
+-- components 1 (mask), 3 (arms) and 4 to 11, and prop 0 (hat). Other slots and bad entries are left out (and named,
+-- for the server log) instead of refusing the whole outfit.
 
 local outfit = {}
 
-local COMPONENTS = { [0] = true, true, true, true, true, true, true, true, true, true, true, true } -- 0..11
-local PROPS = { [0] = true, [1] = true, [2] = true, [6] = true, [7] = true }
+outfit.COMPONENTS = { 1, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+outfit.PROPS = { 0 }
+
+local COMPONENT_SET, PROP_SET = {}, {}
+for _, id in ipairs(outfit.COMPONENTS) do COMPONENT_SET[id] = true end
+for _, id in ipairs(outfit.PROPS) do PROP_SET[id] = true end
+
 local MAX_DRAWABLE = 4095
 local MAX_TEXTURE = 255
 local MAX_ENTRIES = 32
@@ -26,30 +32,29 @@ end
 
 ---@param list unknown
 ---@param idKey string 'component_id' | 'prop_id'
----@param ids table<integer, true>
----@return table[]? clean, string? why
-local function clean(list, idKey, ids)
-    if type(list) ~= 'table' then return nil, ('%s: not a list'):format(idKey) end
-
+---@param allowed table<integer, true>
+---@param skipped string[] filled with what was left out
+---@return table[]
+local function clean(list, idKey, allowed, skipped)
     local out, seen, count = {}, {}, 0
+    if type(list) ~= 'table' then return out end
 
     for _, entry in pairs(list) do
         count = count + 1
-        if count > MAX_ENTRIES then return nil, ('%s: too many'):format(idKey) end
-        if type(entry) ~= 'table' then return nil, ('%s: entry is %s'):format(idKey, type(entry)) end
+        if count > MAX_ENTRIES then break end
 
-        local id = int(entry[idKey], 0, 11)
+        local id = type(entry) == 'table' and int(entry[idKey], 0, 11) or nil
 
-        if id and ids[id] and not seen[id] then
+        if id and allowed[id] and not seen[id] then
             local drawable = int(entry.drawable, -1, MAX_DRAWABLE)
             local texture = int(entry.texture, -1, MAX_TEXTURE)
 
-            if not drawable or not texture then
-                return nil, ('%s %d: drawable %s texture %s'):format(idKey, id, tostring(entry.drawable), tostring(entry.texture))
+            if drawable and texture then
+                seen[id] = true
+                out[#out + 1] = { [idKey] = id, drawable = drawable, texture = texture }
+            else
+                skipped[#skipped + 1] = ('%s %d (%s/%s)'):format(idKey, id, tostring(entry.drawable), tostring(entry.texture))
             end
-
-            seen[id] = true
-            out[#out + 1] = { [idKey] = id, drawable = drawable, texture = texture }
         end
     end
 
@@ -60,31 +65,16 @@ end
 
 ---@param components unknown
 ---@param props unknown
----@return table[]? components, table[]|string props, or nil and why
+---@return table[]? components, table[]? props, string? skipped (nil components: nothing usable at all)
 function outfit.check(components, props)
-    local cleanComponents, why = clean(components, 'component_id', COMPONENTS)
-    if not cleanComponents then return nil, why end
-    if #cleanComponents == 0 then return nil, 'no clothes' end
+    local skipped = {}
+    local cleanComponents = clean(components, 'component_id', COMPONENT_SET, skipped)
+    local cleanProps = clean(props, 'prop_id', PROP_SET, skipped)
+    local why = #skipped > 0 and table.concat(skipped, ', ') or nil
 
-    local cleanProps, whyProps = clean(props or {}, 'prop_id', PROPS)
-    if not cleanProps then return nil, whyProps end
+    if #cleanComponents == 0 then return nil, nil, why or 'no clothes' end
 
-    return cleanComponents, cleanProps
-end
-
--- A uniform never carries the face (0) or the hair (2) of whoever made it
-local NOT_UNIFORM = { [0] = true, [2] = true }
-
----@param components table[] checked components
----@return table[]
-function outfit.uniformOnly(components)
-    local out = {}
-
-    for _, entry in ipairs(components) do
-        if not NOT_UNIFORM[entry.component_id] then out[#out + 1] = entry end
-    end
-
-    return out
+    return cleanComponents, cleanProps, why
 end
 
 ---@param value unknown

@@ -73,18 +73,23 @@ assert(records.reduce(40, { kind = 'months', value = settings.maxMonths + 1 }) =
 assert(records.reduce(40, { kind = 'other', value = 5 }) == nil)
 assert(records.reduce(40, 'half') == nil)
 
--- Clothes from a client: known slots kept (others left out), whole numbers in range, numbers as text or 55.0 accepted
+-- Clothes from a client: only clothing slots (no face 0, hair 2, glasses/ears/watch/bracelet props), numbers as
+-- text or 55.0 accepted, bad entries left out and named instead of refusing everything
 local outfit = require 'server.outfit'
-local comps, props = outfit.check({ { component_id = 11, drawable = 55, texture = 0 }, { component_id = 4, drawable = '35', texture = 0.0 } }, { { prop_id = 0, drawable = -1, texture = -1 } })
-assert(#comps == 2 and comps[1].component_id == 4 and comps[1].drawable == 35 and comps[2].drawable == 55 and #props == 1 and props[1].drawable == -1)
-local full = {}
+local full, allProps = {}, {}
 for id = 0, 11 do full[#full + 1] = { component_id = id, drawable = 15, texture = 3 } end
-assert(#outfit.check(full, {}) == 12)
-assert(#outfit.uniformOnly(outfit.check(full, {})) == 10)
-assert(#outfit.check({ { component_id = 12, drawable = 1, texture = 0 }, { component_id = 1, drawable = 1, texture = 0 } }, {}) == 1)
-assert(outfit.check({ { component_id = 11, drawable = 1.5, texture = 0 } }, {}) == nil)
-assert(outfit.check({ { component_id = 11, drawable = 5000, texture = 0 } }, {}) == nil)
-assert(outfit.check({ { component_id = 12, drawable = 1, texture = 0 } }, {}) == nil)
+for _, id in ipairs({ 0, 1, 2, 6, 7 }) do allProps[#allProps + 1] = { prop_id = id, drawable = -1, texture = -1 } end
+local comps, props, skipped = outfit.check(full, allProps)
+assert(#comps == 10 and #props == 1 and props[1].prop_id == 0 and skipped == nil)
+for _, entry in ipairs(comps) do assert(entry.component_id ~= 0 and entry.component_id ~= 2) end
+
+comps = outfit.check({ { component_id = 11, drawable = 55, texture = 0 }, { component_id = 4, drawable = '35', texture = 0.0 } }, nil)
+assert(#comps == 2 and comps[1].component_id == 4 and comps[1].drawable == 35)
+
+comps, props, skipped = outfit.check({ { component_id = 11, drawable = 1.5, texture = 0 }, { component_id = 4, drawable = 1, texture = 0 } }, {})
+assert(#comps == 1 and comps[1].component_id == 4 and skipped:find('component_id 11'))
+
+assert(outfit.check({ { component_id = 2, drawable = 1, texture = 0 } }, {}) == nil)
 assert(outfit.check('shirt', {}) == nil)
 assert(outfit.sex('female') == 'female' and outfit.sex('other') == nil)
 

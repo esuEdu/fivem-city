@@ -577,5 +577,7 @@
     "wardrobe_by": "by",
     "wardrobe_sure": "Sure?",
     "wardrobe_name": "Uniform name",
-    "wardrobe_saved": "Uniform \"%s\" saved"
+    "wardrobe_saved": "Uniform \"%s\" saved",
+    "error_no_clothes": "Couldn't read your clothes; the server log says which piece",
+    "error_no_name": "Give the uniform a name"
 }

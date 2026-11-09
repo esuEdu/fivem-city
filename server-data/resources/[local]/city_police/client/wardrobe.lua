@@ -15,41 +15,44 @@ local function mySex()
     return GetEntityModel(cache.ped) == `mp_f_freemode_01` and 'female' or 'male'
 end
 
-local PROP_IDS = { 0, 1, 2, 6, 7 }
+-- Only clothes: mask, arms, legs, bag, shoes, accessories, undershirt, armour, decals, jacket and the hat. The face,
+-- hair, glasses, ears, watch and bracelets are never read or changed (server/outfit.lua keeps the same list).
+local COMPONENT_IDS = { 1, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
+local HAT = 0
 
----What the ped wears now, in illenium-appearance's format (read straight from the game).
+---What the ped wears now, read straight from the game, in illenium-appearance's format.
 ---@return { components: table[], props: table[] }
 local function currentClothes()
     local ped = cache.ped
-    local components, props = {}, {}
+    local components = {}
 
-    for id = 0, 11 do
+    for _, id in ipairs(COMPONENT_IDS) do
         components[#components + 1] = { component_id = id, drawable = GetPedDrawableVariation(ped, id), texture = GetPedTextureVariation(ped, id) }
     end
 
-    for _, id in ipairs(PROP_IDS) do
-        props[#props + 1] = { prop_id = id, drawable = GetPedPropIndex(ped, id), texture = GetPedPropTextureIndex(ped, id) }
-    end
-
-    return { components = components, props = props }
+    return { components = components, props = { { prop_id = HAT, drawable = GetPedPropIndex(ped, HAT), texture = GetPedPropTextureIndex(ped, HAT) } } }
 end
 
+---Puts on a uniform or the officer's own clothes. A uniform without a hat takes the hat off.
 ---@param clothes { components: table[], props: table[] }?
 local function dress(clothes)
     if not clothes then return end
 
     local ped = cache.ped
+    local hat = nil
 
     for _, entry in ipairs(clothes.components or {}) do
         SetPedComponentVariation(ped, entry.component_id, entry.drawable, math.max(entry.texture, 0), 0)
     end
 
     for _, entry in ipairs(clothes.props or {}) do
-        if entry.drawable < 0 then
-            ClearPedProp(ped, entry.prop_id)
-        else
-            SetPedPropIndex(ped, entry.prop_id, entry.drawable, math.max(entry.texture, 0), true)
-        end
+        if entry.prop_id == HAT then hat = entry end
+    end
+
+    if hat and hat.drawable >= 0 then
+        SetPedPropIndex(ped, HAT, hat.drawable, math.max(hat.texture, 0), true)
+    else
+        ClearPedProp(ped, HAT)
     end
 end
 
@@ -122,7 +125,7 @@ local function design()
         ped = false, headBlend = false, faceFeatures = false, headOverlays = false, tattoos = false,
         components = true, props = true, enableExit = true,
         componentConfig = { masks = true, upperBody = true, lowerBody = true, bags = true, shoes = true, scarfAndChains = true, bodyArmor = true, shirts = true, decals = true, jackets = true },
-        propConfig = { hats = true, glasses = true, ear = true, watches = true, bracelets = true },
+        propConfig = { hats = true, glasses = false, ear = false, watches = false, bracelets = false },
     })
 end
 
