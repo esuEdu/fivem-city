@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>city_militech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Poppins:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="app.js"></script>
+</head>
+<body>
+    <main id="app" class="tuner hidden">
+        <header class="head">
+            <div class="brand">
+                <span class="brand__mark">MILITECH</span>
+                <span class="brand__sub">Performance Tuning Module</span>
+            </div>
+            <div class="car">
+                <span id="car-name" class="car__name"></span>
+                <b id="car-plate" class="car__plate"></b>
+            </div>
+            <div class="pi">
+                <div class="pi__badge" id="pi-badge">
+                    <span id="pi-class" class="pi__class"></span>
+                    <span id="pi-value" class="pi__value"></span>
+                </div>
+                <span id="pi-stock" class="pi__stock"></span>
+            </div>
+            <button id="close" class="close" aria-label="Close">&#215;</button>
+        </header>
+
+        <div class="body">
+            <nav id="groups" class="groups"></nav>
+
+            <section class="params">
+                <header class="params__head">
+                    <h2 id="group-title"></h2>
+                    <span id="group-count" class="params__count"></span>
+                </header>
+                <ul id="params" class="params__list"></ul>
+                <footer class="help">
+                    <b id="help-title"></b>
+                    <p id="help-text"></p>
+                </footer>
+            </section>
+
+            <aside class="side">
+                <h3 class="side__title">Performance</h3>
+                <ul id="stats" class="stats"></ul>
+
+                <div class="legend">
+                    <span><i class="legend__stock"></i>Stock</span>
+                    <span><i class="legend__up"></i>Gain</span>
+                    <span><i class="legend__down"></i>Loss</span>
+                </div>
+
+                <div id="dirty" class="dirty hidden">Unsaved changes</div>
+
+                <div class="actions">
+                    <button id="apply" class="btn btn--accent">Upload setup</button>
+                    <button id="revert" class="btn">Undo changes</button>
+                    <button id="reset" class="btn btn--danger">Restore factory</button>
+                </div>
+            </aside>
+        </div>
+
+        <div id="toast" class="toast hidden"></div>
+    </main>
+</body>
+</html>

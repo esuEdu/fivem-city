@@ -1410,6 +1410,17 @@ return {
         description = 'Found in a fishing chest.',
     },
 
+    ['militech_tuning'] = {
+        label = 'Militech Tuning',
+        description = 'Military-grade tuning module. Use it from the driver seat of a stopped car to tune its handling.',
+        category = 'electronics',
+        weight = 900,
+        stack = false,
+        close = true,
+        consume = 0,
+        client = { image = 'tunerchip.png' },
+    },
+
     -- Mining (city_mining): licences, tools, safety gear, ore, ingots, geodes, gems, jewellery. Images marked as
     -- placeholders until the real ones are made (list in docs/city-mining.md).
     ['mining_license'] = {
