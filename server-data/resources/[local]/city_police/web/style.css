@@ -122,6 +122,13 @@
 
 .profile { flex-direction: row; align-items: center; gap: 18px; }
 .vehicle-photo { padding: 12px; align-items: center; }
+.split-body { flex-grow: 1; min-height: 0; display: flex; flex-direction: column; }
+.split-body > .list { flex-grow: 1; }
+.grow-list { flex-grow: 1; min-height: 0; display: flex; flex-direction: column; }
+.list-label { padding: 12px 14px 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.owner-card { flex: none; flex-direction: row; align-items: center; gap: 12px; padding: 14px; }
+.owner-card .pills { align-items: center; }
+.owner-card .icon-btn { flex: none; align-self: flex-start; width: 28px; height: 28px; border: 0; border-radius: 8px; background: var(--field); color: var(--muted); display: grid; place-items: center; cursor: pointer; }
 .vehicle-photo img { width: 100%; max-height: 240px; object-fit: contain; }
 .pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
 
@@ -235,6 +242,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .photo { flex: none; object-fit: cover; background: var(--field); display: grid; place-items: center; font-weight: 700; color: var(--muted); }
 .photo.big { width: 84px; height: 84px; border-radius: 20px; font-size: 26px; }
 .photo.small { width: 34px; height: 34px; border-radius: 10px; font-size: 12px; }
+.photo.mid { width: 52px; height: 52px; border-radius: 14px; font-size: 16px; }
 .plate { flex: none; min-width: 76px; height: 26px; padding: 0 8px; border-radius: 6px; background: #f2f2f2; color: #1a2b6d; border: 2px solid #1a2b6d; font-family: 'Courier New', monospace; font-size: 13px; font-weight: 700; display: grid; place-items: center; letter-spacing: 1px; }
 .plate.big { min-width: 120px; height: 44px; font-size: 20px; }
 button.plate { cursor: pointer; }

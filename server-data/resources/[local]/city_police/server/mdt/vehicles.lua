@@ -3,6 +3,7 @@
 local mdt = require 'server.mdt.core'
 local police = require 'server.police'
 local plates = require 'server.plates'
+local records = require 'server.records'
 local settings = require 'server.config'
 
 local STATUSES = { stolen = true, wanted = true }
@@ -23,6 +24,7 @@ local function brief(row)
     }
 end
 
+-- One search box for both: citizens whose name matches (to pick the owner) and cars whose plate matches
 mdt.register('searchVehicles', function(_, data)
     local like = mdt.like(data.q)
     if not like then
@@ -31,20 +33,62 @@ mdt.register('searchVehicles', function(_, data)
         for plate, flag in pairs(plates.all()) do
             list[#list + 1] = { plate = plate, flag = flag.status, reason = flag.reason }
         end
-        return true, list
+        return true, { people = {}, vehicles = list }
+    end
+
+    local people = MySQL.query.await([[
+        SELECT p.citizenid, p.charinfo, (SELECT COUNT(*) FROM player_vehicles v WHERE v.citizenid = p.citizenid) AS cars
+        FROM players p
+        WHERE CONCAT(JSON_VALUE(p.charinfo, '$.firstname'), ' ', JSON_VALUE(p.charinfo, '$.lastname')) LIKE ?
+        ORDER BY JSON_VALUE(p.charinfo, '$.firstname'), JSON_VALUE(p.charinfo, '$.lastname') LIMIT ?
+    ]], { like, settings.searchLimit }) or {}
+
+    for i = 1, #people do
+        local row = people[i]
+        local charinfo = json.decode(row.charinfo or '{}') or {}
+
+        people[i] = {
+            citizenid = row.citizenid,
+            name = ('%s %s'):format(charinfo.firstname or '?', charinfo.lastname or ''),
+            cars = tonumber(row.cars) or 0,
+            online = exports.qbx_core:GetPlayerByCitizenId(row.citizenid) ~= nil,
+        }
     end
 
     local rows = MySQL.query.await([[
         SELECT v.plate, v.vehicle, v.citizenid, v.state, p.charinfo FROM player_vehicles v
         LEFT JOIN players p ON p.citizenid = v.citizenid
-        WHERE v.plate LIKE ? OR CONCAT(JSON_VALUE(p.charinfo, '$.firstname'), ' ', JSON_VALUE(p.charinfo, '$.lastname')) LIKE ?
-        LIMIT ?
-    ]], { like, like, settings.searchLimit }) or {}
+        WHERE v.plate LIKE ? LIMIT ?
+    ]], { like, settings.searchLimit }) or {}
 
-    local list = {}
-    for i = 1, #rows do list[i] = brief(rows[i]) end
+    local vehicles = {}
+    for i = 1, #rows do vehicles[i] = brief(rows[i]) end
 
-    return true, list
+    return true, { people = people, vehicles = vehicles }
+end, 'vehicles')
+
+-- The owner's small profile beside a car: name, booking photo and every car they own
+mdt.register('vehicleOwner', function(_, data)
+    local citizenid = mdt.citizenid(data.citizenid)
+    local person = citizenid and mdt.person(citizenid)
+    if not person then return false, 'not_found' end
+
+    local rows = MySQL.query.await('SELECT plate, vehicle, state FROM player_vehicles WHERE citizenid = ? ORDER BY vehicle LIMIT 30', { citizenid }) or {}
+
+    local vehicles = {}
+    for i = 1, #rows do
+        local flag = plates.get(rows[i].plate)
+        vehicles[i] = { plate = rows[i].plate, model = rows[i].vehicle, state = rows[i].state, flag = flag and flag.status or nil }
+    end
+
+    return true, {
+        citizenid = citizenid,
+        name = person.name,
+        phone = person.charinfo and person.charinfo.phone,
+        online = person.source ~= nil,
+        photo = records.photo(citizenid),
+        vehicles = vehicles,
+    }
 end, 'vehicles')
 
 mdt.register('vehicle', function(_, data)
