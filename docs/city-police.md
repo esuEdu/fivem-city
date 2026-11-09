@@ -16,15 +16,16 @@ Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuff
 | **Dashboard** | Your shift (time on duty, status, callsign), open calls, units on duty, active warrants, today's arrests and fines, the chief's notices. |
 | **Dispatch** | Open calls: 190 calls from the phone (`city_dispatch` forwards them), automatic alerts (robberies, drug selling, car theft, flagged plates on radars, officer panic button). Attach to a call (sets the GPS), detach, add a note, close. A new call shows a banner on the tablet, a blip and a sound. |
 | **Map** | A live map of the city (drawn, not the game's picture) with units, calls and ankle monitors. Clicking one sets the GPS; a button opens the game's own map. |
-| **Units** | Officers on duty: callsign, grade, status (available, busy, en route, on scene, break), the call each is on, how long on duty. Set your own status and callsign. |
+| **Units** | Officers on duty: callsign, grade, status (available, busy, en route, on scene, break), the call each is on, how long on duty. Set your own status and callsign. The camera button watches that unit's **bodycam** live: the tablet closes, the viewer's ped hides below the unit (like the Staff app's spectate) and the game camera follows them; Backspace leaves. |
 | **People** | Search by name, phone, citizen ID or fingerprint. A person's file: photo (last booking), date of birth, phone, job, licences and driving points, ankle monitor, warrants, arrests and fines, reports they're in, vehicles, registered weapons. |
 | **Vehicles** | Search by plate or owner: model, owner, flags (stolen / wanted, with reason), impounds. Flag or clear a plate. |
 | **Weapons** | Search by serial: model, registered owner, where it was bought, status (registered, seized, stolen), casings matched to it. Weapons bought in a shop are registered automatically. |
 | **Reports** | Incident reports: title, type, place, text, people involved (with roles), vehicles, evidence. Officers write and edit their own; sergeants and up edit any. |
 | **Warrants** | Arrest warrants with reason, charges and expiry. Sergeant and up issue or cancel them; any officer marks one served (an arrest of that person serves it automatically). |
+| **BOLOs** | "Be on the lookout": a person or a vehicle (with plate) to watch for, no warrant or known citizen needed. Any officer creates one (title, description, hours valid, `boloHours` default) and every unit on duty gets a banner; any officer closes it. The Dashboard counts the active ones. |
 | **Charges** | The penal code (crimes, months, fine, driving points). Pick a person and the crimes: **Fine** (a bank bill) or **Arrest** (booking: photo of the suspect, fingerprint, months; the suspect sees the arrest screen). Both go into the person's record. |
 | **Impounds** | Impounded vehicles (reason, fee, hold time, officer) and the evidence locker contents. Impound the car in front of you; release (sergeant+) or the owner pays at the station desk after the hold time. |
-| **Licences** | Driver and weapon licences of a person, driving points in the last 30 days. Grant or revoke (weapon licence: sergeant+). The driver licence is suspended by itself at `Config.Licences.maxPoints`. |
+| **Licences** | Driver, weapon and explosives licences of a person, driving points in the last 30 days. Grant or revoke (weapon and explosives: sergeant+; explosives lets city_mining sell that person the dynamite card). The driver licence is suspended by itself at `Config.Licences.maxPoints`. |
 | **Evidence** | Evidence bags in your inventory: analyze them at the lab (forensics certification) to turn a casing into a weapon serial, blood into a DNA match and a fingerprint into a person. Results are saved and can go into a report. |
 | **Cameras** | The security cameras of shops, banks and the jeweler. Viewing one puts the tablet away; arrows change camera, Backspace leaves. Cameras a robbery cut show as offline. |
 | **Certifications** | Each officer's certifications; lieutenants and up give or take them. |
@@ -34,7 +35,7 @@ Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuff
 
 - **Stations** (`Config.Stations`, Mission Row and Sandy Shores): clock in/out, armory (a `city_inventory` shop, items by grade), personal locker, evidence locker (stash), trash, garage and helipad, impound desk, forensics lab. All with `ox_target`.
 - **Vehicles**: one at a time per officer, from the garage they stand at, models by grade and certification, plate `LSPD####`, keys given.
-- **On players** (ox_target on a player, and the radial menu): cuff / uncuff (needs `handcuffs`), soft cuff (can walk), escort, put in / take out of a vehicle, search (`city_inventory` player search), check status (gunpowder, alcohol, smells), scan fingerprint, ankle monitor on/off. Every action is checked on the server (job on duty, distance, the target's state).
+- **On players** (ox_target on a player, and the radial menu): cuff / uncuff (needs `handcuffs`), soft cuff (can walk), escort, put in / take out of a vehicle, search (`city_inventory` player search; a suspect who isn't cuffed, down or hands up gets an Allow/Refuse prompt first, `search` in `server/config.lua`, and `server/search.lua` blocks the inventory opening without it through city_inventory's `openInventory` hook), check status (gunpowder, alcohol, smells), scan fingerprint, ankle monitor on/off. Every action is checked on the server (job on duty, distance, the target's state).
 - **Cuffed players** can't run, shoot, drive or open the inventory/phone/tablet; the `ishandcuffed` metadata is set on the server. A soft cuff can be broken with a skill check.
 - **Objects** (radial menu): cones, barriers, road signs, lights, tent; spike strips burst the tyres of cars that drive over them (max `Config.MaxSpikes` per officer). Pick them up again from the radial menu.
 - **Evidence**: shooting drops casings (with the weapon's serial), wounds drop blood, robberies leave fingerprints (no gloves). Officers on duty see them when aiming a flashlight, and pick them up with an `empty_evidence_bag`. Evidence on the ground disappears after `Config.Evidence.minutes`.
@@ -42,6 +43,11 @@ Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuff
 - **Radars**: fixed speed cameras (km/h). Speeding gives the driver a bank bill; a flagged plate creates a call.
 - **Arrest**: only with the suspect cuffed or down and the officer at a booking place (`bookingPlaces` in `server/config.lua`: Mission Row, Paleto Bay, Bolingbroke; an empty list allows anywhere). Fines have no such limit. The suspect sees an arrest screen with the months and the crimes, the arrest goes in their record, and `city_prison` takes them straight to Bolingbroke ([city-prison.md](city-prison.md)).
 - **Panic button** (radial "Emergency"): a high-priority call with the officer's position.
+- **Tackle** (G while sprinting, `Config.Keys`): the player just ahead falls for `Config.Tackle.suspectMs` and the officer briefly too. Server: on duty, in reach, neither in a car, `tackleCooldown` seconds between tackles.
+- **Zip ties and head bag** (`zipties`, `head_bag`; YouTool sells both, the armory has zip ties): anyone uses them on the closest player who has their hands up, is cuffed or is down. Zip ties are cuffs (`ishandcuffed`) marked with the `zipTied` state bag; anyone with a blade (`zipCutters`) cuts them with ox_target, and police uncuffing also frees them. The head bag is the `headBag` state bag: the wearer's screen goes black and a bag sits on their head; anyone close takes it off (and gets the item back), or it falls off after `headBagMinutes`.
+- **Crowbar** (`crowbar`, from the armory): ox_target "Force open" on a locked car, police on duty; the server times the 8 seconds itself (start and finish callbacks) and unlocks through `qbx_vehiclekeys:SetLockState`, logged.
+- **Patrol car radar** (F7 on/off, F6 freeze, in an emergency-class car): speed and plate of the car ahead and behind and your own speed, read on the client only.
+- **Megaphone** (hold Y in an emergency-class car): the voice range is `Config.Megaphone.range` through pma-voice's proximity override.
 
 ## Calls (dispatch)
 
@@ -49,6 +55,8 @@ Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuff
 
 - 190 calls: `city_dispatch` calls `exports.city_police:PhoneCall(src, kind, text, caller)`; when the first unit attaches, city_police fires `city_police:server:callAccepted` and the caller hears the police are on the way.
 - Scripts: `exports.city_police:Alert({ title, text, coords, code, priority })`, server only.
+- Shots fired (`server/alerts.lua`, from the shot reports that also drop casings): anyone but police on duty shooting inside `shots.areas` makes a 10-71 call; with a suppressor attached only `suppressedChance` (20%) of reported shots do. After a call the same shooter makes no new one for `shots.cooldown` seconds (20).
+- Officer down: an officer on duty whose `qbx_medical:deathState` stops being alive makes a high-priority 10-99 call.
 - Old qbx_police events still work, for the vendored robbery scripts: `police:server:policeAlert`, `evidence:server:CreateFingerDrop`, `evidence:server:CreateBloodDrop`, and on the client `evidence:client:SetStatus` and `police:client:SendPoliceEmergencyAlert` (`server/compat.lua`, `client/compat.lua`). `police:SetCopCount` is still sent to everyone when the number on duty changes.
 
 ## Data
@@ -62,6 +70,7 @@ Tables, created on start:
 | `city_police_records` | arrests, fines and citations: charges, months, fine, points, officer, booking photo and fingerprint |
 | `city_police_reports` | incident reports |
 | `city_police_warrants` | warrants: charges, expiry, status |
+| `city_police_bolos` | BOLOs: kind, title, description, plate, expiry, status |
 | `city_police_plates` | flagged plates (stolen / wanted) |
 | `city_police_weapons` | registered weapons by serial |
 | `city_police_impounds` | impounds: plate, reason, fee, hold until, released |
@@ -76,4 +85,4 @@ Fines, radar tickets and impound fees are **bank bills** (`exports.city_bank:Cre
 
 ## Not in v1
 
-BOLO, K9, body cams, the helicopter camera, court and lawyers, evidence photos.
+K9, recorded bodycam footage, the helicopter camera, court and lawyers, evidence photos.

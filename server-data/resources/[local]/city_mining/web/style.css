@@ -1,0 +1,96 @@
+/* Colors, radius and font come from city_ui/theme.lua as CSS variables (applyTheme in minigame.js). */
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: var(--font, 'Poppins', sans-serif);
+    color: var(--text, #eef0f3);
+    user-select: none;
+}
+
+.hidden { display: none !important; }
+
+.panel {
+    position: absolute;
+    left: 50%;
+    bottom: 14%;
+    width: 380px;
+    transform: translateX(-50%);
+    padding: 14px 16px 12px;
+    border-radius: var(--radius-large, 22px);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.panel__head { display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600; }
+.panel__hint { font-size: 12px; color: var(--muted); text-align: center; }
+
+.pips { display: flex; gap: 5px; }
+.pips i { width: 16px; height: 6px; border-radius: 3px; background: var(--section); }
+.pips i.hit { background: var(--accent); }
+.pips i.perfect { background: var(--success); box-shadow: 0 0 8px var(--success-glow); }
+.pips i.miss { background: var(--danger); }
+
+.time { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+
+.track {
+    position: relative;
+    height: 26px;
+    border-radius: var(--radius, 10px);
+    background: var(--section);
+    overflow: hidden;
+}
+
+.track__zone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: var(--accent-soft);
+    border-left: 2px solid var(--accent);
+    border-right: 2px solid var(--accent);
+}
+
+.track__perfect {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    opacity: 0.55;
+}
+
+.track__band {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: var(--accent-soft);
+    border-left: 2px solid var(--accent);
+    border-right: 2px solid var(--accent);
+}
+
+.track__band.inside { background: var(--accent); opacity: 0.6; }
+
+.track__marker {
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
+    width: 4px;
+    margin-left: -2px;
+    border-radius: 2px;
+    background: var(--text);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.track.flash-hit { box-shadow: inset 0 0 0 2px var(--accent); }
+.track.flash-perfect { box-shadow: inset 0 0 0 2px var(--success); }
+.track.flash-miss { box-shadow: inset 0 0 0 2px var(--danger); }
+
+.meter { height: 6px; border-radius: 3px; background: var(--section); overflow: hidden; }
+.meter__fill { height: 100%; width: 100%; background: var(--accent); }

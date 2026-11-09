@@ -8,6 +8,7 @@ import { renderVehicles } from './vehicles.js';
 import { renderWeapons } from './weapons.js';
 import { renderReports } from './reports.js';
 import { renderWarrants } from './warrants.js';
+import { renderBolos } from './bolos.js';
 import { renderCharges } from './charges.js';
 import { renderImpounds } from './impounds.js';
 import { renderLicences } from './licences.js';
@@ -35,6 +36,7 @@ const SECTIONS = [
         { id: 'weapons', icon: 'weapons', permission: 'weapons', render: renderWeapons },
         { id: 'reports', icon: 'reports', permission: 'reports', render: renderReports },
         { id: 'warrants', icon: 'warrants', permission: 'warrants', render: renderWarrants },
+        { id: 'bolos', icon: 'bolos', permission: 'bolos', render: renderBolos },
         { id: 'charges', icon: 'charges', permission: 'charge', render: renderCharges },
     ] },
     { id: 'tools', tabs: [
@@ -175,6 +177,7 @@ window.CityOS.on('message', (message) => {
 // A tapped call notification opens that call
 window.CityOS.on('open', (args) => {
     if (args && args.tab === 'dispatch' && can('dispatch')) go('dispatch', { id: args.call });
+    if (args && args.tab === 'bolos' && can('bolos')) go('bolos');
 });
 
 start();

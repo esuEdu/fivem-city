@@ -68,14 +68,46 @@ local function anklet(target)
     exports.qbx_core:Notify(locale(result and 'anklet_on' or 'anklet_off'), 'success')
 end
 
+---Restrained suspects open straight away; anyone else is asked first and the server opens it if they accept.
 ---@param target integer
 local function search(target)
-    exports.city_inventory:openInventory('player', target)
+    local ok, result = lib.callback.await('city_police:search', false, target)
+    if not ok then return job.fail(result) end
+
+    if result == 'open' then return exports.city_inventory:openInventory('player', target) end
+
+    exports.qbx_core:Notify(locale('search_asked'), 'inform')
 end
 
+RegisterNetEvent('city_police:client:openSearch', function(target)
+    if type(target) ~= 'number' then return end
+
+    exports.city_inventory:openInventory('player', target)
+end)
+
+-- An officer asks to search us: accept or refuse before the time runs out
+RegisterNetEvent('city_police:client:searchRequest', function(officer, seconds)
+    local answered = false
+
+    SetTimeout(seconds * 1000, function()
+        if not answered then lib.closeAlertDialog() end
+    end)
+
+    local choice = lib.alertDialog({
+        header = locale('search_request_header'),
+        content = locale('search_request_text', officer, seconds),
+        centered = true,
+        cancel = true,
+        labels = { confirm = locale('search_accept'), cancel = locale('search_refuse') },
+    })
+
+    answered = true
+    TriggerServerEvent('city_police:server:searchAnswer', choice == 'confirm')
+end)
+
 local OPTIONS = {
-    { name = 'city_police:cuff', label = locale('target_cuff'), icon = 'fas fa-handcuffs', fn = function(t) cuff(t, false) end },
-    { name = 'city_police:softcuff', label = locale('target_softcuff'), icon = 'fas fa-link', fn = function(t) cuff(t, true) end },
+    { name = 'city_police:cuff', label = locale('target_cuff'), icon = 'fas fa-handcuffs', distance = Config.Ranges.cuff, fn = function(t) cuff(t, false) end },
+    { name = 'city_police:softcuff', label = locale('target_softcuff'), icon = 'fas fa-link', distance = Config.Ranges.cuff, fn = function(t) cuff(t, true) end },
     { name = 'city_police:escort', label = locale('target_escort'), icon = 'fas fa-people-pulling', fn = escort },
     { name = 'city_police:putin', label = locale('target_put_in'), icon = 'fas fa-car-side', fn = putInVehicle },
     { name = 'city_police:search', label = locale('target_search'), icon = 'fas fa-magnifying-glass', fn = search },
@@ -86,7 +118,7 @@ local OPTIONS = {
 local targetOptions = {}
 for i, option in ipairs(OPTIONS) do
     targetOptions[i] = {
-        name = option.name, label = option.label, icon = option.icon, distance = REACH,
+        name = option.name, label = option.label, icon = option.icon, distance = option.distance or REACH,
         canInteract = job.onDuty,
         onSelect = function(data) option.fn(job.serverIdOf(data.entity)) end,
     }
@@ -141,19 +173,19 @@ local VEHICLE_OPTIONS = {
 exports.ox_target:addGlobalVehicle(VEHICLE_OPTIONS)
 
 -- The radial menu's police buttons (qbx_radialmenu's config fires these on the client)
-local function onClosest(fn)
+local function onClosest(fn, distance)
     return function()
         if not job.onDuty() then return end
 
-        local target = job.closestPlayer(REACH)
+        local target = job.closestPlayer(distance or REACH)
         if not target then return exports.qbx_core:Notify(locale('error_no_one_near'), 'error') end
 
         fn(target)
     end
 end
 
-AddEventHandler('city_police:client:radialCuff', onClosest(function(t) cuff(t, false) end))
-AddEventHandler('city_police:client:radialSoftCuff', onClosest(function(t) cuff(t, true) end))
+AddEventHandler('city_police:client:radialCuff', onClosest(function(t) cuff(t, false) end, Config.Ranges.cuff))
+AddEventHandler('city_police:client:radialSoftCuff', onClosest(function(t) cuff(t, true) end, Config.Ranges.cuff))
 AddEventHandler('city_police:client:radialEscort', onClosest(escort))
 AddEventHandler('city_police:client:radialPutIn', onClosest(putInVehicle))
 AddEventHandler('city_police:client:radialTakeOut', function()
