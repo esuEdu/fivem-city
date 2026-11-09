@@ -1,0 +1,183 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: var(--font);
+    color: var(--text);
+    user-select: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.picker {
+    position: fixed;
+    inset: 0;
+    animation: fade-in 0.6s ease;
+}
+
+.picker__head {
+    position: absolute;
+    top: 5vh;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    text-align: center;
+    pointer-events: none;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+.picker__head h1 {
+    font-size: 2.1vw;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.picker__head p {
+    margin-top: 0.4vh;
+    font-size: 0.85vw;
+    color: var(--muted);
+}
+
+.picker__hint {
+    position: absolute;
+    bottom: 2.4vh;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    text-align: center;
+    font-size: 0.7vw;
+    color: var(--muted);
+    pointer-events: none;
+}
+
+.spots {
+    display: flex;
+    height: 100%;
+}
+
+.spot {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 34vh 1vw 0;
+    border-right: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(8, 9, 13, 0.55) 0%, rgba(8, 9, 13, 0.72) 100%);
+    cursor: pointer;
+    transition: flex 0.35s ease, background 0.35s ease;
+}
+
+.spot:last-child {
+    border-right: none;
+}
+
+.spot::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4px;
+    background: var(--accent);
+    box-shadow: 0 0 18px var(--accent-glow);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.spot.is-active {
+    flex: 1.35;
+    background: linear-gradient(180deg, rgba(8, 9, 13, 0) 0%, rgba(8, 9, 13, 0) 55%, rgba(8, 9, 13, 0.55) 100%);
+}
+
+.spot.is-active::after {
+    opacity: 1;
+}
+
+.spot__icon {
+    display: grid;
+    place-items: center;
+    width: 3.6vw;
+    height: 3.6vw;
+    border-radius: var(--radius);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+}
+
+.spot__icon svg {
+    width: 55%;
+    height: 55%;
+    fill: #fff;
+}
+
+.spot.is-active .spot__icon {
+    transform: scale(1.12);
+}
+
+.spot__label {
+    margin-top: 2.6vh;
+    max-width: 90%;
+    font-size: 1.35vw;
+    font-weight: 800;
+    line-height: 1.1;
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
+}
+
+.spot__confirm {
+    position: absolute;
+    bottom: 12vh;
+    display: flex;
+    align-items: center;
+    gap: 0.6vw;
+    padding: 1.2vh 1.6vw;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--accent-text);
+    font-family: inherit;
+    font-size: 0.75vw;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    opacity: 0.45;
+    transition: opacity 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+}
+
+.spot__confirm svg {
+    width: 0.7vw;
+    height: 0.7vw;
+    fill: currentColor;
+}
+
+.spot.is-active .spot__confirm {
+    opacity: 1;
+    box-shadow: 0 0 26px var(--accent-glow);
+}
+
+.spot__confirm:active {
+    transform: scale(0.96);
+}
+
+.picker.is-busy .spot {
+    pointer-events: none;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}

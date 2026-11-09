@@ -20,7 +20,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 |---|---|
 | **city_character** | Ours, replaces qbx_core's character menus: the character select screen and the creator for new characters (heritage with the parents' portraits, a face you sculpt by dragging points on the character's face or dots in 2D pads, skin, hair, makeup, starter looks and pieces, identity with an ID card preview), in a lit studio with face/body/shoes cameras and light presets. Saves the look in illenium-appearance's format. |
 | **illenium-appearance** | Clothing stores, barbers, tattoos, plastic surgeon, saved outfits (the first look is made in city_character). |
-| **qbx_spawn** | Spawn location picker when you join. |
+| **city_spawn** | Ours, replaces qbx_spawn: after character select, a full-screen picker with one column per place (Legion Square garage, police department, hospital, Paleto garage, last location) and a live camera over the place you point at. Jailed, downed or cuffed characters go back where they logged out. |
 | **qbx_idcard** | ID card, driver's licence and weapon licence items. |
 | **qbx_hud** | Health, armour, hunger, thirst, stress, speedometer. |
 | **qbx_medical** | Injuries, bleeding, dying and last stand. |
