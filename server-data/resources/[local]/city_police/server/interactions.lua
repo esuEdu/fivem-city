@@ -69,7 +69,7 @@ lib.callback.register('city_police:cuff', function(source, target, soft)
     local src = source
     if not police.onDuty(src) then return false end
 
-    target = police.reach(src, target)
+    target = police.reach(src, target, Config.Ranges.cuff)
     if not target then return false, 'too_far' end
 
     if isCuffed(target) then

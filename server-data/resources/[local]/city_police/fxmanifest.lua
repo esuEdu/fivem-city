@@ -34,6 +34,7 @@ server_scripts {
     'server/main.lua',
     'server/stations.lua',
     'server/interactions.lua',
+    'server/search.lua',
     'server/objects.lua',
     'server/evidence.lua',
     'server/radar.lua',

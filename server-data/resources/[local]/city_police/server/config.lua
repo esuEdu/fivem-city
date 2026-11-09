@@ -15,6 +15,9 @@ return {
         { label = 'Bolingbroke', coords = vec3(1699.86, 2605.15, 45.56), radius = 200.0 }, -- city_prison's circle
     },
 
+    -- Searching someone who isn't cuffed, down or hands up asks them first: seconds to answer, seconds between asks
+    search = { seconds = 15, cooldown = 10 },
+
     -- Licences: points counted over this many days; at maxPoints the driver licence goes
     pointsDays = 30,
     maxPoints = 20,
