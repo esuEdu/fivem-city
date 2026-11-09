@@ -1,4 +1,4 @@
-// Team: everyone with the job. The boss hires by server id, moves grades up and down and fires (the server checks it all).
+// Team: everyone with the job. The boss moves grades up and down and fires (the server checks it all); hiring is its own tab.
 import { app, state } from './main.js';
 
 const { el, L, run, icon, heading, pill, avatar, confirmButton } = window.WorkApp;
@@ -40,31 +40,6 @@ function memberActions(member) {
     );
 }
 
-function hireCard() {
-    const input = el('input', { class: 'field', type: 'number', min: '1', placeholder: L('ui_hire_placeholder'), 'aria-label': L('ui_hire_placeholder') });
-
-    const hire = async () => {
-        const target = Number(input.value);
-        if (!Number.isInteger(target) || target < 1) return;
-
-        const response = await run('hire', { target });
-        if (response) {
-            window.WorkApp.toast(L('ui_hired', response.data));
-            app.go('team');
-        }
-    };
-
-    input.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') hire();
-    });
-
-    return el('div', { class: 'card hire' },
-        el('div', { class: 'card-head' }, el('span', { class: 'tile-icon tint' }, icon('plus', 18, 2)),
-            el('div', { class: 'who' }, el('strong', { text: L('ui_hire_title') }), el('small', { text: L('ui_hire_sub', gradeName(0)) }))),
-        el('div', { class: 'form-row' }, input, el('button', { class: 'kit-btn tint', onclick: hire }, L('ui_hire'))),
-    );
-}
-
 export async function renderTeam() {
     const response = await run('team');
     if (!response) return el('div', { class: 'empty', text: L('error_failed') });
@@ -75,11 +50,11 @@ export async function renderTeam() {
 
     return el('div', { class: 'stack' },
         heading(L('ui_tab_team'), pill(L('ui_members', members.length)), pill(L('ui_on_duty_count', onDuty), 'green'), el('span', { class: 'spacer' }),
+            state.boss ? el('button', { class: 'kit-btn tint', onclick: () => app.go('hire') }, icon('plus', 16, 2), L('ui_tab_hire')) : null,
             window.WorkApp.segmented([['all', L('ui_all')], ['duty', L('ui_on_duty')]], filter, (value) => {
                 filter = value;
                 app.go('team');
             })),
-        state.boss ? hireCard() : null,
         el('div', { class: 'card flush' },
             el('div', { class: 'table-head team-cols' }, ['ui_member', 'ui_grade', 'ui_status', 'ui_week_services', ''].map((key) => el('span', { text: key ? L(key) : '' }))),
             shown.length ? shown.map((member) => el('div', { class: `table-row team-cols${member.me ? ' me' : ''}` },

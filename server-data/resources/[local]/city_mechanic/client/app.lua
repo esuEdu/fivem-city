@@ -3,7 +3,7 @@
 
 -- Server callbacks the page may call (city_mechanic:app:<name>)
 local ACTIONS = {
-    app = true, dashboard = true, services = true, team = true, hire = true, setGrade = true, fire = true,
+    app = true, dashboard = true, services = true, team = true, candidates = true, hire = true, setGrade = true, fire = true,
 }
 
 ---"Zone, Street" for a position; street names only exist on the client.

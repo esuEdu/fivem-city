@@ -103,6 +103,32 @@ core.register('fire', function(src, player, data)
     return true
 end, { boss = true })
 
+-- The Hire tab: online players who don't work here yet, with their server id and current job
+core.register('candidates', function(src)
+    local members = {}
+    for _, member in ipairs(exports.qbx_core:GetGroupMembers(Config.Job, 'job') or {}) do
+        members[member.citizenid] = true
+    end
+
+    local list = {}
+
+    for target, player in pairs(exports.qbx_core:GetQBPlayers()) do
+        if target ~= src and not members[player.PlayerData.citizenid] then
+            local job = player.PlayerData.job
+
+            list[#list + 1] = {
+                id = target,
+                name = core.fullName(player),
+                job = job and job.name ~= 'unemployed' and job.label or nil,
+            }
+        end
+    end
+
+    table.sort(list, function(a, b) return a.id < b.id end)
+
+    return true, list
+end, { boss = true })
+
 -- Any online player, by server id, at the lowest grade
 core.register('hire', function(src, player, data)
     local target = math.tointeger(data.target)

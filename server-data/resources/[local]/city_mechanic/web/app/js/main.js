@@ -3,6 +3,7 @@ import { renderDashboard } from './dashboard.js';
 import { renderCalls, loadCalls } from './calls.js';
 import { renderTeam } from './team.js';
 import { renderServices } from './services.js';
+import { renderHire } from './hire.js';
 
 const { el, L, setLabels, run, shell, addIcons } = window.WorkApp;
 
@@ -23,6 +24,7 @@ export const app = shell({
         { id: 'dashboard', icon: 'dashboard', label: () => L('ui_tab_dashboard'), render: renderDashboard },
         { id: 'calls', icon: 'bell', label: () => L('ui_tab_calls'), badge: () => (state.onDuty ? state.calls : 0), render: renderCalls },
         { id: 'team', icon: 'players', label: () => L('ui_tab_team'), render: renderTeam },
+        { id: 'hire', icon: 'plus', label: () => L('ui_tab_hire'), visible: () => state.boss, render: renderHire },
         { id: 'services', icon: 'list', label: () => L('ui_tab_services'), render: renderServices },
     ],
     footer: () => el('div', { class: 'wa-foot' },

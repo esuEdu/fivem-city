@@ -49,3 +49,8 @@
 .levels { display: flex; gap: 8px; flex-wrap: wrap; }
 .level { min-width: 84px; padding: 8px 10px; border-radius: 10px; background: var(--field); display: flex; flex-direction: column; gap: 2px; }
 .level small { font-size: 11px; color: var(--muted2); }
+
+/* Hire */
+.hire-cols { grid-template-columns: 56px minmax(0, 2fr) minmax(0, 1fr) 110px; }
+.hire-cols .kit-btn { justify-self: end; }
+.server-id { justify-self: start; min-width: 36px; padding: 4px 8px; border-radius: 8px; background: var(--chip); font-family: var(--mono, monospace); font-weight: 700; text-align: center; }
