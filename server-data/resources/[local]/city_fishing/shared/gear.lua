@@ -81,8 +81,8 @@ function gear.catalogue()
 
     add('rod', gear.rods)
     add('bait', gear.baits)
-    add('tackle', gear.tackle)
-    list[#list + 1] = { item = gear.pot.item, price = gear.pot.price, level = gear.pot.level, kind = 'pot' }
+    if Config.Features.tackle then add('tackle', gear.tackle) end
+    if Config.Features.pots then list[#list + 1] = { item = gear.pot.item, price = gear.pot.price, level = gear.pot.level, kind = 'pot' } end
 
     return list
 end

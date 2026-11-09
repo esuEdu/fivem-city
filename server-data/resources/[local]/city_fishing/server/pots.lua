@@ -113,6 +113,7 @@ end)
 
 lib.callback.register('city_fishing:placePot', function(source, coordsData)
     local src = source
+    if not Config.Features.pots then return false end
     local player, citizenid = util.player(src)
     if not player then return false end
 
@@ -170,6 +171,7 @@ end)
 
 lib.callback.register('city_fishing:pullPot', function(source, id)
     local src = source
+    if not Config.Features.pots then return false end
     local player, citizenid = util.player(src)
     if not player then return false end
 
@@ -208,6 +210,8 @@ end)
 
 -- The app's Pots tab: this character's pots, time left and where
 lib.callback.register('city_fishing:app:pots', function(source)
+    if not Config.Features.pots then return false end
+
     local _, citizenid = util.player(source)
     if not citizenid then return false end
 

@@ -58,6 +58,7 @@ end)
 
 lib.callback.register('city_fishing:app:learn', function(source, id)
     local src = source
+    if not Config.Features.skills then return false end
     local _, citizenid = util.player(src)
     if not citizenid or type(id) ~= 'string' then return false end
 
@@ -72,6 +73,8 @@ lib.callback.register('city_fishing:app:learn', function(source, id)
 end)
 
 lib.callback.register('city_fishing:app:collection', function(source)
+    if not Config.Features.collection then return false end
+
     local _, citizenid = util.player(source)
     if not citizenid then return false end
 
@@ -113,6 +116,8 @@ lib.callback.register('city_fishing:app:market', function(source)
 end)
 
 lib.callback.register('city_fishing:app:events', function(source)
+    if not Config.Features.events then return false end
+
     local src = source
     local _, citizenid = util.player(src)
     if not citizenid then return false end
@@ -139,6 +144,8 @@ lib.callback.register('city_fishing:app:events', function(source)
 end)
 
 lib.callback.register('city_fishing:app:join', function(source)
+    if not Config.Features.events then return false end
+
     local src = source
     local _, citizenid = util.player(src)
     if not citizenid then return false end
@@ -147,6 +154,8 @@ lib.callback.register('city_fishing:app:join', function(source)
 end)
 
 lib.callback.register('city_fishing:app:startTournament', function(source, data)
+    if not Config.Features.events then return false end
+
     local src = source
     local _, citizenid = util.player(src)
     if not citizenid or not isStaff(src) then
@@ -166,6 +175,8 @@ lib.callback.register('city_fishing:app:startTournament', function(source, data)
 end)
 
 lib.callback.register('city_fishing:app:startFrenzy', function(source)
+    if not Config.Features.events then return false end
+
     local src = source
     if not util.player(src) or not isStaff(src) then return false, 'no_permission' end
 
