@@ -2,7 +2,7 @@
 return {
     -- What a new character starts with (BANCO_DESIGN.md 3)
     startingCash = 2000,
-    startingBank = 18000,
+    startingBank = 498000, -- V1 test: $500,000 in all
 
     -- Hard ceilings, far below 2^53 so the NUI never loses precision
     maxTransaction = 5000000,
@@ -18,7 +18,7 @@ return {
             { reason = '^starting$', credit = true },
         },
         qbx_core = {
-            { reason = '^paycheck$', credit = true, perHour = 20000 },
+            { reason = '^paycheck$', credit = true, perHour = 120000 }, -- $20,000 every 10 minutes
         },
         city_inventory = {
             { reason = '^shop%-refund$', credit = true, perHour = 500000 },

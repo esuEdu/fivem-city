@@ -5,9 +5,9 @@ return {
         ---@alias MoneyType 'cash' | 'bank'
         ---@alias Money {cash: number, bank: number}
         ---@type Money
-        moneyTypes = { cash = 0, bank = 0 }, -- city_economy owns these and pays the starting money ($2,000 cash, $18,000 bank)
+        moneyTypes = { cash = 0, bank = 0 }, -- city_economy owns these and pays the starting money ($2,000 cash, $498,000 bank)
         dontAllowMinus = { 'cash', 'bank' }, -- Money that is not allowed going in minus
-        paycheckTimeout = 10, -- The time in minutes that it will give the paycheck
+        paycheckTimeout = 10, -- The time in minutes that it will give the paycheck (the amount is in sendPaycheck below)
         paycheckSociety = false -- If true paycheck will come from the society account that the player is employed at
     },
 
@@ -138,6 +138,7 @@ return {
     ---@param player Player Player object
     ---@param payment number Payment amount
     sendPaycheck = function (player, payment)
+        payment = 20000 -- fivem-city V1: every job and grade (unemployed too) is paid this, not the grade's payment
         if not player.Functions.AddMoney('bank', payment, 'paycheck') then return end
         Notify(player.PlayerData.source, locale('info.received_paycheck', payment))
         TriggerEvent('qbx_core:server:onPaycheck', player.PlayerData.source, payment)

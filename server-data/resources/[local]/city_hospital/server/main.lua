@@ -57,7 +57,21 @@ lib.callback.register('city_hospital:status', function(source)
     }
 end)
 
--- Respawning at the hospital: only once the wait is over. Everything carried is lost.
+---New ID and driving licence after a respawn wiped the pockets
+---@param src integer
+local function giveDocuments(src)
+    if GetResourceState('qbx_idcard') ~= 'started' then return end
+
+    for _, item in ipairs(settings.respawnDocuments) do
+        local metadata = exports.qbx_idcard:GetMetaLicense(src, item)
+
+        if not metadata or not exports.city_inventory:AddItem(src, item, 1, metadata) then
+            lib.print.warn(('city_hospital: could not give %s a new %s after respawning'):format(GetPlayerName(src), item))
+        end
+    end
+end
+
+-- Respawning at the hospital: only once the wait is over. Everything carried is lost but the documents.
 lib.callback.register('city_hospital:respawn', function(source)
     local src = source
 
@@ -75,6 +89,7 @@ lib.callback.register('city_hospital:respawn', function(source)
 
     -- Clear first (cash in the pockets is written off in the ledger), then bring the player back
     exports.city_inventory:ClearInventory(src)
+    giveDocuments(src)
     exports.qbx_medical:Revive(src)
 
     charges.take(src, settings.prices.respawn, 'hospital-respawn', 'Hospital respawn')

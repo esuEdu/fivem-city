@@ -39,4 +39,7 @@ return {
     },
 
     locker = { slots = 30, weight = 100000 },
+
+    -- Documents a hospital respawn hands back new (everything else carried is lost); qbx_idcard fills them in
+    respawnDocuments = { 'id_card', 'driver_license' },
 }

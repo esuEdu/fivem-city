@@ -100,10 +100,10 @@ index d6efaea..6e86bda 100644
          startingApartment = true, -- If set to false, skips apartment choice in the beginning (requires qbx_spawn if true)
  
 diff --git a/server-data/resources/[qbx]/qbx_core/config/server.lua b/server-data/resources/[qbx]/qbx_core/config/server.lua
-index edc2219..7d78aff 100644
+index edc2219..0b17ec8 100644
 --- a/server-data/resources/[qbx]/qbx_core/config/server.lua
 +++ b/server-data/resources/[qbx]/qbx_core/config/server.lua
-@@ -2,11 +2,11 @@ return {
+@@ -2,12 +2,12 @@ return {
      updateInterval = 5, -- how often to update player data in minutes
  
      money = {
@@ -114,11 +114,13 @@ index edc2219..7d78aff 100644
          ---@type Money
 -        moneyTypes = { cash = 500, bank = 5000, crypto = 0 }, -- type = startamount - Add or remove money types for your server (for ex. blackmoney = 0), remember once added it will not be removed from the database!
 -        dontAllowMinus = { 'cash', 'crypto' }, -- Money that is not allowed going in minus
-+        moneyTypes = { cash = 0, bank = 0 }, -- city_economy owns these and pays the starting money ($2,000 cash, $18,000 bank)
+-        paycheckTimeout = 10, -- The time in minutes that it will give the paycheck
++        moneyTypes = { cash = 0, bank = 0 }, -- city_economy owns these and pays the starting money ($2,000 cash, $498,000 bank)
 +        dontAllowMinus = { 'cash', 'bank' }, -- Money that is not allowed going in minus
-         paycheckTimeout = 10, -- The time in minutes that it will give the paycheck
++        paycheckTimeout = 10, -- The time in minutes that it will give the paycheck (the amount is in sendPaycheck below)
          paycheckSociety = false -- If true paycheck will come from the society account that the player is employed at
      },
+ 
 @@ -88,7 +88,7 @@ return {
          discord = '', -- Discord invite link
          checkDuplicateLicense = true, -- Check for duplicate rockstar license on join
@@ -128,7 +130,7 @@ index edc2219..7d78aff 100644
          permissions = { 'god', 'admin', 'mod' }, -- Add as many groups as you want here after creating them in your server.cfg
      },
  
-@@ -125,19 +125,20 @@ return {
+@@ -125,19 +125,21 @@ return {
          exports.qbx_vehiclekeys:SetLockState(vehicle, state)
      end,
  
@@ -150,6 +152,7 @@ index edc2219..7d78aff 100644
      ---@param payment number Payment amount
      sendPaycheck = function (player, payment)
 -        player.Functions.AddMoney('bank', payment)
++        payment = 20000 -- fivem-city V1: every job and grade (unemployed too) is paid this, not the grade's payment
 +        if not player.Functions.AddMoney('bank', payment, 'paycheck') then return end
          Notify(player.PlayerData.source, locale('info.received_paycheck', payment))
          TriggerEvent('qbx_core:server:onPaycheck', player.PlayerData.source, payment)
