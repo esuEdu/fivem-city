@@ -14,6 +14,7 @@ return {
             { name = 'phone', price = 1 },
             { name = 'tablet', price = 1 },
             { name = 'radio', price = 1 },
+            { name = 'darkchat_usb', price = 1 }, -- V1: DarkChat's USB is sold here too
         },
         locations = {
             vec4(150.26, -1037.47, 29.34, 340.0),
