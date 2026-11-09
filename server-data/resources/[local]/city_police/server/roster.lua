@@ -226,4 +226,10 @@ CreateThread(function()
     end
 end)
 
+-- For the radio list (city_radio): an officer's callsign while on duty, or nil
+exports('Callsign', function(src)
+    local unit = units[src]
+    return unit and unit.callsign or nil
+end)
+
 return roster

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <section id="list" class="list hidden" aria-live="off">
+        <header class="head" id="head">
+            <span class="icon" aria-hidden="true"></span>
+            <strong id="title"></strong>
+            <span class="live" id="live"></span>
+        </header>
+        <div class="channel">
+            <small id="channel-label"></small>
+            <div class="channel-row"><strong id="channel-name"></strong><span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+        </div>
+        <div class="members-head"><small id="members-label"></small><span class="count" id="count"></span></div>
+        <ul class="members" id="members"></ul>
+        <div class="edit-bar hidden" id="edit-bar"><button type="button" id="done"></button></div>
+        <span class="resize hidden" id="resize" aria-hidden="true"></span>
+    </section>
+    <script src="app.js"></script>
+</body>
+</html>

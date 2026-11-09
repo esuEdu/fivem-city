@@ -95,7 +95,8 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 | **city_phone_music** | Ours: the Music app: search YouTube by title (server key `youtube_api_key`) or paste a YouTube / https audio link, library and playlists, shuffle and repeat, mini player and the dynamic island; only the phone's owner hears it. |
 | **city_phone_calls** | Ours: the Phone app: calls through pma-voice (up to 4 people, mute, hidden number), contacts, favorites, recents, blocked numbers and sharing your contact with people nearby, and the city services (190 police, 192 EMS, mechanic) as fixed contacts that send a written call. |
 | **pma-voice** | Proximity voice chat. |
-| **mm_radio** | Radio item for police, EMS and other channels. |
+| **mm_radio** | Radio item for police, EMS and other channels (talk with Caps Lock, `voice_defaultRadio`). Its own player list is left off; `city_radio` shows it. |
+| **city_radio** | Ours: the radio list on screen while in a channel: channel name, members (callsign + name from city_police), who is talking, LIVE/TX. `/radiolist` hides or shows it, `/radiolistmove` drags and resizes it (saved per computer). |
 | **qbx_chat_theme** | Chat style. |
 
 ## World and admin

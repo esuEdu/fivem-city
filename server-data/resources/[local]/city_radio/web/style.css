@@ -1,0 +1,52 @@
+/* The radio list. Colors come from city_ui/theme.lua (app.js turns each key into a CSS variable). */
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; font-family: var(--font, 'Poppins', sans-serif); color: var(--text, #eef0f3); user-select: none; }
+.hidden { display: none !important; }
+
+.list { position: fixed; top: 40%; right: 24px; width: 260px; padding: 12px; border-radius: var(--radius-large, 16px); background: rgba(14, 16, 22, 0.92); border: 1px solid var(--border, rgba(255, 255, 255, 0.07)); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); display: flex; flex-direction: column; gap: 10px; }
+.list.editing { outline: 2px dashed var(--accent, #f5c542); outline-offset: 3px; }
+.list.editing .head { cursor: move; }
+
+.head { display: flex; align-items: center; gap: 10px; }
+.icon { width: 30px; height: 30px; border-radius: 9px; background: rgba(91, 140, 255, 0.18); position: relative; }
+.icon::before { content: ''; position: absolute; left: 9px; top: 7px; width: 12px; height: 16px; border: 2px solid #7fa6ff; border-radius: 3px; }
+.head strong { flex-grow: 1; font-size: 16px; }
+.live { padding: 3px 10px; border-radius: 12px; background: rgba(91, 140, 255, 0.16); color: #7fa6ff; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+.live::before { content: '\2022  '; }
+.live.tx { background: rgba(62, 207, 114, 0.18); color: var(--success, #3ecf72); }
+
+.channel { padding: 10px 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.04); }
+.channel small, .members-head small { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted, #8b93a1); }
+.channel-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 2px; }
+.channel-row strong { font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.signal { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+.signal i { width: 3px; border-radius: 1px; background: #7fa6ff; }
+.signal i:nth-child(1) { height: 4px; }
+.signal i:nth-child(2) { height: 7px; }
+.signal i:nth-child(3) { height: 10px; }
+.signal i:nth-child(4) { height: 14px; }
+
+.members-head { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
+.count { min-width: 22px; height: 20px; padding: 0 6px; border-radius: 10px; background: rgba(91, 140, 255, 0.18); color: #7fa6ff; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
+
+.members { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; max-height: 40vh; overflow-y: auto; }
+.member { display: flex; align-items: center; gap: 10px; padding: 7px 9px; border-radius: 11px; background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; transition: background 0.15s, border-color 0.15s; }
+.member.talking { background: rgba(91, 140, 255, 0.16); border-color: rgba(91, 140, 255, 0.5); }
+.avatar { flex: none; width: 30px; height: 30px; border-radius: 9px; background: rgba(255, 255, 255, 0.08); color: var(--muted, #a3aab6); font-size: 11px; font-weight: 700; display: grid; place-items: center; }
+.member.talking .avatar { background: #3b6cf6; color: #fff; }
+.member .name { flex-grow: 1; min-width: 0; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.member.me .name::after { content: ' \2022'; color: var(--muted, #8b93a1); }
+
+.bars { display: flex; align-items: flex-end; gap: 2px; height: 14px; opacity: 0.25; }
+.bars i { width: 3px; height: 4px; border-radius: 1px; background: #7fa6ff; }
+.member.talking .bars { opacity: 1; }
+.member.talking .bars i { animation: talk 0.6s ease-in-out infinite alternate; }
+.member.talking .bars i:nth-child(2) { animation-delay: 0.15s; }
+.member.talking .bars i:nth-child(3) { animation-delay: 0.3s; }
+
+.edit-bar { display: flex; justify-content: flex-end; }
+#done { height: 30px; padding: 0 14px; border: 0; border-radius: 9px; background: var(--accent, #f5c542); color: var(--accent-text, #15181d); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.resize { position: absolute; right: 4px; bottom: 4px; width: 14px; height: 14px; border-right: 3px solid var(--accent, #f5c542); border-bottom: 3px solid var(--accent, #f5c542); border-radius: 0 0 4px 0; cursor: ew-resize; }
+
+@keyframes talk { from { height: 4px; } to { height: 14px; } }

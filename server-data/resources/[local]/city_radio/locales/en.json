@@ -1,0 +1,14 @@
+{
+    "title": "Radio",
+    "live": "LIVE",
+    "tx": "TX",
+    "channel": "Channel",
+    "members": "Members",
+    "done": "Done",
+    "hidden": "Radio list hidden. /radiolist shows it again",
+    "shown": "Radio list shown",
+    "not_in_channel": "Join a radio channel first",
+    "key_toggle": "Radio: show or hide the list",
+    "help_toggle": "Show or hide the radio list",
+    "help_move": "Drag and resize the radio list"
+}
