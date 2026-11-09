@@ -2,6 +2,7 @@
 lib.locale()
 
 local mechanic = require 'server.mechanic'
+local appCore = require 'server.app.core'
 
 local workVehicles = {}
 local lastSpawn = {}
@@ -19,6 +20,7 @@ lib.callback.register('city_mechanic:duty', function(source)
 
     local onDuty = not player.PlayerData.job.onduty
     exports.qbx_core:SetJobDuty(src, onDuty)
+    appCore.setBadge(src, onDuty and appCore.openCalls() or 0)
 
     return onDuty
 end)

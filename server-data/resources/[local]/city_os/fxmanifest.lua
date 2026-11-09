@@ -33,6 +33,8 @@ files {
     'web/js/*.js',
     'web/kit/kit.css',
     'web/kit/kit.js',
+    'web/kit/workapp.css',
+    'web/kit/workapp.js',
 }
 
 dependencies {

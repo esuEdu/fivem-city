@@ -414,12 +414,8 @@
     "ui_no_members": "Nobody in the department",
 
     "ui_hire": "Hire",
-    "ui_hire_person": "Hire %s",
-    "ui_hired": "Hired",
-    "ui_hire_hint": "Stand next to the person you want to hire.",
     "ui_fire": "Fire",
     "ui_this_week": "This week",
-    "ui_last_duty": "Last on duty",
     "ui_on_duty_now": "On duty now",
     "ui_members_count": "%s members",
     "ui_on_duty_count": "%s on duty",
@@ -590,5 +586,20 @@
     "badge_not_yours": "Only police officers can show a badge",
     "badge_rank": "Rank",
     "badge_callsign": "Callsign",
-    "badge_number": "Badge no."
+    "badge_number": "Badge no.",
+
+    "offer_title": "Job offer",
+    "offer_text": "%s offers you a job in the LSPD.",
+    "offer_accept": "Accept",
+    "offer_decline": "Decline",
+    "offer_accepted": "%s accepted the job",
+    "offer_declined": "%s declined the job",
+    "ui_send_offer": "Send offer",
+    "ui_offer_hint": "The player gets the offer on their screen and starts as %s if they accept.",
+    "ui_offer_sent": "Offer sent to %s",
+    "ui_hire_placeholder": "Player server ID",
+    "ui_online": "Online",
+    "ui_not_online": "Offline",
+    "ui_offline_since": "Off · %s",
+    "error_pending": "They already have an offer on screen"
 }

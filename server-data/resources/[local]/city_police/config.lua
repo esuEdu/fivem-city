@@ -29,6 +29,9 @@ Config.Features = {
     bolos = false, -- the BOLOs tab
 }
 
+-- How long a job offer from the chief (MDT Management) stays on the player's screen
+Config.OfferSeconds = 60
+
 -- Lowest job grade for each MDT action (0 Recruit, 1 Officer, 2 Sergeant, 3 Lieutenant, 4 Chief)
 Config.Permissions = {
     app = 0,

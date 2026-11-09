@@ -52,10 +52,10 @@ local function members()
     return list
 end
 
--- Both the Certifications and the Management tab list the members
+-- The Certifications and Management tabs list the members; every officer sees Management, the chief acts on it
 mdt.register('members', function()
     return true, members()
-end, { 'certs', 'management' })
+end, 'app')
 
 mdt.register('setCert', function(src, data)
     local citizenid = mdt.citizenid(data.citizenid)
@@ -119,33 +119,57 @@ mdt.register('fire', function(src, data)
     return ok == true, ok ~= true and 'failed' or nil
 end, 'management')
 
--- Hiring someone standing next to the chief
-mdt.register('hire', function(src, data)
-    local target = police.reach(src, data.target, 5.0)
-    if not target then return false, 'too_far' end
-    if police.isCop(target) then return false, 'already' end
-
-    local ok = exports.qbx_core:SetJob(target, Config.Job, 0)
-    if not ok then return false, 'failed' end
-
-    roster.row(police.citizenid(target), police.name(target))
-    police.notify(target, 'hired_you', 'success')
-
-    return true
-end, 'management')
-
-mdt.register('nearbyCivilians', function(src)
-    local list = {}
-    local coords = GetEntityCoords(GetPlayerPed(src))
-
-    for target, player in pairs(exports.qbx_core:GetQBPlayers()) do
-        if target ~= src and player.PlayerData.job.name ~= Config.Job and #(GetEntityCoords(GetPlayerPed(target)) - coords) <= 5.0 then
-            list[#list + 1] = { id = target, name = police.fullName(player) }
-        end
+---@param citizenid string
+---@return boolean
+local function isMember(citizenid)
+    for _, member in ipairs(exports.qbx_core:GetGroupMembers(Config.Job, 'job') or {}) do
+        if member.citizenid == citizenid then return true end
     end
 
-    return true, list
+    return false
+end
+
+---@type table<integer, true> players with an offer on screen
+local pendingOffers = {}
+
+-- The chief offers the job to any online player by server id; the player accepts or declines on their screen and starts
+-- at the lowest grade. The chief hears the answer.
+mdt.register('offer', function(src, data)
+    local target = math.tointeger(data.target)
+    local offered = target and target ~= src and exports.qbx_core:GetPlayer(target)
+    if not offered then return false, 'no_player' end
+    if isMember(offered.PlayerData.citizenid) then return false, 'already' end
+    if pendingOffers[target] then return false, 'pending' end
+
+    pendingOffers[target] = true
+
+    local citizenid = offered.PlayerData.citizenid
+    local name = police.fullName(offered)
+
+    CreateThread(function()
+        local accepted = lib.callback.await('city_police:jobOffer', target, police.name(src)) == true
+        pendingOffers[target] = nil
+
+        if police.citizenid(target) ~= citizenid then return end
+
+        -- The chief may have lost the grade, or someone else hired them, while the offer was open
+        if accepted and police.can(src, 'management') and not isMember(citizenid) and exports.qbx_core:SetJob(target, Config.Job, 0) then
+            roster.row(citizenid, name)
+            police.notify(target, 'hired_you', 'success')
+            police.notify(src, 'offer_accepted', 'success', name)
+            TriggerClientEvent('city_police:client:mdtRefresh', src, { members = true })
+            return
+        end
+
+        if GetPlayerName(src) then police.notify(src, 'offer_declined', 'error', name) end
+    end)
+
+    return true, name
 end, 'management')
+
+AddEventHandler('playerDropped', function()
+    pendingOffers[source] = nil
+end)
 
 mdt.register('notices', function()
     return true, MySQL.query.await('SELECT id, text, author, created FROM city_police_notices ORDER BY id DESC LIMIT 30') or {}
