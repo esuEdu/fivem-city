@@ -22,6 +22,9 @@ local function playIdle()
     local sex = GetEntityModel(ped) == `mp_f_freemode_01` and 'f' or 'm'
     local idle = Config.Studio.idle[sex]
 
+    -- A missing animation only leaves the ped standing still; lib.requestAnimDict would throw and break the screen
+    if not idle or not DoesAnimDictExist(idle.dict) then return end
+
     lib.requestAnimDict(idle.dict)
     TaskPlayAnim(ped, idle.dict, idle.anim, 8.0, -8.0, -1, 1, 0.0, false, false, false)
     RemoveAnimDict(idle.dict)
