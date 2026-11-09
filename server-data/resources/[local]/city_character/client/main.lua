@@ -86,14 +86,13 @@ local function spawnNew(newData)
     end
 end
 
--- A character that already played: qbx_spawn's picker, or where they logged out
-local function spawnExisting(citizenid)
+-- A character that already played: city_spawn's picker, or where they logged out
+local function spawnExisting()
     fadeOut(300)
     leaveStudio()
 
-    if GetResourceState('qbx_spawn') == 'started' then
-        TriggerEvent('qb-spawn:client:setupSpawns', citizenid)
-        TriggerEvent('qb-spawn:client:openUI', true)
+    if GetResourceState('city_spawn') == 'started' then
+        exports.city_spawn:Open()
     else
         spawnAt(exports.qbx_core:GetPlayerData().position)
         DoScreenFadeIn(500)
@@ -169,7 +168,7 @@ local function play(citizenid, hasLook)
     busy = false
 
     if hasLook then
-        spawnExisting(citizenid)
+        spawnExisting()
         return
     end
 
@@ -183,7 +182,7 @@ local function play(citizenid, hasLook)
         busy = false
         if not ok then return false, 'look' end
 
-        CreateThread(function() spawnExisting(citizenid) end)
+        CreateThread(spawnExisting)
         return true
     end)
 end
