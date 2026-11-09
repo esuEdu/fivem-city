@@ -84,3 +84,6 @@ Config.Kits = {
 }
 
 Config.KitDistance = 4.0
+
+-- "Check vehicle" (ox_target on any car, anyone): parts fitted, body, engine and fuel
+Config.Inspect = { seconds = 3, distance = 2.5 }
