@@ -20,6 +20,7 @@ client_scripts {
     'client/stations.lua',
     'client/interactions.lua',
     'client/carmenu.lua',
+    'client/wardrobe.lua',
     'client/restraints.lua',
     'client/tools.lua',
     'client/patrol.lua',
@@ -46,6 +47,7 @@ server_scripts {
     'server/radar.lua',
     'server/compat.lua',
     'server/radio.lua',
+    'server/wardrobe.lua',
     'server/mdt/app.lua',
     'server/mdt/people.lua',
     'server/mdt/vehicles.lua',
@@ -89,4 +91,5 @@ dependencies {
     'qbx_core',
     'qbx_vehiclekeys',
     'MugShotBase64',
+    'illenium-appearance',
 }

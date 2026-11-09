@@ -95,6 +95,34 @@ kbd { padding: 1px 5px; border-radius: 4px; background: rgba(255, 255, 255, 0.12
 .car-btn.on small { color: inherit; }
 .car-btn.urgent { border-color: var(--danger, #e5484d); background: rgba(229, 72, 77, 0.16); }
 
+/* Station wardrobe, left side */
+.wardrobe { position: fixed; top: 50%; left: 28px; height: min(640px, 86vh); transform: translateY(-50%); display: flex; border-radius: var(--radius-large, 18px); background: rgba(12, 13, 18, 0.95); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); overflow: hidden; animation: fade 0.2s ease; }
+.wardrobe-side { width: 34px; display: grid; place-items: center; background: rgba(255, 255, 255, 0.03); border-right: 1px solid rgba(255, 255, 255, 0.05); }
+.wardrobe-side span { transform: rotate(-90deg); white-space: nowrap; font-size: 11px; font-weight: 700; letter-spacing: 4px; color: var(--muted, #7d8590); }
+.wardrobe-main { width: 340px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.wardrobe-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.wardrobe-head h2 { margin: 0; font-size: 22px; }
+.wardrobe-head small { font-size: 11px; color: var(--muted, #9aa1ad); }
+.wardrobe-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.wardrobe-tab { height: 34px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 9px; background: rgba(255, 255, 255, 0.04); color: var(--text, #eef0f3); font: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; }
+.wardrobe-tab.on { background: var(--accent, #f5c542); color: var(--accent-text, #15181d); border-color: transparent; }
+.wardrobe-body { flex-grow: 1; min-height: 0; overflow-y: auto; }
+.wardrobe-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.wardrobe-card { position: relative; padding: 14px 10px 10px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; background: rgba(255, 255, 255, 0.04); color: var(--text, #eef0f3); font: inherit; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.wardrobe-card svg { fill: none; stroke: var(--muted, #9aa1ad); stroke-width: 1.4; stroke-linejoin: round; margin-bottom: 4px; }
+.wardrobe-card strong { font-size: 13px; }
+.wardrobe-card small { font-size: 10px; color: var(--muted, #7d8590); }
+.wardrobe-card .wardrobe-btn { margin-top: 6px; width: 100%; }
+.wardrobe-card.add { justify-content: center; min-height: 150px; border-style: dashed; cursor: pointer; }
+.wardrobe-card.add:hover { border-color: var(--accent, #f5c542); }
+.wardrobe-plus { font-size: 34px; line-height: 1; color: var(--accent, #f5c542); }
+.wardrobe-btn { height: 34px; padding: 0 12px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 9px; background: rgba(255, 255, 255, 0.06); color: var(--text, #eef0f3); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.wardrobe-btn.accent { background: var(--accent, #f5c542); color: var(--accent-text, #15181d); border-color: transparent; }
+.wardrobe-btn:disabled { opacity: 0.4; cursor: default; }
+.wardrobe-x { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border: 0; border-radius: 11px; background: var(--danger, #e5484d); color: #fff; font-size: 14px; line-height: 1; cursor: pointer; }
+.wardrobe-mine { display: flex; flex-direction: column; gap: 8px; }
+.wardrobe-mine p, .wardrobe-none { margin: 0 0 4px; font-size: 13px; color: var(--muted, #9aa1ad); }
+
 /* Head bag: nothing to see */
 .head-bag { position: fixed; inset: 0; background: #000; }
 

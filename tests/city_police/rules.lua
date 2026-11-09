@@ -73,4 +73,16 @@ assert(records.reduce(40, { kind = 'months', value = settings.maxMonths + 1 }) =
 assert(records.reduce(40, { kind = 'other', value = 5 }) == nil)
 assert(records.reduce(40, 'half') == nil)
 
+-- Clothes from a client: known slots, whole numbers in range, no slot twice; props may be -1 (none)
+local outfit = require 'server.outfit'
+local comps, props = outfit.check({ { component_id = 11, drawable = 55, texture = 0 }, { component_id = 4, drawable = 35, texture = 0 } }, { { prop_id = 0, drawable = -1, texture = -1 } })
+assert(#comps == 2 and comps[1].drawable == 55 and #props == 1 and props[1].drawable == -1)
+assert(outfit.check({ { component_id = 12, drawable = 1, texture = 0 } }, {}) == nil)
+assert(outfit.check({ { component_id = 11, drawable = 1.5, texture = 0 } }, {}) == nil)
+assert(outfit.check({ { component_id = 11, drawable = -1, texture = 0 } }, {}) == nil)
+assert(outfit.check({ { component_id = 11, drawable = 1, texture = 0 }, { component_id = 11, drawable = 2, texture = 0 } }, {}) == nil)
+assert(outfit.check({ { component_id = 1, drawable = 1, texture = 0 } }, { { prop_id = 3, drawable = 0, texture = 0 } }) == nil)
+assert(outfit.check('shirt', {}) == nil)
+assert(outfit.sex('female') == 'female' and outfit.sex('other') == nil)
+
 print('city_police rules ok')

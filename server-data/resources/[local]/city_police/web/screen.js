@@ -260,3 +260,116 @@ window.addEventListener('message', (event) => {
     else if (message.action === 'carMenu') showCarMenu(message);
     else if (message.action === 'carMenuOff') $('car-menu').classList.add('hidden');
 });
+
+// The station wardrobe: uniforms for this body, or the officer's own clothes back
+let wardrobeTab = 'uniforms';
+let wardrobeData = null;
+
+const SHIRT = 'M8 3l-5 3 2 5 3-1v11h8V10l3 1 2-5-5-3a4 4 0 0 1-8 0z';
+
+function shirtIcon() {
+    ICONS.shirt = SHIRT;
+    return svgIcon('shirt', 46);
+}
+
+// A button that asks once more before doing it
+function sureButton(className, text, sure, onConfirm) {
+    const button = node('button', className, text);
+    button.type = 'button';
+    let armed = false;
+
+    button.addEventListener('click', () => {
+        if (!armed) {
+            armed = true;
+            button.textContent = sure;
+            setTimeout(() => { armed = false; button.textContent = text; }, 3000);
+            return;
+        }
+        onConfirm();
+    });
+
+    return button;
+}
+
+function drawWardrobe() {
+    const data = wardrobeData;
+    const labels = data.labels || {};
+
+    const tabs = [['uniforms', labels.uniforms], ['mine', labels.mine]].map(([id, text]) => {
+        const button = node('button', `wardrobe-tab${wardrobeTab === id ? ' on' : ''}`, text);
+        button.type = 'button';
+        button.addEventListener('click', () => { wardrobeTab = id; drawWardrobe(); });
+        return button;
+    });
+    $('wardrobe-tabs').replaceChildren(...tabs);
+
+    if (wardrobeTab === 'mine') {
+        const box = node('div', 'wardrobe-mine');
+        box.append(node('p', null, data.wearing ? labels.mineHint : labels.notWearing));
+
+        const back = node('button', 'wardrobe-btn', labels.back);
+        back.type = 'button';
+        back.disabled = !data.wearing;
+        back.addEventListener('click', () => post('wardrobeBack', { offDuty: false }));
+
+        const backOff = node('button', 'wardrobe-btn accent', labels.backOff);
+        backOff.type = 'button';
+        backOff.disabled = !data.wearing && !data.onDuty;
+        backOff.addEventListener('click', () => post('wardrobeBack', { offDuty: true }));
+
+        box.append(back, backOff);
+        return $('wardrobe-body').replaceChildren(box);
+    }
+
+    const cards = (data.uniforms || []).map((uniform) => {
+        const card = node('div', 'wardrobe-card');
+        card.append(shirtIcon(), node('strong', null, uniform.label), node('small', null, uniform.by ? `${labels.by} ${uniform.by}` : 'LSPD'));
+
+        const wear = node('button', 'wardrobe-btn accent', labels.wear);
+        wear.type = 'button';
+        wear.addEventListener('click', () => post('wardrobeWear', { id: uniform.id }));
+        card.append(wear);
+
+        if (data.canManage && !uniform.fixed) {
+            const remove = sureButton('wardrobe-x', '×', '?', () => post('wardrobeDelete', { id: uniform.id }));
+            card.append(remove);
+        }
+
+        return card;
+    });
+
+    if (data.canManage) {
+        const add = node('button', 'wardrobe-card add');
+        add.type = 'button';
+        add.append(node('span', 'wardrobe-plus', '+'), node('strong', null, labels.new));
+        add.addEventListener('click', () => post('wardrobeNew'));
+        cards.push(add);
+    }
+
+    $('wardrobe-body').replaceChildren(cards.length ? Object.assign(node('div', 'wardrobe-grid'), {}) : node('p', 'wardrobe-none', labels.none));
+    if (cards.length) $('wardrobe-body').firstChild.append(...cards);
+}
+
+function showWardrobe(message) {
+    wardrobeData = message;
+    const labels = message.labels || {};
+    $('wardrobe-title').textContent = labels.title || '';
+    $('wardrobe-subtitle').textContent = labels.subtitle || '';
+    $('wardrobe-side').textContent = (labels.title || '').toUpperCase();
+    drawWardrobe();
+    $('wardrobe').classList.remove('hidden');
+}
+
+$('wardrobe-close').addEventListener('click', () => post('wardrobeClose'));
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !$('wardrobe').classList.contains('hidden')) post('wardrobeClose');
+});
+
+window.addEventListener('message', (event) => {
+    const message = event.data;
+    if (!message || typeof message.action !== 'string') return;
+
+    if (message.action === 'wardrobe') showWardrobe(message);
+    else if (message.action === 'wardrobeOff') $('wardrobe').classList.add('hidden');
+});
