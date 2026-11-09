@@ -171,6 +171,28 @@ local TABLES = {
             KEY `report_id` (`report_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ]],
+    -- Uniforms made in game, and each officer's own clothes kept while they wear one
+    [[
+        CREATE TABLE IF NOT EXISTS `city_police_uniforms` (
+            `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            `label` VARCHAR(40) NOT NULL,
+            `sex` VARCHAR(6) NOT NULL,
+            `components` TEXT NOT NULL,
+            `props` TEXT NOT NULL,
+            `created_by` VARCHAR(100) NOT NULL,
+            `created` INT UNSIGNED NOT NULL,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ]],
+    [[
+        CREATE TABLE IF NOT EXISTS `city_police_wardrobe` (
+            `citizenid` VARCHAR(50) NOT NULL,
+            `components` TEXT NOT NULL,
+            `props` TEXT NOT NULL,
+            `saved` INT UNSIGNED NOT NULL,
+            PRIMARY KEY (`citizenid`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ]],
     [[
         CREATE TABLE IF NOT EXISTS `city_police_notices` (
             `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,

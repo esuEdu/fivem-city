@@ -35,6 +35,7 @@ Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuff
 ## The field job
 
 - **Stations** (`Config.Stations`, Mission Row and Sandy Shores): clock in/out, armory (a `city_inventory` shop, items by grade), personal locker, evidence locker (stash), trash, garage and helipad, impound desk, forensics lab. All with `ox_target`.
+- **Wardrobe** (`wardrobe` in `Config.Stations`, `server/wardrobe.lua`): a panel with the uniforms for the character's body (`Config.Uniforms` plus the ones made in game). Putting one on keeps the officer's own clothes in `city_police_wardrobe` (once, so switching uniforms doesn't lose them); "Change back" or "Go off duty and change back" puts them back, even after logging out. Clothes are only set on the ped (illenium-appearance's `setPedComponents`), never saved as the skin. The chief (`Config.Permissions.uniforms`) makes a uniform in illenium-appearance's clothing editor, names it and can delete it (max `Config.MaxUniforms`); `server/outfit.lua` checks every outfit (tested).
 - **Vehicles**: one at a time per officer, from the garage they stand at, models by grade and certification, plate `LSPD####`, keys given.
 - **Police actions** (ALT on a player or a vehicle shows one ox_target item that opens a round menu, `client/radial.lua` on the screen page): on a player, open their file in the MDT (the tablet opens on People through `exports.city_os:OpenApp`), cuff, soft cuff, escort, put in a vehicle, search, fine (the MDT opens a new case with this officer and the person as a criminal, or adds them to the case being written), check status; on a vehicle, open it in the MDT, take someone out, impound. Putting in and taking out ask for the seat (2 front passenger, 3 rear left, 4 rear right, more for vans; the driver's seat is only offered to take out); the server checks the seat is free.
 - **On players** (the actions above, and qbx_radialmenu's police buttons): cuff / uncuff (needs `handcuffs`), soft cuff (can walk), escort, put in / take out of a vehicle, search (`city_inventory` player search; a suspect who isn't cuffed, down or hands up gets an Allow/Refuse prompt first, `search` in `server/config.lua`, and `server/search.lua` blocks the inventory opening without it through city_inventory's `openInventory` hook), check status (gunpowder, alcohol, smells), scan fingerprint, ankle monitor on/off. Every action is checked on the server (job on duty, distance, the target's state).
@@ -74,6 +75,8 @@ Tables, created on start:
 | `city_police_records` | arrests, fines and citations: charges, months, fine, points, officer, booking photo and fingerprint |
 | `city_police_reports` | cases: tags, people with roles and charges, plates, photo ids |
 | `city_police_case_photos` | evidence photos copied from officers' phones (unsaved ones deleted after a day) |
+| `city_police_uniforms` | uniforms the chief made in game: label, body, components, props |
+| `city_police_wardrobe` | an officer's own clothes while they wear a uniform |
 | `city_police_warrants` | warrants: charges, expiry, status |
 | `city_police_bolos` | BOLOs: kind, title, description, plate, expiry, status |
 | `city_police_plates` | flagged plates (stolen / wanted) |

@@ -52,6 +52,7 @@ Config.Permissions = {
     grantCert = 3,
     notices = 3,
     management = 4,
+    uniforms = 4, -- create and delete the station's uniforms (everyone on the job wears them)
     bolos = 0,
     bodycam = 0,
     map = 0,
@@ -93,6 +94,7 @@ Config.Stations = {
         duty = vec3(440.09, -974.92, 30.69),
         armory = vec3(451.51, -979.44, 30.68),
         locker = vec3(453.08, -980.12, 30.89),
+        wardrobe = vec3(453.08, -980.12, 30.89), -- uniforms (same spot as the locker; move it to the locker room)
         trash = vec3(439.09, -976.75, 30.78),
         lab = vec3(460.97, -989.18, 24.92),
         evidence = vec3(463.5, -989.2, 24.92),
@@ -104,12 +106,42 @@ Config.Stations = {
         label = 'Paleto Bay Sheriff Office',
         blip = vec3(-448.4, 6011.8, 31.7),
         duty = vec3(-449.81, 6012.91, 31.82),
+        wardrobe = vec3(-449.81, 6012.91, 31.82),
         impound = vec3(-436.14, 5982.63, 31.34),
         heli = { menu = vec3(-475.43, 5988.35, 31.72), spawn = vec4(-475.43, 5988.35, 31.72, 31.34) },
     },
 }
 
 Config.Blip = { sprite = 60, colour = 29, scale = 0.8 }
+
+-- Uniforms everyone on the job can put on at a wardrobe; the chief adds more in game (saved in the database). Numbers
+-- are GTA freemode drawables { component_id, drawable, texture } (3 arms, 4 legs, 6 shoes, 8 undershirt, 11 jacket)
+-- and props { prop_id, drawable, texture } (-1 = none). Check them in game and adjust.
+Config.Uniforms = {
+    {
+        id = 'lspd_short', label = 'LSPD short sleeve', sex = 'male',
+        components = {
+            { component_id = 3, drawable = 0, texture = 0 },
+            { component_id = 4, drawable = 35, texture = 0 },
+            { component_id = 6, drawable = 25, texture = 0 },
+            { component_id = 8, drawable = 58, texture = 0 },
+            { component_id = 11, drawable = 55, texture = 0 },
+        },
+        props = {},
+    },
+    {
+        id = 'lspd_short_f', label = 'LSPD short sleeve', sex = 'female',
+        components = {
+            { component_id = 3, drawable = 14, texture = 0 },
+            { component_id = 4, drawable = 34, texture = 0 },
+            { component_id = 6, drawable = 25, texture = 0 },
+            { component_id = 8, drawable = 35, texture = 0 },
+            { component_id = 11, drawable = 48, texture = 0 },
+        },
+        props = {},
+    },
+}
+Config.MaxUniforms = 30 -- made in game, for both sexes together
 
 -- Garage vehicles: lowest grade, and a certification when one is needed
 Config.Vehicles = {

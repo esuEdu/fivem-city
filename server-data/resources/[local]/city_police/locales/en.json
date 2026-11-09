@@ -560,5 +560,22 @@
     "panic_help": "Police panic button: your position to every unit",
     "key_panic": "Police: panic button",
     "error_no_tablet": "You need a tablet",
-    "error_seat_taken": "That seat is taken"
+    "error_seat_taken": "That seat is taken",
+
+    "target_wardrobe": "Wardrobe",
+    "wardrobe_title": "Wardrobe",
+    "wardrobe_subtitle": "Put on a uniform or change back into your own clothes",
+    "wardrobe_uniforms": "Police uniform",
+    "wardrobe_mine": "My clothes",
+    "wardrobe_wear": "Wear",
+    "wardrobe_back": "Change back",
+    "wardrobe_back_off": "Go off duty and change back",
+    "wardrobe_new": "New uniform",
+    "wardrobe_none": "No uniform for this body yet",
+    "wardrobe_not_wearing": "You're in your own clothes.",
+    "wardrobe_mine_hint": "Your own clothes are kept while you wear a uniform, even if you log out.",
+    "wardrobe_by": "by",
+    "wardrobe_sure": "Sure?",
+    "wardrobe_name": "Uniform name",
+    "wardrobe_saved": "Uniform \"%s\" saved"
 }
