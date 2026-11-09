@@ -20,6 +20,10 @@ Config.Ringtones = { 'classic', 'marimba', 'chime', 'pulse' }
 -- Other players hear a ringing phone up to this far away (meters), quieter with distance
 Config.RingDistance = 20.0
 
+-- The player can walk (and drive) with the phone open; these game controls stay off while it is: the mouse camera,
+-- attacking and aiming, the weapon wheel and pause. Typing in a text field takes every key until the field loses focus.
+Config.BlockedControls = { 1, 2, 24, 25, 37, 44, 45, 140, 141, 142, 257, 263, 264, 199, 200, 16, 17, 68, 69, 70, 91, 92, 106 }
+
 -- Holding the phone
 Config.Prop = { model = `prop_npc_phone_02`, bone = 28422, offset = vec3(0.0, 0.0, 0.0), rotation = vec3(0.0, 0.0, 0.0) }
 Config.Anims = {

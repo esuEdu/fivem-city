@@ -11,6 +11,7 @@ import { fit, initResize } from './resize.js';
 import { refreshSettings } from './settings.js';
 import { state, on, emit } from './state.js';
 import { initSwitcher, closeSwitcher, isSwitcherOpen } from './switcher.js';
+import { initTyping } from './typing.js';
 import { $, post, applyTheme } from './util.js';
 import { initViews, launch, goHome, messageApp, activeApp } from './views.js';
 
@@ -66,6 +67,8 @@ function close() {
     closeControl();
     closeSwitcher();
     $('phone').classList.remove('phone--open');
+    // A field left focused would still be typing when the phone opens again
+    document.activeElement?.blur();
 }
 
 const handlers = {
@@ -117,6 +120,7 @@ async function start() {
     initViews();
     initSwitcher();
     initControl();
+    initTyping();
     initNotifications();
     applySettings();
 

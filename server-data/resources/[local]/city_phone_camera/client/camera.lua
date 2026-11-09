@@ -1,5 +1,6 @@
 -- Camera mode: the phone closes and the player looks through the camera. Back camera = a scripted first person
--- camera (mouse to aim, wheel to zoom); selfie = the game's own front phone camera. Filters are timecycle modifiers,
+-- camera (mouse to aim, wheel to zoom); selfie = a scripted camera in front of the face. The player walks in both
+-- (the game's own selfie mode would freeze them). Filters are timecycle modifiers,
 -- and the HUD and radar stay hidden so photos come out clean. The photo itself is taken by the server
 -- (city_phone_photos:capture), never sent by this client.
 local camera = {}
@@ -54,30 +55,69 @@ local function stopBack()
     cam = nil
 end
 
--- CELL_CAM_ACTIVATE_SELFIE_MODE: FiveM's Lua has no named function for it, so it is called by its hash
-local function selfieMode(on)
-    Citizen.InvokeNative(0x2491A93618B7D838, on)
-end
+local selfieProp
 
 local function startSelfie()
-    CreateMobilePhone(1)
-    CellCamActivate(true, true)
-    selfieMode(true)
+    local settings = Config.Selfie
+    local ped = cache.ped
+
+    lib.requestModel(settings.prop.model)
+    local coords = GetEntityCoords(ped)
+    selfieProp = CreateObject(settings.prop.model, coords.x, coords.y, coords.z + 0.2, false, false, false)
+    SetModelAsNoLongerNeeded(settings.prop.model)
+    AttachEntityToEntity(selfieProp, ped, GetPedBoneIndex(ped, settings.prop.bone), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        true, true, false, true, 1, true)
+
+    -- Upper body only, so the legs keep walking
+    local anim = settings.anim
+    if DoesAnimDictExist(anim.dict) then
+        lib.requestAnimDict(anim.dict)
+        TaskPlayAnim(ped, anim.dict, anim.clip, 3.0, 3.0, -1, 49, 0, false, false, false)
+        RemoveAnimDict(anim.dict)
+    end
+
+    cam = CreateCam('DEFAULT_SCRIPTED_CAMERA', true)
+    SetCamFov(cam, settings.fov)
+    RenderScriptCams(true, false, 0, true, true)
 end
 
 local function stopSelfie()
-    selfieMode(false)
-    CellCamActivate(false, false)
-    DestroyMobilePhone()
+    local anim = Config.Selfie.anim
+    StopAnimTask(cache.ped, anim.dict, anim.clip, 2.0)
+
+    if selfieProp and DoesEntityExist(selfieProp) then DeleteEntity(selfieProp) end
+    selfieProp = nil
+    stopBack()
+end
+
+-- The mouse turns the player; the game camera is kept behind them so W always walks where the photo camera points
+local function turn()
+    local ped = cache.ped
+    SetEntityHeading(ped, GetEntityHeading(ped) - GetDisabledControlNormal(0, 1) * Config.LookSpeed)
+    SetGameplayCamRelativeHeading(0.0)
+end
+
+-- The selfie camera stays at arm's length in front of the face, looking back at it
+local function moveSelfie()
+    turn()
+
+    local settings = Config.Selfie
+    local ped = cache.ped
+    local head = GetPedBoneCoords(ped, 31086, 0.0, 0.0, 0.0)
+    local forward = GetEntityForwardVector(ped)
+    local right = vector3(forward.y, -forward.x, 0.0)
+    local spot = head + forward * settings.distance + right * settings.side
+
+    SetCamCoord(cam, spot.x, spot.y, spot.z + settings.height)
+    PointCamAtCoord(cam, head.x, head.y, head.z)
 end
 
 -- The back camera follows the head; the mouse turns the player and tilts the camera
 local function moveBack()
     local ped = cache.ped
-    local x = GetDisabledControlNormal(0, 1) * Config.LookSpeed
     local y = GetDisabledControlNormal(0, 2) * Config.LookSpeed
 
-    SetEntityHeading(ped, GetEntityHeading(ped) - x)
+    turn()
     pitch = math.max(Config.Pitch.min, math.min(Config.Pitch.max, pitch - y))
 
     local head = GetPedBoneCoords(ped, 31086, 0.0, 0.0, 0.0)
@@ -153,11 +193,9 @@ local function frame()
     DisableControlAction(0, 199, true)
     DisableControlAction(0, 200, true)
 
-    if not selfie then
-        DisableControlAction(0, 1, true)
-        DisableControlAction(0, 2, true)
-        moveBack()
-    end
+    DisableControlAction(0, 1, true)
+    DisableControlAction(0, 2, true)
+    if selfie then moveSelfie() else moveBack() end
 
     if hideHud then HideHudAndRadarThisFrame() end
 
