@@ -7,9 +7,9 @@ local mdt = {}
 ---Registers lib.callback 'city_police:mdt:<name>'. The handler returns ok, then the result or why not.
 ---@param name string
 ---@param handler fun(src: integer, data: table): boolean, any
----@param permission? string Config.Permissions key (default: name)
+---@param permission? string | string[] Config.Permissions key, or several where any one is enough (default: name)
 function mdt.register(name, handler, permission)
-    permission = permission or name
+    local permissions = type(permission) == 'table' and permission or { permission or name }
 
     lib.callback.register(('city_police:mdt:%s'):format(name), function(source, data)
         local src = source
@@ -17,7 +17,15 @@ function mdt.register(name, handler, permission)
 
         if not police.onDuty(src) then return false, 'off_duty' end
 
-        if not police.can(src, permission) then
+        local allowed = false
+        for _, key in ipairs(permissions) do
+            if police.can(src, key) then
+                allowed = true
+                break
+            end
+        end
+
+        if not allowed then
             police.warn(src, ('tried MDT %s without the grade'):format(name))
             return false, 'no_permission'
         end
