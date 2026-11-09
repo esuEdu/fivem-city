@@ -1,4 +1,4 @@
-/* The arrested player's screen and the security camera overlay. Colors come from city_ui/theme.lua (screen.js). */
+/* This resource's screen page: arrest, camera, radar, call popups, the round menu and the patrol car menu. Colors come from city_ui/theme.lua (screen.js). */
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; font-family: var(--font, 'Poppins', sans-serif); color: var(--text, #eef0f3); }
 .hidden { display: none !important; }
@@ -25,17 +25,80 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: transparent;
 .cam-offline { position: absolute; inset: 0; display: grid; place-items: center; background: repeating-linear-gradient(0deg, #111 0 2px, #1b1b1b 2px 4px); font-family: var(--mono, monospace); font-size: 28px; letter-spacing: 4px; }
 .cam-bottom { position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%); padding: 8px 16px; border-radius: var(--radius, 10px); background: var(--panel, rgba(12, 13, 18, 0.6)); font-size: 13px; color: var(--muted, #7d8590); }
 
-/* Patrol car radar */
-.radar { position: fixed; right: 28px; bottom: 220px; display: flex; gap: 6px; padding: 8px; border-radius: var(--radius, 10px); background: var(--panel, rgba(12, 13, 18, 0.85)); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); pointer-events: none; }
-.radar-cell { display: flex; flex-direction: column; align-items: center; min-width: 84px; padding: 6px 8px; border-radius: var(--radius-small, 6px); background: var(--slot, rgba(255, 255, 255, 0.04)); }
-.radar-cell small { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted, #7d8590); }
-.radar-cell strong { font-family: var(--mono, monospace); font-size: 28px; color: var(--accent, #f5c542); }
-.radar-cell span { min-height: 16px; font-family: var(--mono, monospace); font-size: 12px; }
-.radar-cell.own strong { color: var(--text, #eef0f3); }
-#radar-lock { color: var(--danger, #e5484d); font-weight: 700; }
+/* Patrol car radar: digital readouts like a dash unit */
+.radar { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); padding: 8px 12px 12px; border-radius: var(--radius-large, 16px); background: rgba(8, 9, 12, 0.92); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); pointer-events: none; }
+.radar-head { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 9px; letter-spacing: 2px; color: var(--muted, #7d8590); }
+.radar-locked { color: var(--danger, #e5484d); font-weight: 700; }
+.radar-row { display: flex; gap: 8px; align-items: stretch; }
+.radar-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 78px; padding: 6px 8px; border-radius: 8px; background: #050506; border: 1px solid rgba(255, 255, 255, 0.05); }
+.radar-cell small { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted, #7d8590); }
+.digits { font-family: var(--mono, 'Consolas', monospace); font-size: 34px; line-height: 1; letter-spacing: 2px; }
+.digits.green { color: #3ee67a; text-shadow: 0 0 10px rgba(62, 230, 122, 0.45); }
+.digits.orange { color: #ff9d2e; text-shadow: 0 0 10px rgba(255, 157, 46, 0.45); }
+.digits.red { color: #ff4848; text-shadow: 0 0 10px rgba(255, 72, 72, 0.45); }
+.radar-plates { display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+.plate { min-width: 112px; padding: 3px 8px; border-radius: 6px; background: #eef1f6; color: #12234d; text-align: center; }
+.plate small { display: block; font-size: 8px; font-style: italic; color: #b2272c; }
+.plate strong { font-family: var(--mono, monospace); font-size: 16px; letter-spacing: 1px; }
+.plate.rear { opacity: 0.75; }
+
+/* Call popups, top left, newest at the bottom */
+.popups { position: fixed; top: 24px; left: 24px; width: 300px; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.popup { position: relative; overflow: hidden; border-radius: 12px; background: rgba(14, 15, 20, 0.94); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); animation: slide 0.25s ease; transition: opacity 0.25s, transform 0.25s; }
+.popup.leaving { opacity: 0; transform: translateX(-20px); }
+.popup-head { display: flex; align-items: center; gap: 8px; padding: 7px 12px; background: rgba(229, 72, 77, 0.14); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--danger, #e5484d); }
+.popup.code .popup-head { background: rgba(91, 140, 255, 0.14); color: #7fa6ff; }
+.popup-dot { width: 7px; height: 7px; border-radius: 4px; background: currentColor; animation: blink 1s steps(2) infinite; }
+.popup-label { flex-grow: 1; }
+.popup-time { color: var(--muted, #7d8590); font-weight: 600; letter-spacing: 0; }
+.popup-body { padding: 10px 12px 4px; }
+.popup-title { display: flex; align-items: center; gap: 8px; }
+.popup-title strong { font-size: 15px; }
+.popup-code { flex: none; padding: 2px 7px; border-radius: 6px; background: #3b6cf6; color: #fff; font-size: 11px; font-weight: 700; }
+.popup.urgent .popup-code { background: var(--danger, #e5484d); }
+.popup-text, .popup-place { margin: 5px 0 0; font-size: 12px; color: var(--muted, #9aa1ad); }
+.popup-keys { display: flex; gap: 6px; padding: 8px 12px 10px; }
+.popup-key { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; height: 28px; border-radius: 8px; background: rgba(255, 255, 255, 0.05); font-size: 11px; font-weight: 600; color: var(--text, #eef0f3); }
+kbd { padding: 1px 5px; border-radius: 4px; background: rgba(255, 255, 255, 0.12); font-family: var(--mono, monospace); font-size: 10px; }
+.popup-bar { position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--accent, #f5c542); transform-origin: left; animation: shrink linear forwards; }
+.popup.urgent .popup-bar { background: var(--danger, #e5484d); }
+
+/* The round action menu */
+.radial-wrap { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(circle, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.1) 60%); }
+.radial { position: relative; width: 420px; height: 420px; }
+.radial-center { position: absolute; left: 50%; top: 50%; width: 132px; height: 132px; transform: translate(-50%, -50%); border: 2px solid var(--accent, #f5c542); border-radius: 50%; background: rgba(12, 13, 18, 0.95); color: var(--text, #eef0f3); font: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; box-shadow: 0 0 30px var(--accent-glow, rgba(245, 197, 66, 0.35)); }
+.radial-center strong { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; }
+.radial-center small { max-width: 110px; font-size: 11px; color: var(--muted, #9aa1ad); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.radial-center em { margin-top: 4px; font-size: 9px; font-style: normal; color: var(--muted, #7d8590); }
+.radial-item { position: absolute; width: 92px; height: 92px; transform: translate(-50%, -50%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50%; background: rgba(12, 13, 18, 0.92); color: var(--text, #eef0f3); font: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: transform 0.12s, border-color 0.12s, background 0.12s; }
+.radial-item svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.radial-item span { max-width: 80px; font-size: 11px; font-weight: 600; line-height: 1.15; text-align: center; }
+.radial-item small { font-size: 9px; color: var(--muted, #7d8590); }
+.radial-item:hover:not(.disabled) { transform: translate(-50%, -50%) scale(1.08); border-color: var(--accent, #f5c542); color: var(--accent, #f5c542); }
+.radial-item.disabled { opacity: 0.35; cursor: default; }
+
+/* Patrol car menu (F6), right side */
+.car-menu { position: fixed; top: 50%; right: 28px; width: 330px; transform: translateY(-50%); padding: 16px; border-radius: var(--radius-large, 18px); background: rgba(12, 13, 18, 0.94); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); animation: fade 0.2s ease; }
+.car-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+.car-head h2 { margin: 0; font-size: 22px; }
+.car-head small { font-size: 11px; color: var(--muted, #9aa1ad); }
+.car-close { width: 32px; height: 32px; border: 0; border-radius: 9px; background: var(--danger, #e5484d); color: #fff; font-size: 20px; line-height: 1; cursor: pointer; }
+.car-menu h3 { margin: 14px 0 8px; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted, #7d8590); }
+.car-radar, .car-codes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.car-btn { min-height: 46px; padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; background: rgba(255, 255, 255, 0.04); color: var(--text, #eef0f3); font: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+.car-btn svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.car-btn:hover { border-color: var(--accent, #f5c542); }
+.car-btn.on { background: var(--accent, #f5c542); color: var(--accent-text, #15181d); border-color: transparent; }
+.car-btn.code { flex-direction: column; gap: 1px; }
+.car-btn.code strong { font-size: 14px; }
+.car-btn.code small { font-size: 10px; color: var(--muted, #9aa1ad); text-align: center; }
+.car-btn.on small { color: inherit; }
+.car-btn.urgent { border-color: var(--danger, #e5484d); background: rgba(229, 72, 77, 0.16); }
 
 /* Head bag: nothing to see */
 .head-bag { position: fixed; inset: 0; background: #000; }
 
 @keyframes blink { to { opacity: 0; } }
 @keyframes fade { from { opacity: 0; } }
+@keyframes slide { from { opacity: 0; transform: translateX(-20px); } }
+@keyframes shrink { from { transform: scaleX(1); } to { transform: scaleX(0); } }

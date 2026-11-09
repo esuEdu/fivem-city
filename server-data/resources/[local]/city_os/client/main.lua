@@ -263,6 +263,25 @@ end)
 
 exports('Close', close)
 
+---Opens the tablet (if it isn't) on one app, passing args to its page like a tapped notification does. With a
+---passcode the app opens once the player unlocks. Only the app's own resource may call it.
+---@param appId string
+---@param args? table
+---@return boolean opened
+exports('OpenApp', function(appId, args)
+    if type(appId) ~= 'string' or (args ~= nil and type(args) ~= 'table') then return false end
+
+    if not isOpen then open() end
+    if not isOpen then return false end
+
+    local app = apps[appId]
+    if not app or app.resource ~= GetInvokingResource() then return false end
+
+    SendNUIMessage({ action = 'openApp', app = appId, args = args })
+
+    return true
+end)
+
 ---Sends data from an app's client script to its page inside the tablet.
 ---@param appId string
 ---@param data any

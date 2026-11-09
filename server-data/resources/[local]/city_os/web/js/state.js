@@ -17,6 +17,7 @@ export const state = {
     screen: 'locked', // locked | passcode | home | app | settings
     app: null, // id of the open app
     notesOpen: false,
+    pendingApp: null, // { id, args } an app script asked for while the tablet was still locked
 };
 
 const renderers = [];

@@ -1,7 +1,9 @@
--- What an officer on duty does to the player in front of them (ox_target and the radial menu), and impounding the
--- vehicle in front of them. The server checks each action again.
+-- What an officer on duty does to the player or the vehicle in front of them: ALT (ox_target) shows one "Police
+-- actions" item that opens the round menu (client/radial.lua), and qbx_radialmenu's police buttons. The server
+-- checks each action again.
 
 local job = require 'client.job'
+local radial = require 'client.radial'
 
 local REACH = Config.Ranges.player
 
@@ -25,26 +27,56 @@ local function escort(target)
     if not ok then return job.fail(result) end
 end
 
----The closest vehicle with a free seat, as a net id.
----@return integer?
-local function closestVehicle()
-    local vehicle = lib.getClosestVehicle(GetEntityCoords(cache.ped), Config.Ranges.vehicle, false)
+-- Seat names by index (-1 driver); vans and buses go on with "Seat n"
+local SEATS = { [-1] = 'seat_driver', [0] = 'seat_front', [1] = 'seat_rear_left', [2] = 'seat_rear_right' }
 
-    return vehicle and NetworkGetNetworkIdFromEntity(vehicle) or nil
+---@param seat integer
+---@return string
+local function seatLabel(seat)
+    return SEATS[seat] and locale(SEATS[seat]) or locale('seat_other', seat + 2)
+end
+
+---Asks which seat: the free passenger seats (putting in) or the taken ones (taking out).
+---@param vehicle integer
+---@param taken boolean
+---@return integer? seat
+local function chooseSeat(vehicle, taken)
+    local items = {}
+
+    for seat = taken and -1 or 0, GetVehicleMaxNumberOfPassengers(vehicle) - 1 do
+        local ped = GetPedInVehicleSeat(vehicle, seat)
+        local free = ped == 0
+        local usable = taken and (not free and IsPedAPlayer(ped) and ped ~= cache.ped) or (not taken and free)
+
+        items[#items + 1] = { id = tostring(seat), label = seatLabel(seat), icon = 'seat', disabled = not usable, hint = tostring(seat + 2) }
+    end
+
+    local picked = radial.choose({ title = locale(taken and 'radial_take_out' or 'radial_put_in'), subtitle = locale('radial_pick_seat'), items = items })
+
+    return picked and math.tointeger(tonumber(picked)) or nil
 end
 
 ---@param target integer
 local function putInVehicle(target)
-    local netId = closestVehicle()
-    if not netId then return job.fail('no_vehicle') end
+    local vehicle = lib.getClosestVehicle(GetEntityCoords(cache.ped), Config.Ranges.vehicle, false)
+    if not vehicle then return job.fail('no_vehicle') end
 
-    local ok, reason = lib.callback.await('city_police:putInVehicle', false, target, netId)
+    local seat = chooseSeat(vehicle, false)
+    if not seat then return end
+
+    local ok, reason = lib.callback.await('city_police:putInVehicle', false, target, NetworkGetNetworkIdFromEntity(vehicle), seat)
     if not ok then job.fail(reason) end
 end
 
----@param target integer
-local function takeOut(target)
-    local ok, reason = lib.callback.await('city_police:takeOutOfVehicle', false, target)
+---@param vehicle integer
+local function takeOut(vehicle)
+    local seat = chooseSeat(vehicle, true)
+    if not seat then return end
+
+    local ped = GetPedInVehicleSeat(vehicle, seat)
+    if ped == 0 or not IsPedAPlayer(ped) then return job.fail('no_one_near') end
+
+    local ok, reason = lib.callback.await('city_police:takeOutOfVehicle', false, job.serverIdOf(ped))
     if not ok then job.fail(reason) end
 end
 
@@ -81,6 +113,90 @@ local function search(target)
     exports.qbx_core:Notify(locale('search_asked'), 'inform')
 end
 
+---Opens the tablet on the MDT, showing what args ask (a person by server id, a plate, a new case).
+---@param args table
+local function openMdt(args)
+    if not exports.city_os:OpenApp(Config.App.id, args) then job.fail('no_tablet') end
+end
+
+-- Impounding the empty car in front: reason, fee and hold time, then a short progress
+local function impound(vehicle)
+    local input = lib.inputDialog(locale('impound_title'), {
+        { type = 'input', label = locale('impound_reason'), required = true, max = 160 },
+        { type = 'number', label = locale('impound_fee'), default = 500, min = 0, max = 10000 },
+        { type = 'number', label = locale('impound_hours'), default = 0, min = 0, max = 72 },
+    })
+    if not input then return end
+
+    if lib.progressCircle({ duration = 5000, label = locale('impounding'), position = 'bottom', disable = { move = true, car = true, combat = true } }) then
+        local ok, result = lib.callback.await('city_police:mdt:impound', false, {
+            netId = NetworkGetNetworkIdFromEntity(vehicle), reason = input[1], fee = math.floor(input[2] or 0), hours = math.floor(input[3] or 0),
+        })
+
+        if not ok then return job.fail(result) end
+        exports.qbx_core:Notify(locale(result.owned and 'impounded' or 'impounded_local', result.plate), 'success')
+    end
+end
+
+---@param target integer server id
+local function playerMenu(target)
+    local picked = radial.choose({
+        title = locale('radial_title'),
+        subtitle = locale('radial_player'),
+        items = {
+            { id = 'mdt', label = locale('radial_open_file'), icon = 'tablet' },
+            { id = 'cuff', label = locale('target_cuff'), icon = 'cuff' },
+            { id = 'softcuff', label = locale('target_softcuff'), icon = 'link' },
+            { id = 'escort', label = locale('target_escort'), icon = 'escort' },
+            { id = 'putin', label = locale('target_put_in'), icon = 'car' },
+            { id = 'search', label = locale('target_search'), icon = 'search' },
+            { id = 'fine', label = locale('radial_fine'), icon = 'bill' },
+            { id = 'status', label = locale('target_status'), icon = 'eye' },
+            Config.Features.anklet and { id = 'anklet', label = locale('target_anklet'), icon = 'anklet' } or nil,
+        },
+    })
+
+    if picked == 'mdt' then openMdt({ tab = 'people', serverId = target })
+    elseif picked == 'cuff' then cuff(target, false)
+    elseif picked == 'softcuff' then cuff(target, true)
+    elseif picked == 'escort' then escort(target)
+    elseif picked == 'putin' then putInVehicle(target)
+    elseif picked == 'search' then search(target)
+    elseif picked == 'fine' then openMdt({ tab = 'reports', serverId = target })
+    elseif picked == 'status' then checkStatus(target)
+    elseif picked == 'anklet' then anklet(target) end
+end
+
+---@param vehicle integer
+local function hasPlayerInside(vehicle)
+    for seat = -1, GetVehicleMaxNumberOfPassengers(vehicle) - 1 do
+        local ped = GetPedInVehicleSeat(vehicle, seat)
+        if ped ~= 0 and IsPedAPlayer(ped) and ped ~= cache.ped then return true end
+    end
+
+    return false
+end
+
+---@param vehicle integer
+local function vehicleMenu(vehicle)
+    local plate = GetVehicleNumberPlateText(vehicle):match('^%s*(.-)%s*$')
+    local empty = GetVehicleNumberOfPassengers(vehicle) == 0 and IsVehicleSeatFree(vehicle, -1)
+
+    local picked = radial.choose({
+        title = locale('radial_title'),
+        subtitle = plate,
+        items = {
+            { id = 'mdt', label = locale('radial_open_vehicle'), icon = 'tablet' },
+            { id = 'takeout', label = locale('target_take_out'), icon = 'exit', disabled = not hasPlayerInside(vehicle) },
+            { id = 'impound', label = locale('target_impound'), icon = 'tow', disabled = not empty },
+        },
+    })
+
+    if picked == 'mdt' then openMdt({ tab = 'vehicles', plate = plate })
+    elseif picked == 'takeout' then takeOut(vehicle)
+    elseif picked == 'impound' then impound(vehicle) end
+end
+
 RegisterNetEvent('city_police:client:openSearch', function(target)
     if type(target) ~= 'number' then return end
 
@@ -107,72 +223,21 @@ RegisterNetEvent('city_police:client:searchRequest', function(officer, seconds)
     TriggerServerEvent('city_police:server:searchAnswer', choice == 'confirm')
 end)
 
-local OPTIONS = {
-    { name = 'city_police:cuff', label = locale('target_cuff'), icon = 'fas fa-handcuffs', distance = Config.Ranges.cuff, fn = function(t) cuff(t, false) end },
-    { name = 'city_police:softcuff', label = locale('target_softcuff'), icon = 'fas fa-link', distance = Config.Ranges.cuff, fn = function(t) cuff(t, true) end },
-    { name = 'city_police:escort', label = locale('target_escort'), icon = 'fas fa-people-pulling', fn = escort },
-    { name = 'city_police:putin', label = locale('target_put_in'), icon = 'fas fa-car-side', fn = putInVehicle },
-    { name = 'city_police:search', label = locale('target_search'), icon = 'fas fa-magnifying-glass', fn = search },
-    { name = 'city_police:status', label = locale('target_status'), icon = 'fas fa-eye', fn = checkStatus },
-    Config.Features.anklet and { name = 'city_police:anklet', label = locale('target_anklet'), icon = 'fas fa-satellite-dish', fn = anklet } or nil,
-}
-
-local targetOptions = {}
-for i, option in ipairs(OPTIONS) do
-    targetOptions[i] = {
-        name = option.name, label = option.label, icon = option.icon, distance = option.distance or REACH,
+exports.ox_target:addGlobalPlayer({
+    {
+        name = 'city_police:actions', label = locale('radial_title'), icon = 'fas fa-shield-halved', distance = REACH,
         canInteract = job.onDuty,
-        onSelect = function(data) option.fn(job.serverIdOf(data.entity)) end,
-    }
-end
-
-exports.ox_target:addGlobalPlayer(targetOptions)
-
--- Impounding the empty car in front: reason, fee and hold time, then a short progress
-local function impound(vehicle)
-    local input = lib.inputDialog(locale('impound_title'), {
-        { type = 'input', label = locale('impound_reason'), required = true, max = 160 },
-        { type = 'number', label = locale('impound_fee'), default = 500, min = 0, max = 10000 },
-        { type = 'number', label = locale('impound_hours'), default = 0, min = 0, max = 72 },
-    })
-    if not input then return end
-
-    if lib.progressCircle({ duration = 5000, label = locale('impounding'), position = 'bottom', disable = { move = true, car = true, combat = true } }) then
-        local ok, result = lib.callback.await('city_police:mdt:impound', false, {
-            netId = NetworkGetNetworkIdFromEntity(vehicle), reason = input[1], fee = math.floor(input[2] or 0), hours = math.floor(input[3] or 0),
-        })
-
-        if not ok then return job.fail(result) end
-        exports.qbx_core:Notify(locale(result.owned and 'impounded' or 'impounded_local', result.plate), 'success')
-    end
-end
-
-local VEHICLE_OPTIONS = {
-    {
-        name = 'city_police:takeout', label = locale('target_take_out'), icon = 'fas fa-person-walking-arrow-right', distance = Config.Ranges.vehicle,
-        canInteract = function(entity)
-            if not job.onDuty() then return false end
-            for seat = -1, GetVehicleMaxNumberOfPassengers(entity) - 1 do
-                local ped = GetPedInVehicleSeat(entity, seat)
-                if ped ~= 0 and IsPedAPlayer(ped) and ped ~= cache.ped then return true end
-            end
-            return false
-        end,
-        onSelect = function(data)
-            for seat = -1, GetVehicleMaxNumberOfPassengers(data.entity) - 1 do
-                local ped = GetPedInVehicleSeat(data.entity, seat)
-                if ped ~= 0 and IsPedAPlayer(ped) and ped ~= cache.ped then takeOut(job.serverIdOf(ped)) end
-            end
-        end,
+        onSelect = function(data) playerMenu(job.serverIdOf(data.entity)) end,
     },
-    {
-        name = 'city_police:impound', label = locale('target_impound'), icon = 'fas fa-truck-pickup', distance = Config.Ranges.vehicle,
-        canInteract = function(entity) return job.onDuty() and GetVehicleNumberOfPassengers(entity) == 0 and IsVehicleSeatFree(entity, -1) end,
-        onSelect = function(data) impound(data.entity) end,
-    },
-}
+})
 
-exports.ox_target:addGlobalVehicle(VEHICLE_OPTIONS)
+exports.ox_target:addGlobalVehicle({
+    {
+        name = 'city_police:vehicleActions', label = locale('radial_title'), icon = 'fas fa-shield-halved', distance = Config.Ranges.vehicle,
+        canInteract = function(entity) return job.onDuty() and entity ~= cache.vehicle end,
+        onSelect = function(data) vehicleMenu(data.entity) end,
+    },
+})
 
 -- The radial menu's police buttons (qbx_radialmenu's config fires these on the client)
 local function onClosest(fn, distance)
@@ -196,10 +261,7 @@ AddEventHandler('city_police:client:radialTakeOut', function()
     local vehicle = lib.getClosestVehicle(GetEntityCoords(cache.ped), Config.Ranges.vehicle, false)
     if not vehicle then return job.fail('no_vehicle') end
 
-    for seat = -1, GetVehicleMaxNumberOfPassengers(vehicle) - 1 do
-        local ped = GetPedInVehicleSeat(vehicle, seat)
-        if ped ~= 0 and IsPedAPlayer(ped) and ped ~= cache.ped then takeOut(job.serverIdOf(ped)) end
-    end
+    takeOut(vehicle)
 end)
 AddEventHandler('city_police:client:radialSearch', onClosest(search))
 AddEventHandler('city_police:client:radialStatus', onClosest(checkStatus))
@@ -208,11 +270,6 @@ AddEventHandler('city_police:client:radialAnklet', onClosest(anklet))
 AddEventHandler('onResourceStop', function(resource)
     if resource ~= cache.resource then return end
 
-    local names = {}
-    for i, option in ipairs(targetOptions) do names[i] = option.name end
-    exports.ox_target:removeGlobalPlayer(names)
-
-    names = {}
-    for i, option in ipairs(VEHICLE_OPTIONS) do names[i] = option.name end
-    exports.ox_target:removeGlobalVehicle(names)
+    exports.ox_target:removeGlobalPlayer({ 'city_police:actions' })
+    exports.ox_target:removeGlobalVehicle({ 'city_police:vehicleActions' })
 end)

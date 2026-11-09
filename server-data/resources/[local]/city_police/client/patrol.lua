@@ -26,10 +26,12 @@ end
 local function stop()
     on, locked = false, false
     SendNUIMessage({ action = 'radarOff' })
+    TriggerEvent('city_police:client:radarState', false, false)
 end
 
 local function start()
     on = true
+    TriggerEvent('city_police:client:radarState', true, false)
 
     CreateThread(function()
         while on do
@@ -53,26 +55,35 @@ local function start()
     end)
 end
 
+local function toggle()
+    if on then return stop() end
+    if not job.onDuty() or not cache.vehicle or GetVehicleClass(cache.vehicle) ~= POLICE_CLASS then return end
+
+    start()
+end
+
+local function toggleLock()
+    if not on then return end
+
+    locked = not locked
+    SendNUIMessage({ action = 'radarLock', locked = locked })
+    TriggerEvent('city_police:client:radarState', on, locked)
+end
+
+-- The patrol car menu (client/carmenu.lua) has the same two buttons
+AddEventHandler('city_police:client:radarToggle', toggle)
+AddEventHandler('city_police:client:radarLockToggle', toggleLock)
+
 lib.addKeybind({
     name = 'police_radar',
     description = locale('key_radar'),
     defaultKey = Config.Keys.radar,
-    onPressed = function()
-        if on then return stop() end
-        if not job.onDuty() or not cache.vehicle or GetVehicleClass(cache.vehicle) ~= POLICE_CLASS then return end
-
-        start()
-    end,
+    onPressed = toggle,
 })
 
 lib.addKeybind({
     name = 'police_radar_lock',
     description = locale('key_radar_lock'),
     defaultKey = Config.Keys.radarLock,
-    onPressed = function()
-        if not on then return end
-
-        locked = not locked
-        SendNUIMessage({ action = 'radarLock', locked = locked })
-    end,
+    onPressed = toggleLock,
 })

@@ -112,7 +112,7 @@ function dispatch.add(data)
     calls[call.id] = call
 
     for _, src in ipairs(officers) do
-        TriggerClientEvent('city_police:client:newCall', src, { id = call.id, kind = call.kind, code = call.code, title = call.title, coords = call.coords, priority = call.priority })
+        TriggerClientEvent('city_police:client:newCall', src, { id = call.id, kind = call.kind, code = call.code, title = call.title, text = call.text, coords = call.coords, priority = call.priority })
 
         exports.city_os:Notify(src, {
             app = Config.App.id,

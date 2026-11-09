@@ -136,7 +136,9 @@ RegisterNetEvent('city_police:server:escortEnded', function()
     stopEscort(source)
 end)
 
-lib.callback.register('city_police:putInVehicle', function(source, target, netId)
+local MAX_SEAT = 14 -- passenger seats are 0 (front) and up; -1, the driver's, is never offered
+
+lib.callback.register('city_police:putInVehicle', function(source, target, netId, seat)
     local src = source
     if not police.onDuty(src) then return false end
 
@@ -144,12 +146,16 @@ lib.callback.register('city_police:putInVehicle', function(source, target, netId
     if not target then return false, 'too_far' end
     if not isCuffed(target) and not isDown(target) then return false, 'not_restrained' end
 
+    seat = math.tointeger(seat)
+    if seat ~= nil and (seat < 0 or seat > MAX_SEAT) then return false, 'invalid' end
+
     local vehicle = type(netId) == 'number' and NetworkGetEntityFromNetworkId(netId)
     if not vehicle or vehicle == 0 or not DoesEntityExist(vehicle) or GetEntityType(vehicle) ~= 2 then return false end
     if not police.near(src, GetEntityCoords(vehicle), Config.Ranges.vehicle) then return false, 'too_far' end
+    if seat and GetPedInVehicleSeat(vehicle, seat) ~= 0 then return false, 'seat_taken' end
 
     stopEscort(target)
-    TriggerClientEvent('city_police:client:enterVehicle', target, netId)
+    TriggerClientEvent('city_police:client:enterVehicle', target, netId, seat)
 
     return true
 end)

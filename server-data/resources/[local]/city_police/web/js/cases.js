@@ -14,13 +14,24 @@ export function tagPill(id) {
     return tag ? pill(tag.label, tag.color) : null;
 }
 
+// A case already being written gets the person as a criminal instead of being thrown away for a new one
+function withPerson(draft, person) {
+    if (!draft || !person) return null;
+
+    if (!draft.people.some((entry) => entry.citizenid === person.citizenid)) {
+        draft.people.push({ citizenid: person.citizenid, name: person.name, role: 'criminal', charges: [] });
+    }
+
+    return draft;
+}
+
 export async function renderCases(args) {
     app.editing = false;
     if (args && args.id) selected = args.id;
 
     let detail;
     if (args && (args.new || args.edit || args.draft)) {
-        detail = caseEditor((args.draft && loadDraft('case')) || args.edit || newCase(args.person));
+        detail = caseEditor((args.draft && loadDraft('case')) || args.edit || withPerson(loadDraft('case'), args.person) || newCase(args.person));
     } else if (selected) {
         detail = await caseView(selected);
     } else {

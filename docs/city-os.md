@@ -55,6 +55,7 @@ Hiding an app is only UX. Every app's own server events still check job/grade/st
 - **Page → its own Lua**: `fetch('https://<resource>/<callback>', ...)` reaches that resource's `RegisterNUICallback`, as normal NUI.
 - **Lua → its page**: `exports.city_os:SendAppMessage(appId, data)` (client); `city_os` forwards it into the app's iframe. A plain `SendNUIMessage` from the app resource doesn't reach a page inside another resource's NUI.
 - **Tablet → page**: `city_os` posts `{ type = 'theme' }` (appearance, icon style, text size, city_ui colors) and `{ type = 'open', args }` (e.g. the dispatch call a notification was tapped for).
+- **Lua opens its app**: `exports.city_os:OpenApp(appId, args)` (client, only from the app's own resource) opens the tablet if needed and shows that app with `{ type = 'open', args }`; with a passcode the app opens right after unlocking. Returns false when the tablet can't open (no tablet item, busy). city_police uses it to open a person's file from the ALT menu.
 
 ### Shared UI kit
 

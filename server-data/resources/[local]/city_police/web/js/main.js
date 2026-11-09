@@ -12,6 +12,7 @@ import { renderBolos } from './bolos.js';
 import { renderPrison } from './prison.js';
 import { renderPenal } from './penal.js';
 import { loadDraft } from './draft.js';
+import { run } from './ui.js';
 import { renderImpounds } from './impounds.js';
 import { renderLicences } from './licences.js';
 import { renderEvidence } from './evidence.js';
@@ -163,6 +164,12 @@ async function start() {
     started = true;
     content.replaceChildren();
 
+    if (pendingOpen) {
+        const args = pendingOpen;
+        pendingOpen = null;
+        return openFromGame(args);
+    }
+
     // Back to a case or an arrest that was on screen when the tablet closed
     const caseDraft = can('reports') && loadDraft('case');
     const prisonDraft = can('charge') && loadDraft('prison');
@@ -190,10 +197,40 @@ window.CityOS.on('message', (message) => {
     }
 });
 
-// A tapped call notification opens that call
+// What the game asked to open (args from a tapped notification or exports.city_os:OpenApp), kept until the MDT started
+let pendingOpen = null;
+
+// The person behind a server id (the player the officer aimed at), from the server
+async function personById(serverId) {
+    const response = await run('searchPeople', { q: String(serverId), by: 'id' });
+    return response && response.data[0];
+}
+
+async function openFromGame(args) {
+    if (args.tab === 'dispatch' && can('dispatch')) return go('dispatch', { id: args.call });
+    if (args.tab === 'bolos' && can('bolos')) return go('bolos');
+    if (args.tab === 'vehicles' && can('vehicles')) return go('vehicles', { plate: args.plate });
+
+    if ((args.tab === 'people' || args.tab === 'reports') && Number.isInteger(args.serverId)) {
+        const person = await personById(args.serverId);
+        if (!person) return go('dashboard');
+
+        if (args.tab === 'people' && can('people')) return go('people', { citizenid: person.citizenid });
+        // A fine starts a case with this officer and the person as a criminal
+        if (args.tab === 'reports' && can('reports')) return go('reports', { new: true, person: { citizenid: person.citizenid, name: person.name } });
+    }
+
+    go('dashboard');
+}
+
 window.CityOS.on('open', (args) => {
-    if (args && args.tab === 'dispatch' && can('dispatch')) go('dispatch', { id: args.call });
-    if (args && args.tab === 'bolos' && can('bolos')) go('bolos');
+    if (!args || typeof args !== 'object') return;
+    if (!started) {
+        pendingOpen = args;
+        return;
+    }
+
+    openFromGame(args);
 });
 
 start();
