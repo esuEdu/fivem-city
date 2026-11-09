@@ -321,7 +321,16 @@ function inmates.checkEscapes()
         end
     end
 
-    for _, src in ipairs(found) do inmates.escape(src) end
+    for _, src in ipairs(found) do
+        if Config.Features.escape then
+            inmates.escape(src)
+        else
+            local spawn = Config.Spawns[math.random(#Config.Spawns)]
+            SetEntityCoords(GetPlayerPed(src), spawn.x, spawn.y, spawn.z, false, false, false, false)
+            inside[src] = now
+            util.notify(src, 'notify_brought_back', 'error')
+        end
+    end
 end
 
 return inmates

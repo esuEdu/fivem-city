@@ -144,6 +144,7 @@ end)
 
 lib.callback.register('city_prison:beginSearch', function(source, index)
     local src = source
+    if not Config.Features.contraband then return false end
     local row = inmate(src)
     local spot = type(index) == 'number' and Config.Contraband[index]
     if not row or not spot then return false end
@@ -169,6 +170,7 @@ end
 
 lib.callback.register('city_prison:finishSearch', function(source, index)
     local src = source
+    if not Config.Features.contraband then return false end
     local row = inmate(src)
     if not row or not finish(src, 'search', index) then return false end
     if not util.near(src, Config.Contraband[index], SPOT_RANGE) then return false, 'too_far' end

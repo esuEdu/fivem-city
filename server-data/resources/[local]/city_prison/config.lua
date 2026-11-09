@@ -3,6 +3,12 @@ Config = {}
 -- Bolingbroke Penitentiary. The spawns, desk, computer, terminals and circle come from xt-prison; everything else
 -- (infirmary, job board and spots, fountains, tray, contraband, gate doors) was placed without the game open: check.
 
+-- Parts of the prison switched on for this version. Off: no zones on the client, refused by the server.
+Config.Features = {
+    contraband = false, -- hidden spots with parts for the shank, gate jammer and burner phone
+    escape = false, -- gate hacks and escapes; off, an inmate who leaves the circle is brought back to the yard
+}
+
 -- Leaving this circle while serving is an escape
 Config.Prison = {
     label = 'Bolingbroke Penitentiary',

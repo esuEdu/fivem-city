@@ -181,7 +181,7 @@ local function create()
         onSelect = function() simple('city_prison:eat', nil, locale('ate')) end,
     } })
 
-    for index, coords in ipairs(Config.Contraband) do
+    for index, coords in ipairs(Config.Features.contraband and Config.Contraband or {}) do
         addZone(coords, { {
             name = 'city_prison:search', icon = 'fas fa-magnifying-glass', label = locale('target_search'),
             onSelect = function() search(index) end,

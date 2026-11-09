@@ -76,6 +76,7 @@ end
 
 lib.callback.register('city_prison:beginHack', function(source, index)
     local src = source
+    if not Config.Features.escape then return false end
     local terminal = type(index) == 'number' and Config.Terminals[index]
     if not terminal or util.throttled(src, 'hack', 2) then return false end
     if not util.near(src, terminal.coords, TERMINAL_RANGE) then return false, 'too_far' end
@@ -90,6 +91,7 @@ end)
 
 lib.callback.register('city_prison:finishHack', function(source, index, success)
     local src = source
+    if not Config.Features.escape then return false end
     local started = hacking[src]
     hacking[src] = nil
 
