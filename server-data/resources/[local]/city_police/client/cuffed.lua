@@ -104,10 +104,35 @@ RegisterNetEvent('city_police:client:escorted', function(on, officer)
     controlLoop()
 end)
 
-RegisterNetEvent('city_police:client:escorting', function(on)
+-- The officer's side: a key (and a hint) to let go, since Alt can't reach the escorted player
+local escorting = nil
+
+local stopEscortKey = lib.addKeybind({
+    name = 'policestopescort',
+    description = locale('keybind_stop_escort'),
+    defaultKey = Config.Keys.stopEscort,
+    disabled = true,
+    onPressed = function()
+        if not escorting then return end
+
+        local ok, result = lib.callback.await('city_police:escort', false, escorting)
+        if not ok and result then exports.qbx_core:Notify(locale(('error_%s'):format(result)), 'error') end
+    end,
+})
+
+RegisterNetEvent('city_police:client:escorting', function(on, target)
     if GetInvokingResource() then return end
 
-    TriggerEvent('hospital:client:SetEscortingState', on == true)
+    escorting = on and math.type(target) == 'integer' and target or nil
+    stopEscortKey:disable(not escorting)
+
+    if escorting then
+        lib.showTextUI(locale('stop_escort_hint', stopEscortKey:getCurrentKey()))
+    else
+        lib.hideTextUI()
+    end
+
+    TriggerEvent('hospital:client:SetEscortingState', escorting ~= nil)
 end)
 
 RegisterNetEvent('city_police:client:enterVehicle', function(netId, seat)
@@ -175,7 +200,8 @@ AddEventHandler('onResourceStop', function(resource)
     if resource ~= cache.resource then return end
 
     if escortedBy then DetachEntity(cache.ped, true, false) end
-    cuffed, escortedBy = false, nil
+    if escorting then lib.hideTextUI() end
+    cuffed, escortedBy, escorting = false, nil, nil
 end)
 
 CreateThread(function()
