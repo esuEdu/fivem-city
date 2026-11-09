@@ -52,6 +52,10 @@ export const ICONS = {
     camera: 'M3 8h12v8H3zM15 11l6-3v8l-6-3',
     flag: 'M5 21V4h11l-2 4 2 4H5',
     user: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21v-1a7 7 0 0 1 7-7h2a7 7 0 0 1 7 7v1',
+    cases: 'M4 7h16v12H4zM9 7V5h6v2M4 12h16M11 12v2h2v-2',
+    prison: 'M4 4h16v16H4zM8 4v16M12 4v16M16 4v16',
+    penal: 'M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11M9 8h6',
+    image: 'M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4M15 9h.01',
 };
 
 export function icon(name, size = 20, stroke = 1.8) {

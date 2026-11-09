@@ -13,17 +13,18 @@ Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuff
 
 | Tab | What it does |
 | --- | --- |
-| **Dashboard** | Your shift (time on duty, status, callsign), open calls, units on duty, active warrants, today's arrests and fines, the chief's notices. |
+| **Dashboard** | Your shift (time on duty, status, callsign), open calls, units on duty, inmates in Bolingbroke now, today's arrests and fines, the chief's notices. |
 | **Dispatch** | Open calls: 190 calls from the phone (`city_dispatch` forwards them), automatic alerts (robberies, drug selling, car theft, flagged plates on radars, officer panic button). Attach to a call (sets the GPS), detach, add a note, close. A new call shows a banner on the tablet, a blip and a sound. |
 | **Map** | A live map of the city (drawn, not the game's picture) with units, calls and ankle monitors. Clicking one sets the GPS; a button opens the game's own map. |
 | **Units** | Officers on duty: callsign, grade, status (available, busy, en route, on scene, break), the call each is on, how long on duty. Set your own status and callsign. The camera button watches that unit's **bodycam** live: the tablet closes, the viewer's ped hides below the unit (like the Staff app's spectate) and the game camera follows them; Backspace leaves. |
-| **People** | Search by name, phone, citizen ID or fingerprint. A person's file: photo (last booking), date of birth, phone, job, licences and driving points, ankle monitor, warrants, arrests and fines, reports they're in, vehicles, registered weapons. |
+| **People** | Search by name (A to Z: "João" lists every João, first match on top), phone, citizen ID or fingerprint, or switch to **ID** for the server ID (exact: 5 shows only player 5, online only). The same Name / ID switch is in every person picker. A person's file: photo (last booking), date of birth, phone, job, licences and driving points, ankle monitor, warrants, arrests and fines, cases they're in, vehicles, registered weapons; buttons for a new case and Jail. |
 | **Vehicles** | Search by plate or owner: model, owner, flags (stolen / wanted, with reason), impounds. Flag or clear a plate. |
 | **Weapons** | Search by serial: model, registered owner, where it was bought, status (registered, seized, stolen), casings matched to it. Weapons bought in a shop are registered automatically. |
-| **Reports** | Incident reports: title, type, place, text, people involved (with roles), vehicles, evidence. Officers write and edit their own; sergeants and up edit any. |
-| **Warrants** | Arrest warrants with reason, charges and expiry. Sergeant and up issue or cancel them; any officer marks one served (an arrest of that person serves it automatically). |
+| **Cases** | Title, place, evidence photos (picked from the officer's phone camera roll and copied into `city_police_case_photos`), crime tags (`Config.CaseTags`, each adds its template to the description), description (starts from a template with the date and who filed it), vehicles, officers, civilians and criminals involved; each criminal gets charges from the penal code with the months and fine added up. From a saved case: **Fine** a criminal who is in the city (bank bill) or **Jail** them (opens the Prison tab with the case attached). A case being written is a draft kept in the page's storage per character: closing the tablet and opening it again goes back to it. Officers write and edit their own; sergeants and up edit any. |
+| **Warrants** | (Off in V1: `Config.Features.warrants`.) Arrest warrants with reason, charges and expiry. Sergeant and up issue or cancel them; any officer marks one served (an arrest of that person serves it automatically). `exports.city_police:IssueWarrant` still works. |
 | **BOLOs** | "Be on the lookout": a person or a vehicle (with plate) to watch for, no warrant or known citizen needed. Any officer creates one (title, description, hours valid, `boloHours` default) and every unit on duty gets a banner; any officer closes it. The Dashboard counts the active ones. |
-| **Charges** | The penal code (crimes, months, fine, driving points). Pick a person and the crimes: **Fine** (a bank bill) or **Arrest** (booking: photo of the suspect, fingerprint, months; the suspect sees the arrest screen). Both go into the person's record. |
+| **Prison** | Who is in Bolingbroke now (from `exports.city_prison:Inmates`), and booking an arrest: the suspect (Name / ID search, must be in the city), a case they are a criminal in (its charges fill in), charges with × and + Add, the reason, and a reduction (percent off for a first arrest or a lawyer, or a set time; `records.reduce`). The arrest takes the booking photo and fingerprint, bills the fine and sends them to city_prison. The prison computer still changes and ends sentences. |
+| **Penal code** | Look-only: every crime as a card colored by category (infraction, misdemeanor, felony) with months, fine and points, and a search. The same cards are the charge picker in Cases and Prison. |
 | **Impounds** | Impounded vehicles (reason, fee, hold time, officer) and the evidence locker contents. Impound the car in front of you; release (sergeant+) or the owner pays at the station desk after the hold time. |
 | **Licences** | Driver, weapon and explosives licences of a person, driving points in the last 30 days. Grant or revoke (weapon and explosives: sergeant+; explosives lets city_mining sell that person the dynamite card). The driver licence is suspended by itself at `Config.Licences.maxPoints`. |
 | **Evidence** | Evidence bags in your inventory: analyze them at the lab (forensics certification) to turn a casing into a weapon serial, blood into a DNA match and a fingerprint into a person. Results are saved and can go into a report. |
@@ -68,7 +69,8 @@ Tables, created on start:
 | `city_police_officers` | citizenid, name, callsign, certifications, minutes on duty, last duty |
 | `city_police_shifts` | one row per shift (start, end), for hours per week |
 | `city_police_records` | arrests, fines and citations: charges, months, fine, points, officer, booking photo and fingerprint |
-| `city_police_reports` | incident reports |
+| `city_police_reports` | cases: tags, people with roles and charges, plates, photo ids |
+| `city_police_case_photos` | evidence photos copied from officers' phones (unsaved ones deleted after a day) |
 | `city_police_warrants` | warrants: charges, expiry, status |
 | `city_police_bolos` | BOLOs: kind, title, description, plate, expiry, status |
 | `city_police_plates` | flagged plates (stolen / wanted) |

@@ -155,6 +155,22 @@ local TABLES = {
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ]],
+    -- Cases (the Reports table grown up): crime tags and attached photos; records point back to their case
+    [[ ALTER TABLE `city_police_reports` ADD COLUMN IF NOT EXISTS `tags` VARCHAR(255) NOT NULL DEFAULT '[]' ]],
+    [[ ALTER TABLE `city_police_reports` ADD COLUMN IF NOT EXISTS `photos` VARCHAR(255) NOT NULL DEFAULT '[]' ]],
+    [[ ALTER TABLE `city_police_reports` MODIFY `people` MEDIUMTEXT NOT NULL ]],
+    [[ ALTER TABLE `city_police_records` ADD COLUMN IF NOT EXISTS `report_id` INT UNSIGNED NULL ]],
+    [[
+        CREATE TABLE IF NOT EXISTS `city_police_case_photos` (
+            `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            `report_id` INT UNSIGNED NULL,
+            `officer_cid` VARCHAR(50) NOT NULL,
+            `data` MEDIUMTEXT NOT NULL,
+            `created` INT UNSIGNED NOT NULL,
+            PRIMARY KEY (`id`),
+            KEY `report_id` (`report_id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ]],
     [[
         CREATE TABLE IF NOT EXISTS `city_police_notices` (
             `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,

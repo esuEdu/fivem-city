@@ -114,4 +114,25 @@ function mdt.person(citizenid)
     }
 end
 
+---Everyone in Bolingbroke right now, from city_prison (empty when it isn't running).
+---@return table[]
+function mdt.inmates()
+    if GetResourceState('city_prison') ~= 'started' then return {} end
+
+    local ok, list = pcall(function() return exports.city_prison:Inmates() end)
+
+    return ok and type(list) == 'table' and list or {}
+end
+
+---@return integer serving now (escaped ones left out)
+function mdt.inmateCount()
+    local count = 0
+
+    for _, inmate in ipairs(mdt.inmates()) do
+        if inmate.status == 'serving' then count = count + 1 end
+    end
+
+    return count
+end
+
 return mdt

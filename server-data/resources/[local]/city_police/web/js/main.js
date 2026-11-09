@@ -6,10 +6,12 @@ import { renderUnits, pickStatus } from './units.js';
 import { renderPeople } from './people.js';
 import { renderVehicles } from './vehicles.js';
 import { renderWeapons } from './weapons.js';
-import { renderReports } from './reports.js';
+import { renderCases } from './cases.js';
 import { renderWarrants } from './warrants.js';
 import { renderBolos } from './bolos.js';
-import { renderCharges } from './charges.js';
+import { renderPrison } from './prison.js';
+import { renderPenal } from './penal.js';
+import { loadDraft } from './draft.js';
 import { renderImpounds } from './impounds.js';
 import { renderLicences } from './licences.js';
 import { renderEvidence } from './evidence.js';
@@ -34,12 +36,12 @@ const SECTIONS = [
         { id: 'people', icon: 'people', permission: 'people', render: renderPeople },
         { id: 'vehicles', icon: 'vehicles', permission: 'vehicles', render: renderVehicles },
         { id: 'weapons', icon: 'weapons', permission: 'weapons', render: renderWeapons },
-        { id: 'reports', icon: 'reports', permission: 'reports', render: renderReports },
+        { id: 'reports', icon: 'cases', permission: 'reports', render: renderCases },
         { id: 'warrants', icon: 'warrants', permission: 'warrants', render: renderWarrants },
         { id: 'bolos', icon: 'bolos', permission: 'bolos', render: renderBolos },
-        { id: 'charges', icon: 'charges', permission: 'charge', render: renderCharges },
     ] },
     { id: 'tools', tabs: [
+        { id: 'prison', icon: 'prison', permission: 'charge', render: renderPrison },
         { id: 'impounds', icon: 'impounds', permission: 'impound', render: renderImpounds },
         { id: 'licences', icon: 'licences', permission: 'licences', render: renderLicences },
         { id: 'evidence', icon: 'evidence', permission: 'evidence', render: renderEvidence },
@@ -48,6 +50,7 @@ const SECTIONS = [
     { id: 'department', tabs: [
         { id: 'certs', icon: 'certs', permission: 'certs', render: renderCerts },
         { id: 'management', icon: 'management', permission: 'management', render: renderManagement },
+        { id: 'penal', icon: 'penal', permission: 'app', render: renderPenal },
     ] },
 ];
 
@@ -66,7 +69,14 @@ let starting = 0;
 
 // Each tab draws into the content area; `args` opens it on one item (a person, a call from a notification)
 export async function go(tab, args) {
+    // a form being written is kept as a draft, but not reopened on the next start
+    if (app.onLeave) {
+        app.onLeave();
+        app.onLeave = null;
+    }
+
     app.tab = tab;
+    app.editing = false;
     drawNav();
 
     const ticket = ++drawing;
@@ -152,7 +162,13 @@ async function start() {
 
     started = true;
     content.replaceChildren();
-    go('dashboard');
+
+    // Back to a case or an arrest that was on screen when the tablet closed
+    const caseDraft = can('reports') && loadDraft('case');
+    const prisonDraft = can('charge') && loadDraft('prison');
+    if (caseDraft && caseDraft.open) go('reports', { draft: true });
+    else if (prisonDraft && prisonDraft.open) go('prison');
+    else go('dashboard');
 }
 
 document.getElementById('status-card').addEventListener('click', () => {

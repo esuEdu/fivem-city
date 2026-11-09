@@ -1,32 +1,77 @@
 import { el, L, run, icon } from './ui.js';
 
-// A search field that lists people as you type; picking one calls onPick({ citizenid, name })
-export function personPicker(onPick, placeholder = L('ui_find_person')) {
-    const input = el('input', { class: 'field', type: 'text', placeholder });
+// Name or server ID: which one the person searches use (kept while the MDT is open)
+let searchBy = 'name';
+
+// The Name / ID switch above a person search; onChange(by) runs the search again
+export function searchSwitch(onChange) {
+    const box = el('div', { class: 'switch-row' });
+    const draw = () => box.replaceChildren(...['name', 'id'].map((by) => el('button', {
+        class: `switch-opt${searchBy === by ? ' on' : ''}`, type: 'button', text: L(`ui_search_by_${by}`),
+        onclick: () => {
+            if (searchBy === by) return;
+            searchBy = by;
+            draw();
+            onChange(by);
+        },
+    })));
+    draw();
+
+    return box;
+}
+
+// Asks the server: by name (A to Z, several) or by server ID (exactly that player, online only)
+export async function findPeople(value) {
+    const q = value.trim();
+    if (searchBy === 'id' ? !/^\d{1,5}$/.test(q) : q.length < 2) return null;
+
+    const response = await run('searchPeople', { q, by: searchBy });
+    return response ? response.data : [];
+}
+
+export function searchPlaceholder() {
+    return L(searchBy === 'id' ? 'ui_search_id' : 'ui_search_people');
+}
+
+// "Name · #12" for someone in the city right now
+export function personLabel(person) {
+    return person.id ? `${person.name} · #${person.id}` : person.name;
+}
+
+// A search field with the Name / ID switch that lists people as you type (first match on top, keep scrolling for
+// the others); picking one calls onPick({ citizenid, name, online, id })
+export function personPicker(onPick) {
+    const input = el('input', { class: 'field', type: 'text', placeholder: searchPlaceholder() });
     const results = el('div', { class: 'picker-list hidden' });
     let timer = null;
 
-    input.addEventListener('input', () => {
+    const lookup = () => {
         clearTimeout(timer);
-        const value = input.value.trim();
-        if (value.length < 2) return results.classList.add('hidden');
-
         timer = setTimeout(async () => {
-            const response = await run('searchPeople', { q: value });
-            const people = response ? response.data : [];
+            const people = await findPeople(input.value);
+            if (!people) return results.classList.add('hidden');
 
             results.replaceChildren(...(people.length
                 ? people.map((person) => el('button', { class: 'picker-item', type: 'button', onclick: () => {
                     results.classList.add('hidden');
                     input.value = '';
-                    onPick({ citizenid: person.citizenid, name: person.name, online: person.online });
-                } }, el('span', { text: person.name }), el('small', { text: person.citizenid })))
+                    onPick({ citizenid: person.citizenid, name: person.name, online: person.online, id: person.id });
+                } }, el('span', { text: personLabel(person) }), el('small', { text: person.citizenid })))
                 : [el('div', { class: 'picker-item muted', text: L('ui_no_results') })]));
             results.classList.remove('hidden');
-        }, 300);
+        }, 250);
+    };
+
+    input.addEventListener('input', lookup);
+
+    const switcher = searchSwitch(() => {
+        input.placeholder = searchPlaceholder();
+        input.value = '';
+        results.classList.add('hidden');
+        input.focus();
     });
 
-    return el('div', { class: 'picker' }, el('label', { class: 'search' }, icon('search', 16, 2), input), results);
+    return el('div', { class: 'picker' }, switcher, el('label', { class: 'search' }, icon('search', 16, 2), input), results);
 }
 
 // The penal code as a list of crimes with − / + counts; `counts` is { crimeId: n } and is changed in place

@@ -71,12 +71,19 @@ mdt.register('charge', function(src, data)
 
     local kind = data.kind == 'arrest' and 'arrest' or 'fine'
     local notes = police.clean(data.notes, settings.text.line)
+    local caseId = mdt.id(data.caseId)
     local photo, fingerprint
+
+    if caseId and not MySQL.scalar.await('SELECT id FROM city_police_reports WHERE id = ?', { caseId }) then return false, 'not_found' end
 
     if kind == 'arrest' then
         if not police.reach(src, targetSrc, settings.chargeRange) then return false, 'too_far' end
         if not police.restrained(targetSrc) then return false, 'not_restrained' end
         if not atBookingPlace(src) then return false, 'not_at_station' end
+
+        local months = records.reduce(totals.months, data.reduction)
+        if not months then return false, 'invalid' end
+        totals.months = months
 
         photo = photoOf(data.photo)
         fingerprint = target.PlayerData.metadata.fingerprint
@@ -91,7 +98,7 @@ mdt.register('charge', function(src, data)
         citizenid = citizenid, name = name, kind = kind, charges = charges,
         months = kind == 'arrest' and totals.months or 0, fine = totals.fine, points = totals.points,
         notes = notes ~= '' and notes or nil, officer = officer, officerCid = police.citizenid(src),
-        photo = photo, fingerprint = fingerprint,
+        photo = photo, fingerprint = fingerprint, caseId = caseId,
     })
 
     if totals.points > 0 then checkPoints(targetSrc, citizenid) end
@@ -129,4 +136,9 @@ mdt.register('nearby', function(src)
     end
 
     return true, list
+end, 'charge')
+
+-- The Prison tab: who is in Bolingbroke now (city_prison's computer still changes and ends sentences)
+mdt.register('inmates', function()
+    return true, mdt.inmates()
 end, 'charge')

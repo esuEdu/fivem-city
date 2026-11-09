@@ -19,24 +19,47 @@ local function brief(row)
     }
 end
 
+---The player in the city with exactly this server id (the number in the scoreboard), as a one-row list.
+---@param value unknown
+---@return table[]
+local function byServerId(value)
+    local id = math.tointeger(tonumber(value))
+    local player = id and id > 0 and exports.qbx_core:GetPlayer(id)
+    if not player then return {} end
+
+    local data = player.PlayerData
+    local row = brief({ citizenid = data.citizenid, charinfo = json.encode(data.charinfo) })
+    row.id = id
+
+    return { row }
+end
+
 mdt.register('searchPeople', function(_, data)
+    if data.by == 'id' then return true, byServerId(data.q) end
+
     local like = mdt.like(data.q)
     if not like then return true, {} end
 
     local exact = type(data.q) == 'string' and data.q:match('^%s*(.-)%s*$') or ''
 
+    -- A to Z by first name, then last name, so "João" lists every João in order
     local rows = MySQL.query.await([[
         SELECT citizenid, charinfo FROM players
         WHERE CONCAT(JSON_VALUE(charinfo, '$.firstname'), ' ', JSON_VALUE(charinfo, '$.lastname')) LIKE ?
             OR citizenid LIKE ? OR phone_number LIKE ? OR JSON_VALUE(metadata, '$.fingerprint') = ?
-        ORDER BY last_updated DESC LIMIT ?
+        ORDER BY JSON_VALUE(charinfo, '$.firstname'), JSON_VALUE(charinfo, '$.lastname') LIMIT ?
     ]], { like, like, like, exact, settings.searchLimit }) or {}
 
     local list = {}
-    for i = 1, #rows do list[i] = brief(rows[i]) end
+    for i = 1, #rows do
+        list[i] = brief(rows[i])
+
+        local online = exports.qbx_core:GetPlayerByCitizenId(rows[i].citizenid)
+        if online then list[i].id = online.PlayerData.source end
+    end
 
     return true, list
-end, 'people')
+end, { 'people', 'charge' })
 
 ---@param citizenid string
 ---@return table
@@ -72,6 +95,7 @@ mdt.register('person', function(_, data)
         phone = person.charinfo.phone,
         job = person.job and person.job.label,
         online = person.source ~= nil,
+        id = person.source,
         fingerprint = metadata.fingerprint,
         bloodtype = metadata.bloodtype,
         anklet = metadata.tracker == true,
