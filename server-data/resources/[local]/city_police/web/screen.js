@@ -42,6 +42,23 @@ function closeArrest() {
     post('arrestClose');
 }
 
+function radarCell(side, reading, label) {
+    $(`radar-${side}-label`).textContent = label || '';
+    $(`radar-${side}-speed`).textContent = reading ? String(reading.speed) : '--';
+    $(`radar-${side}-plate`).textContent = reading ? reading.plate : '';
+}
+
+function showRadar(message) {
+    const labels = message.labels || {};
+
+    radarCell('front', message.front, labels.front);
+    radarCell('rear', message.rear, labels.rear);
+    $('radar-own-label').textContent = labels.own || '';
+    $('radar-own-speed').textContent = String(message.own);
+    $('radar-lock').textContent = labels.locked || '';
+    $('radar').classList.remove('hidden');
+}
+
 $('arrest-ok').addEventListener('click', closeArrest);
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && !$('arrest').classList.contains('hidden')) closeArrest();
@@ -64,5 +81,20 @@ window.addEventListener('message', (event) => {
         $('camera').classList.remove('hidden');
     } else if (message.action === 'cameraOff') {
         $('camera').classList.add('hidden');
+    } else if (message.action === 'bodycam') {
+        $('cam-label').textContent = `BODYCAM · ${message.label}`;
+        $('cam-time').textContent = '';
+        $('cam-offline').classList.add('hidden');
+        $('cam-help').textContent = message.help;
+        $('camera').classList.remove('hidden');
+    } else if (message.action === 'radar') {
+        showRadar(message);
+    } else if (message.action === 'radarLock') {
+        $('radar-lock').classList.toggle('hidden', !message.locked);
+    } else if (message.action === 'radarOff') {
+        $('radar').classList.add('hidden');
+        $('radar-lock').classList.add('hidden');
+    } else if (message.action === 'headBag') {
+        $('head-bag').classList.toggle('hidden', !message.on);
     }
 });

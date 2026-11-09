@@ -266,31 +266,34 @@ return {
     ['diamond'] = {
         label = 'Diamond',
         category = 'valuable',
-        weight = 1500,
+        weight = 50,
+        description = 'A cut diamond.',
+        client = { image = 'diamond_ring.png' },
     },
 
     ['diamond_ring'] = {
         label = 'Diamond Ring',
         category = 'valuable',
-        weight = 1500,
+        weight = 100,
     },
 
     ['rolex'] = {
         label = 'Golden Watch',
         category = 'valuable',
-        weight = 1500,
+        weight = 100,
     },
 
     ['goldbar'] = {
         label = 'Gold Bar',
         category = 'valuable',
-        weight = 1500,
+        weight = 2500,
+        description = 'Smelted from gold ore and a silver bar.',
     },
 
     ['goldchain'] = {
         label = 'Golden Chain',
         category = 'valuable',
-        weight = 1500,
+        weight = 100,
     },
 
     ['10kgoldchain'] = {
@@ -501,9 +504,10 @@ return {
     },
 
     ['steel'] = {
-        label = 'Steel',
+        label = 'Steel Ingot',
         category = 'material',
-        weight = 100,
+        weight = 3000,
+        description = 'Made from iron ingots and coal at a smelter (city_mining).',
     },
 
     ['rubber'] = {
@@ -519,15 +523,17 @@ return {
     },
 
     ['iron'] = {
-        label = 'Iron',
+        label = 'Iron Ingot',
         category = 'material',
-        weight = 100,
+        weight = 2000,
+        description = 'Smelted from iron ore.',
     },
 
     ['copper'] = {
-        label = 'Copper',
+        label = 'Copper Ingot',
         category = 'material',
-        weight = 100,
+        weight = 2000,
+        description = 'Smelted from copper ore.',
     },
 
     ['aluminum'] = {
@@ -746,6 +752,32 @@ return {
         label = 'Handcuffs',
         category = 'tool',
         weight = 200,
+    },
+
+    -- city_police: used on a player with their hands up, cuffed or down
+    ['zipties'] = {
+        label = 'Zip Ties',
+        category = 'tool',
+        weight = 20,
+        description = 'Ties the hands of someone who has given up. Cut with a knife.',
+        client = { image = 'ziptie.png' },
+    },
+
+    ['head_bag'] = {
+        label = 'Head Bag',
+        category = 'tool',
+        weight = 150,
+        description = 'Goes over the head of someone who has given up.',
+        client = { image = 'paperbag.png' },
+    },
+
+    -- city_police: forces a locked car open (police on duty)
+    ['crowbar'] = {
+        label = 'Crowbar',
+        category = 'tool',
+        weight = 1500,
+        description = 'Police issue. Forces locked car doors.',
+        client = { image = 'weapon_crowbar.png' },
     },
 
     -- Prison contraband (city_prison): parts found in hidden spots, combined into the three below
@@ -1398,5 +1430,195 @@ return {
         close = true,
         consume = 0,
         client = { image = 'tunerchip.png' },
+    },
+
+    -- Mining (city_mining): licences, tools, safety gear, ore, ingots, geodes, gems, jewellery. Images marked as
+    -- placeholders until the real ones are made (list in docs/city-mining.md).
+    ['mining_license'] = {
+        label = 'Mining Licence',
+        category = 'document',
+        weight = 10,
+        stack = false,
+        description = 'Lets you sell ore and use the smelter. Bought at the mining shop.',
+        client = { image = 'driver_license.png' },
+    },
+
+    ['explosives_license'] = {
+        label = 'Explosives Licence',
+        category = 'document',
+        weight = 10,
+        stack = false,
+        description = 'Lets you buy dynamite. The police must grant it in the MDT first.',
+        client = { image = 'id_card.png' },
+    },
+
+    ['pickaxe'] = {
+        label = 'Pickaxe',
+        category = 'tool',
+        weight = 2500,
+        stack = false,
+        description = 'Breaks tier 1 veins.',
+        client = { image = 'weapon_stone_hatchet.png' },
+    },
+
+    ['steel_pickaxe'] = {
+        label = 'Steel Pickaxe',
+        category = 'tool',
+        weight = 2800,
+        stack = false,
+        description = 'Breaks veins up to tier 2.',
+        client = { image = 'weapon_stone_hatchet.png' },
+    },
+
+    ['hardened_pickaxe'] = {
+        label = 'Hardened Pickaxe',
+        category = 'tool',
+        weight = 3000,
+        stack = false,
+        description = 'Breaks veins up to tier 3.',
+        client = { image = 'weapon_stone_hatchet.png' },
+    },
+
+    ['diamond_pickaxe'] = {
+        label = 'Diamond Pickaxe',
+        category = 'tool',
+        weight = 3200,
+        stack = false,
+        description = 'Breaks every vein.',
+        client = { image = 'weapon_stone_hatchet.png' },
+    },
+
+    ['gold_pan'] = {
+        label = 'Gold Pan',
+        category = 'tool',
+        weight = 1000,
+        stack = false,
+        description = 'Pan the gravel spots in the rivers.',
+        client = { image = 'scrapmetal.png' },
+    },
+
+    ['sluice_box'] = {
+        label = 'Sluice Box',
+        category = 'tool',
+        weight = 8000,
+        stack = false,
+        description = 'Use it at a river gravel spot and stay close. Needs the Golden Pan skill.',
+        client = { image = 'scrapmetal.png' },
+    },
+
+    ['mining_helmet'] = {
+        label = 'Mining Helmet',
+        category = 'tool',
+        weight = 800,
+        stack = false,
+        description = 'Use it to put it on: a lamp, and less harm in a cave-in.',
+        client = { image = 'weapon_hammer.png' },
+    },
+
+    ['mining_gloves'] = {
+        label = 'Mining Gloves',
+        category = 'tool',
+        weight = 300,
+        stack = false,
+        description = 'Your tools wear slower while you carry them.',
+        client = { image = 'weapon_hammer.png' },
+    },
+
+    ['mining_boots'] = {
+        label = 'Mining Boots',
+        category = 'tool',
+        weight = 1200,
+        stack = false,
+        description = 'You walk faster with a heavy load while you carry them.',
+        client = { image = 'weapon_hammer.png' },
+    },
+
+    ['home_furnace'] = {
+        label = 'Home Furnace',
+        category = 'tool',
+        weight = 30000,
+        stack = false,
+        description = 'Use it inside your property to install it. Slow, small batches, no stamp.',
+        client = { image = 'scrapmetal.png' },
+    },
+
+    ['dynamite'] = {
+        label = 'Dynamite',
+        category = 'tool',
+        weight = 500,
+        description = 'Registered dynamite. Breaks boulders and rockfalls.',
+        client = { image = 'weapon_stickybomb.png' },
+    },
+
+    ['homemade_dynamite'] = {
+        label = 'Homemade Dynamite',
+        category = 'tool',
+        weight = 500,
+        description = 'Unstable and unregistered.',
+        client = { image = 'weapon_pipebomb.png' },
+    },
+
+    ['gunpowder'] = {
+        label = 'Gunpowder',
+        category = 'material',
+        weight = 250,
+        client = { image = 'scrapmetal.png' },
+    },
+
+    ['copper_ore'] = { label = 'Copper Ore', category = 'material', weight = 1000, client = { image = 'copper.png' } },
+    ['iron_ore'] = { label = 'Iron Ore', category = 'material', weight = 1000, client = { image = 'iron.png' } },
+    ['coal'] = { label = 'Coal', category = 'material', weight = 500, client = { image = 'scrapmetal.png' } },
+    ['silver_ore'] = { label = 'Silver Ore', category = 'material', weight = 1000, client = { image = 'steel.png' } },
+    ['quartz'] = { label = 'Quartz', category = 'material', weight = 500, client = { image = 'steel.png' } },
+    ['saltpeter'] = { label = 'Saltpeter', category = 'material', weight = 500, client = { image = 'scrapmetal.png' } },
+    ['gold_ore'] = { label = 'Gold Ore', category = 'material', weight = 1000, client = { image = 'goldbar.png' } },
+    ['platinum_ore'] = { label = 'Platinum Ore', category = 'material', weight = 1000, client = { image = 'steel.png' } },
+    ['gold_nugget'] = { label = 'Gold Nugget', category = 'valuable', weight = 50, client = { image = 'goldbar.png' } },
+
+    ['silver_bar'] = {
+        label = 'Silver Bar',
+        category = 'valuable',
+        weight = 2000,
+        description = 'Smelted from silver ore.',
+        client = { image = 'steel.png' },
+    },
+
+    ['platinum_bar'] = {
+        label = 'Platinum Bar',
+        category = 'valuable',
+        weight = 2500,
+        description = 'Smelted from platinum ore and a gold bar.',
+        client = { image = 'steel.png' },
+    },
+
+    ['geode'] = { label = 'Geode', category = 'misc', weight = 1500, description = 'Open it at Vangelico.', client = { image = 'scrapmetal.png' } },
+    ['deep_geode'] = { label = 'Deep Geode', category = 'misc', weight = 2000, description = 'Open it at Vangelico.', client = { image = 'scrapmetal.png' } },
+    ['ancient_geode'] = { label = 'Ancient Geode', category = 'misc', weight = 2500, description = 'Open it at Vangelico.', client = { image = 'scrapmetal.png' } },
+
+    ['rough_amethyst'] = { label = 'Rough Amethyst', category = 'valuable', weight = 100, client = { image = 'diamond_ring.png' } },
+    ['rough_topaz'] = { label = 'Rough Topaz', category = 'valuable', weight = 100, client = { image = 'diamond_ring.png' } },
+    ['rough_emerald'] = { label = 'Rough Emerald', category = 'valuable', weight = 100, client = { image = 'diamond_ring.png' } },
+    ['rough_ruby'] = { label = 'Rough Ruby', category = 'valuable', weight = 100, client = { image = 'diamond_ring.png' } },
+    ['rough_diamond'] = { label = 'Rough Diamond', category = 'valuable', weight = 100, client = { image = 'diamond_ring.png' } },
+    ['amethyst'] = { label = 'Amethyst', category = 'valuable', weight = 50, client = { image = 'diamond_ring.png' } },
+    ['topaz'] = { label = 'Topaz', category = 'valuable', weight = 50, client = { image = 'diamond_ring.png' } },
+    ['emerald'] = { label = 'Emerald', category = 'valuable', weight = 50, client = { image = 'diamond_ring.png' } },
+    ['ruby'] = { label = 'Ruby', category = 'valuable', weight = 50, client = { image = 'diamond_ring.png' } },
+    ['gem_dust'] = { label = 'Gem Dust', category = 'misc', weight = 50, description = 'What is left of a gem that broke.', client = { image = 'scrapmetal.png' } },
+
+    ['silver_ring'] = { label = 'Silver Ring', category = 'valuable', weight = 100, client = { image = 'diamond_ring.png' } },
+    ['emerald_necklace'] = { label = 'Emerald Necklace', category = 'valuable', weight = 100, client = { image = 'goldchain.png' } },
+    ['ruby_ring'] = { label = 'Ruby Ring', category = 'valuable', weight = 100, client = { image = 'diamond_ring.png' } },
+    ['platinum_watch'] = { label = 'Platinum Watch', category = 'valuable', weight = 100, client = { image = 'rolex.png' } },
+
+    ['ancient_coin'] = { label = 'Ancient Coin', category = 'valuable', weight = 300, client = { image = 'goldbar.png' } },
+    ['old_relic'] = { label = 'Old Relic', category = 'valuable', weight = 300, client = { image = 'goldchain.png' } },
+    ['fossil'] = { label = 'Fossil', category = 'valuable', weight = 300, client = { image = 'scrapmetal.png' } },
+    ['mountain_heart'] = {
+        label = 'Heart of the Mountain',
+        category = 'valuable',
+        weight = 1000,
+        description = 'One of a kind. Only ancient geodes hold it.',
+        client = { image = 'diamond_ring.png' },
     },
 }
