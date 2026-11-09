@@ -32,14 +32,14 @@ lib.callback.register('city_robbery:plantAtm', function(source, atmCoords)
     local coords = common.toVec(atmCoords)
     if not coords then
         common.warn(src, 'sent bad ATM coords')
-        return false
+        return common.deny(src, 'failed', 'bad ATM coords')
     end
 
-    if common.session(src) then return false, 'busy' end
-    if not common.near(src, coords, atm.maxDistance) then return false, 'too_far' end
-    if common.isDown(src) then return false, 'cant_now' end
-    if onCooldown(coords) then return false, 'atm_cooldown' end
-    if exports.city_inventory:GetItemCount(src, atm.item) < 1 then return false, 'no_c4' end
+    if common.session(src) then return common.deny(src, 'busy') end
+    if not common.near(src, coords, atm.maxDistance) then return common.deny(src, 'too_far') end
+    if common.isDown(src) then return common.deny(src, 'cant_now') end
+    if onCooldown(coords) then return common.deny(src, 'atm_cooldown') end
+    if exports.city_inventory:GetItemCount(src, atm.item) < 1 then return common.deny(src, 'no_c4') end
 
     common.start(src, { kind = 'atm', coords = coords, ttl = (atm.plantSeconds + 30) * 1000 })
 
@@ -74,20 +74,20 @@ lib.callback.register('city_robbery:armAtm', function(source)
     if not exports.qbx_core:GetPlayer(src) then return false end
 
     local session = common.session(src)
-    if not session or session.kind ~= 'atm' then return false end
+    if not session or session.kind ~= 'atm' then return common.deny(src, 'failed', 'no ATM robbery going') end
 
     common.stop(src)
 
     if not common.waited(session, atm.plantSeconds) then
         common.warn(src, 'armed the C4 too fast')
-        return false
+        return common.deny(src, 'failed', 'armed too fast')
     end
 
-    if not common.near(src, session.coords, atm.maxDistance + 1.0) then return false, 'too_far' end
-    if common.isDown(src) then return false, 'cant_now' end
+    if not common.near(src, session.coords, atm.maxDistance + 1.0) then return common.deny(src, 'too_far') end
+    if common.isDown(src) then return common.deny(src, 'cant_now') end
     -- Someone else blew it while this one was planting
-    if onCooldown(session.coords) then return false, 'atm_cooldown' end
-    if not exports.city_inventory:RemoveItem(src, atm.item, 1) then return false, 'no_c4' end
+    if onCooldown(session.coords) then return common.deny(src, 'atm_cooldown') end
+    if not exports.city_inventory:RemoveItem(src, atm.item, 1) then return common.deny(src, 'no_c4') end
 
     blown[#blown + 1] = { coords = session.coords, untilTime = os.time() + atm.fuseSeconds + atm.cooldownSeconds }
 

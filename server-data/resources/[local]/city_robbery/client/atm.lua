@@ -27,7 +27,7 @@ local function plant(entity)
 
     local ok, reason = lib.callback.await('city_robbery:plantAtm', false, GetEntityCoords(entity))
     if not ok then
-        if reason then lib.notify({ description = locale(reason), type = 'error' }) end
+        lib.notify({ description = locale(reason or 'failed'), type = 'error' })
         return
     end
 
@@ -42,6 +42,7 @@ local function plant(entity)
     })
 
     if not done then
+        lib.notify({ description = locale('cancelled'), type = 'error' })
         lib.callback.await('city_robbery:cancel', false)
         busy = false
         return
@@ -51,7 +52,7 @@ local function plant(entity)
     busy = false
 
     if not armed then
-        if result then lib.notify({ description = locale(result), type = 'error' }) end
+        lib.notify({ description = locale(result or 'failed'), type = 'error' })
         return
     end
 

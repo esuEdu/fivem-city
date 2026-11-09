@@ -24,8 +24,8 @@ local function pickUp(id)
     local ok, result = lib.callback.await('city_robbery:pickBag', false, tonumber(id))
     if ok then
         lib.notify({ description = locale('picked_up', result), type = 'success' })
-    elseif result then
-        lib.notify({ description = locale(result), type = 'error' })
+    else
+        lib.notify({ description = locale(result or 'failed'), type = 'error' })
     end
 end
 

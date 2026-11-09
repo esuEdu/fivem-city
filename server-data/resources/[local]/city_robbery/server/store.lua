@@ -25,19 +25,19 @@ lib.callback.register('city_robbery:startStore', function(source, id)
     local location = math.type(id) == 'integer' and locations[id]
     if not location then
         common.warn(src, ('sent an unknown store %s'):format(id))
-        return false
+        return common.deny(src, 'failed', 'unknown store')
     end
 
     local coords = vec3(location.x, location.y, location.z)
 
-    if common.session(src) then return false, 'busy' end
-    if not common.near(src, coords, store.targetRadius + 2.0) then return false, 'too_far' end
-    if common.isDown(src) then return false, 'cant_now' end
-    if (cooldowns[id] or 0) > os.time() then return false, 'store_cooldown' end
+    if common.session(src) then return common.deny(src, 'busy') end
+    if not common.near(src, coords, store.targetRadius + 2.0) then return common.deny(src, 'too_far') end
+    if common.isDown(src) then return common.deny(src, 'cant_now') end
+    if (cooldowns[id] or 0) > os.time() then return common.deny(src, 'store_cooldown') end
 
     local override = false
     if common.policeOnDuty() < store.minPolice then
-        if not common.isStaff(src) then return false, 'no_police' end
+        if not common.isStaff(src) then return common.deny(src, 'no_police') end
 
         override = true
         logOverride(src, id)
@@ -62,17 +62,17 @@ lib.callback.register('city_robbery:finishStore', function(source)
     if not exports.qbx_core:GetPlayer(src) then return false end
 
     local session = common.session(src)
-    if not session or session.kind ~= 'store' then return false end
+    if not session or session.kind ~= 'store' then return common.deny(src, 'failed', 'no store robbery going') end
 
     common.stop(src)
 
     if not common.waited(session, store.seconds) then
         common.warn(src, 'finished a store robbery too fast')
-        return false
+        return common.deny(src, 'failed', 'finished too fast')
     end
 
-    if not common.near(src, session.coords, store.maxDistance) then return false, 'too_far' end
-    if common.isDown(src) then return false, 'cant_now' end
+    if not common.near(src, session.coords, store.maxDistance) then return common.deny(src, 'too_far') end
+    if common.isDown(src) then return common.deny(src, 'cant_now') end
 
     bags.add('store', GetEntityCoords(GetPlayerPed(src)), settings.store.amount)
 

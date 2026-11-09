@@ -81,6 +81,17 @@ function common.warn(src, reason)
     lib.print.warn(('city_robbery: player %s %s'):format(src, reason))
 end
 
+---Refuses a robbery step: logged with the reason (so staff can see why in the console) and sent to the client.
+---@param src integer
+---@param reason string locale key shown to the player
+---@param detail? string extra detail for the log
+---@return false, string
+function common.deny(src, reason, detail)
+    lib.print.info(('city_robbery: refused player %s (%s): %s%s'):format(src, GetPlayerName(src) or '?', reason, detail and (' - ' .. detail) or ''))
+
+    return false, reason
+end
+
 lib.callback.register('city_robbery:cancel', function(source)
     sessions[source] = nil
 end)
