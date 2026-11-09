@@ -37,7 +37,7 @@ end
 -- Config.Permissions keys that belong to a part of the job in Config.Features
 local FEATURE_OF = {
     map = 'map', bodycam = 'bodycam', cameras = 'cameras', evidence = 'evidence', certs = 'certs', grantCert = 'certs',
-    anklet = 'anklet',
+    anklet = 'anklet', weapons = 'weapons', reports = 'reports', editAnyReport = 'reports', bolos = 'bolos',
 }
 
 ---@param src integer

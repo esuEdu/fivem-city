@@ -23,6 +23,9 @@ Config.Features = {
     evidence = false, -- casings, blood and fingerprints on the ground, the lab and the Evidence tab
     certs = false, -- certifications; off, garage vehicles need none
     anklet = false, -- ankle monitors
+    weapons = false, -- the Weapons tab (registered serials; shop purchases are still recorded)
+    reports = false, -- the Reports tab
+    bolos = false, -- the BOLOs tab
 }
 
 -- Lowest job grade for each MDT action (0 Recruit, 1 Officer, 2 Sergeant, 3 Lieutenant, 4 Chief)

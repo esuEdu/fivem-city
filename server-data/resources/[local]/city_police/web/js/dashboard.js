@@ -60,7 +60,7 @@ export async function renderDashboard() {
             tile('dispatch', 'red', L('ui_open_calls'), data.openCalls, null, can('dispatch') ? 'dispatch' : null),
             tile('units', 'blue', L('ui_units_on_duty'), data.units, null, 'units'),
             tile('warrants', 'gold', L('ui_active_warrants'), data.warrants, null, can('warrants') ? 'warrants' : null),
-            tile('bolos', 'blue', L('ui_active_bolos'), data.bolos, null, can('bolos') ? 'bolos' : null),
+            can('bolos') ? tile('bolos', 'blue', L('ui_active_bolos'), data.bolos, null, 'bolos') : null,
             tile('charges', 'green', L('ui_today'), L('ui_arrests_fines', data.arrests, data.fines), money(data.fined)),
             tile('impounds', 'grey', L('ui_impounded'), data.impounds, null, can('impound') ? 'impounds' : null),
         ),
