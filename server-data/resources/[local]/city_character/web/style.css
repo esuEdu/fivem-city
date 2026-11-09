@@ -553,6 +553,18 @@ button, input, select { font: inherit; color: inherit; }
 .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .field.is-invalid input { border-color: var(--danger); }
 .field__error { font-size: 0.75rem; color: var(--danger); min-height: 1em; }
+.suggest {
+    display: none;
+    max-height: 13rem;
+    overflow-y: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: rgba(0, 0, 0, 0.45);
+}
+.suggest.is-open { display: block; }
+.suggest__row { padding: 0.55rem 0.95rem; font-size: 0.88rem; cursor: pointer; }
+.suggest__row:hover { background: var(--slot-hover); }
+.suggest__row.is-active { background: var(--accent-soft); color: var(--accent); }
 .fields-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
 
 .idcard {
