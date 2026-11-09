@@ -91,6 +91,22 @@ return {
         },
     },
 
+    -- Car care at LS Customs (Burton), open to everyone; no blip of its own, city_mechanic's LS Customs blip is on the
+    -- same spot. Coordinates placed without the game open: check them in game with /coords (city_base).
+    MechanicStore = {
+        name = 'Mechanic Supplies',
+        ped = `s_m_m_autoshop_01`,
+        inventory = {
+            { name = 'repairkit', price = 200 },
+            { name = 'advancedrepairkit', price = 600 },
+            { name = 'cleaningkit', price = 75 },
+            { name = 'jerry_can', price = 200 },
+        },
+        locations = {
+            vec4(-347.6, -133.4, 39.01, 250.0),
+        },
+    },
+
     Ammunation = {
         name = 'Ammunation',
         blip = { id = 110, colour = 69, scale = 0.8 },
