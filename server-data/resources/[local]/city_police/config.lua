@@ -24,7 +24,8 @@ Config.Features = {
     certs = false, -- certifications; off, garage vehicles need none
     anklet = false, -- ankle monitors
     weapons = false, -- the Weapons tab (registered serials; shop purchases are still recorded)
-    reports = false, -- the Reports tab
+    cases = true, -- the Cases tab (incident reports with people, tags, charges and photos)
+    warrants = false, -- the Warrants tab and issuing warrants (exports.city_police:IssueWarrant still works)
     bolos = false, -- the BOLOs tab
 }
 
@@ -64,6 +65,20 @@ Config.Certs = {
     { id = 'interceptor', label = 'Interceptor' },
     { id = 'tactical', label = 'Tactical (SWAT)' },
     { id = 'forensics', label = 'Forensics' },
+}
+
+-- Crime tags on a case (color: green, gold, bad, blue). Adding one puts its template at the end of an empty or
+-- untouched description, for the officer to fill in.
+Config.CaseTags = {
+    { id = 'pursuit', label = 'Pursuit', color = 'gold', template = 'Pursuit:\n- Started at:\n- Vehicle and plate:\n- Route and end:\n' },
+    { id = 'robbery', label = 'Robbery', color = 'bad', template = 'Robbery:\n- Place robbed:\n- What was taken:\n- Weapons seen:\n' },
+    { id = 'assault', label = 'Assault', color = 'bad', template = 'Assault:\n- Victim:\n- Injuries:\n- Weapon used:\n' },
+    { id = 'shooting', label = 'Shooting', color = 'bad', template = 'Shooting:\n- Shots fired at:\n- Weapon and casings:\n- Wounded:\n' },
+    { id = 'drugs', label = 'Drugs', color = 'green', template = 'Drugs:\n- Substance and amount:\n- Where it was found:\n' },
+    { id = 'traffic', label = 'Traffic', color = 'blue', template = 'Traffic stop:\n- Vehicle and plate:\n- Reason for the stop:\n- Driver condition:\n' },
+    { id = 'theft', label = 'Vehicle theft', color = 'gold', template = 'Vehicle theft:\n- Vehicle and plate:\n- Owner:\n- Where it was recovered:\n' },
+    { id = 'kidnapping', label = 'Kidnapping', color = 'bad', template = 'Kidnapping:\n- Hostage:\n- Demands:\n- How it ended:\n' },
+    { id = 'other', label = 'Other', color = 'blue', template = '' },
 }
 
 -- Officer statuses on the Units tab

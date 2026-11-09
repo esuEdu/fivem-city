@@ -1,4 +1,4 @@
-import { el, L, run, icon, heading, duration, money, ago, empty } from './ui.js';
+import { el, L, run, icon, heading, duration, ago, empty } from './ui.js';
 import { app, can, go, setCallCount, setMyStatus } from './main.js';
 
 function tile(iconName, color, label, value, sub, tab) {
@@ -61,10 +61,9 @@ export async function renderDashboard() {
         el('div', { class: 'tiles' },
             tile('dispatch', 'red', L('ui_open_calls'), data.openCalls, null, can('dispatch') ? 'dispatch' : null),
             tile('units', 'blue', L('ui_units_on_duty'), data.units, null, 'units'),
-            tile('warrants', 'gold', L('ui_active_warrants'), data.warrants, null, can('warrants') ? 'warrants' : null),
+            tile('prison', 'gold', L('ui_inmates_now'), data.inmates, null, can('charge') ? 'prison' : null),
             can('bolos') ? tile('bolos', 'blue', L('ui_active_bolos'), data.bolos, null, 'bolos') : null,
-            tile('charges', 'green', L('ui_today'), L('ui_arrests_fines', data.arrests, data.fines), money(data.fined)),
-            tile('impounds', 'grey', L('ui_impounded'), data.impounds, null, can('impound') ? 'impounds' : null),
+            tile('charges', 'green', L('ui_today'), L('ui_arrests_fines', data.arrests, data.fines), null),
         ),
         el('div', { class: 'two-cols' }, calls, el('div', { class: 'stack small' }, shift, notices)),
     );

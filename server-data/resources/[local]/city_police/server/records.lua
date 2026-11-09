@@ -44,15 +44,15 @@ function records.total(list)
     }
 end
 
----@param data { citizenid: string, name: string, kind: string, charges: table, months: integer, fine: integer, points: integer, notes: string?, officer: string, officerCid: string, photo: string?, fingerprint: string? }
+---@param data { citizenid: string, name: string, kind: string, charges: table, months: integer, fine: integer, points: integer, notes: string?, officer: string, officerCid: string, photo: string?, fingerprint: string?, caseId: integer? }
 ---@return integer id
 function records.add(data)
     return MySQL.insert.await([[
-        INSERT INTO city_police_records (citizenid, name, kind, charges, months, fine, points, notes, officer, officer_cid, photo, fingerprint, created)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO city_police_records (citizenid, name, kind, charges, months, fine, points, notes, officer, officer_cid, photo, fingerprint, report_id, created)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ]], {
         data.citizenid, data.name, data.kind, json.encode(data.charges), data.months, data.fine, data.points, data.notes,
-        data.officer, data.officerCid, data.photo, data.fingerprint, os.time(),
+        data.officer, data.officerCid, data.photo, data.fingerprint, data.caseId, os.time(),
     })
 end
 
@@ -78,6 +78,26 @@ end
 ---@param officer string
 function records.serveWarrants(citizenid, officer)
     MySQL.update.await("UPDATE city_police_warrants SET status = 'served', closed_by = ?, closed_at = ? WHERE citizenid = ? AND status = 'active'", { officer, os.time(), citizenid })
+end
+
+---The sentence after a reduction the officer chose: a percent off (first arrest, a lawyer) or a set number of months.
+---@param months integer from the penal code
+---@param reduction unknown { kind = 'percent' | 'months', value = integer } or nil
+---@return integer?
+function records.reduce(months, reduction)
+    if reduction == nil then return months end
+    if type(reduction) ~= 'table' then return end
+
+    local value = math.tointeger(reduction.value)
+    if not value or value < 0 then return end
+
+    if reduction.kind == 'percent' then
+        if value > 100 then return end
+        return math.floor(months * (100 - value) / 100)
+    elseif reduction.kind == 'months' then
+        if value > settings.maxMonths then return end
+        return value
+    end
 end
 
 return records

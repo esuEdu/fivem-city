@@ -42,6 +42,9 @@ local function list()
     return result
 end
 
+-- city_police's MDT Prison tab: everyone serving or escaped, newest first
+exports('Inmates', list)
+
 local function grades(src)
     local grade = util.policeGrade(src) or -1
     local allowed = {}

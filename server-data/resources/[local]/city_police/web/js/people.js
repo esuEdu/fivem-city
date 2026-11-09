@@ -1,5 +1,6 @@
 import { el, L, run, icon, pill, searchField, formatTime, dateOnly, money, empty, photo } from './ui.js';
 import { can, go } from './main.js';
+import { findPeople, searchPlaceholder, searchSwitch, personLabel } from './picker.js';
 
 let query = '';
 let results = [];
@@ -22,7 +23,7 @@ export function serverSearch(placeholder, action, onResults, initial = '') {
 function personRow(person) {
     return el('button', { class: `list-row${person.citizenid === selected ? ' on' : ''}`, onclick: () => go('people', { citizenid: person.citizenid }) },
         photo(null, person.name, 'small'),
-        el('span', { class: 'who' }, el('strong', { text: person.name }), el('small', { text: [person.citizenid, person.phone].filter(Boolean).join(' · ') })),
+        el('span', { class: 'who' }, el('strong', { text: personLabel(person) }), el('small', { text: [person.citizenid, person.phone].filter(Boolean).join(' · ') })),
         person.online ? el('i', { class: 'dot available' }) : null,
     );
 }
@@ -34,14 +35,32 @@ export async function renderPeople(args) {
     const draw = () => list.replaceChildren(...(results.length ? results.map(personRow) : [empty(L(query ? 'ui_no_results' : 'ui_search_hint'))]));
     draw();
 
+    let timer = null;
+    const input = el('input', { type: 'text', placeholder: searchPlaceholder(), value: query });
+    const lookup = () => {
+        clearTimeout(timer);
+        timer = setTimeout(async () => {
+            query = input.value.trim();
+            results = (await findPeople(query)) || [];
+            draw();
+        }, 300);
+    };
+    input.addEventListener('input', lookup);
+
+    const switcher = searchSwitch(() => {
+        input.placeholder = searchPlaceholder();
+        input.value = '';
+        query = '';
+        results = [];
+        draw();
+        input.focus();
+    });
+
     return el('div', { class: 'split' },
         el('div', { class: 'split-list' },
             el('div', { class: 'heading' }, el('h1', { text: L('ui_tab_people') })),
-            serverSearch(L('ui_search_people'), 'searchPeople', (value, data) => {
-                query = value;
-                results = data;
-                draw();
-            }, query),
+            switcher,
+            el('label', { class: 'search' }, icon('search', 16, 2), input),
             list,
         ),
         el('div', { class: 'split-detail' }, selected ? await personFile(selected) : el('div', { class: 'empty' }, icon('people', 40), el('p', { text: L('ui_pick_person') }))),
@@ -76,8 +95,8 @@ async function personFile(citizenid) {
     ];
 
     const actions = el('div', { class: 'button-row' },
-        can('charge') && person.online ? el('button', { class: 'kit-btn accent', onclick: () => go('charges', { citizenid: person.citizenid, name: person.name }) }, L('ui_charge')) : null,
-        can('reports') ? el('button', { class: 'kit-btn', onclick: () => go('reports', { new: true, person: { citizenid: person.citizenid, name: person.name } }) }, L('ui_new_report')) : null,
+        can('reports') ? el('button', { class: 'kit-btn accent', onclick: () => go('reports', { new: true, person: { citizenid: person.citizenid, name: person.name } }) }, L('ui_new_case')) : null,
+        can('charge') && person.online ? el('button', { class: 'kit-btn danger', onclick: () => go('prison', { person: { citizenid: person.citizenid, name: person.name, id: person.id } }) }, L('ui_jail')) : null,
         can('issueWarrant') ? el('button', { class: 'kit-btn', onclick: () => go('warrants', { issue: { citizenid: person.citizenid, name: person.name } }) }, L('ui_issue_warrant')) : null,
         can('licences') ? el('button', { class: 'kit-btn', onclick: () => go('licences', { citizenid: person.citizenid }) }, L('ui_tab_licences')) : null,
     );

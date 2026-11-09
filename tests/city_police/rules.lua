@@ -60,4 +60,17 @@ for action, grade in pairs(Config.Permissions) do
     assert(math.tointeger(grade) and grade >= 0 and grade <= 4, action)
 end
 
+
+-- Sentence reductions: none, a percent off (rounded down) or a set time; anything else is refused
+assert(records.reduce(40, nil) == 40)
+assert(records.reduce(40, { kind = 'percent', value = 25 }) == 30)
+assert(records.reduce(45, { kind = 'percent', value = 50 }) == 22)
+assert(records.reduce(40, { kind = 'percent', value = 100 }) == 0)
+assert(records.reduce(40, { kind = 'months', value = 12 }) == 12)
+assert(records.reduce(40, { kind = 'percent', value = 101 }) == nil)
+assert(records.reduce(40, { kind = 'percent', value = -5 }) == nil)
+assert(records.reduce(40, { kind = 'months', value = settings.maxMonths + 1 }) == nil)
+assert(records.reduce(40, { kind = 'other', value = 5 }) == nil)
+assert(records.reduce(40, 'half') == nil)
+
 print('city_police rules ok')

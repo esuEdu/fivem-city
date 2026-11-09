@@ -77,6 +77,7 @@ mdt.register('app', function(src)
         me = me(src),
         permissions = mdt.permissions(src),
         penal = penal,
+        caseTags = Config.CaseTags,
         statuses = Config.Statuses,
         certs = Config.Certs,
         grades = grades(),
@@ -103,16 +104,11 @@ mdt.register('dashboard', function(src)
     for _ in pairs(roster.all()) do units = units + 1 end
 
     local counts = MySQL.single.await([[
-        SELECT
-            SUM(kind = 'arrest') AS arrests,
-            SUM(kind = 'fine') AS fines,
-            COALESCE(SUM(fine), 0) AS fined
+        SELECT SUM(kind = 'arrest') AS arrests, SUM(kind = 'fine') AS fines
         FROM city_police_records WHERE created >= ?
     ]], { since }) or {}
 
-    local warrants = MySQL.scalar.await("SELECT COUNT(*) FROM city_police_warrants WHERE status = 'active' AND expires > ?", { os.time() }) or 0
     local notices = MySQL.query.await('SELECT id, text, author, created FROM city_police_notices ORDER BY id DESC LIMIT 5') or {}
-    local impounds = MySQL.scalar.await('SELECT COUNT(*) FROM city_police_impounds WHERE released_at IS NULL') or 0
 
     return true, {
         me = me(src),
@@ -120,12 +116,10 @@ mdt.register('dashboard', function(src)
         openCalls = #calls,
         calls = latest,
         units = units,
-        warrants = warrants,
-        bolos = mdt.activeBolos(),
-        impounds = impounds,
+        inmates = mdt.inmateCount(),
+        bolos = police.can(src, 'bolos') and mdt.activeBolos() or 0,
         arrests = tonumber(counts.arrests) or 0,
         fines = tonumber(counts.fines) or 0,
-        fined = tonumber(counts.fined) or 0,
         notices = notices,
     }
 end, 'app')
