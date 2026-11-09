@@ -17,7 +17,7 @@ local ACTIONS = {
     impounds = true, impound = true, release = true,
     licences = true, setLicence = true,
     evidence = true, analyze = true, evidenceItem = true, scanFingerprint = true, viewCamera = true,
-    members = true, setCert = true, setGrade = true, fire = true, hire = true, nearbyCivilians = true,
+    members = true, setCert = true, setGrade = true, fire = true, offer = true,
     notices = true, addNotice = true, deleteNotice = true,
 }
 
@@ -138,4 +138,25 @@ RegisterNetEvent('city_police:client:mdtRefresh', function(what)
     if GetInvokingResource() then return end
 
     exports.city_os:SendAppMessage(Config.App.id, { type = 'refresh', what = what })
+end)
+
+-- The chief offered this player a job in the police (MDT Management); no answer in time is a no
+lib.callback.register('city_police:jobOffer', function(chief)
+    local answered = false
+
+    SetTimeout(Config.OfferSeconds * 1000, function()
+        if not answered then lib.closeAlertDialog() end
+    end)
+
+    local answer = lib.alertDialog({
+        header = locale('offer_title'),
+        content = locale('offer_text', chief),
+        centered = true,
+        cancel = true,
+        labels = { confirm = locale('offer_accept'), cancel = locale('offer_decline') },
+    })
+
+    answered = true
+
+    return answer == 'confirm'
 end)

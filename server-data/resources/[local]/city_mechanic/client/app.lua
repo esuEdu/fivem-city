@@ -3,7 +3,7 @@
 
 -- Server callbacks the page may call (city_mechanic:app:<name>)
 local ACTIONS = {
-    app = true, dashboard = true, services = true, team = true, candidates = true, hire = true, setGrade = true, fire = true,
+    app = true, dashboard = true, services = true, team = true, offer = true, setGrade = true, fire = true,
 }
 
 ---"Zone, Street" for a position; street names only exist on the client.
@@ -73,4 +73,25 @@ RegisterNetEvent('city_mechanic:client:appMessage', function(message)
     if GetInvokingResource() or type(message) ~= 'table' then return end
 
     exports.city_os:SendAppMessage(Config.App.id, message)
+end)
+
+-- A boss offered this player the job (Management tab); no answer in time is a no
+lib.callback.register('city_mechanic:jobOffer', function(shop, grade, boss)
+    local answered = false
+
+    SetTimeout(Config.App.offerSeconds * 1000, function()
+        if not answered then lib.closeAlertDialog() end
+    end)
+
+    local answer = lib.alertDialog({
+        header = locale('offer_title'),
+        content = locale('offer_text', boss, shop, grade),
+        centered = true,
+        cancel = true,
+        labels = { confirm = locale('offer_accept'), cancel = locale('offer_decline') },
+    })
+
+    answered = true
+
+    return answer == 'confirm'
 end)

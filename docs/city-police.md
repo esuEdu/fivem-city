@@ -30,7 +30,7 @@ Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuff
 | **Evidence** | Evidence bags in your inventory: analyze them at the lab (forensics certification) to turn a casing into a weapon serial, blood into a DNA match and a fingerprint into a person. Results are saved and can go into a report. |
 | **Cameras** | The security cameras of shops, banks and the jeweler. Viewing one puts the tablet away; arrows change camera, Backspace leaves. Cameras a robbery cut show as offline. |
 | **Certifications** | Each officer's certifications; lieutenants and up give or take them. |
-| **Management** | (Chief) hire a nearby player, promote, demote, fire, see each officer's hours this week and in total, last time on duty; write notices for the Dashboard. |
+| **Management** | Every officer sees the roster: rank, hours this week and in total, on duty / online / offline. The chief sends a job offer by server id (the player accepts or declines on screen), changes ranks and fires; notices for the Dashboard. |
 
 ## The field job
 

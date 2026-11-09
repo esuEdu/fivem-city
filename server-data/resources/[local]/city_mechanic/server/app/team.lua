@@ -103,46 +103,62 @@ core.register('fire', function(src, player, data)
     return true
 end, { boss = true })
 
--- The Hire tab: online players who don't work here yet, with their server id and current job
-core.register('candidates', function(src)
-    local members = {}
+---@param citizenid string
+---@return boolean
+local function isMember(citizenid)
     for _, member in ipairs(exports.qbx_core:GetGroupMembers(Config.Job, 'job') or {}) do
-        members[member.citizenid] = true
+        if member.citizenid == citizenid then return true end
     end
 
-    local list = {}
+    return false
+end
 
-    for target, player in pairs(exports.qbx_core:GetQBPlayers()) do
-        if target ~= src and not members[player.PlayerData.citizenid] then
-            local job = player.PlayerData.job
+---@type table<integer, true> players with an offer on screen
+local pending = {}
 
-            list[#list + 1] = {
-                id = target,
-                name = core.fullName(player),
-                job = job and job.name ~= 'unemployed' and job.label or nil,
-            }
-        end
-    end
-
-    table.sort(list, function(a, b) return a.id < b.id end)
-
-    return true, list
-end, { boss = true })
-
--- Any online player, by server id, at the lowest grade
-core.register('hire', function(src, player, data)
+-- The boss offers the job to any online player by server id; the player accepts or declines on their screen and starts
+-- at the lowest grade. The boss hears the answer.
+core.register('offer', function(src, player, data)
     local target = math.tointeger(data.target)
-    local hired = target and target ~= src and exports.qbx_core:GetPlayer(target)
-    if not hired then return false, 'no_player' end
+    local offered = target and target ~= src and exports.qbx_core:GetPlayer(target)
+    if not offered then return false, 'no_player' end
+    if isMember(offered.PlayerData.citizenid) then return false, 'already' end
+    if pending[target] then return false, 'pending' end
 
-    for _, member in ipairs(exports.qbx_core:GetGroupMembers(Config.Job, 'job') or {}) do
-        if member.citizenid == hired.PlayerData.citizenid then return false, 'already' end
-    end
+    pending[target] = true
 
-    if not exports.qbx_core:SetJob(target, Config.Job, 0) then return false, 'failed' end
+    local boss = core.fullName(player)
+    local name = core.fullName(offered)
+    local grade = exports.qbx_core:GetJob(Config.Job).grades[0]
 
-    exports.qbx_core:Notify(target, locale('hired_you', Config.Label), 'success')
-    lib.print.info(('city_mechanic: %s (%s) hired %s'):format(player.PlayerData.citizenid, src, hired.PlayerData.citizenid))
+    CreateThread(function()
+        local accepted = lib.callback.await('city_mechanic:jobOffer', target, Config.Label, grade and grade.name or '', boss) == true
+        pending[target] = nil
 
-    return true, core.fullName(hired)
+        local now = exports.qbx_core:GetPlayer(target)
+        if not now or now.PlayerData.citizenid ~= offered.PlayerData.citizenid then return end
+
+        -- The boss may have lost the grade, or someone else hired them, while the offer was open
+        local stillBoss = core.member(src)
+        if accepted and stillBoss and stillBoss.PlayerData.job.isboss and not isMember(now.PlayerData.citizenid)
+            and exports.qbx_core:SetJob(target, Config.Job, 0) then
+            exports.qbx_core:Notify(target, locale('hired_you', Config.Label), 'success')
+            lib.print.info(('city_mechanic: %s (%s) hired %s'):format(player.PlayerData.citizenid, src, now.PlayerData.citizenid))
+
+            if GetPlayerName(src) then
+                exports.qbx_core:Notify(src, locale('offer_accepted', name), 'success')
+                TriggerClientEvent('city_mechanic:client:appMessage', src, { type = 'team' })
+            end
+
+            return
+        end
+
+        if GetPlayerName(src) then exports.qbx_core:Notify(src, locale('offer_declined', name), 'error') end
+    end)
+
+    return true, name
 end, { boss = true })
+
+AddEventHandler('playerDropped', function()
+    pending[source] = nil
+end)

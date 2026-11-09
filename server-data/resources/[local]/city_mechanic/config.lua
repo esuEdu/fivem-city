@@ -20,6 +20,7 @@ Config.App = {
     },
     service = 'mechanic', -- city_dispatch service whose calls the app shows
     historyLimit = 60, -- services listed in the Services tab
+    offerSeconds = 60, -- how long a job offer from the boss stays on the player's screen
 }
 
 -- Staff with this ACE (support < mod < admin) may use the tuning bay without the mechanic job; always free, written

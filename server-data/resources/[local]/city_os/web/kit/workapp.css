@@ -85,10 +85,13 @@ button.wa-foot:hover { background: var(--hover); }
 .search input { flex-grow: 1; min-width: 0; border: 0; outline: 0; background: none; color: var(--fg); font: inherit; }
 .field { height: 38px; min-width: 0; padding: 0 12px; border: 0; border-radius: 10px; outline: 0; background: var(--field); color: var(--fg); font: inherit; }
 .field.wide { flex-grow: 1; }
+select.field { padding-right: 30px; appearance: none; cursor: pointer; background-image: linear-gradient(45deg, transparent 50%, var(--muted2) 50%), linear-gradient(135deg, var(--muted2) 50%, transparent 50%); background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
+select.field option { background: var(--group); color: var(--fg); }
 .kit-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
 .kit-btn.tint { border-color: transparent; background: var(--app-accent); color: var(--app-accent-text); }
 .kit-btn.success { border-color: transparent; background: var(--success); color: var(--page); }
 .kit-btn.soft-danger { border-color: transparent; background: var(--red-soft); color: var(--bad); }
+.kit-btn.small { height: 32px; padding: 0 11px; border-radius: 10px; font-size: 12px; }
 .kit-btn:disabled { opacity: 0.45; cursor: default; filter: none; }
 
 .meter { display: block; height: 5px; border-radius: 3px; background: var(--field); overflow: hidden; }

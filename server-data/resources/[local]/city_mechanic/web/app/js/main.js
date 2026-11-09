@@ -1,9 +1,8 @@
 // The Mechanic app: the WorkApp shell (city_os/web/kit/workapp.js) with this job's tabs.
 import { renderDashboard } from './dashboard.js';
 import { renderCalls, loadCalls } from './calls.js';
-import { renderTeam } from './team.js';
+import { renderManagement } from './management.js';
 import { renderServices } from './services.js';
-import { renderHire } from './hire.js';
 
 const { el, L, setLabels, run, shell, addIcons } = window.WorkApp;
 
@@ -23,8 +22,7 @@ export const app = shell({
     tabs: [
         { id: 'dashboard', icon: 'dashboard', label: () => L('ui_tab_dashboard'), render: renderDashboard },
         { id: 'calls', icon: 'bell', label: () => L('ui_tab_calls'), badge: () => (state.onDuty ? state.calls : 0), render: renderCalls },
-        { id: 'team', icon: 'players', label: () => L('ui_tab_team'), render: renderTeam },
-        { id: 'hire', icon: 'plus', label: () => L('ui_tab_hire'), visible: () => state.boss, render: renderHire },
+        { id: 'management', icon: 'players', label: () => L('ui_tab_management'), render: renderManagement },
         { id: 'services', icon: 'list', label: () => L('ui_tab_services'), render: renderServices },
     ],
     footer: () => el('div', { class: 'wa-foot' },
@@ -56,7 +54,14 @@ async function start() {
 }
 
 window.CityOS.on('message', async (message) => {
-    if (!message || message.type !== 'calls') return;
+    if (!message) return;
+
+    if (message.type === 'team') {
+        if (app.tab === 'management') app.go('management');
+        return;
+    }
+
+    if (message.type !== 'calls') return;
 
     await loadCalls();
     if (app.tab === 'calls' || app.tab === 'dashboard') app.go(app.tab);

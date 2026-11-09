@@ -50,7 +50,7 @@ const SECTIONS = [
     ] },
     { id: 'department', tabs: [
         { id: 'certs', icon: 'certs', permission: 'certs', render: renderCerts },
-        { id: 'management', icon: 'management', permission: 'management', render: renderManagement },
+        { id: 'management', icon: 'management', permission: 'app', render: renderManagement },
         { id: 'penal', icon: 'penal', permission: 'app', render: renderPenal },
     ] },
 ];
@@ -58,7 +58,7 @@ const SECTIONS = [
 const TABS = SECTIONS.flatMap((section) => section.tabs);
 
 // Tabs that redraw on their own when the server says calls or units changed
-const LIVE = { calls: ['dashboard', 'dispatch', 'map'], units: ['units', 'map', 'dashboard'] };
+const LIVE = { calls: ['dashboard', 'dispatch', 'map'], units: ['units', 'map', 'dashboard'], members: ['management', 'certs'] };
 
 export function can(action) {
     return app.permissions[action] === true;
