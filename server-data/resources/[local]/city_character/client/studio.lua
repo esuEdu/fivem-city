@@ -27,8 +27,27 @@ local function playIdle()
     RemoveAnimDict(idle.dict)
 end
 
--- How long to wait for the room's collision around a new ped before freezing it anyway
+-- How long to wait for the room's collision around a new ped, and for it to land on the floor, before freezing it anyway
 local COLLISION_WAIT_MS = 1500
+local LAND_WAIT_MS = 2000
+
+-- Where the ped stands once it landed; the camera and the lights follow it, not Config.Studio.ped
+local standing = vector3(Config.Studio.ped.x, Config.Studio.ped.y, Config.Studio.ped.z)
+
+---Lets the ped drop onto the floor and waits until it stops moving
+---@param ped integer
+local function land(ped)
+    local deadline = GetGameTimer() + LAND_WAIT_MS
+    local last = GetEntityCoords(ped).z
+    local still = 0
+
+    repeat
+        Wait(50)
+        local z = GetEntityCoords(ped).z
+        still = (math.abs(z - last) < 0.005 and not IsPedFalling(ped)) and still + 1 or 0
+        last = z
+    until still >= 3 or GetGameTimer() > deadline
+end
 
 local function placePed()
     -- After SetPlayerModel the player has a new ped; cache.ped only follows it on ox_lib's next tick
@@ -36,18 +55,26 @@ local function placePed()
     cache.ped = ped
     local spot = Config.Studio.ped
 
-    -- A ped frozen in the same frame it was created, before the room's collision is there, ends up pushed up into the
-    -- ceiling: place it unfrozen, wait for the collision, then place it again and freeze it
+    -- Freezing the ped right where it was put left it floating about a metre above the floor (head in the ceiling) after
+    -- a model swap: drop it unfrozen once the room's collision is there, and freeze it where it lands
     FreezeEntityPosition(ped, false)
     RequestCollisionAtCoord(spot.x, spot.y, spot.z)
     SetEntityCoords(ped, spot.x, spot.y, spot.z, false, false, false, false)
+    SetEntityHeading(ped, spot.w)
 
     local deadline = GetGameTimer() + COLLISION_WAIT_MS
     repeat Wait(0) until HasCollisionLoadedAroundEntity(ped) or GetGameTimer() > deadline
 
-    SetEntityCoords(ped, spot.x, spot.y, spot.z, false, false, false, false)
+    land(ped)
+
+    -- Fell through a floor that never loaded: back to the configured spot
+    if GetEntityCoords(ped).z < spot.z - 3.0 then
+        SetEntityCoords(ped, spot.x, spot.y, spot.z, false, false, false, false)
+    end
+
     SetEntityHeading(ped, spot.w)
     FreezeEntityPosition(ped, true)
+    standing = GetEntityCoords(ped)
     SetEntityInvincible(ped, true)
     SetEntityVisible(ped, true, false)
     ClearPedTasksImmediately(ped)
@@ -58,7 +85,7 @@ end
 local function framing(name)
     local spot = Config.Studio.ped
     local preset = Config.Cameras[name]
-    local base = vector3(spot.x, spot.y, spot.z)
+    local base = standing
     local dir = forward(spot.w)
     local distance = math.max(0.35, preset.distance - zoom)
     local target = base + vector3(0.0, 0.0, preset.height)
@@ -153,7 +180,7 @@ local function drawLoop()
     CreateThread(function()
         while active do
             local spot = Config.Studio.ped
-            local base = vector3(spot.x, spot.y, spot.z)
+            local base = standing
             local fwd, side = forward(spot.w), right(spot.w)
 
             for i = 1, #lights do
