@@ -62,5 +62,21 @@
     "ui_free": "Free",
     "ui_back": "Back",
     "ui_hint": "Drag to turn the camera, scroll to zoom",
-    "ui_search": "Search"
+    "ui_search": "Search",
+    "target_inspect": "Check vehicle",
+    "inspecting": "Checking vehicle...",
+    "inspect_title": "Vehicle check",
+    "inspect_engine": "Engine",
+    "inspect_brakes": "Brakes",
+    "inspect_transmission": "Transmission",
+    "inspect_suspension": "Suspension",
+    "inspect_armor": "Armor",
+    "inspect_turbo": "Turbo",
+    "inspect_body": "Body",
+    "inspect_engine_health": "Engine condition",
+    "inspect_fuel": "Fuel",
+    "inspect_level": "Level %s / %s",
+    "inspect_unavailable": "Not available for this car",
+    "inspect_fitted": "Fitted",
+    "inspect_none": "Not fitted"
 }
