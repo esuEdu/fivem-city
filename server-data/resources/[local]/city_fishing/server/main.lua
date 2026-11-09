@@ -48,7 +48,7 @@ end
 for name in pairs(gear.tackle) do
     exports.qbx_core:CreateUseableItem(name, function(source, used)
         local src = source
-        if not util.player(src) then return false end
+        if not Config.Features.tackle or not util.player(src) then return false end
 
         local slots = {}
         for _, item in pairs(exports.city_inventory:GetInventoryItems(src) or {}) do slots[#slots + 1] = item end
@@ -79,7 +79,7 @@ end
 
 exports.qbx_core:CreateUseableItem(gear.pot.item, function(source)
     local src = source
-    if not util.player(src) then return false end
+    if not Config.Features.pots or not util.player(src) then return false end
 
     TriggerClientEvent('city_fishing:client:placePot', src)
 

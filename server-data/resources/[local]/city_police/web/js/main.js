@@ -27,7 +27,7 @@ const SECTIONS = [
     { id: 'operations', tabs: [
         { id: 'dashboard', icon: 'dashboard', permission: 'app', render: renderDashboard },
         { id: 'dispatch', icon: 'dispatch', permission: 'dispatch', render: renderDispatch },
-        { id: 'map', icon: 'map', permission: 'app', render: renderMap },
+        { id: 'map', icon: 'map', permission: 'map', render: renderMap },
         { id: 'units', icon: 'units', permission: 'app', render: renderUnits },
     ] },
     { id: 'records', tabs: [

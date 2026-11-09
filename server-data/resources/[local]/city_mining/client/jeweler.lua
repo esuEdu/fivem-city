@@ -134,10 +134,12 @@ openJeweler = function()
     lib.showContext('city_mining_jeweler')
 end
 
-places.blip(Config.Jeweler.coords, Config.Jeweler.blip, locale('blip_jeweler'))
-places.add('jeweler', Config.JewelerPed, Config.Jeweler.coords, {
-    { name = 'city_mining:jeweler', icon = 'fa-solid fa-gem', label = locale('target_jeweler'), onSelect = openJeweler },
-})
+if Config.Features.jeweler then
+    places.blip(Config.Jeweler.coords, Config.Jeweler.blip, locale('blip_jeweler'))
+    places.add('jeweler', Config.JewelerPed, Config.Jeweler.coords, {
+        { name = 'city_mining:jeweler', icon = 'fa-solid fa-gem', label = locale('target_jeweler'), onSelect = openJeweler },
+    })
+end
 
 -- The crime buyer
 local function crimeSell()

@@ -110,8 +110,19 @@ end
 ---@param handler fun(src: integer, player: table, citizenid: string, ...): table
 local handlers = {}
 
+-- Panel requests that belong to a part of the bank in Config.Features
+local FEATURE_OF = {
+    loans = 'loans', requestLoan = 'loans', payInstallment = 'loans',
+    createSavings = 'savings',
+    schedule = 'scheduled', scheduleState = 'scheduled',
+}
+
 function access.panel(name, handler)
+    local feature = FEATURE_OF[name]
+
     local function run(src, player, ...)
+        if feature and not Config.Features[feature] then return { ok = false, error = 'feature_off' } end
+
         local ok, result = pcall(handler, src, player, player.PlayerData.citizenid, ...)
 
         if not ok then

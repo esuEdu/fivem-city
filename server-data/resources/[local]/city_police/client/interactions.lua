@@ -62,6 +62,8 @@ end
 
 ---@param target integer
 local function anklet(target)
+    if not Config.Features.anklet then return job.fail('feature_off') end
+
     local ok, result = lib.callback.await('city_police:anklet', false, target)
     if not ok then return job.fail(result) end
 
@@ -112,7 +114,7 @@ local OPTIONS = {
     { name = 'city_police:putin', label = locale('target_put_in'), icon = 'fas fa-car-side', fn = putInVehicle },
     { name = 'city_police:search', label = locale('target_search'), icon = 'fas fa-magnifying-glass', fn = search },
     { name = 'city_police:status', label = locale('target_status'), icon = 'fas fa-eye', fn = checkStatus },
-    { name = 'city_police:anklet', label = locale('target_anklet'), icon = 'fas fa-satellite-dish', fn = anklet },
+    Config.Features.anklet and { name = 'city_police:anklet', label = locale('target_anklet'), icon = 'fas fa-satellite-dish', fn = anklet } or nil,
 }
 
 local targetOptions = {}

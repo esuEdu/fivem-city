@@ -74,6 +74,14 @@ lib.callback.register('city_mining:finish', function(source, sessionId, perfect)
         settings = settings,
     }, math.random)
 
+    if not Config.Features.geodes then
+        local kept = {}
+        for _, drop in ipairs(drops) do
+            if not settings.geodes[drop.item] then kept[#kept + 1] = drop end
+        end
+        drops = kept
+    end
+
     if not util.giveAll(src, drops) then return false, 'inventory_full' end
 
     veins.take(current.vein)

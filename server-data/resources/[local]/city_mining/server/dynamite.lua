@@ -50,6 +50,7 @@ local function misfire(src, item)
 end
 
 lib.callback.register('city_mining:blast', function(source, kind, regionId)
+    if not Config.Features.dynamite then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end
@@ -109,6 +110,7 @@ end)
 -- Using dynamite anywhere else: a blast in front of the player after a short fuse
 local function useDynamite(source, item)
     local src = source
+    if not Config.Features.dynamite then return false end
     if not util.player(src) then return false end
 
     TriggerClientEvent('city_mining:client:plantDynamite', src, item.name)
@@ -120,6 +122,7 @@ exports.qbx_core:CreateUseableItem('dynamite', useDynamite)
 exports.qbx_core:CreateUseableItem('homemade_dynamite', useDynamite)
 
 lib.callback.register('city_mining:plant', function(source, name, at)
+    if not Config.Features.dynamite then return false end
     local src = source
     if not util.player(src) then return false end
     if name ~= 'dynamite' and name ~= 'homemade_dynamite' then return false, 'invalid' end
@@ -185,16 +188,21 @@ CreateThread(function()
     while true do
         Wait(caves.checkMinutes * 60000)
 
+        if not Config.Features.dynamite then goto continue end
+
         for _, region in ipairs(Config.Regions) do
             if region.gallery then
                 local recent = lastBlast[region.id] and os.time() - lastBlast[region.id] <= caves.blastSeconds
                 if math.random() < (recent and caves.afterBlast or caves.chance) then caveIn(region) end
             end
         end
+
+        ::continue::
     end
 end)
 
 lib.callback.register('city_mining:rescue', function(source, target)
+    if not Config.Features.dynamite then return false end
     local src = source
     if not util.player(src) then return false end
 

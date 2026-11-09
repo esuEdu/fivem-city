@@ -36,6 +36,7 @@ end
 
 lib.callback.register('city_fishing:rentBoat', function(source)
     local src = source
+    if not Config.Features.boat then return false end
     local player, citizenid = util.player(src)
     if not player then return false end
 

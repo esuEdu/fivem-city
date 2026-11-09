@@ -1,4 +1,4 @@
-import { call, h, label, money, panel, kpi, table, chip, button, iconButton, field, input, select, whole, modal, report, toast, progress, actions } from '../util.js';
+import { call, h, label, money, panel, kpi, table, chip, button, iconButton, field, input, select, whole, modal, report, toast, progress, actions, state } from '../util.js';
 
 const PERMS = ['deposit', 'withdraw', 'transfer', 'cards', 'members'];
 
@@ -129,7 +129,7 @@ export default async function render(container, ctx) {
 
     const total = data.accounts.reduce((sum, a) => sum + (a.role === 'owner' ? a.balance : 0), 0);
     const tools = [
-        !data.hasSavings ? button(label('open_savings'), async () => { if (report(await call('createSavings'), 'done')) ctx.refresh(); }, 'primary', false, 'plus') : null,
+        !data.hasSavings && state.features.savings !== false ? button(label('open_savings'), async () => { if (report(await call('createSavings'), 'done')) ctx.refresh(); }, 'primary', false, 'plus') : null,
         data.canShare && !data.pendingJoin ? button(label('create_shared'), () => newSharedDialog(ctx), 'ghost', false, 'plus') : null,
         data.canShare && !data.pendingJoin ? button(label('join_shared'), () => joinDialog(ctx), 'ghost', false, 'users') : null,
     ];

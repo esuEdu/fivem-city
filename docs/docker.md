@@ -112,6 +112,12 @@ They survive `docker compose down`, rebuilds and updates. **`docker compose down
 docker compose exec -T mariadb sh -c 'mariadb-dump -uroot -p"$MARIADB_ROOT_PASSWORD" "$MARIADB_DATABASE"' > backup.sql
 ```
 
+**Wiping player data** for a new test round (characters, items, money, cars, records, phone data, job progress; bans, staff log, Builder props, mining points, doors and houses stay):
+```sh
+bash scripts/wipe-db.sh
+```
+It saves a full dump in `backups/` (gitignored) first, stops fxserver, empties the tables and starts it again. The undo command is printed at the end.
+
 **Opening the database with a tool** (HeidiSQL, DBeaver): add `ports: ["127.0.0.1:3307:3306"]` under `mariadb` in `docker-compose.yml`, run `docker compose up -d`, then connect to `127.0.0.1:3307` as `root`. It isn't exposed by default so it can't clash with a local MySQL/XAMPP on 3306.
 
 ## Troubleshooting

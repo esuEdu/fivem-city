@@ -119,7 +119,7 @@ access.panel('send', function(_, player, citizenid, fromId, key, amount, referen
 end)
 
 access.panel('scheduled', function(_, _, citizenid)
-    local rows = MySQL.query.await(
+    local rows = Config.Features.scheduled and MySQL.query.await(
         'SELECT s.`id`, s.`amount`, s.`frequency`, s.`next_run`, s.`status`, s.`reference`, a.`number` AS `to_number` FROM `bank_scheduled` s LEFT JOIN `economy_accounts` a ON a.`id` = s.`to_account` WHERE s.`citizenid` = ? ORDER BY s.`id`',
         { citizenid }
     ) or {}

@@ -2,6 +2,18 @@ lib.locale()
 
 Config = {}
 
+-- Parts of fishing switched on for this version. Off: hidden in the shop, marina and tablet app, refused by the server.
+Config.Features = {
+    skills = false, -- the skill tree and the skill reset (points still add up for later)
+    collection = false, -- the Collection tab
+    tackle = false, -- tackle: not sold and can't be fitted
+    chests = false, -- treasure chests during the minigame
+    boat = false, -- boat rental at the marina
+    pots = false, -- crab pots
+    legendary = false, -- legendary fish
+    events = false, -- frenzies and tournaments
+}
+
 -- Fishing shop (licence, gear, repairs, skill reset), fish market (selling) and the marina (boat rental).
 -- Coordinates were placed without the game open: check them in game with /coords (city_base).
 Config.Ped = `a_m_m_salton_02`

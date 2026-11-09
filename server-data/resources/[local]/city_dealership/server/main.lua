@@ -81,6 +81,8 @@ lib.callback.register('city_dealership:buy', function(source, data)
     local plan
 
     if data.financed == true then
+        if not Config.Features.finance then return nil, 'failed' end
+
         plan = quote.plan(entry.price, math.tointeger(data.downPct), math.tointeger(data.count), Config.Finance)
         if not plan then return nil, 'failed' end
     end

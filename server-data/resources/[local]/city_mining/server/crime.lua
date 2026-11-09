@@ -20,6 +20,11 @@ end
 local current
 
 local function publish()
+    if not Config.Features.crime then
+        GlobalState.miningBuyer = nil
+        return
+    end
+
     local point = todayPoint()
     if current == point then return end
 
@@ -47,6 +52,7 @@ local function unitPrice(item)
 end
 
 lib.callback.register('city_mining:crimeSell', function(source)
+    if not Config.Features.crime then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end

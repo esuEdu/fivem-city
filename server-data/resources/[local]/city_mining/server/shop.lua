@@ -133,6 +133,7 @@ lib.callback.register('city_mining:buyLicence', function(source)
 end)
 
 lib.callback.register('city_mining:buyExplosives', function(source)
+    if not Config.Features.dynamite then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end
@@ -165,6 +166,7 @@ lib.callback.register('city_mining:repair', function(source)
 end)
 
 lib.callback.register('city_mining:respec', function(source)
+    if not Config.Features.skills then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end

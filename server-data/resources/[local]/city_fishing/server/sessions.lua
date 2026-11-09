@@ -187,7 +187,7 @@ lib.callback.register('city_fishing:cast', function(source, slot, bobberData, me
             baitName = bait and baitName or nil,
             effects = gear.tackleEffects(tackle),
             frenzy = frenzy.speciesAt(bobber, region),
-            atSpot = function(id) return regions.atSpot(id, bobber.x, bobber.y) end,
+            atSpot = function(id) return Config.Features.legendary and regions.atSpot(id, bobber.x, bobber.y) end,
         },
     }
 
@@ -238,7 +238,7 @@ lib.callback.register('city_fishing:hook', function(source, castId)
 
     wearTackle(src, state)
 
-    local chest = catch.rollChest(ctx, settings.chest)
+    local chest = Config.Features.chests and catch.rollChest(ctx, settings.chest)
     local challenge = ctx.bait and ctx.bait.challenge or false
 
     state.session = {

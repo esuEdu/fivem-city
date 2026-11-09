@@ -256,4 +256,4 @@ mdt.register('map', function()
     end
 
     return true, { units = unitList(), calls = calls, anklets = anklets }
-end, 'app')
+end, 'map')

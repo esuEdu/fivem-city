@@ -25,7 +25,7 @@ for key, value in pairs(theme) do bankTheme[key] = value end
 for key, value in pairs(Config.Theme) do bankTheme[key] = value end
 
 local function setupNui()
-    SendNUIMessage({ action = 'setup', theme = bankTheme, labels = lib.getLocales(), currency = '$' })
+    SendNUIMessage({ action = 'setup', theme = bankTheme, labels = lib.getLocales(), currency = '$', features = Config.Features })
 end
 
 ---Closes the panel if the player walks away from the banker

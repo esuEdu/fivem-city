@@ -6,6 +6,8 @@ local targets = {}
 local zones = {}
 local blip
 local inBay, inGarage = false, false
+-- Staff may use the tuning bay without the job (Config.StaffAce); asked once from the server, which checks again
+local staffTuner = false
 local prompt
 local refresh
 
@@ -28,9 +30,9 @@ end
 ---What the tune key does right now, if anything
 ---@return string?
 local function action()
-    if not cache.vehicle or cache.seat ~= -1 or tuning.active() or not onDuty() then return end
-    if inBay then return 'tune' end
-    if inGarage and Entity(cache.vehicle).state.mechanicWork then return 'store' end
+    if not cache.vehicle or cache.seat ~= -1 or tuning.active() then return end
+    if inBay and (onDuty() or staffTuner) then return 'tune' end
+    if inGarage and onDuty() and Entity(cache.vehicle).state.mechanicWork then return 'store' end
 end
 
 local keybind = lib.addKeybind({
@@ -144,6 +146,13 @@ local function addZones()
         onEnter = function()
             inBay = true
             refresh()
+
+            if Config.StaffAce and not onDuty() then
+                CreateThread(function()
+                    staffTuner = lib.callback.await('city_mechanic:canTune', false) == true
+                    refresh()
+                end)
+            end
         end,
         onExit = function()
             inBay = false

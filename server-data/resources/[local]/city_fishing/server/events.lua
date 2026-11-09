@@ -12,10 +12,14 @@ CreateThread(function()
         Wait(60000)
         minutes = minutes + 1
 
+        if not Config.Features.events then goto continue end
+
         frenzy.tick()
         if minutes % settings.frenzy.checkMinutes == 0 then frenzy.roll() end
 
         tournaments.tick(started)
+
+        ::continue::
     end
 end)
 

@@ -15,6 +15,16 @@ Config.App = {
     },
 }
 
+-- Parts of the job switched on for this version. Off: hidden in the MDT and the field, refused by the server.
+Config.Features = {
+    map = false, -- the live map tab
+    bodycam = false, -- watching a unit's bodycam from the Units tab
+    cameras = false, -- the security cameras tab
+    evidence = false, -- casings, blood and fingerprints on the ground, the lab and the Evidence tab
+    certs = false, -- certifications; off, garage vehicles need none
+    anklet = false, -- ankle monitors
+}
+
 -- Lowest job grade for each MDT action (0 Recruit, 1 Officer, 2 Sergeant, 3 Lieutenant, 4 Chief)
 Config.Permissions = {
     app = 0,
@@ -40,6 +50,8 @@ Config.Permissions = {
     management = 4,
     bolos = 0,
     bodycam = 0,
+    map = 0,
+    anklet = 0,
 }
 
 -- Certifications lieutenants give in the MDT; they unlock vehicles and forensic analysis

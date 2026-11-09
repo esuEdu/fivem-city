@@ -1,6 +1,6 @@
 const resource = typeof GetParentResourceName === 'function' ? GetParentResourceName() : 'city_bank';
 
-export const state = { labels: {}, currency: '$' };
+export const state = { labels: {}, currency: '$', features: {} };
 
 // Calls a RegisterNUICallback on the Lua side and returns its answer
 export async function post(name, data = {}) {

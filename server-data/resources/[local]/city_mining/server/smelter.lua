@@ -91,6 +91,7 @@ lib.callback.register('city_mining:buyCoal', function(source, count)
 end)
 
 lib.callback.register('city_mining:buyDynamite', function(source, count)
+    if not Config.Features.dynamite then return false end
     local src = source
     local player, citizenid = util.player(src)
     if not player then return false end

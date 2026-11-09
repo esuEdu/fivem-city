@@ -50,6 +50,7 @@ lib.callback.register('city_mining:app:profile', function(source)
 end)
 
 lib.callback.register('city_mining:app:learn', function(source, id)
+    if not Config.Features.skills then return false end
     local src = source
     local _, citizenid = util.player(src)
     if not citizenid or type(id) ~= 'string' then return false end

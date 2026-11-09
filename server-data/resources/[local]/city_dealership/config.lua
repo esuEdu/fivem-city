@@ -63,6 +63,11 @@ Config.TestDrive = {
     maxDistance = 1500.0, -- the test ends early when the car goes this far from the dealership
 }
 
+-- Parts of the dealership switched on for this version. Off: hidden on the computer, refused by the server.
+Config.Features = {
+    finance = false, -- financed purchases (down payment + installment bills); off, cars are bought in full only
+}
+
 Config.Finance = {
     minDownPct = 20, -- smallest down payment, % of the price
     installments = { 5, 10, 15 }, -- choices offered, one installment every `everyHours`

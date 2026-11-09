@@ -158,6 +158,7 @@ end)
 
 lib.callback.register('city_fishing:respec', function(source)
     local src = source
+    if not Config.Features.skills then return false end
     local player, citizenid = util.player(src)
     if not player then return false end
     if not atShop(src) then return false, 'too_far' end

@@ -42,6 +42,7 @@ local function open()
             everyHours = Config.Finance.everyHours,
             repoAfter = Config.Finance.repoAfter,
         },
+        financeEnabled = Config.Features.finance,
         testDriveSeconds = Config.TestDrive.seconds,
         balances = balances(),
         finances = lib.callback.await('city_dealership:finances', false) or {},

@@ -48,6 +48,8 @@ local function hack(index)
 end
 
 CreateThread(function()
+    if not Config.Features.escape then return end
+
     for index, terminal in ipairs(Config.Terminals) do
         zones[#zones + 1] = exports.ox_target:addSphereZone({
             coords = terminal.coords,

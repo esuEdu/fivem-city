@@ -5,7 +5,8 @@ const nav = document.getElementById('nav');
 
 const app = { tab: 'profile', branches: [], profile: null };
 
-const TABS = ['profile', 'skills', 'collection', 'market', 'events', 'pots'];
+const ALL_TABS = ['profile', 'skills', 'collection', 'market', 'events', 'pots'];
+let TABS = ALL_TABS;
 const REGIONS = ['ocean', 'deep', 'alamo', 'river', 'lake', 'canal'];
 const MODES = ['biggest', 'count', 'weight'];
 
@@ -47,7 +48,7 @@ async function renderProfile() {
                 el('strong', { text: L('ui_level', p.level) }),
                 el('small', { text: p.to ? L('ui_xp', p.xp, p.to) : L('ui_level_max') }),
             ),
-            p.points > 0 ? el('button', { class: 'kit-btn accent', text: L('ui_points', p.points), onclick: () => go('skills') }) : null,
+            app.skillsOn && p.points > 0 ? el('button', { class: 'kit-btn accent', text: L('ui_points', p.points), onclick: () => go('skills') }) : null,
         ),
         el('div', { class: 'xp' }, el('div', { style: `width:${Math.max(0, Math.min(1, share)) * 100}%` })),
     );
@@ -291,6 +292,10 @@ async function start() {
     const setup = await window.CityOS.send('setup');
     setLabels(setup && setup.labels);
     app.branches = (setup && setup.branches) || [];
+    // Tabs switched off in Config.Features; the server refuses their callbacks too
+    const features = (setup && setup.features) || {};
+    TABS = ALL_TABS.filter((tab) => !(tab in features) || features[tab]);
+    app.skillsOn = features.skills !== false;
 
     document.getElementById('title').textContent = L('ui_title');
     go('profile');

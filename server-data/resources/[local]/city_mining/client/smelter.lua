@@ -118,13 +118,13 @@ local function openSmelter()
         icon = 'cube',
         onSelect = function() buyCount('city_mining:buyCoal', places.label('coal'), 100) end,
     }
-    options[#options + 1] = {
+    options[#options + 1] = Config.Features.dynamite and {
         title = locale('buy_dynamite'),
         description = info.dynamite.allowed and locale('dynamite_left', info.dynamite.left, info.dynamite.price) or locale('no_explosives_licence'),
         icon = 'bomb',
         disabled = not info.dynamite.allowed or info.dynamite.left == 0,
         onSelect = function() buyCount('city_mining:buyDynamite', places.label('dynamite'), info.dynamite.left) end,
-    }
+    } or nil
 
     lib.registerContext({ id = 'city_mining_smelter', title = locale('smelter_title'), options = options })
     lib.showContext('city_mining_smelter')

@@ -35,6 +35,17 @@ local function openKind(kind, info)
     lib.showContext('city_mining_shop_kind')
 end
 
+-- Menu options switched off by Config.Features are false; ox_lib needs a list without them
+local function compact(list)
+    local out = {}
+
+    for _, option in ipairs(list) do
+        if option then out[#out + 1] = option end
+    end
+
+    return out
+end
+
 local function openShop()
     local ok, info = lib.callback.await('city_mining:shopInfo', false)
     if not ok then return end
@@ -54,7 +65,7 @@ local function openShop()
     lib.registerContext({
         id = 'city_mining_shop',
         title = locale('shop_title'),
-        options = {
+        options = compact({
             {
                 title = locale(licence.valid and 'shop_licence_extend' or 'shop_licence_buy'),
                 description = ('%s · %s'):format(licence.valid and locale('licence_valid_until', licence.expires) or locale('licence_none'), locale('shop_price', licence.price)),
@@ -64,7 +75,7 @@ local function openShop()
                     places.report(bought, result, 'licence_bought')
                 end,
             },
-            {
+            Config.Features.dynamite and {
                 title = locale('shop_explosives'),
                 description = explosivesText,
                 icon = 'bomb',
@@ -75,7 +86,7 @@ local function openShop()
                 end,
             },
             { title = locale('shop_pickaxe'), icon = 'hammer', arrow = true, onSelect = function() openKind('pickaxe', info) end },
-            { title = locale('shop_tools'), icon = 'toolbox', arrow = true, onSelect = function() openKind('tools', info) end },
+            (Config.Features.panning or Config.Features.furnace) and { title = locale('shop_tools'), icon = 'toolbox', arrow = true, onSelect = function() openKind('tools', info) end },
             { title = locale('shop_ppe'), icon = 'helmet-safety', arrow = true, onSelect = function() openKind('ppe', info) end },
             {
                 title = locale('shop_repair'),
@@ -87,7 +98,7 @@ local function openShop()
                     places.report(repaired, result, 'shop_repaired', result)
                 end,
             },
-            {
+            Config.Features.skills and {
                 title = locale('shop_respec'),
                 description = locale('shop_price', info.respec),
                 icon = 'rotate-left',
@@ -98,7 +109,7 @@ local function openShop()
                     places.report(reset, result, 'shop_respec_done')
                 end,
             },
-        },
+        }),
     })
 
     lib.showContext('city_mining_shop')

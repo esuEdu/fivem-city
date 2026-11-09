@@ -115,6 +115,17 @@ local function openKind(kind, info)
     lib.showContext('city_fishing_shop_kind')
 end
 
+-- Menu options switched off by Config.Features are false; ox_lib needs a list without them
+local function compact(list)
+    local out = {}
+
+    for _, option in ipairs(list) do
+        if option then out[#out + 1] = option end
+    end
+
+    return out
+end
+
 openShop = function()
     local ok, info = lib.callback.await('city_fishing:shopInfo', false)
     if not ok then return end
@@ -125,7 +136,7 @@ openShop = function()
     lib.registerContext({
         id = 'city_fishing_shop',
         title = locale('shop_title'),
-        options = {
+        options = compact({
             {
                 title = locale(licence.valid and 'shop_licence_extend' or 'shop_licence_buy'),
                 description = ('%s · %s'):format(licenceText, locale('shop_price', licence.price)),
@@ -137,8 +148,8 @@ openShop = function()
             },
             { title = locale('shop_rod'), icon = 'fish', arrow = true, onSelect = function() openKind('rod', info) end },
             { title = locale('shop_bait'), icon = 'worm', arrow = true, onSelect = function() openKind('bait', info) end },
-            { title = locale('shop_tackle'), icon = 'gear', arrow = true, onSelect = function() openKind('tackle', info) end },
-            { title = locale('shop_pot'), icon = 'box', arrow = true, onSelect = function() openKind('pot', info) end },
+            Config.Features.tackle and { title = locale('shop_tackle'), icon = 'gear', arrow = true, onSelect = function() openKind('tackle', info) end },
+            Config.Features.pots and { title = locale('shop_pot'), icon = 'box', arrow = true, onSelect = function() openKind('pot', info) end },
             {
                 title = locale('shop_repair'),
                 description = info.repair > 0 and locale('shop_price', info.repair) or locale('nothing_to_repair'),
@@ -149,7 +160,7 @@ openShop = function()
                     report(repaired, result, 'shop_repaired', result)
                 end,
             },
-            {
+            Config.Features.skills and {
                 title = locale('shop_respec'),
                 description = locale('shop_price', info.respec),
                 icon = 'rotate-left',
@@ -160,7 +171,7 @@ openShop = function()
                     report(reset, result, 'shop_respec_done')
                 end,
             },
-        },
+        }),
     })
 
     lib.showContext('city_fishing_shop')
@@ -225,7 +236,7 @@ for index, market in ipairs(Config.Markets) do
     })
 end
 
-for index, place in ipairs(Config.Marinas) do
+for index, place in ipairs(Config.Features.boat and Config.Marinas or {}) do
     addPlace(('marina%d'):format(index), place.coords, place.blip, locale('blip_marina'), {
         { name = 'city_fishing:marina', icon = 'fa-solid fa-ship', label = locale('target_marina'), onSelect = marina },
     })

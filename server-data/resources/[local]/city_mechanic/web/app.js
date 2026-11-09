@@ -164,8 +164,13 @@ async function undoAll() {
     render();
 }
 
+// More than the shop account holds (never when tuning is free)
+function short(sum) {
+    return !data.free && sum > data.balance;
+}
+
 async function confirm() {
-    if (busy || total() > data.balance || (cart.size === 0 && !repair)) return;
+    if (busy || short(total()) || (cart.size === 0 && !repair)) return;
 
     busy = true;
     render();
@@ -351,10 +356,10 @@ function renderOrder() {
     $('repair-price').textContent = canRepair ? money(data.repair) : '';
 
     const sum = total();
-    $('balance').textContent = money(data.balance);
+    $('balance').textContent = data.free ? t('ui_free') : money(data.balance);
     $('total').textContent = money(sum);
-    $('total').parentElement.classList.toggle('is-short', sum > data.balance);
-    $('confirm').disabled = busy || sum > data.balance || (cart.size === 0 && !repair);
+    $('total').parentElement.classList.toggle('is-short', short(sum));
+    $('confirm').disabled = busy || short(sum) || (cart.size === 0 && !repair);
     $('reset').disabled = busy || (cart.size === 0 && !repair);
 }
 
@@ -465,6 +470,7 @@ window.addEventListener('message', (event) => {
         $('title').textContent = message.label;
         $('model').textContent = message.model;
         $('plate').textContent = message.plate;
+        $('confirm').textContent = t(message.free ? 'ui_confirm_free' : 'ui_confirm');
         $('stage').classList.remove('hidden');
         render();
     } else if (message.action === 'close') {

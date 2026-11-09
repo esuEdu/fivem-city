@@ -365,6 +365,10 @@ function open(payload) {
         counts.append(chip);
     }
 
+    // Financing switched off in Config.Features: only buying in full, no "my financing" view
+    $('plan-finance').classList.toggle('hidden', !data.financeEnabled);
+    $('view-finance').classList.toggle('hidden', !data.financeEnabled);
+
     $('placeholder').classList.remove('hidden');
     $('detail').classList.add('hidden');
 

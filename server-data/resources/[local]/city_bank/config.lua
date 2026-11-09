@@ -1,5 +1,12 @@
 Config = {}
 
+-- Parts of the bank switched on for this version. Off: hidden in the panel and the Wallet app, refused by the server.
+Config.Features = {
+    loans = false, -- loan requests and installments
+    savings = false, -- savings accounts and their yield
+    scheduled = false, -- scheduled transfers
+}
+
 -- How close the player must stand to the banker for the server to accept a request
 Config.MaxDistance = 3.0
 

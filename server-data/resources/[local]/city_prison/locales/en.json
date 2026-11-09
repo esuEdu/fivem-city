@@ -13,6 +13,7 @@
     "notify_belongings_back": "Your belongings were given back",
     "notify_belongings_partial": "Not everything fit; collect the rest at the prison release desk",
     "notify_escaped": "You escaped! The police have a warrant for you.",
+    "notify_brought_back": "You can't leave the prison yet.",
     "notify_no_duty": "You can't clock in while in prison",
 
     "alert_escape_title": "Prison escape",
