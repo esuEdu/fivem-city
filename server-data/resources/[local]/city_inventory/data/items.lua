@@ -1421,6 +1421,17 @@ return {
         client = { image = 'tunerchip.png' },
     },
 
+    ['staff_militech'] = {
+        label = 'Staff Militech',
+        description = 'Staff-only handling editor. Sets every handling value of the car you are driving.',
+        category = 'electronics',
+        weight = 900,
+        stack = false,
+        close = true,
+        consume = 0,
+        client = { image = 'tunerchip.png' },
+    },
+
     -- Mining (city_mining): licences, tools, safety gear, ore, ingots, geodes, gems, jewellery. Images marked as
     -- placeholders until the real ones are made (list in docs/city-mining.md).
     ['mining_license'] = {

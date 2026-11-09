@@ -1,0 +1,10 @@
+{
+    "error_not_staff": "Only staff can use this module",
+    "error_not_driver": "You need to be in the driver seat",
+    "error_moving": "Stop the car first",
+    "error_no_item": "You need the Staff Militech module",
+    "error_wait": "Wait a moment",
+    "error_failed": "The tuner couldn't apply that",
+    "applied": "Staff setup uploaded to the car",
+    "restored": "Staff setup removed"
+}

@@ -1,29 +1,42 @@
--- Keeps the driven car's handling in step with its `militech` state bag. Only the driver's client simulates the
--- car, so only the driver applies the setup.
+-- Keeps the driven car's handling in step with its state bags. Only the driver's client simulates the car, so only
+-- the driver applies them. `militechStaff` (absolute values from city_militech_staff) replaces `militech` (the
+-- player's setup) while it's there.
 lib.locale()
 
 local handling = require 'client.handling'
+
+local STAFF_RESOURCE = 'city_militech_staff'
 
 local function driving(vehicle)
     return vehicle and vehicle ~= 0 and DoesEntityExist(vehicle) and GetPedInVehicleSeat(vehicle, -1) == cache.ped
 end
 
 ---@param vehicle integer
+---@param settings table|false|nil the player's setup
+---@param staff table|false|nil staff values
+local function refresh(vehicle, settings, staff)
+    if staff then return handling.set(vehicle, staff) end
+    if settings then return handling.apply(vehicle, settings) end
+    if handling.touched(vehicle) then handling.set(vehicle, {}) end
+end
+
+---@param vehicle integer
 local function sync(vehicle)
     if not driving(vehicle) then return end
 
-    local settings = Entity(vehicle).state.militech
+    local state = Entity(vehicle).state
+    local netId = NetworkGetNetworkIdFromEntity(vehicle)
 
-    if settings == nil then
-        -- the server puts the saved setup (or false) on the bag; the handler below applies it
-        return lib.callback('city_militech:load', false, function() end,NetworkGetNetworkIdFromEntity(vehicle))
+    -- the servers put the saved setups (or false) on the bags; the handlers below apply them
+    if state.militech == nil then
+        lib.callback('city_militech:load', false, function() end, netId)
     end
 
-    if settings then
-        handling.apply(vehicle, settings)
-    elseif handling.touched(vehicle) then
-        handling.apply(vehicle, {})
+    if state.militechStaff == nil and GetResourceState(STAFF_RESOURCE) == 'started' then
+        lib.callback(('%s:load'):format(STAFF_RESOURCE), false, function() end, netId)
     end
+
+    refresh(vehicle, state.militech, state.militechStaff)
 end
 
 lib.onCache('seat', function(seat)
@@ -39,7 +52,20 @@ AddStateBagChangeHandler('militech', nil, function(bagName, _, value)
     local vehicle = GetEntityFromStateBagName(bagName)
     if vehicle == 0 or not driving(vehicle) then return end
 
-    handling.apply(vehicle, value or {})
+    refresh(vehicle, value, Entity(vehicle).state.militechStaff)
+end)
+
+AddStateBagChangeHandler('militechStaff', nil, function(bagName, _, value)
+    local vehicle = GetEntityFromStateBagName(bagName)
+    if vehicle == 0 or not driving(vehicle) then return end
+
+    refresh(vehicle, Entity(vehicle).state.militech, value)
+end)
+
+-- Stock values for city_militech_staff's screen, read here so both use the same per-car stock
+exports('Stock', function(vehicle, fields)
+    if type(vehicle) ~= 'number' or not DoesEntityExist(vehicle) or type(fields) ~= 'table' then return {} end
+    return handling.stock(vehicle, fields)
 end)
 
 CreateThread(function()
@@ -50,5 +76,5 @@ AddEventHandler('onResourceStop', function(resource)
     if resource ~= cache.resource then return end
 
     local vehicle = cache.vehicle
-    if vehicle and handling.touched(vehicle) then handling.apply(vehicle, {}) end
+    if vehicle and handling.touched(vehicle) then handling.set(vehicle, {}) end
 end)
