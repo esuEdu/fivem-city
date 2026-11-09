@@ -7,6 +7,7 @@ local points = {}
 local peds = {}
 local zones = {}
 local current
+local currentLot
 
 ---@param garage table
 ---@return boolean
@@ -36,9 +37,26 @@ end
 local function close()
     if not current then return end
 
-    current = nil
+    current, currentLot = nil, nil
     SetNuiFocus(false, false)
     SendNUIMessage({ action = 'close' })
+end
+
+-- The impound lot of this kind closest to the player, for cars that wait there
+---@param kind string
+---@return table?
+local function nearestDepot(kind)
+    local best, bestDistance
+
+    for _, garage in pairs(garages) do
+        if garage.depot and garage.kind == kind and allowed(garage) then
+            local distance = #(cache.coords - garage.coords.xyz)
+
+            if not best or distance < bestDistance then best, bestDistance = garage, distance end
+        end
+    end
+
+    return best
 end
 
 ---@param garage table
@@ -53,11 +71,14 @@ local function open(garage)
     if not vehicles then return exports.qbx_core:Notify(locale('error_no_access'), 'error') end
     if #vehicles == 0 then return exports.qbx_core:Notify(locale('no_vehicles'), 'inform') end
 
+    local lot = not garage.depot and nearestDepot(garage.kind) or nil
+
     current = garage
+    currentLot = lot
     SetNuiFocus(true, true)
     SendNUIMessage({
         action = 'open',
-        garage = { label = garage.label, depot = garage.depot },
+        garage = { label = garage.label, depot = garage.depot, lot = lot and lot.label or nil },
         vehicles = vehicles,
         favorites = loadFavorites(),
     })
@@ -178,7 +199,8 @@ RegisterNUICallback('ready', function(_, cb)
     for _, key in ipairs({
         'ui_search', 'ui_all', 'ui_favorites', 'ui_count', 'ui_empty', 'ui_select', 'ui_plate', 'ui_engine', 'ui_body',
         'ui_fuel', 'ui_fee', 'ui_take_out', 'ui_pay_take_out', 'ui_close', 'ui_depot', 'ui_garage', 'state_garaged',
-        'state_street', 'state_depot', 'state_impounded', 'hint_street', 'hint_depot', 'hint_impounded', 'hint_garaged',
+        'state_street', 'state_depot', 'state_impounded', 'hint_street', 'hint_depot', 'hint_depot_at', 'hint_impounded',
+        'hint_garaged', 'ui_route',
     }) do
         labels[key] = locale(key)
     end
@@ -188,6 +210,17 @@ end)
 
 RegisterNUICallback('close', function(_, cb)
     close()
+    cb(true)
+end)
+
+-- A car waiting at the impound lot: the GPS route there
+RegisterNUICallback('route', function(_, cb)
+    local lot = currentLot
+    if not lot then return cb(false) end
+
+    SetNewWaypoint(lot.coords.x, lot.coords.y)
+    close()
+    exports.qbx_core:Notify(locale('route_set', lot.label), 'inform')
     cb(true)
 end)
 

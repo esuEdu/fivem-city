@@ -5,6 +5,7 @@
 
     "parked": "Vehicle parked at %s",
     "taken_out": "Your vehicle is waiting outside",
+    "route_set": "GPS set to the %s",
     "no_vehicles": "You have no vehicles of this kind",
 
     "error_not_owned": "This vehicle isn't yours",
@@ -43,6 +44,8 @@
     "state_impounded": "Held by police",
     "hint_street": "It's still out in the city. Park it, or it goes to the impound lot once it's gone.",
     "hint_depot": "Pick it up at an impound lot.",
+    "hint_depot_at": "It was left out and towed to the %s. Pick it up there for a fee; the police impound desk doesn't have it.",
+    "ui_route": "Set GPS to the %s",
     "hint_impounded": "The police hold it. It's released at a police station's impound desk.",
     "hint_garaged": "It's parked. Take it out at any garage."
 }
