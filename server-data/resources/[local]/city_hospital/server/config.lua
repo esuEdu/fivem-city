@@ -40,6 +40,14 @@ return {
 
     locker = { slots = 30, weight = 100000 },
 
+    -- Reference prices the EMS app shows, to charge patients with a bill (only a guide: the bill amount is the EMS's)
+    billing = {
+        { key = 'revive', price = 500 },
+        { key = 'treatment', price = 250 },
+        { key = 'transport', price = 300 },
+        { key = 'checkup', price = 150 },
+    },
+
     -- Documents a hospital respawn hands back new (everything else carried is lost); qbx_idcard fills them in
     respawnDocuments = { 'id_card', 'driver_license' },
 }

@@ -1,0 +1,44 @@
+/* EMS app: the WorkApp shell (city_os/web/kit/workapp.css) in hospital red, plus this app's own rows. */
+:root {
+    --app-accent: #e5383b; --app-accent-soft: rgba(229, 56, 59, 0.16); --app-accent-text: #fff;
+    --app-logo: linear-gradient(160deg, #ff8f8f, #e5383b 55%, #9d1c20);
+}
+
+.banner { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 14px; background: var(--app-accent-soft); color: var(--app-accent); font-weight: 600; font-size: 13px; }
+.kit-btn.big { height: 44px; padding: 0 18px; border-radius: 13px; font-size: 14px; }
+
+.value { justify-self: end; font-variant-numeric: tabular-nums; }
+.chip.tint-chip { background: var(--app-accent-soft); color: var(--app-accent); }
+.chip.blue-chip { background: var(--blue-soft); color: var(--blue); }
+.chip.muted { color: var(--muted2); }
+
+/* Dashboard */
+.record-cols { grid-template-columns: 92px minmax(0, 1.3fr) minmax(0, 1.3fr) minmax(0, 1fr) 90px; }
+.duty-list { display: flex; flex-direction: column; gap: 12px; max-height: 210px; overflow-y: auto; }
+
+/* Calls */
+.call-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.call-card { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 14px; border: 1px solid transparent; background: var(--group); color: var(--fg); font: inherit; text-align: left; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+.call-card:hover { background: var(--hover); }
+.call-card.on { background: var(--field); border-color: var(--app-accent); }
+.call-top { display: flex; align-items: center; gap: 10px; }
+.call-top small, .call-place { font-size: 12px; color: var(--muted2); }
+.call-place { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.call-icon { flex: none; width: 30px; height: 30px; border-radius: 9px; background: var(--app-accent-soft); color: var(--app-accent); display: grid; place-items: center; }
+.empty-card { align-items: center; text-align: center; padding: 36px 18px; gap: 8px; }
+
+/* Team */
+.team-cols { grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr) 110px 70px 96px; }
+.grade-select { height: 34px; max-width: 170px; }
+.table-row.me { background: var(--row); }
+.grade { display: flex; align-items: center; gap: 6px; color: var(--fg2); }
+.grade svg { color: var(--accent-ink); }
+.row-actions { display: flex; justify-content: flex-end; gap: 6px; }
+.hire .form-row input.field { flex: 0 1 220px; }
+
+/* Records */
+.kind { justify-self: start; }
+.record-note { color: var(--muted2); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.price-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.card.price { flex-direction: row; align-items: center; gap: 12px; padding: 14px 16px; }
+.card.price .who { flex-grow: 1; }
