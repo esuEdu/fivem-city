@@ -1,5 +1,8 @@
 local config = require 'config.client'
 
+local DUTY_NOTICE_MS = 5000
+local nextDutyNotice = 0
+
 --- Checks if the vehicle is shared for the player's current job and if the player meets the requirements to use shared keys.
 ---@param vehicle number The entity number of the vehicle.
 ---@param skipNotification? boolean
@@ -11,19 +14,23 @@ function AreKeysJobShared(vehicle, skipNotification)
     local jobProfile = config.sharedKeys[job.name]
     if not jobProfile then return end
 
+    local isJobVehicle = (jobProfile.classes and jobProfile.classes[GetVehicleClass(vehicle)])
+        or (jobProfile.vehicles and jobProfile.vehicles[GetEntityModel(vehicle)])
+
+    -- Only a job vehicle needs the player on duty. Checking duty first warned an off-duty officer about every car,
+    -- once per frame from the engine loop in main.lua
+    if not isJobVehicle then return end
+
     if jobProfile.requireOnDuty and not job.onduty then
-        if not skipNotification then
+        -- Called every frame while the engine is held off: say it once every few seconds, not every frame
+        if not skipNotification and GetGameTimer() >= nextDutyNotice then
+            nextDutyNotice = GetGameTimer() + DUTY_NOTICE_MS
             exports.qbx_core:Notify(locale('notify.require_on_duty'), 'error')
         end
         return
     end
 
-    local isSharedVehicleClass = jobProfile.classes
-        and jobProfile.classes[GetVehicleClass(vehicle)]
-
-    return isSharedVehicleClass
-        or (jobProfile.vehicles
-       and jobProfile.vehicles[GetEntityModel(vehicle)])
+    return true
 end
 
 ---Checks if player has vehicle keys
