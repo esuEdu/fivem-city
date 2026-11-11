@@ -47,7 +47,8 @@ Config.Categories = {
     clothing = {
         { id = 'tops', label = 'Tops', kind = 'component', slot = 11, shot = 'torso' },
         { id = 'undershirts', label = 'Undershirts', kind = 'component', slot = 8, shot = 'torso' },
-        { id = 'arms', label = 'Arms & gloves', kind = 'component', slot = 3, shot = 'torso' },
+        -- Free when bought with a top or undershirt: the shop fits the arms made for them by itself
+        { id = 'arms', label = 'Arms & gloves', kind = 'component', slot = 3, shot = 'torso', freeWith = { 'tops', 'undershirts' } },
         { id = 'pants', label = 'Pants', kind = 'component', slot = 4, shot = 'legs' },
         { id = 'shoes', label = 'Shoes', kind = 'component', slot = 6, shot = 'feet' },
         { id = 'neck', label = 'Neck & ties', kind = 'component', slot = 7, shot = 'torso' },

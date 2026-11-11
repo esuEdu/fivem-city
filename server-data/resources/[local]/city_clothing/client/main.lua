@@ -32,6 +32,7 @@ local function categoriesFor(storeType, prices)
                 slot = category.slot,
                 shot = category.shot,
                 colors = category.colors,
+                freeWith = category.freeWith,
                 price = prices[category.id] or 0,
                 count = look.count(category),
                 value = look.get(category),
@@ -106,6 +107,7 @@ local function openStore(index)
         outfits = info.outfits,
         maxOutfits = info.maxOutfits,
         images = images(),
+        custom = info.custom,
     })
     SetNuiFocus(true, true)
 end
@@ -140,6 +142,18 @@ RegisterNUICallback('preview', function(data, cb)
     for key, v in pairs(data.value) do value[key] = key == 'opacity' and v + 0.0 or math.tointeger(v) end
 
     look.set(category, value)
+
+    -- A new top or undershirt brings the arms made for it; the page moves its Arms tab to match
+    local arms = open.byId.arms
+    if arms and category.kind == 'component' and (category.slot == 11 or category.slot == 8) then
+        local fitted = look.forcedArms(category.slot, value.drawable)
+        if fitted then
+            local armsValue = { drawable = fitted, texture = 0 }
+            look.set(arms, armsValue)
+            return cb({ arms = armsValue })
+        end
+    end
+
     cb(true)
 end)
 

@@ -1,17 +1,20 @@
 -- The photo tool (started from the Staff app): the staff member's client dresses its ped one piece at a time and asks
 -- for each picture here; the server captures it with screencapture and writes images/<sex>_<key>_<drawable>.webp.
--- images/index.json lists what exists, so the shop knows which cards have a picture.
+-- A run can be every piece, or one tab, one sex and a range of numbers (e.g. the 30 new jackets).
+local images = require 'server.images'
+
 local RESOURCE = GetCurrentResourceName()
-local INDEX_FILE = 'images/index.json'
 local DATA_URI = '^data:image/webp;base64,([%w%+/=]+)$'
 local MAX_DRAWABLE = 2000
-local SAVE_INDEX_EVERY = 25
 local BUCKET_BASE = 7700
 
----@type table<integer, { bucket: integer, taken: integer }>
+---@type table<integer, { bucket: integer, taken: integer, from: integer }>
 local sessions = {}
-local index = json.decode(LoadResourceFile(RESOURCE, INDEX_FILE) or '{}') or {}
-local unsaved = 0
+
+local CATEGORIES = {}
+for _, storeType in ipairs({ 'clothing', 'barber' }) do
+    for _, category in ipairs(Config.Categories[storeType]) do CATEGORIES[category.id] = category end
+end
 
 -- Keys a picture may have: c<component>, p<prop>, o<overlay>, from the categories the shops sell
 local KEYS = {}
@@ -53,11 +56,6 @@ local function decodeBase64(data)
     return table.concat(out)
 end
 
-local function saveIndex()
-    SaveResourceFile(RESOURCE, INDEX_FILE, json.encode(index), -1)
-    unsaved = 0
-end
-
 local function capture(src)
     local result = promise.new()
 
@@ -81,20 +79,69 @@ local function staffLog(src, details)
     exports.city_staff:Log(src, 'clothing_photos', nil, details)
 end
 
+---Shop numbers (as on the cards, from 1) to a style range; nil and why for bad input
+local function readOptions(data)
+    data = type(data) == 'table' and data or {}
+
+    local category = data.category or 'all'
+    if category ~= 'all' and not CATEGORIES[category] then return nil, 'invalid' end
+
+    local sex = data.sex or 'both'
+    if sex ~= 'both' and sex ~= 'm' and sex ~= 'f' then return nil, 'invalid' end
+
+    local function number(value)
+        if value == nil then return nil, true end
+        local n = math.tointeger(value)
+        if not n or n < 1 or n > MAX_DRAWABLE + 1 then return nil, false end
+        return n - 1, true
+    end
+
+    local from, okFrom = number(data.from)
+    local to, okTo = number(data.to)
+    local arms, okArms = number(data.arms)
+    if not okFrom or not okTo or not okArms then return nil, 'bad_range' end
+    if from and to and from > to then return nil, 'bad_range' end
+
+    return {
+        category = category,
+        sex = sex,
+        from = from or 0,
+        to = to or MAX_DRAWABLE,
+        arms = arms,
+        overwrite = data.overwrite == true,
+    }
+end
+
+---The tabs the Staff app offers
+exports('PhotoCategories', function()
+    local list = {}
+    for _, storeType in ipairs({ 'clothing', 'barber' }) do
+        for _, category in ipairs(Config.Categories[storeType]) do
+            list[#list + 1] = { id = category.id, label = category.label }
+        end
+    end
+    return list
+end)
+
 ---Starts the tool for a staff member (called by city_staff after its own permission check)
 ---@param src integer
+---@param data table? { category, sex, from, to, arms, overwrite } from the Staff app
 ---@return boolean ok
 ---@return string? reason
-local function start(src)
+local function start(src, data)
     if not exports.qbx_core:GetPlayer(src) then return false, 'player' end
     if not IsPlayerAceAllowed(tostring(src), Config.PhotoAce) then return false, 'no_permission' end
     if sessions[src] then return false, 'busy' end
     if GetResourceState('screencapture') ~= 'started' then return false, 'screencapture' end
 
+    local options, reason = readOptions(data)
+    if not options then return false, reason end
+
     sessions[src] = { bucket = BUCKET_BASE + src, taken = 0, from = GetPlayerRoutingBucket(src) }
     SetPlayerRoutingBucket(src, sessions[src].bucket)
-    TriggerClientEvent('city_clothing:client:photos', src)
-    staffLog(src, 'started the clothing photo tool')
+    TriggerClientEvent('city_clothing:client:photos', src, options)
+    staffLog(src, ('started the clothing photo tool: %s, %s, #%d-#%d%s'):format(options.category, options.sex,
+        options.from + 1, options.to + 1, options.overwrite and ', overwrite' or ''))
 
     return true
 end
@@ -103,7 +150,7 @@ exports('StartPhotos', start)
 
 lib.callback.register('city_clothing:photos:index', function(source)
     if not sessions[source] then return nil end
-    return index
+    return images.index
 end)
 
 lib.callback.register('city_clothing:photos:shot', function(source, sex, key, drawable)
@@ -126,10 +173,8 @@ lib.callback.register('city_clothing:photos:shot', function(source, sex, key, dr
     local name = ('%s_%s_%d'):format(sex, key, drawable)
     if not SaveResourceFile(RESOURCE, ('images/%s.webp'):format(name), bytes, #bytes) then return false end
 
-    index[name] = true
+    images.add(name)
     session.taken = session.taken + 1
-    unsaved = unsaved + 1
-    if unsaved >= SAVE_INDEX_EVERY then saveIndex() end
 
     return true
 end)
@@ -139,7 +184,7 @@ local function finish(src)
     if not session then return 0 end
 
     sessions[src] = nil
-    saveIndex()
+    images.save()
     if GetPlayerName(src) then SetPlayerRoutingBucket(src, session.from or 0) end
     staffLog(src, ('clothing photo tool finished: %d new pictures'):format(session.taken))
 

@@ -80,6 +80,23 @@ function look.textures(category, drawable)
     return 0
 end
 
+---The arms the game itself puts under a top or undershirt (the shop's forced component), when it has one.
+---Without them the bare arms poke through the sleeves.
+function look.forcedArms(slot, drawable)
+    local ok, arms = pcall(function()
+        local hash = GetHashNameForComponent(cache.ped, slot, drawable, 0)
+        if not hash or hash == 0 then return nil end
+
+        for i = 0, GetShopPedApparelForcedComponentCount(hash) - 1 do
+            local nameHash, enumValue, componentType = GetForcedComponent(hash, i)
+            -- Only plain ones: a named component would need the shop's data struct to read its drawable
+            if componentType == 3 and (nameHash == 0 or nameHash == `0`) then return enumValue end
+        end
+    end)
+
+    return ok and arms or nil
+end
+
 local function rgb(r, g, b)
     return ('#%02x%02x%02x'):format(r, g, b)
 end

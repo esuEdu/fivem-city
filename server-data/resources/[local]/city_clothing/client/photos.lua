@@ -1,5 +1,7 @@
 -- The photo tool: one picture of every piece the shops sell, for both sexes. The staff member's own ped is dressed in
 -- underwear and one piece at a time under a scripted camera; the server takes each picture. Their look comes back after.
+local look = require 'client.look'
+
 local photos = Config.Photos
 local STOP_KEY = 194 -- Backspace
 local UP = vector3(0.0, 0.0, 1.0)
@@ -13,13 +15,13 @@ local function keyOf(category)
     return prefix .. category.slot
 end
 
----Every category of every store once, as the pictures are keyed (hair is component 2)
-local function shotList()
+---The categories this run shoots (one tab, or every tab once), as the pictures are keyed (hair is component 2)
+local function shotList(only)
     local list, seen = {}, {}
     for _, storeType in ipairs({ 'clothing', 'barber' }) do
         for _, category in ipairs(Config.Categories[storeType]) do
             local key = keyOf(category)
-            if not seen[key] then
+            if not seen[key] and (only == 'all' or only == category.id) then
                 seen[key] = true
                 list[#list + 1] = { key = key, category = category }
             end
@@ -27,6 +29,10 @@ local function shotList()
     end
     return list
 end
+
+-- Tops and undershirts need the arms made for them, or the bare arms poke through the sleeves
+local NEEDS_ARMS = { [11] = true, [8] = true }
+
 
 local function normalize(v)
     local length = #v
@@ -130,8 +136,13 @@ local function waitFor(check)
 end
 
 ---Dresses the ped in one style of a category, waiting for it to stream in
-local function wearPiece(category, drawable)
+local function wearPiece(category, drawable, sex, options)
     local ped, slot = cache.ped, category.slot
+
+    if category.kind == 'component' and NEEDS_ARMS[slot] then
+        local arms = options.arms or look.forcedArms(slot, drawable) or photos.base[sex][3]
+        SetPedComponentVariation(ped, 3, arms, 0, 0)
+    end
 
     if category.kind == 'component' then
         SetPedPreloadVariationData(ped, slot, drawable, 0)
@@ -164,6 +175,7 @@ local function takeOff(category, sex)
 
     if category.kind == 'component' then
         SetPedComponentVariation(ped, slot, photos.base[sex][slot] or 0, 0, 0)
+        if NEEDS_ARMS[slot] then SetPedComponentVariation(ped, 3, photos.base[sex][3], 0, 0) end
     elseif category.kind == 'prop' then
         ClearPedProp(ped, slot)
     elseif category.kind == 'hair' then
@@ -185,14 +197,16 @@ local function progress(text)
     lib.showTextUI(('%s  ·  [Backspace] stop'):format(text), { position = 'top-center' })
 end
 
-local function run()
+---@param options { category: string, sex: string, from: integer, to: integer, arms: integer?, overwrite: boolean }
+local function run(options)
     local index = lib.callback.await('city_clothing:photos:index', false)
     if not index then return end
 
     running = true
     local back = GetEntityCoords(cache.ped)
     local backHeading = GetEntityHeading(cache.ped)
-    local list = shotList()
+    local list = shotList(options.category)
+    local sexes = options.sex == 'both' and { 'm', 'f' } or { options.sex }
     local taken, failed = 0, 0
 
     DisplayRadar(false)
@@ -200,7 +214,7 @@ local function run()
     RenderScriptCams(true, false, 0, true, true)
     drawLoop()
 
-    for _, sex in ipairs({ 'm', 'f' }) do
+    for _, sex in ipairs(sexes) do
         if not running then break end
 
         setModel(sex)
@@ -215,13 +229,13 @@ local function run()
                 local count = countOf(category)
                 aim(category.shot)
 
-                for drawable = 0, count - 1 do
+                for drawable = options.from, math.min(options.to, count - 1) do
                     if not running then break end
 
                     local name = ('%s_%s_%d'):format(sex, shot.key, drawable)
-                    if not index[name] then
-                        progress(('Photos %s · %s %d/%d · %d taken'):format(sex == 'm' and 'male' or 'female', category.label, drawable + 1, count, taken))
-                        wearPiece(category, drawable)
+                    if options.overwrite or not index[name] then
+                        progress(('Photos %s · %s #%d of %d · %d taken'):format(sex == 'm' and 'male' or 'female', category.label, drawable + 1, count, taken))
+                        wearPiece(category, drawable, sex, options)
                         aim(category.shot)
 
                         -- The progress box is page UI; keep it out of the picture
@@ -266,7 +280,7 @@ local function run()
     })
 end
 
-RegisterNetEvent('city_clothing:client:photos', function()
-    if GetInvokingResource() or running then return end
-    CreateThread(run)
+RegisterNetEvent('city_clothing:client:photos', function(options)
+    if GetInvokingResource() or running or type(options) ~= 'table' then return end
+    CreateThread(function() run(options) end)
 end)

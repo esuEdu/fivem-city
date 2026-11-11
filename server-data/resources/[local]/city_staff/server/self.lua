@@ -71,10 +71,10 @@ staff.register('spawnVehicle', function(src, data)
 end)
 
 -- city_clothing checks its own ACE again and writes the start and the result to the staff log
-staff.register('clothingPhotos', function(src)
+staff.register('clothingPhotos', function(src, data)
     if GetResourceState('city_clothing') ~= 'started' then return false, 'unavailable' end
 
-    return exports.city_clothing:StartPhotos(src)
+    return exports.city_clothing:StartPhotos(src, data)
 end)
 
 AddEventHandler('playerDropped', function()
