@@ -243,6 +243,10 @@ local function openUi(id)
 			action = 'setSoundFiles',
 			data = lib.callback.await('ox_doorlock:getSounds', false)
 		})
+
+		-- fivem-city: the panel (web/city) takes its colors from city_ui's theme
+		local ok, theme = pcall(require, '@city_ui.theme')
+		if ok then SendNUIMessage({ action = 'setTheme', data = theme }) end
 	end
 
 	SetNuiFocus(true, true)

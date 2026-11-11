@@ -1,0 +1,690 @@
+diff --git a/server-data/resources/[ox]/ox_doorlock/client/main.lua b/server-data/resources/[ox]/ox_doorlock/client/main.lua
+index 710ab5b..83e2f4b 100644
+--- a/server-data/resources/[ox]/ox_doorlock/client/main.lua
++++ b/server-data/resources/[ox]/ox_doorlock/client/main.lua
+@@ -148,6 +148,7 @@ RegisterNetEvent('ox_doorlock:setState', function(id, state, source, data)
+     local door = data or doors[id]
+     local double = door.doors
+     door.state = state
++    door.changedAt = GetGameTimer() -- fivem-city: the lock icon pops when the state changes
+ 
+     if double then
+         DoorSystemSetDoorState(double[1].hash, door.state, false, false)
+@@ -324,8 +325,21 @@ CreateThread(function()
+                         local sprite = drawSprite[door.state]
+ 
+                         if sprite then
++                            -- fivem-city: grow and settle back for a moment after the door locks or unlocks
++                            local scale = 1.0
++
++                            if door.changedAt then
++                                local progress = (GetGameTimer() - door.changedAt) / 400
++
++                                if progress < 1.0 then
++                                    scale = 1.0 + 0.6 * math.sin(progress * math.pi)
++                                else
++                                    door.changedAt = nil
++                                end
++                            end
++
+                             SetDrawOrigin(door.coords.x, door.coords.y, door.coords.z)
+-                            DrawSprite(sprite[1], sprite[2], sprite[3], sprite[4], sprite[5], sprite[6] * ratio,
++                            DrawSprite(sprite[1], sprite[2], sprite[3], sprite[4], sprite[5] * scale, sprite[6] * ratio * scale,
+                                 sprite[7], sprite[8], sprite[9], sprite[10], sprite[11])
+                             ClearDrawOrigin()
+                         end
+diff --git a/server-data/resources/[ox]/ox_doorlock/client/utils.lua b/server-data/resources/[ox]/ox_doorlock/client/utils.lua
+index 84b4c3f..4a3022a 100644
+--- a/server-data/resources/[ox]/ox_doorlock/client/utils.lua
++++ b/server-data/resources/[ox]/ox_doorlock/client/utils.lua
+@@ -243,6 +243,10 @@ local function openUi(id)
+ 			action = 'setSoundFiles',
+ 			data = lib.callback.await('ox_doorlock:getSounds', false)
+ 		})
++
++		-- fivem-city: the panel (web/city) takes its colors from city_ui's theme
++		local ok, theme = pcall(require, '@city_ui.theme')
++		if ok then SendNUIMessage({ action = 'setTheme', data = theme }) end
+ 	end
+ 
+ 	SetNuiFocus(true, true)
+diff --git a/server-data/resources/[ox]/ox_doorlock/config.lua b/server-data/resources/[ox]/ox_doorlock/config.lua
+index 8d432c3..a06f120 100644
+--- a/server-data/resources/[ox]/ox_doorlock/config.lua
++++ b/server-data/resources/[ox]/ox_doorlock/config.lua
+@@ -11,10 +11,11 @@ Config.DrawTextUI = false
+ ---Set the properties used by [DrawSprite](https://docs.fivem.net/natives/?_0xE7FFAE5EBF23D890).
+ Config.DrawSprite = {
+     -- Unlocked
+-    [0] = { 'mpsafecracking', 'lock_open', 0, 0, 0.018, 0.018, 0, 255, 255, 255, 100 },
++    -- fivem-city: green when unlocked, red when locked (city_ui success / danger)
++    [0] = { 'mpsafecracking', 'lock_open', 0, 0, 0.018, 0.018, 0, 62, 207, 114, 220 },
+ 
+     -- Locked
+-    [1] = { 'mpsafecracking', 'lock_closed', 0, 0, 0.018, 0.018, 0, 255, 255, 255, 100 },
++    [1] = { 'mpsafecracking', 'lock_closed', 0, 0, 0.018, 0.018, 0, 229, 72, 77, 220 },
+ }
+ 
+ ---Allow the specified ace principal to use 'command.doorlock'.
+diff --git a/server-data/resources/[ox]/ox_doorlock/fxmanifest.lua b/server-data/resources/[ox]/ox_doorlock/fxmanifest.lua
+index 33f637c..93e9df3 100644
+--- a/server-data/resources/[ox]/ox_doorlock/fxmanifest.lua
++++ b/server-data/resources/[ox]/ox_doorlock/fxmanifest.lua
+@@ -27,11 +27,13 @@ server_scripts {
+     'server/main.lua',
+ }
+ 
+-ui_page 'web/build/index.html'
++-- fivem-city: our own panel in the city_ui look (web/city); web/build stays for its sounds
++ui_page 'web/city/index.html'
+ 
+ files {
+     'web/build/index.html',
+     'web/build/**/*',
++    'web/city/*',
+     'locales/*.json',
+     'audio/data/oxdoorlock_sounds.dat54.rel',
+     'audio/dlc_oxdoorlock/oxdoorlock.awc',
+diff --git a/server-data/resources/[ox]/ox_doorlock/server/main.lua b/server-data/resources/[ox]/ox_doorlock/server/main.lua
+index a6d61ce..dfb69df 100644
+--- a/server-data/resources/[ox]/ox_doorlock/server/main.lua
++++ b/server-data/resources/[ox]/ox_doorlock/server/main.lua
+@@ -413,16 +413,5 @@ RegisterNetEvent('ox_doorlock:teleportToDoor', function(id)
+     SetEntityCoords(ped, door.coords.x, door.coords.y, door.coords.z, false, false, false, false)
+ end)
+ 
+-lib.addCommand('doorlock', {
+-    help = locale('create_modify_lock'),
+-    params = {
+-        {
+-            name = 'closest',
+-            help = locale('command_closest'),
+-            optional = true,
+-        },
+-    },
+-    restricted = Config.CommandPrincipal
+-}, function(source, args)
+-    TriggerClientEvent('ox_doorlock:triggeredCommand', source, args.closest)
+-end)
++-- fivem-city: no /doorlock command; staff open the panel from the Staff app (city_staff's doorlock tool), which
++-- triggers ox_doorlock:triggeredCommand. Changes still need the command.doorlock ACE (group.admin has it).
+diff --git a/server-data/resources/[ox]/ox_doorlock/web/city/app.js b/server-data/resources/[ox]/ox_doorlock/web/city/app.js
+new file mode 100644
+index 0000000..f323994
+--- /dev/null
++++ b/server-data/resources/[ox]/ox_doorlock/web/city/app.js
+@@ -0,0 +1,444 @@
++// fivem-city: ox_doorlock's panel in the city_ui look. Same NUI messages and callbacks as ox_doorlock's own page
++// (updateDoorData, setSoundFiles, setVisible, playSound; createDoor, deleteDoor, teleportToDoor, exit, notify).
++// Game data goes in with textContent only.
++
++const RESOURCE = typeof GetParentResourceName === 'function' ? GetParentResourceName() : 'ox_doorlock';
++const $ = (id) => document.getElementById(id);
++const DIFFICULTIES = ['easy', 'medium', 'hard'];
++
++const doors = new Map();
++let sounds = [];
++let view = 'list';
++let search = '';
++let draft = null;
++let copied = null;
++
++function post(event, data = {}) {
++    return fetch(`https://${RESOURCE}/${event}`, {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
++        body: JSON.stringify(data),
++    }).catch(() => null);
++}
++
++function applyTheme(theme) {
++    for (const [key, value] of Object.entries(theme || {})) {
++        document.documentElement.style.setProperty(`--${key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`, value);
++    }
++}
++
++function el(tag, attrs = {}, ...children) {
++    const element = document.createElement(tag);
++
++    for (const [key, value] of Object.entries(attrs)) {
++        if (value === undefined || value === null || value === false) continue;
++        if (key === 'text') element.textContent = String(value);
++        else if (key.startsWith('on')) element.addEventListener(key.slice(2), value);
++        else element.setAttribute(key, value === true ? '' : String(value));
++    }
++
++    for (const child of children.flat()) {
++        if (child !== null && child !== undefined && child !== false) element.append(child);
++    }
++
++    return element;
++}
++
++function svg(d, size = 16) {
++    const ns = 'http://www.w3.org/2000/svg';
++    const icon = document.createElementNS(ns, 'svg');
++    icon.setAttribute('viewBox', '0 0 24 24');
++    icon.setAttribute('width', String(size));
++    icon.setAttribute('height', String(size));
++    const path = document.createElementNS(ns, 'path');
++    path.setAttribute('d', d);
++    icon.append(path);
++    return icon;
++}
++
++const ICONS = {
++    plus: 'M12 5v14M5 12h14',
++    edit: 'M15.5 5.5l3 3M4 20l1-4 11-11a2.1 2.1 0 0 1 3 3L8 19z',
++    goto: 'M4.5 11.2L19.5 4.5l-6.7 15-1.9-6.4z',
++    trash: 'M5 7h14M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
++    copy: 'M9 9h11v11H9zM5 15H4V4h11v1',
++    paste: 'M8 4h8v3H8zM6 5H4v16h16V5h-2',
++    search: 'M11 4.5a6.5 6.5 0 1 1 0 13a6.5 6.5 0 1 1 0-13zM16 16l4.5 4.5',
++    lock: 'M7 10V7a5 5 0 0 1 10 0v3M5 10h14v11H5z',
++    unlock: 'M7 10V7a5 5 0 0 1 9.6-2M5 10h14v11H5z',
++};
++
++let toastTimer = null;
++
++function toast(text) {
++    $('toast').textContent = text;
++    $('toast').classList.remove('hidden');
++    clearTimeout(toastTimer);
++    toastTimer = setTimeout(() => $('toast').classList.add('hidden'), 2500);
++}
++
++// ---- Door data ----
++
++function setDoors(data) {
++    if (typeof data === 'number') {
++        doors.delete(data);
++    } else if (data && typeof data === 'object' && data.id !== undefined && !Array.isArray(data)) {
++        doors.set(Number(data.id), data);
++    } else if (data && typeof data === 'object') {
++        doors.clear();
++        for (const door of Object.values(data)) if (door && door.id !== undefined) doors.set(Number(door.id), door);
++    }
++
++    if (view === 'list' && !$('panel').classList.contains('hidden')) drawList();
++}
++
++// A door as the form edits it; arrays and plain values only
++function toDraft(door) {
++    const groups = Object.entries(door?.groups || {}).map(([name, grade]) => ({ name, grade }));
++    const difficulty = (door?.lockpickDifficulty || []).map((entry) => (typeof entry === 'string'
++        ? { kind: entry }
++        : { kind: 'custom', areaSize: entry.areaSize, speedMultiplier: entry.speedMultiplier }));
++
++    return {
++        id: door?.id,
++        name: door?.name || '',
++        passcode: door?.passcode || '',
++        autolock: door?.autolock ?? '',
++        maxDistance: door?.maxDistance ?? 2,
++        doorRate: door?.doorRate ?? '',
++        lockSound: door?.lockSound || '',
++        unlockSound: door?.unlockSound || '',
++        state: door ? door.state === 1 : true,
++        double: Boolean(door?.doors),
++        auto: Boolean(door?.auto),
++        lockpick: Boolean(door?.lockpick),
++        hideUi: Boolean(door?.hideUi),
++        holdOpen: Boolean(door?.holdOpen),
++        groups,
++        characters: [...(door?.characters || [])],
++        items: (door?.items || []).map((item) => ({
++            name: typeof item === 'string' ? item : item.name || '',
++            metadata: typeof item === 'object' && item.metadata ? String(item.metadata) : '',
++            remove: typeof item === 'object' && item.remove === true,
++        })),
++        difficulty,
++    };
++}
++
++const number = (value) => (value === '' || value === null || value === undefined || Number.isNaN(Number(value)) ? undefined : Number(value));
++const text = (value) => (typeof value === 'string' && value.trim() !== '' ? value.trim() : undefined);
++
++// What createDoor gets: the original door (coords, model, double door leaves) with the form's values on top.
++// Empty values are left out, never sent as null.
++function fromDraft() {
++    const original = draft.id !== undefined ? doors.get(Number(draft.id)) : null;
++    const data = original ? JSON.parse(JSON.stringify(original)) : {};
++
++    for (const key of ['passcode', 'autolock', 'doorRate', 'lockSound', 'unlockSound', 'groups', 'characters', 'items', 'lockpickDifficulty']) delete data[key];
++
++    data.name = text(draft.name);
++    data.passcode = text(draft.passcode);
++    data.autolock = number(draft.autolock) > 0 ? number(draft.autolock) : undefined;
++    data.maxDistance = number(draft.maxDistance) ?? 2;
++    data.doorRate = number(draft.doorRate);
++    data.lockSound = text(draft.lockSound);
++    data.unlockSound = text(draft.unlockSound);
++    data.state = draft.state;
++    data.auto = draft.auto;
++    data.lockpick = draft.lockpick;
++    data.hideUi = draft.hideUi;
++    data.holdOpen = draft.holdOpen;
++    if (!original) data.doors = draft.double || undefined;
++
++    const groups = {};
++    for (const group of draft.groups) if (text(group.name)) groups[group.name.trim()] = number(group.grade) ?? 0;
++    data.groups = groups;
++    data.characters = draft.characters.map(text).filter(Boolean);
++    data.items = draft.items.filter((item) => text(item.name)).map((item) => ({
++        name: item.name.trim(),
++        metadata: text(item.metadata),
++        remove: item.remove || undefined,
++    }));
++    data.lockpickDifficulty = draft.difficulty.map((entry) => (entry.kind === 'custom'
++        ? { areaSize: number(entry.areaSize) ?? 50, speedMultiplier: number(entry.speedMultiplier) ?? 1 }
++        : entry.kind));
++
++    for (const key of Object.keys(data)) if (data[key] === undefined) delete data[key];
++
++    return data;
++}
++
++// ---- Header ----
++
++function headButton(icon, label, onclick, accent) {
++    return el('button', { type: 'button', class: `btn${accent ? ' accent' : ''}`, onclick }, svg(ICONS[icon], 15), el('span', { text: label }));
++}
++
++function drawHead() {
++    const editing = view === 'form';
++    $('back').classList.toggle('hidden', !editing);
++
++    if (!editing) {
++        $('title').textContent = 'Door locks';
++        $('subtitle').textContent = `${doors.size} door${doors.size === 1 ? '' : 's'}`;
++        $('head-actions').replaceChildren(headButton('plus', 'New door', () => openForm(null), true));
++        return;
++    }
++
++    $('title').textContent = draft.id !== undefined ? draft.name || `Door ${draft.id}` : 'New door';
++    $('subtitle').textContent = draft.id !== undefined ? `#${draft.id}` : 'Save, then click the door in the world (right click cancels)';
++    const actions = [headButton('copy', 'Copy settings', () => {
++        copied = JSON.parse(JSON.stringify(draft));
++        drawHead();
++        toast('Settings copied');
++    })];
++
++    if (copied) {
++        actions.push(headButton('paste', 'Apply copied', () => {
++            const keep = { id: draft.id, name: draft.name, double: draft.double };
++            draft = { ...JSON.parse(JSON.stringify(copied)), ...keep };
++            drawForm();
++            toast('Copied settings applied');
++        }));
++    }
++
++    $('head-actions').replaceChildren(...actions);
++}
++
++// ---- List ----
++
++function drawList() {
++    view = 'list';
++    drawHead();
++
++    const input = el('input', { class: 'field', type: 'search', placeholder: 'Search by name, id or area', value: search, 'aria-label': 'Search doors' });
++    input.addEventListener('input', () => {
++        search = input.value;
++        drawRows(rows);
++    });
++
++    const rows = el('div', { class: 'rows' });
++    drawRows(rows);
++
++    $('body').replaceChildren(el('div', { class: 'search' }, svg(ICONS.search, 16), input), rows);
++    input.focus();
++}
++
++function drawRows(rows) {
++    const query = search.trim().toLowerCase();
++    const list = [...doors.values()]
++        .filter((door) => !query || [door.id, door.name, door.zone].some((value) => String(value ?? '').toLowerCase().includes(query)))
++        .sort((a, b) => Number(a.id) - Number(b.id));
++
++    if (!list.length) return rows.replaceChildren(el('p', { class: 'empty', text: doors.size ? 'No door matches the search.' : 'No doors yet. Create the first one.' }));
++
++    rows.replaceChildren(...list.map((door) => {
++        const locked = door.state === 1;
++        const access = Object.keys(door.groups || {}).join(', ') || (door.passcode ? 'Passcode' : door.items?.length ? 'Items' : door.characters?.length ? 'Characters' : 'Nobody');
++
++        const remove = el('button', { type: 'button', class: 'icon-btn danger', title: 'Delete', 'aria-label': `Delete ${door.name || door.id}` }, svg(ICONS.trash, 16));
++        remove.addEventListener('click', () => {
++            if (!remove.classList.contains('sure')) {
++                remove.classList.add('sure');
++                remove.replaceChildren(el('span', { text: 'Sure?' }));
++                return setTimeout(() => remove.isConnected && drawRows(rows), 3000);
++            }
++            post('deleteDoor', Number(door.id));
++        });
++
++        return el('div', { class: 'row' },
++            el('span', { class: 'id', text: `#${door.id}` }),
++            el('span', { class: `state ${locked ? 'locked' : 'open'}`, title: locked ? 'Locked' : 'Unlocked' }, svg(locked ? ICONS.lock : ICONS.unlock, 14)),
++            el('div', { class: 'grow' },
++                el('strong', { text: door.name || `Door ${door.id}` }),
++                el('small', { text: [door.zone, door.doors ? 'Double' : null, door.auto ? 'Automatic' : null].filter(Boolean).join(' · ') }),
++            ),
++            el('span', { class: 'chip', text: access }),
++            el('div', { class: 'row-actions' },
++                el('button', { type: 'button', class: 'icon-btn', title: 'Edit', 'aria-label': `Edit ${door.name || door.id}`, onclick: () => openForm(door) }, svg(ICONS.edit, 16)),
++                el('button', { type: 'button', class: 'icon-btn', title: 'Teleport to door', 'aria-label': `Teleport to ${door.name || door.id}`, onclick: () => { post('teleportToDoor', Number(door.id)); hide(false); } }, svg(ICONS.goto, 16)),
++                remove,
++            ),
++        );
++    }));
++}
++
++// ---- Form ----
++
++function openForm(door) {
++    draft = toDraft(door);
++    view = 'form';
++    drawForm();
++}
++
++function bind(input, key, target = draft, kind = 'value') {
++    if (kind === 'checked') {
++        input.checked = Boolean(target[key]);
++        input.addEventListener('change', () => { target[key] = input.checked; });
++    } else {
++        input.value = target[key] ?? '';
++        input.addEventListener('input', () => { target[key] = input.value; });
++    }
++    return input;
++}
++
++function field(label, input, hint) {
++    return el('label', { class: 'field-box' }, el('span', { class: 'label', text: label }), input, hint ? el('small', { class: 'hint', text: hint }) : null);
++}
++
++function toggle(label, key, hint, disabled) {
++    const input = bind(el('input', { type: 'checkbox', disabled }), key, draft, 'checked');
++    return el('label', { class: `toggle${disabled ? ' disabled' : ''}`, title: hint || '' }, input, el('i'), el('span', { text: label }));
++}
++
++function soundSelect(key) {
++    const select = el('select', { class: 'field' }, el('option', { value: '', text: 'Default' }), sounds.map((name) => el('option', { value: name, text: name })));
++    return bind(select, key);
++}
++
++// One editable list (groups, characters, items, lockpick difficulty)
++function listSection(title, hint, entries, makeRow, makeEntry) {
++    const body = el('div', { class: 'list' });
++
++    const redraw = () => {
++        body.replaceChildren(...entries.map((entry, index) => el('div', { class: 'list-row' },
++            ...makeRow(entry, index),
++            el('button', { type: 'button', class: 'icon-btn danger', 'aria-label': 'Remove', onclick: () => { entries.splice(index, 1); redraw(); } }, svg(ICONS.trash, 15)),
++        )));
++        if (!entries.length) body.append(el('p', { class: 'empty small', text: 'None' }));
++    };
++    redraw();
++
++    return el('section', { class: 'card' },
++        el('div', { class: 'card-head' },
++            el('div', {}, el('strong', { text: title }), el('small', { text: hint })),
++            el('button', { type: 'button', class: 'btn small', onclick: () => { entries.push(makeEntry()); redraw(); } }, svg(ICONS.plus, 14), el('span', { text: 'Add' })),
++        ),
++        body,
++    );
++}
++
++function drawForm() {
++    drawHead();
++    const isNew = draft.id === undefined;
++
++    const general = el('section', { class: 'card' },
++        el('div', { class: 'card-head' }, el('div', {}, el('strong', { text: 'Door' }), el('small', { text: 'Name, how close to use it and the sounds' }))),
++        el('div', { class: 'grid' },
++            field('Name', bind(el('input', { class: 'field', type: 'text', maxlength: '60', placeholder: 'mrpd cell 1' }), 'name')),
++            field('Passcode', bind(el('input', { class: 'field', type: 'text', maxlength: '30', placeholder: 'None' }), 'passcode'), 'Asked when someone without access uses it'),
++            field('Autolock (seconds)', bind(el('input', { class: 'field', type: 'number', min: '0', step: '1', placeholder: 'Off' }), 'autolock')),
++            field('Interact distance (m)', bind(el('input', { class: 'field', type: 'number', min: '0.5', max: '15', step: '0.5' }), 'maxDistance')),
++            field('Door rate', bind(el('input', { class: 'field', type: 'number', min: '0', step: '0.1', placeholder: 'Default' }), 'doorRate'), 'How fast an automatic door moves'),
++            field('Lock sound', soundSelect('lockSound')),
++            field('Unlock sound', soundSelect('unlockSound')),
++        ),
++        el('div', { class: 'toggles' },
++            toggle('Locked', 'state'),
++            toggle('Double door', 'double', 'Two leaves; pick both in the world', !isNew),
++            toggle('Automatic', 'auto', 'Opens by itself (gates, garage doors)'),
++            toggle('Lockpick', 'lockpick', 'Can be lockpicked'),
++            toggle('Hide icon', 'hideUi', 'No lock icon near the door'),
++            toggle('Hold open', 'holdOpen', 'Stays open while unlocked'),
++        ),
++    );
++
++    const groups = listSection('Groups', 'Jobs or gangs, from a grade up', draft.groups,
++        (entry) => [bind(el('input', { class: 'field', type: 'text', placeholder: 'police', 'aria-label': 'Group' }), 'name', entry),
++            bind(el('input', { class: 'field narrow', type: 'number', min: '0', step: '1', placeholder: 'Grade', 'aria-label': 'Grade' }), 'grade', entry)],
++        () => ({ name: '', grade: 0 }));
++
++    const characters = listSection('Characters', 'Citizen IDs that always open it', draft.characters,
++        (entry, index) => {
++            const input = el('input', { class: 'field', type: 'text', placeholder: 'Citizen ID', 'aria-label': 'Citizen ID', value: entry });
++            input.addEventListener('input', () => { draft.characters[index] = input.value; });
++            return [input];
++        },
++        () => '');
++
++    const items = listSection('Items', 'Carrying one opens it', draft.items,
++        (entry) => [bind(el('input', { class: 'field', type: 'text', placeholder: 'Item name', 'aria-label': 'Item' }), 'name', entry),
++            bind(el('input', { class: 'field', type: 'text', placeholder: 'Metadata type (optional)', 'aria-label': 'Metadata' }), 'metadata', entry),
++            el('label', { class: 'toggle compact' }, bind(el('input', { type: 'checkbox' }), 'remove', entry, 'checked'), el('i'), el('span', { text: 'Remove on use' }))],
++        () => ({ name: '', metadata: '', remove: false }));
++
++    const difficulty = listSection('Lockpick difficulty', 'One skill check per row', draft.difficulty,
++        (entry) => {
++            const kind = el('select', { class: 'field narrow', 'aria-label': 'Difficulty' },
++                [...DIFFICULTIES, 'custom'].map((value) => el('option', { value, text: value[0].toUpperCase() + value.slice(1) })));
++            const custom = el('div', { class: `custom${entry.kind === 'custom' ? '' : ' hidden'}` },
++                bind(el('input', { class: 'field narrow', type: 'number', min: '1', placeholder: 'Area size', 'aria-label': 'Area size' }), 'areaSize', entry),
++                bind(el('input', { class: 'field narrow', type: 'number', min: '0.1', step: '0.1', placeholder: 'Speed', 'aria-label': 'Speed multiplier' }), 'speedMultiplier', entry));
++            kind.value = entry.kind;
++            kind.addEventListener('change', () => {
++                entry.kind = kind.value;
++                custom.classList.toggle('hidden', entry.kind !== 'custom');
++            });
++            return [kind, custom];
++        },
++        () => ({ kind: 'easy' }));
++
++    const save = el('button', { type: 'button', class: 'btn accent big' }, el('span', { text: isNew ? 'Save and pick the door' : 'Save changes' }));
++    save.addEventListener('click', () => {
++        if (!text(draft.name)) return toast('Give the door a name');
++        if (draft.lockpick && !draft.difficulty.length) draft.difficulty.push({ kind: 'easy' });
++
++        post('createDoor', fromDraft());
++        hide(false);
++    });
++
++    $('body').replaceChildren(
++        el('div', { class: 'form' },
++            general,
++            el('div', { class: 'two' }, groups, characters),
++            el('div', { class: 'two' }, items, difficulty),
++        ),
++        el('div', { class: 'foot' }, el('button', { type: 'button', class: 'btn', text: 'Cancel', onclick: drawList }), save),
++    );
++}
++
++// ---- Open and close ----
++
++// createDoor and teleportToDoor drop the focus themselves; only Close and Escape tell the game
++function hide(tellGame = true) {
++    $('panel').classList.add('hidden');
++    if (tellGame) post('exit');
++}
++
++function show(id) {
++    $('panel').classList.remove('hidden');
++
++    const door = id !== null && id !== undefined ? doors.get(Number(id)) : null;
++    if (door) openForm(door);
++    else drawList();
++}
++
++$('close').addEventListener('click', () => hide());
++$('back').addEventListener('click', drawList);
++
++document.addEventListener('keydown', (event) => {
++    if (event.key !== 'Escape' || $('panel').classList.contains('hidden')) return;
++    if (view === 'form') drawList();
++    else hide();
++});
++
++window.addEventListener('message', (event) => {
++    const message = event.data;
++    if (!message || typeof message.action !== 'string') return;
++
++    switch (message.action) {
++    case 'setTheme': applyTheme(message.data); break;
++    case 'updateDoorData': setDoors(message.data); break;
++    case 'setSoundFiles': sounds = Array.isArray(message.data) ? message.data.map(String) : []; break;
++    case 'setVisible': show(message.data); break;
++    case 'playSound': {
++        const sound = message.data || {};
++        if (typeof sound.sound !== 'string') break;
++        const audio = new Audio(`../build/sounds/${encodeURIComponent(sound.sound)}.ogg`);
++        audio.volume = Math.max(0, Math.min(1, Number(sound.volume) || 0));
++        audio.play().catch(() => null);
++        break;
++    }
++    default: break;
++    }
++});
+diff --git a/server-data/resources/[ox]/ox_doorlock/web/city/index.html b/server-data/resources/[ox]/ox_doorlock/web/city/index.html
+new file mode 100644
+index 0000000..000d38d
+--- /dev/null
++++ b/server-data/resources/[ox]/ox_doorlock/web/city/index.html
+@@ -0,0 +1,27 @@
++<!doctype html>
++<html lang="en">
++<head>
++    <meta charset="utf-8">
++    <title>Door locks</title>
++    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
++    <link rel="stylesheet" href="style.css">
++</head>
++<body>
++    <section id="panel" class="panel hidden" role="dialog" aria-modal="true" aria-labelledby="title">
++        <header class="head">
++            <button type="button" class="icon-btn hidden" id="back" aria-label="Back to the list">
++                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 5l-7 7 7 7"/></svg>
++            </button>
++            <div class="titles">
++                <h1 id="title">Door locks</h1>
++                <small id="subtitle"></small>
++            </div>
++            <div class="head-actions" id="head-actions"></div>
++            <button type="button" class="icon-btn close" id="close" aria-label="Close">&times;</button>
++        </header>
++        <main class="body" id="body"></main>
++    </section>
++    <div class="toast hidden" id="toast" role="status"></div>
++    <script src="app.js"></script>
++</body>
++</html>
+diff --git a/server-data/resources/[ox]/ox_doorlock/web/city/style.css b/server-data/resources/[ox]/ox_doorlock/web/city/style.css
+new file mode 100644
+index 0000000..d450bd5
+--- /dev/null
++++ b/server-data/resources/[ox]/ox_doorlock/web/city/style.css
+@@ -0,0 +1,91 @@
++/* fivem-city: ox_doorlock's panel. Colors, radius and font come from city_ui/theme.lua (setTheme); the values after
++   each var() are only fallbacks. No backdrop-filter: FiveM's NUI draws it black. */
++* { box-sizing: border-box; }
++html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; font-family: var(--font, 'Poppins', sans-serif); color: var(--text, #eef0f3); }
++.hidden { display: none !important; }
++button { font: inherit; }
++
++.panel { position: fixed; top: 50%; left: 50%; width: min(1040px, 94vw); height: min(720px, 90vh); transform: translate(-50%, -50%); display: flex; flex-direction: column; border-radius: var(--radius-large, 22px); background: rgba(12, 13, 18, 0.97); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); overflow: hidden; animation: fade 0.18s ease; }
++
++.head { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.06)); background: var(--section, rgba(255, 255, 255, 0.035)); }
++.titles { flex-grow: 1; min-width: 0; }
++.titles h1 { margin: 0; font-size: 21px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
++.titles small { font-size: 11px; color: var(--muted, #7d8590); }
++.head-actions { display: flex; gap: 6px; }
++
++.btn { height: 36px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid rgba(255, 255, 255, 0.09); border-radius: var(--radius, 10px); background: var(--slot-hover, rgba(255, 255, 255, 0.07)); color: var(--text, #eef0f3); font-size: 12px; font-weight: 700; cursor: pointer; }
++.btn:hover { border-color: rgba(255, 255, 255, 0.18); }
++.btn.accent { background: var(--accent, #f5c542); color: var(--accent-text, #15181d); border-color: transparent; }
++.btn.small { height: 30px; padding: 0 10px; font-size: 11px; }
++.btn.big { height: 42px; padding: 0 22px; font-size: 13px; }
++.btn svg, .icon-btn svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
++
++.icon-btn { width: 34px; height: 34px; flex-shrink: 0; display: grid; place-items: center; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius, 10px); background: var(--slot, rgba(255, 255, 255, 0.03)); color: var(--text, #eef0f3); cursor: pointer; }
++.icon-btn:hover { background: var(--slot-hover, rgba(255, 255, 255, 0.07)); }
++.icon-btn.close { font-size: 20px; line-height: 1; background: var(--danger, #e5484d); border-color: transparent; color: #fff; }
++.icon-btn.danger:hover, .icon-btn.sure { color: var(--danger, #e5484d); border-color: var(--danger, #e5484d); }
++.icon-btn.sure { width: auto; padding: 0 10px; font-size: 11px; font-weight: 700; }
++
++.body { flex-grow: 1; min-height: 0; overflow-y: auto; padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; }
++
++.field { width: 100%; height: 38px; padding: 0 12px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius, 10px); background: rgba(0, 0, 0, 0.25); color: var(--text, #eef0f3); font: inherit; font-size: 13px; outline: none; }
++.field:focus { border-color: var(--accent, #f5c542); }
++.field.narrow { width: 120px; flex-shrink: 0; }
++select.field { cursor: pointer; }
++select.field option { background: #15171d; }
++
++/* List */
++.search { position: relative; }
++.search svg { position: absolute; left: 12px; top: 11px; fill: none; stroke: var(--muted, #7d8590); stroke-width: 2; }
++.search .field { padding-left: 36px; }
++.rows { display: flex; flex-direction: column; gap: 6px; }
++.row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; background: var(--slot, rgba(255, 255, 255, 0.03)); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); }
++.row:hover { background: var(--slot-hover, rgba(255, 255, 255, 0.07)); }
++.row .id { width: 44px; font-family: var(--mono, monospace); font-size: 12px; color: var(--muted, #7d8590); }
++.row .grow { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; }
++.row strong { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
++.row small { font-size: 11px; color: var(--muted, #7d8590); }
++.state { width: 30px; height: 30px; flex-shrink: 0; display: grid; place-items: center; border-radius: 15px; border: 1.5px solid currentColor; }
++.state svg { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
++.state.locked { color: var(--danger, #e5484d); }
++.state.open { color: var(--success, #3ecf72); }
++.chip { max-width: 220px; padding: 4px 10px; border-radius: 12px; background: var(--accent-soft, rgba(245, 197, 66, 0.1)); color: var(--accent, #f5c542); font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
++.row-actions { display: flex; gap: 6px; }
++.empty { margin: 30px 0; text-align: center; color: var(--muted, #7d8590); }
++.empty.small { margin: 4px 0; font-size: 12px; text-align: left; }
++
++/* Form */
++.form { display: flex; flex-direction: column; gap: 12px; }
++.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
++.card { padding: 14px; border-radius: 14px; background: var(--section, rgba(255, 255, 255, 0.035)); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); display: flex; flex-direction: column; gap: 12px; }
++.card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
++.card-head strong { display: block; font-size: 14px; }
++.card-head small { font-size: 11px; color: var(--muted, #7d8590); }
++.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px 12px; }
++.field-box { display: flex; flex-direction: column; gap: 5px; }
++.label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted, #7d8590); }
++.hint { font-size: 10px; color: var(--muted, #7d8590); }
++.list { display: flex; flex-direction: column; gap: 6px; }
++.list-row { display: flex; align-items: center; gap: 6px; }
++.custom { display: flex; gap: 6px; }
++
++.toggles { display: flex; flex-wrap: wrap; gap: 8px; }
++.toggle { height: 36px; padding: 0 12px 0 8px; display: inline-flex; align-items: center; gap: 8px; border-radius: var(--radius, 10px); background: var(--slot, rgba(255, 255, 255, 0.03)); border: 1px solid rgba(255, 255, 255, 0.08); font-size: 12px; font-weight: 600; cursor: pointer; user-select: none; }
++.toggle.compact { height: 38px; flex-shrink: 0; }
++.toggle.disabled { opacity: 0.45; cursor: default; }
++.toggle input { position: absolute; opacity: 0; pointer-events: none; }
++.toggle i { position: relative; width: 30px; height: 18px; border-radius: 9px; background: rgba(255, 255, 255, 0.14); transition: background 0.15s; }
++.toggle i::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 7px; background: #fff; transition: transform 0.15s; }
++.toggle input:checked + i { background: var(--accent, #f5c542); }
++.toggle input:checked + i::after { transform: translateX(12px); background: var(--accent-text, #15181d); }
++.toggle input:focus-visible + i { outline: 2px solid var(--accent, #f5c542); outline-offset: 2px; }
++
++.foot { position: sticky; bottom: -18px; margin: 0 -18px -18px; padding: 12px 18px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border, rgba(255, 255, 255, 0.06)); background: rgba(12, 13, 18, 0.98); }
++
++.toast { position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%); padding: 10px 18px; border-radius: var(--radius, 10px); background: rgba(12, 13, 18, 0.97); border: 1px solid var(--accent, #f5c542); font-size: 13px; font-weight: 600; }
++
++::-webkit-scrollbar { width: 8px; height: 8px; }
++::-webkit-scrollbar-track { background: transparent; }
++::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 4px; background: rgba(255, 255, 255, 0.14); background-clip: padding-box; }
++
++@keyframes fade { from { opacity: 0; transform: translate(-50%, -48%); } to { opacity: 1; transform: translate(-50%, -50%); } }

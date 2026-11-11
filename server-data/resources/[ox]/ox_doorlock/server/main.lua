@@ -413,16 +413,5 @@ RegisterNetEvent('ox_doorlock:teleportToDoor', function(id)
     SetEntityCoords(ped, door.coords.x, door.coords.y, door.coords.z, false, false, false, false)
 end)
 
-lib.addCommand('doorlock', {
-    help = locale('create_modify_lock'),
-    params = {
-        {
-            name = 'closest',
-            help = locale('command_closest'),
-            optional = true,
-        },
-    },
-    restricted = Config.CommandPrincipal
-}, function(source, args)
-    TriggerClientEvent('ox_doorlock:triggeredCommand', source, args.closest)
-end)
+-- fivem-city: no /doorlock command; staff open the panel from the Staff app (city_staff's doorlock tool), which
+-- triggers ox_doorlock:triggeredCommand. Changes still need the command.doorlock ACE (group.admin has it).
