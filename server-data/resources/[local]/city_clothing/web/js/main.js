@@ -25,8 +25,26 @@ const same = (a, b) => (a.opacity === 0 && b.opacity === 0)
     || Object.keys({ ...a, ...b }).every((key) => a[key] === b[key]);
 const keyOf = (c) => `${c.kind === 'prop' ? 'p' : c.kind === 'overlay' ? 'o' : 'c'}${c.slot}`;
 const imageName = (c, drawable) => `${s.sex}_${keyOf(c)}_${drawable}`;
-// A hand-made .png dropped into images/ wins over the photo tool's .webp
-const imageUrl = (name) => `https://cfx-nui-${RESOURCE}/images/${name}.${s.custom[name] ? 'png' : 'webp'}`;
+
+// A hand-made .png dropped into images/ wins over the photo tool's picture (kept in the tab's pack)
+function pictureOf(category, style) {
+    const name = imageName(category, style);
+    if (s.custom[name]) return `https://cfx-nui-${RESOURCE}/images/${name}.png`;
+    return s.packs[`${s.sex}_${keyOf(category)}`]?.[String(style)] || null;
+}
+
+// One file per sex and tab with every picture of it, fetched the first time the tab opens
+async function loadPack(category) {
+    const key = `${s.sex}_${keyOf(category)}`;
+    if (s.packs[key]) return;
+
+    try {
+        const response = await fetch(`https://cfx-nui-${RESOURCE}/images/pack_${key}.json`);
+        s.packs[key] = response.ok ? await response.json() : {};
+    } catch {
+        s.packs[key] = {};
+    }
+}
 
 // The style number a card stands for: -1 / none for props and overlays
 function styleOf(category, value) {
@@ -77,11 +95,11 @@ function card(category, style) {
     const pic = el('div', 'card__pic');
     if (style < 0) {
         pic.append(el('span', 'card__none', 'None'));
-    } else if (s.custom[imageName(category, style)] || s.images[imageName(category, style)]) {
+    } else if (pictureOf(category, style)) {
         const img = document.createElement('img');
         img.loading = 'lazy';
         img.alt = '';
-        img.src = imageUrl(imageName(category, style));
+        img.src = pictureOf(category, style);
         img.onerror = () => { img.remove(); pic.append(el('span', 'card__number', String(style + 1))); };
         pic.append(img);
     } else {
@@ -243,6 +261,14 @@ function selectTab(id) {
     post('shot', { name: category.shot });
     renderGrid(category);
     renderOptions(category);
+
+    // The grid shows numbers at once; pictures come in when the tab's pack is loaded
+    const key = `${s.sex}_${keyOf(category)}`;
+    if (!s.packs[key]) {
+        loadPack(category).then(() => {
+            if (s && s.tab === id) renderGrid(category);
+        });
+    }
 }
 
 function renderTabs() {
@@ -368,7 +394,7 @@ function open(data) {
         palettes: data.palettes,
         outfits: data.outfits || [],
         maxOutfits: data.maxOutfits,
-        images: data.images || {},
+        packs: {},
         custom: data.custom || {},
         values,
         original: structuredClone(values),

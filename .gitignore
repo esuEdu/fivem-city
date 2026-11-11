@@ -34,3 +34,4 @@ backups/
 # Clothing pictures from the photo tool (made on the server, kept off git)
 server-data/resources/[[]local]/city_clothing/images/*.webp
 server-data/resources/[[]local]/city_clothing/images/index.json
+server-data/resources/[[]local]/city_clothing/images/pack_*.json

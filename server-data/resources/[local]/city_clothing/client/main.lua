@@ -13,11 +13,6 @@ local function notify(text, kind)
     lib.notify({ description = text, type = kind or 'inform' })
 end
 
-local function images()
-    local ok, index = pcall(json.decode, LoadResourceFile(RESOURCE, 'images/index.json') or '{}')
-    return ok and type(index) == 'table' and index or {}
-end
-
 ---The categories of a store this ped can use, with what the page needs to draw them
 local function categoriesFor(storeType, prices)
     local sex = look.sex()
@@ -105,7 +100,6 @@ local function openStore(index)
         palettes = look.palettes(),
         outfits = info.outfits,
         maxOutfits = info.maxOutfits,
-        images = images(),
         custom = info.custom,
     })
     SetNuiFocus(true, true)

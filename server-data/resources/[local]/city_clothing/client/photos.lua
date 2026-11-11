@@ -243,9 +243,6 @@ end
 
 ---@param options { category: string, sex: string, from: integer, to: integer, overwrite: boolean }
 local function run(options)
-    local index = lib.callback.await('city_clothing:photos:index', false)
-    if not index then return end
-
     running = true
     local back = GetEntityCoords(cache.ped)
     local backHeading = GetEntityHeading(cache.ped)
@@ -273,11 +270,15 @@ local function run(options)
                 local count = countOf(category)
                 aim(category.shot)
 
+                local have = {}
+                for _, style in ipairs(lib.callback.await('city_clothing:photos:have', false, sex, shot.key) or {}) do
+                    have[style] = true
+                end
+
                 for drawable = options.from, math.min(options.to, count - 1) do
                     if not running then break end
 
-                    local name = ('%s_%s_%d'):format(sex, shot.key, drawable)
-                    if options.overwrite or not index[name] then
+                    if options.overwrite or not have[drawable] then
                         progress(('Photos %s · %s #%d of %d · %d taken'):format(sex == 'm' and 'male' or 'female', category.label, drawable + 1, count, taken))
                         wearPiece(category, drawable)
                         aim(category.shot)
