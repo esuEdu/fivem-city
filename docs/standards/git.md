@@ -27,8 +27,7 @@ docs/docker-guide
 ```
 
 - One topic per branch. If it grows into a second feature, finish or split it.
-- Features and anything that needs an in-game test go on a branch and are tested on `Cidade_Teste` first (below). Only finished, tested branches reach `main`.
-- Small docs or config fixes can go straight to `main` when the user asks.
+- Every change (features, fixes, docs, config) goes on a branch and to `Cidade_Teste` first (below). Nothing is committed or pushed to `main` directly.
 
 ## Cidade_Teste and main
 
@@ -37,7 +36,7 @@ docs/docker-guide
 1. Branch from `main` (`feat/app-x`) and do the work.
 2. Merge the branch into `Cidade_Teste` (a pull request with base `Cidade_Teste`, or `git switch Cidade_Teste && git merge feat/app-x && git push`). The feature branch stays open: when the PR closes, don't delete it.
 3. Test on the server. A bug, a missing piece or a "forgot X" is fixed **on `feat/app-x`**, never on `Cidade_Teste`, and merged into `Cidade_Teste` again (only the new commits go in).
-4. When the user has tested it and there is nothing more to add for that feature, the user opens the pull request **`feat/app-x` → `main`** and merges it by hand.
+4. When it has been tested and 100% of the feature works, with nothing more to add, someone from the team opens the pull request **`feat/app-x` → `main`** by hand. Claude never opens pull requests to `main`.
 
 Rules:
 

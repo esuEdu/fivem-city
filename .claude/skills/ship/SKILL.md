@@ -31,7 +31,7 @@ The preview has no game behind it: CSS `backdrop-filter` looks fine there but is
 ## 4. Commit and push (only when the user asked)
 
 - Check `git status` and stage only what belongs to the change (never `.env`, `secrets.cfg`, scratch files).
-- Follow `docs/standards/git.md`. Small docs or config fixes go straight to `main` when the user asks to commit and push. Features and anything that needs an in-game test go on a `<type>/<topic>` branch (`feat/player-search`, `fix/fuel-payment`); open the pull request with base **`Cidade_Teste`** (the test server's branch), never `main`, and the user merges. Fixes found in testing are new commits on the same feature branch, merged into `Cidade_Teste` again. Only the user takes a finished branch to `main` (see "Cidade_Teste and main" in `git.md`).
+- Follow `docs/standards/git.md`. Every change goes on a `<type>/<topic>` branch (`feat/player-search`, `fix/fuel-payment`), never on `main`; open the pull request with base **`Cidade_Teste`** (the test server's branch), and the user merges. Fixes found in testing are new commits on the same feature branch, merged into `Cidade_Teste` again. Never commit, push or open a PR to `main`: someone from the team does that by hand once the feature is 100% tested (see "Cidade_Teste and main" in `git.md`).
 - Message: `<type>(<scope>): <description>` (`feat(inventory): add trunks and gloveboxes`), then a short body saying what changed and why, ending with the attribution trailer the environment gives (`Co-Authored-By: ...`). Split unrelated changes into separate commits.
 - `git push` (`-u origin <branch>` the first time). Report the commit hash.
 
