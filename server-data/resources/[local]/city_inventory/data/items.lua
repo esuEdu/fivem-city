@@ -513,6 +513,22 @@ return {
         weight = 1000,
     },
 
+    ['farm_test1'] = {
+        label = 'Farm Package A',
+        category = 'material',
+        weight = 200,
+        description = 'A test farm delivery for the organization vault (city_orgs).',
+        client = { image = 'paperbag.png' },
+    },
+
+    ['farm_test2'] = {
+        label = 'Farm Package B',
+        category = 'material',
+        weight = 200,
+        description = 'A test farm delivery for the organization vault (city_orgs).',
+        client = { image = 'coke_small_brick.png' },
+    },
+
     ['steel'] = {
         label = 'Steel Ingot',
         category = 'material',

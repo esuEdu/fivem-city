@@ -30,7 +30,7 @@ Everything players control (races, garage, tuning, leaderboards, events, profile
 - [ ] Tablet look: **iPad-style**: thin rounded bezel, app grid on a wallpaper, a dock, status bar (time, battery), the swipe-up home bar, smooth open/close animations. Branded with GTA's own **iFruit** (the in-game Apple parody) or our City OS name; no Apple names or logos
 - [ ] First apps, each a separate `city_<feature>` resource on the platform:
   - [ ] **Profile**: character, rank, money
-  - [ ] **Jobs (legal)**: one app per job (police, EMS, mechanic, taxi, …), shown only to players with that job: clock in/out, tasks, job tools; the boss also gets hire, fire, grades and the society account (today's qbx_management boss menu)
+  - [ ] **Jobs (legal)**: one app per job (police, EMS, mechanic, taxi, …), shown only to players with that job: clock in/out, tasks, job tools; the boss also gets hire, fire, grades and the society account (qbx_management was removed; the Mechanic/EMS apps and the MDT already do this)
   - [ ] **Jobs (illegal)**: drugs, robberies, chop shop, …; hidden from the home screen until unlocked (an item, a contact or reputation), so a police search of the tablet doesn't show it; contacts, jobs on offer, reputation
   - [ ] **Staff**: only for staff (`group.support`/`mod`/`admin`): player list, spectate, teleport to/bring, heal/revive, freeze, open a player's inventory, warn/kick/ban, and reports from players
     - Built as `city_staff` ([city-staff.md](city-staff.md)), replacing qbx_adminmenu and txAdmin's in-game menu; waiting for the in-game test.

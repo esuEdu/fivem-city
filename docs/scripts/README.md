@@ -36,7 +36,7 @@ Every resource in `server-data/resources/`, grouped by what it's for. Third-part
 |---|---|
 | **city_economy** | Ours: the money ledger. Owns cash and bank (qbx_core only mirrors them); scripts that pay or charge must be on its allowlist. |
 | **city_bank** | Ours: bank branches (banker NPC, fingerprint, panel with accounts, cards, transfers, loans, bills, history and a staff tab for bankers), ATMs, the card machine item and the `bank_card` item. |
-| **qbx_management** | Boss menu: hire, fire, promote, society money. |
+| **city_orgs** | Ours: the faction (gang) tablet apps — vault, organization money, farm goals, management and activity log. Replaced qbx_management (the job side lives in the Mechanic/EMS apps and the MDT). |
 
 ## Vehicles
 

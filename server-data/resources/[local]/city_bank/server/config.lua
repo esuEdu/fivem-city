@@ -84,6 +84,14 @@ return {
         city_mechanic = { 'mechanic' }, -- parts fitted by mechanics
     },
 
+    -- Resources allowed to move money in and out of a gang account (exports.city_bank:Org*), and which gangs
+    orgs = {
+        moveMax = 500000,
+        resources = {
+            city_orgs = true,
+        },
+    },
+
     loans = { minAmount = 1000, maxActive = 1, every = 7 * DAY },
 
     scheduled = { daily = DAY, weekly = 7 * DAY, biweekly = 14 * DAY, maxPerPlayer = 10 },
