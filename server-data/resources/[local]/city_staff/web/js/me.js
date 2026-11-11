@@ -36,6 +36,18 @@ function photosForm() {
     );
 }
 
+// ox_doorlock's panel: the whole list, or straight to the door the staff member stands next to
+function doorlockCard() {
+    return el('div', { class: 'card form' },
+        el('div', { class: 'tool-top' }, icon('door', 22), el('strong', { text: L('tool_doorlock') })),
+        el('small', { class: 'muted', text: L('tool_doorlock_help') }),
+        el('div', { class: 'form-row' },
+            el('button', { class: 'kit-btn accent', text: L('ui_doorlock_open'), onclick: () => run('doorlock', { closest: false }) }),
+            el('button', { class: 'kit-btn', text: L('ui_doorlock_closest'), onclick: () => run('doorlock', { closest: true }) }),
+        ),
+    );
+}
+
 export async function renderMe() {
     const cards = TOOLS.filter(can).map((tool) => {
         const state = el('small', { class: 'state', text: app.tools[tool] ? L('ui_on') : L('ui_off') });
@@ -70,6 +82,7 @@ export async function renderMe() {
     return el('div', { class: 'stack' },
         heading(L('ui_tab_me')),
         cards.length ? el('div', { class: 'tools' }, cards) : null,
+        can('doorlock') && app.doorlock ? doorlockCard() : null,
         can('clothingPhotos') && app.clothingCategories ? photosForm() : null,
         vehicles.length ? el('div', { class: 'card form' }, el('strong', { text: L('ui_vehicles') }), el('div', { class: 'form-row' }, vehicles), el('small', { class: 'muted', text: L('ui_vehicles_foot') })) : null,
     );
