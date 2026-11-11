@@ -27,11 +27,13 @@ server_scripts {
     'server/main.lua',
 }
 
-ui_page 'web/build/index.html'
+-- fivem-city: our own panel in the city_ui look (web/city); web/build stays for its sounds
+ui_page 'web/city/index.html'
 
 files {
     'web/build/index.html',
     'web/build/**/*',
+    'web/city/*',
     'locales/*.json',
     'audio/data/oxdoorlock_sounds.dat54.rel',
     'audio/dlc_oxdoorlock/oxdoorlock.awc',

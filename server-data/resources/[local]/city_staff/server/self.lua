@@ -70,6 +70,19 @@ staff.register('spawnVehicle', function(src, data)
     return true, netId
 end)
 
+-- ox_doorlock's panel (its /doorlock command is removed by scripts/patches/ox_doorlock.patch). ox_doorlock checks
+-- the command.doorlock ACE again on every change; group.admin has it through `command allow` in server.cfg.
+staff.register('doorlock', function(src, data)
+    if GetResourceState('ox_doorlock') ~= 'started' then return false, 'unavailable' end
+
+    local closest = data.closest == true
+    -- After the tablet closed on this client (it drops the NUI focus the panel takes)
+    SetTimeout(400, function() TriggerClientEvent('ox_doorlock:triggeredCommand', src, closest) end)
+    staff.log(src, 'doorlock', nil, closest and 'closest' or 'panel')
+
+    return true
+end)
+
 -- city_clothing checks its own ACE again and writes the start and the result to the staff log
 staff.register('clothingPhotos', function(src, data)
     if GetResourceState('city_clothing') ~= 'started' then return false, 'unavailable' end

@@ -16,7 +16,7 @@ local ACTIONS = {
 }
 
 -- Tools that close the tablet first, because the player needs the game view (or the inventory) to use them
-local CLOSES_TABLET = { inventory = true, spectate = true, noclip = true, clothingPhotos = true }
+local CLOSES_TABLET = { inventory = true, spectate = true, noclip = true, clothingPhotos = true, doorlock = true }
 
 ---Fills in what only this client knows (whether a tool is on), or returns why the action can't run.
 ---@param action string

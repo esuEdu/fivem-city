@@ -63,6 +63,7 @@ staff.register('app', function(src)
         maxGiveMoney = Config.MaxGiveMoney,
         jobs = permissions.setJob and groupList(exports.qbx_core:GetJobs()) or nil,
         gangs = permissions.setGang and groupList(exports.qbx_core:GetGangs()) or nil,
+        doorlock = permissions.doorlock and GetResourceState('ox_doorlock') == 'started' or nil,
         clothingCategories = permissions.clothingPhotos and GetResourceState('city_clothing') == 'started'
             and exports.city_clothing:PhotoCategories() or nil,
     }

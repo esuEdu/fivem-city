@@ -148,6 +148,7 @@ RegisterNetEvent('ox_doorlock:setState', function(id, state, source, data)
     local door = data or doors[id]
     local double = door.doors
     door.state = state
+    door.changedAt = GetGameTimer() -- fivem-city: the lock icon pops when the state changes
 
     if double then
         DoorSystemSetDoorState(double[1].hash, door.state, false, false)
@@ -324,8 +325,21 @@ CreateThread(function()
                         local sprite = drawSprite[door.state]
 
                         if sprite then
+                            -- fivem-city: grow and settle back for a moment after the door locks or unlocks
+                            local scale = 1.0
+
+                            if door.changedAt then
+                                local progress = (GetGameTimer() - door.changedAt) / 400
+
+                                if progress < 1.0 then
+                                    scale = 1.0 + 0.6 * math.sin(progress * math.pi)
+                                else
+                                    door.changedAt = nil
+                                end
+                            end
+
                             SetDrawOrigin(door.coords.x, door.coords.y, door.coords.z)
-                            DrawSprite(sprite[1], sprite[2], sprite[3], sprite[4], sprite[5], sprite[6] * ratio,
+                            DrawSprite(sprite[1], sprite[2], sprite[3], sprite[4], sprite[5] * scale, sprite[6] * ratio * scale,
                                 sprite[7], sprite[8], sprite[9], sprite[10], sprite[11])
                             ClearDrawOrigin()
                         end

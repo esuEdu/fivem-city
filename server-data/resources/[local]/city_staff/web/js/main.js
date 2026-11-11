@@ -13,7 +13,7 @@ export const app = { permissions: {}, tab: 'dashboard', openReports: 0 };
 const content = document.getElementById('content');
 const nav = document.getElementById('nav');
 
-const SELF_TOOLS = ['noclip', 'invisible', 'godmode', 'names', 'blips', 'spawnVehicle', 'clothingPhotos'];
+const SELF_TOOLS = ['noclip', 'invisible', 'godmode', 'names', 'blips', 'spawnVehicle', 'clothingPhotos', 'doorlock'];
 
 const TABS = [
     { id: 'dashboard', icon: 'dashboard', permission: 'app', render: renderDashboard },

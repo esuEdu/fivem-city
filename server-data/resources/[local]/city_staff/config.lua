@@ -48,8 +48,9 @@ Config.Permissions = {
     -- vehicles
     spawnVehicle = 'admin',
 
-    -- server tools: city_clothing's photo tool (a picture of every clothing piece for the shops)
+    -- server tools: city_clothing's photo tool (a picture of every clothing piece for the shops) and the doorlock panel
     clothingPhotos = 'admin',
+    doorlock = 'admin', -- ox_doorlock's panel: create, edit and delete locked doors
 }
 
 -- Most one Give money can add (the economy also caps staff grants at $1,000,000 per character per hour)

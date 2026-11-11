@@ -19,6 +19,7 @@ None known.
 - **qbx_core:** uses `city_inventory` (`scripts/patches/qbx_core.patch`).
 - **qbx_medical:** tells the server when a revive is real (`qbx_medical:server:revived`), so city_hospital can keep a finished-off player down (`scripts/patches/qbx_medical.patch`).
 - **qbx_core** and **city_dealership:** the `gemera` add-on car is in qbx_core's vehicle list and on the dealership's `Config.Blocklist`, so it can be spawned but isn't sold (`scripts/patches/qbx_core.patch`).
+- **ox_doorlock:** its panel is replaced by our own page in the city_ui look (`web/city`, same NUI messages and callbacks), the `/doorlock` command is removed (staff open the panel from the Staff app's My tools), and the lock icon by a door is green when unlocked, red when locked and pops when it changes (`scripts/patches/ox_doorlock.patch`).
 - **qbx_scoreboard:** lists no robberies, since the robbery scripts were removed (`scripts/patches/qbx_scoreboard.patch`).
 - **qbx_radialmenu:** the dead **Give Contact Details** button is removed, the police buttons fire city_police's events (Kidnap, Take Hostage and Revoke Drivers License are gone), and the mechanic, taxi and tow job buttons and Corner Selling are gone with their scripts (`scripts/patches/qbx_radialmenu.patch`).
 - **qbx_core:** `shared/jobs.lua` keeps only `unemployed`, `police` (which starts off duty; officers clock in at a station), `ambulance` and `mechanic` (city_mechanic); every other upstream job is removed, and a character saved with a removed job loads as unemployed (`scripts/patches/qbx_core.patch`).
