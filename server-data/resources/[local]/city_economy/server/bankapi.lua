@@ -10,7 +10,7 @@ local CALLER = 'city_bank'
 local REASON = '^bank%-[%w%-]+$'
 local COLUMNS = [[SELECT `id`, `number`, `type`, `owner`, `label`, `balance`, `frozen`, `goal_amount`, `goal_date`,
     `fingerprint_at` IS NOT NULL AS `fingerprint`, UNIX_TIMESTAMP(`created_at`) AS `created` FROM `economy_accounts`]]
-local KINDS = { savings = true, shared = true, job = true }
+local KINDS = { savings = true, shared = true, job = true, gang = true }
 local FREEZE = { debt = true, fraud = true, admin = true }
 
 ---@return boolean
@@ -90,15 +90,15 @@ exports('BankSystemAccount', function(name)
     return accounts.system(name)
 end)
 
----@param kind 'savings' | 'shared' | 'job'
----@param owner string citizenid, or the job name for job accounts
+---@param kind 'savings' | 'shared' | 'job' | 'gang'
+---@param owner string citizenid, or the job/gang name for job and gang accounts
 ---@param label string
 exports('BankCreateAccount', function(kind, owner, label)
     if not trusted() or not KINDS[kind] or type(owner) ~= 'string' or type(label) ~= 'string' then return end
 
     accounts.wait()
 
-    -- One savings per character and one account per job; shared accounts get a random key
+    -- One savings per character and one account per job or gang; shared accounts get a random key
     local key = kind == 'shared' and ('shared:%s'):format(lib.string.random('............'))
         or ('%s:%s'):format(kind, owner)
 

@@ -32,6 +32,7 @@ server_scripts {
     'server/devtools.lua',
     'server/app.lua',
     'server/jobs.lua',
+    'server/orgs.lua',
 }
 
 ui_page 'web/index.html'
