@@ -33,4 +33,18 @@ Config.Apps = {
             arma3 = { label = 'Arma 3', vault = vec4(1210.6, -1275.3, 35.2, 90.0) },
         },
     },
+    ammo = {
+        order = 62,
+        color = '#d97b1f',
+        icon = {
+            glyph = 'M8 4c-1 1-1.5 2-1.5 3.5V14h3V7.5C9.5 6 9 5 8 4zM16 4c-1 1-1.5 2-1.5 3.5V14h3V7.5C17.5 6 17 5 16 4zM5 17h14v3H5z',
+            colors = { '#6b3c0e', '#d97b1f', '#381f06' },
+        },
+        farmItems = { 'farm_test1', 'farm_test2' },
+        factions = {
+            muni1 = { label = 'Muni 1', vault = vec4(851.0, -2965.0, 6.0, 90.0) },
+            muni2 = { label = 'Muni 2', vault = vec4(1385.0, -2088.0, 52.0, 300.0) },
+            muni3 = { label = 'Muni 3', vault = vec4(481.0, -1316.0, 29.2, 270.0) },
+        },
+    },
 }
