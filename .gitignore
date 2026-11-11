@@ -30,3 +30,7 @@ server-data/resources/[[]local]/city_builder/exports/*.xml
 
 # Database dumps from scripts/wipe-db.sh
 backups/
+
+# Clothing pictures from the photo tool (made on the server, kept off git)
+server-data/resources/[[]local]/city_clothing/images/*.webp
+server-data/resources/[[]local]/city_clothing/images/index.json

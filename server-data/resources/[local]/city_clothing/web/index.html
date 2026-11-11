@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>city_clothing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="js/main.js"></script>
+</head>
+<body>
+    <section id="shop" class="shop hidden">
+        <div id="stage" class="stage"></div>
+
+        <nav id="tabs" class="tabs"></nav>
+
+        <aside class="browse panel">
+            <header class="browse__head">
+                <p id="kicker" class="kicker"></p>
+                <div class="browse__title-row">
+                    <h2 id="title" class="browse__title"></h2>
+                    <span id="price" class="price-tag"></span>
+                </div>
+                <input id="search" class="search" type="text" inputmode="numeric" maxlength="4" placeholder="Search by number">
+            </header>
+            <div id="grid" class="grid"></div>
+            <div id="options" class="options"></div>
+        </aside>
+
+        <aside class="bag panel">
+            <header class="bag__head">
+                <p class="kicker">Your bag</p>
+                <span id="bag-count" class="muted"></span>
+            </header>
+            <div id="bag-list" class="bag__list"></div>
+            <div class="bag__total">
+                <span>Total</span>
+                <strong id="bag-total">$0</strong>
+            </div>
+            <div class="bag__pay">
+                <button id="pay-cash" class="btn btn--accent" type="button">Pay cash</button>
+                <button id="pay-bank" class="btn" type="button">Pay with bank</button>
+            </div>
+        </aside>
+
+        <footer class="footer">
+            <button id="leave" class="btn btn--ghost" type="button">Leave</button>
+            <span class="muted hint">Drag to turn · Scroll to zoom</span>
+        </footer>
+    </section>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal__card panel">
+            <h3 id="modal-title"></h3>
+            <p id="modal-text" class="muted"></p>
+            <div class="modal__actions">
+                <button id="modal-cancel" class="btn btn--ghost" type="button">Cancel</button>
+                <button id="modal-ok" class="btn btn--accent" type="button">Confirm</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
