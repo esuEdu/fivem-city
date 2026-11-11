@@ -70,24 +70,49 @@ return {
     -- How often (s) unit positions are sent to officers watching the map
     mapSeconds = 3,
 
-    -- Armory (a city_inventory shop; police gear is free, ammo almost)
+    -- Armory (server/armory.lua): everything is free service gear. tiers[n + 1] is what rank n (job grade) unlocks;
+    -- an officer unlocks the tiers one by one up to their own rank, and only takes from tiers at or below their rank.
+    -- The last tier also gets every weapon of city_inventory's data/weapons.lua that no tier lists. A weapon's ammo
+    -- comes with it. `max` is how many one officer may carry (default 1), `count` how many one take gives (default 1).
     armory = {
-        { name = 'handcuffs', price = 0 },
-        { name = 'zipties', price = 0 },
-        { name = 'crowbar', price = 0 },
-        { name = 'radio', price = 0 },
-        { name = 'police_badge', price = 0 },
-        { name = 'empty_evidence_bag', price = 0 },
-        { name = 'armour', price = 0 },
-        { name = 'weapon_flashlight', price = 0 },
-        { name = 'weapon_nightstick', price = 0 },
-        { name = 'weapon_stungun', price = 0, metadata = { registered = true, serial = 'POL' } },
-        { name = 'weapon_pistol', price = 0, metadata = { registered = true, serial = 'POL' } },
-        { name = 'ammo-9', price = 1 },
-        { name = 'weapon_pumpshotgun', price = 0, metadata = { registered = true, serial = 'POL' }, grade = 2 },
-        { name = 'ammo-shotgun', price = 1, grade = 2 },
-        { name = 'weapon_carbinerifle', price = 0, metadata = { registered = true, serial = 'POL' }, grade = 3 },
-        { name = 'ammo-rifle', price = 1, grade = 3 },
+        ammo = { count = 60, max = 250 },
+        takeCooldownMs = 800,
+        tiers = {
+            -- 0 Recruta
+            {
+                { name = 'weapon_stungun' },
+                { name = 'weapon_pistol' },
+                { name = 'weapon_nightstick' },
+                { name = 'weapon_flashlight' },
+                { name = 'handcuffs' },
+                { name = 'zipties', count = 5, max = 10 },
+                { name = 'radio' },
+                { name = 'police_badge' },
+                { name = 'empty_evidence_bag', count = 5, max = 20 },
+                { name = 'armour', max = 2 },
+                { name = 'crowbar' },
+            },
+            -- 1 Soldado
+            { { name = 'weapon_combatpistol' }, { name = 'weapon_pistol_mk2' }, { name = 'weapon_flaregun' } },
+            -- 2 Cabo
+            { { name = 'weapon_smg' }, { name = 'weapon_pumpshotgun' }, { name = 'weapon_heavypistol' } },
+            -- 3 Terceiro Sargento
+            { { name = 'weapon_combatpdw' }, { name = 'weapon_smg_mk2' }, { name = 'weapon_smokegrenade', count = 2, max = 4 } },
+            -- 4 Segundo Sargento
+            { { name = 'weapon_carbinerifle' }, { name = 'weapon_pumpshotgun_mk2' }, { name = 'weapon_teargas', count = 2, max = 4 } },
+            -- 5 Primeiro Sargento
+            { { name = 'weapon_carbinerifle_mk2' }, { name = 'weapon_assaultshotgun' }, { name = 'weapon_pistol50' } },
+            -- 6 Subtenente
+            { { name = 'weapon_specialcarbine' }, { name = 'weapon_bullpuprifle' }, { name = 'weapon_heavyshotgun' } },
+            -- 7 Aspirante
+            { { name = 'weapon_advancedrifle' }, { name = 'weapon_tacticalrifle' }, { name = 'weapon_marksmanrifle' } },
+            -- 8 Segundo Tenente
+            { { name = 'weapon_specialcarbine_mk2' }, { name = 'weapon_bullpuprifle_mk2' }, { name = 'weapon_combatshotgun' }, { name = 'weapon_heavyrifle' } },
+            -- 9 Primeiro Tenente
+            { { name = 'weapon_sniperrifle' }, { name = 'weapon_marksmanrifle_mk2' }, { name = 'weapon_precisionrifle' }, { name = 'weapon_combatmg' } },
+            -- 10 Capitão (and every rank above): every other weapon is added here
+            {},
+        },
     },
 
     locker = { slots = 30, weight = 100000 },

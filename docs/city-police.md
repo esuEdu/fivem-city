@@ -34,7 +34,8 @@ Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuff
 
 ## The field job
 
-- **Stations** (`Config.Stations`, Mission Row and Paleto Bay): clock in/out, armory (a `city_inventory` shop, items by grade), personal locker, evidence locker (stash), trash, garage and helipad, impound desk, forensics lab. All with `ox_target`.
+- **Stations** (`Config.Stations`, Mission Row and Paleto Bay): clock in/out, armory (see below), personal locker, evidence locker (stash), trash, garage and helipad, impound desk, forensics lab. All with `ox_target`.
+- **Armory** (`armory` in `server/config.lua`, `server/armory.lua`, `web/armory.js`): a panel with two tabs. **Unlocks** (the padlock) is a tree with one row per rank from Recruta to Capitão, each with the gear that rank adds; the officer unlocks the rows one at a time, in order, up to their own rank (saved in `city_police_armory`). **Armory** lists what they may take now: the unlocked rows at or below their rank (a demoted officer loses the rows above until promoted again, without unlocking them again), plus the ammo of those weapons. Everything is free; each item has a carry limit (`max`, default 1; ammo `ammo.max`). Recruta starts unlocked (taser, pistol, nightstick, flashlight, cuffs, radio, badge, vest…), and the Capitão row also holds every weapon of city_inventory's `data/weapons.lua` no row lists, so Capitão and up take any weapon. Weapons taken get a `POL` serial and are registered to the officer in `city_police_weapons`.
 - **Doors** (`doors` in `server/config.lua`, `server/doors.lua`): the Mission Row cells, armory, locker rooms, offices, back entrance and garage gate are ox_doorlock doors that only the police job opens and locks (E near the door). city_police creates each one by name when it is missing, so a door staff changed with `/doorlock` keeps the change.
 - **Wardrobe** (`wardrobe` in `Config.Stations`, `server/wardrobe.lua`): a panel with the uniforms for the character's body (`Config.Uniforms` plus the ones made in game). Putting one on keeps the officer's own clothes in `city_police_wardrobe` (once, so switching uniforms doesn't lose them); "Change back" or "Go off duty and change back" puts them back, even after logging out. Clothes are read and set on the ped with the game natives, never saved as the skin. The command (`Config.Permissions.uniforms`, Tenente-Coronel and up) makes a uniform in illenium-appearance's clothing editor, names it and can delete it (max `Config.MaxUniforms`); a uniform only ever touches clothes (components 1 and 3 to 11 and the hat), never the face, hair, glasses, ears, watch or bracelets, and a uniform without a hat takes the hat off. `server/outfit.lua` keeps that list, leaves bad pieces out and logs them (tested).
 - **Vehicles**: one at a time per officer, from the garage they stand at, models by grade and certification, plate `LSPD####`, keys given.
@@ -80,6 +81,7 @@ Tables, created on start:
 | `city_police_case_photos` | evidence photos copied from officers' phones (unsaved ones deleted after a day) |
 | `city_police_uniforms` | uniforms the command made in game: label, body, components, props |
 | `city_police_wardrobe` | an officer's own clothes while they wear a uniform |
+| `city_police_armory` | the highest armory row each officer unlocked |
 | `city_police_warrants` | warrants: charges, expiry, status |
 | `city_police_bolos` | BOLOs: kind, title, description, plate, expiry, status |
 | `city_police_plates` | flagged plates (stolen / wanted) |

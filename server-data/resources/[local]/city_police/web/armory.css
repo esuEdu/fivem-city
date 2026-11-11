@@ -1,0 +1,64 @@
+/* The station armory: a centered panel with the Armory tab (cards to take) and the Unlocks tab (one row per rank, like
+   a tech tree). Colors come from city_ui/theme.lua through screen.js applyTheme. */
+.armory { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(5, 6, 9, 0.55); animation: fade 0.2s ease; }
+.armory-panel { width: min(1080px, 94vw); height: min(700px, 90vh); display: flex; flex-direction: column; border-radius: var(--radius-large, 18px); background: rgba(12, 13, 18, 0.97); border: 1px solid var(--border, rgba(255, 255, 255, 0.06)); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); overflow: hidden; }
+
+.armory-head { display: flex; align-items: center; gap: 18px; padding: 16px 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); background: rgba(255, 255, 255, 0.02); }
+.armory-titles { flex-grow: 1; min-width: 0; }
+.armory-titles h2 { margin: 0; font-size: 22px; }
+.armory-titles small { font-size: 11px; color: var(--muted, #9aa1ad); }
+.armory-rank { display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px 8px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); }
+.armory-rank small { display: block; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted, #7d8590); }
+.armory-rank strong { font-size: 13px; }
+.armory-tabs { display: flex; gap: 6px; }
+.armory-tab { position: relative; height: 36px; padding: 0 16px; display: flex; align-items: center; gap: 7px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; background: rgba(255, 255, 255, 0.04); color: var(--text, #eef0f3); font: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; }
+.armory-tab.on { background: var(--accent, #f5c542); color: var(--accent-text, #15181d); border-color: transparent; }
+.armory-tab .armory-icon { fill: currentColor; }
+.armory-dot { position: absolute; top: -4px; right: -4px; width: 11px; height: 11px; border-radius: 6px; background: var(--danger, #e5484d); border: 2px solid rgba(12, 13, 18, 1); }
+
+.armory-body { flex-grow: 1; min-height: 0; overflow-y: auto; padding: 16px 18px 20px; }
+.armory-section { margin: 4px 0 10px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted, #7d8590); }
+.armory-section:not(:first-child) { margin-top: 20px; }
+.armory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.armory-card { padding: 12px 10px 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; background: rgba(255, 255, 255, 0.04); }
+.armory-card strong { font-size: 13px; }
+.armory-card small { font-size: 10px; color: var(--muted, #7d8590); }
+.armory-card .armory-btn { margin-top: 6px; width: 100%; }
+.armory-card.full { opacity: 0.6; }
+.armory-img { width: 72px; height: 54px; object-fit: contain; }
+.armory-img.missing { visibility: hidden; }
+.armory-empty { margin: 40px auto; max-width: 360px; text-align: center; color: var(--muted, #9aa1ad); }
+
+.armory-btn { height: 34px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 9px; background: rgba(255, 255, 255, 0.06); color: var(--text, #eef0f3); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.armory-btn.accent { background: var(--accent, #f5c542); color: var(--accent-text, #15181d); border-color: transparent; }
+.armory-btn .armory-icon { fill: currentColor; }
+.armory-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Unlocks: a vertical line through one diamond per rank, the rank's items on the right */
+.armory-tree { position: relative; display: flex; flex-direction: column; gap: 10px; }
+.armory-tree::before { content: ''; position: absolute; top: 30px; bottom: 30px; left: 54px; width: 2px; background: rgba(255, 255, 255, 0.08); }
+.armory-row { position: relative; display: grid; grid-template-columns: 110px 1fr 170px; align-items: center; gap: 14px; padding: 8px 12px 8px 0; border-radius: 12px; border: 1px solid transparent; }
+.armory-row.next { border-color: var(--accent, #f5c542); background: var(--accent-soft, rgba(245, 197, 66, 0.1)); }
+.armory-row.rank .armory-items, .armory-row.previous .armory-items { opacity: 0.35; filter: grayscale(1); }
+.armory-node { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.armory-diamond { width: 46px; height: 46px; display: grid; place-items: center; transform: rotate(45deg); border-radius: 8px; background: rgba(20, 22, 28, 1); border: 2px solid rgba(255, 255, 255, 0.12); }
+.armory-diamond .insignia { transform: rotate(-45deg); }
+.armory-row.unlocked .armory-diamond { border-color: var(--accent, #f5c542); background: linear-gradient(var(--accent-soft, rgba(245, 197, 66, 0.1)), var(--accent-soft, rgba(245, 197, 66, 0.1))), rgb(20, 22, 28); }
+.armory-row.next .armory-diamond { border-color: var(--accent, #f5c542); box-shadow: 0 0 14px var(--accent-glow, rgba(245, 197, 66, 0.45)); }
+.armory-node-name { max-width: 110px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-align: center; text-transform: uppercase; line-height: 1.2; }
+.armory-items { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.armory-mini { flex: 0 0 96px; height: 92px; padding: 8px 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; border-radius: 10px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.07); }
+.armory-mini .armory-img { width: 64px; height: 44px; }
+.armory-mini span { font-size: 10px; line-height: 1.2; color: var(--muted, #b8bec8); }
+.armory-mini.all strong { font-size: 30px; line-height: 1; color: var(--accent, #f5c542); }
+.armory-state { display: flex; align-items: center; justify-content: flex-end; gap: 6px; font-size: 11px; font-weight: 600; color: var(--muted, #7d8590); text-align: right; }
+.armory-state .armory-icon { flex-shrink: 0; fill: currentColor; }
+.armory-row.unlocked .armory-state { color: var(--success, #3ecf72); }
+
+.insignia .ins-line { fill: none; stroke: var(--accent, #f5c542); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.insignia .ins-star, .insignia .ins-fill { fill: var(--accent, #f5c542); }
+.armory-row.rank .insignia, .armory-row.previous .insignia { opacity: 0.45; }
+
+.armory-body::-webkit-scrollbar, .armory-items::-webkit-scrollbar { width: 6px; height: 6px; }
+.armory-body::-webkit-scrollbar-thumb, .armory-items::-webkit-scrollbar-thumb { border-radius: 3px; background: rgba(255, 255, 255, 0.14); }
+.armory-body::-webkit-scrollbar-track, .armory-items::-webkit-scrollbar-track { background: transparent; }

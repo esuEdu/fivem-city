@@ -33,13 +33,6 @@ end
 CreateThread(function()
     local groups = { [Config.Job] = 0 }
 
-    exports.city_inventory:RegisterShop('CityPoliceArmory', {
-        name = locale('armory'),
-        inventory = settings.armory,
-        groups = groups,
-        locations = placesOf('armory'),
-    })
-
     exports.city_inventory:RegisterStash('city_police_locker', locale('locker'), settings.locker.slots, settings.locker.weight, true, groups, placesOf('locker'))
     exports.city_inventory:RegisterStash('city_police_evidence', locale('evidence_locker'), settings.evidenceLocker.slots, settings.evidenceLocker.weight, nil, groups, placesOf('evidence'))
     exports.city_inventory:RegisterStash('city_police_trash', locale('trash'), settings.trash.slots, settings.trash.weight, nil, groups, placesOf('trash'))

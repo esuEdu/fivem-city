@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="screen.css">
+    <link rel="stylesheet" href="armory.css">
 </head>
 <body>
     <section id="arrest" class="arrest hidden" role="dialog" aria-modal="true" aria-labelledby="arrest-title">
@@ -70,6 +71,21 @@
         </div>
     </section>
 
+    <section id="armory" class="armory hidden" role="dialog" aria-modal="true" aria-labelledby="armory-title">
+        <div class="armory-panel">
+            <header class="armory-head">
+                <div class="armory-titles">
+                    <h2 id="armory-title"></h2>
+                    <small id="armory-subtitle"></small>
+                </div>
+                <div class="armory-rank" id="armory-rank"></div>
+                <nav class="armory-tabs" id="armory-tabs"></nav>
+                <button type="button" class="car-close" id="armory-close" aria-label="Close">&times;</button>
+            </header>
+            <div class="armory-body" id="armory-body"></div>
+        </div>
+    </section>
+
     <section id="badge" class="badge-card hidden" aria-live="polite">
         <img class="badge-star" src="https://cfx-nui-city_inventory/web/images/police_badge.png" alt="">
         <div class="badge-info">
@@ -83,5 +99,6 @@
     <div id="head-bag" class="head-bag hidden" aria-hidden="true"></div>
 
     <script src="screen.js"></script>
+    <script src="armory.js"></script>
 </body>
 </html>

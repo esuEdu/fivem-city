@@ -23,6 +23,7 @@ client_scripts {
     'client/unitblips.lua',
     'client/badge.lua',
     'client/wardrobe.lua',
+    'client/armory.lua',
     'client/restraints.lua',
     'client/tools.lua',
     'client/patrol.lua',
@@ -51,6 +52,7 @@ server_scripts {
     'server/unitblips.lua',
     'server/badge.lua',
     'server/wardrobe.lua',
+    'server/armory.lua',
     'server/mdt/app.lua',
     'server/mdt/people.lua',
     'server/mdt/vehicles.lua',
@@ -81,6 +83,8 @@ files {
     'web/screen.html',
     'web/screen.css',
     'web/screen.js',
+    'web/armory.js',
+    'web/armory.css',
 }
 
 dependencies {
