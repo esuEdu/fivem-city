@@ -30,8 +30,8 @@ files {
     'web/index.html',
     'web/style.css',
     'web/js/*.js',
-    'images/index.json',
-    'images/*.webp',
+    -- One pack per sex and tab (server/images.lua): thousands of loose pictures broke the join download
+    'images/pack_*.json',
     'images/*.png',
 }
 
