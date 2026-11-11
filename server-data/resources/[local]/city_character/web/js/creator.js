@@ -128,7 +128,20 @@ function parentStrip(list, selected, onPick) {
         const img = document.createElement('img');
         img.alt = '';
         img.src = PORTRAIT(parent.pic);
-        img.onerror = () => { img.remove(); pic.textContent = parent.name[0]; };
+        // The texture dict can still be streaming in: try again a few times before falling back to the initial
+        let retries = 0;
+        img.onerror = () => {
+            if (retries++ < 5) {
+                // nui-img reads the path as dict/texture, so no cache-busting query: clear src to force a new load
+                setTimeout(() => {
+                    img.removeAttribute('src');
+                    img.src = PORTRAIT(parent.pic);
+                }, 400 * retries);
+                return;
+            }
+            img.remove();
+            pic.textContent = parent.name[0];
+        };
         pic.append(img);
 
         item.append(pic, el('div', 'parent__name', parent.name));
@@ -426,6 +439,11 @@ function renderClothes() {
         card.classList.toggle('is-active', s.draft.outfit === outfit.id);
         card.append(icon(outfit.icon), el('span', '', outfit.label));
         card.addEventListener('click', async () => {
+            // A starter look is a whole new outfit: clear every piece first, so a tie or hat picked before doesn't stay on
+            s.catalog.pieces.forEach((piece) => {
+                const store = piece.kind === 'component' ? s.draft.components : s.draft.props;
+                store[String(piece.id)] = { drawable: piece.kind === 'prop' ? -1 : 0, texture: 0 };
+            });
             for (const [id, piece] of Object.entries(outfit.components || {})) {
                 s.draft.components[id] = { drawable: piece[0], texture: piece[1] };
             }
