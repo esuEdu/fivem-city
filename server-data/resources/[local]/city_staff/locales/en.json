@@ -33,7 +33,6 @@
     "ui_photos_sex_f": "Female",
     "ui_photos_from": "From #",
     "ui_photos_to": "To #",
-    "ui_photos_arms": "Arms # (tops)",
     "ui_photos_overwrite": "Take pictures that already exist again",
     "ui_photos_start": "Start photos",
     "error_bad_range": "Check the numbers: From must be at most To",

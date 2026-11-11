@@ -41,16 +41,10 @@ function hasNone(category) {
 
 // ---------- preview ----------
 
-async function setValue(category, value) {
+function setValue(category, value) {
     s.values[category.id] = value;
+    post('preview', { id: category.id, value });
     renderBag();
-
-    // The game may fit new arms under a top: keep the Arms tab and the bag in step
-    const result = await post('preview', { id: category.id, value });
-    if (result?.arms && s.byId.arms) {
-        s.values.arms = result.arms;
-        renderBag();
-    }
 }
 
 async function pick(category, style) {
@@ -275,9 +269,6 @@ function renderBag() {
     const items = bagItems();
     bagList.replaceChildren();
 
-    const changed = new Set(items.map((c) => c.id));
-    const priceOf = (c) => ((c.freeWith || []).some((id) => changed.has(id)) ? 0 : c.price);
-
     items.forEach((category) => {
         const row = el('div', 'bag-row');
         const undo = el('button', 'bag-row__undo', '×');
@@ -292,7 +283,7 @@ function renderBag() {
         row.append(
             el('span', 'bag-row__name', category.label),
             el('span', 'muted bag-row__style', style < 0 ? 'None' : `#${style + 1}`),
-            el('span', 'bag-row__price', priceOf(category) ? money(priceOf(category)) : 'Free'),
+            el('span', 'bag-row__price', money(category.price)),
             undo,
         );
         bagList.append(row);
@@ -300,7 +291,7 @@ function renderBag() {
 
     if (!items.length) bagList.append(el('p', 'muted empty', 'Pick something to try it on.'));
 
-    const total = items.reduce((sum, c) => sum + priceOf(c), 0);
+    const total = items.reduce((sum, c) => sum + c.price, 0);
     bagCount.textContent = items.length ? `${items.length} item${items.length > 1 ? 's' : ''}` : '';
     bagTotal.textContent = money(total);
     payCash.disabled = !items.length;

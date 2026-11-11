@@ -216,20 +216,11 @@ function look.buy(skin, wanted, categories, options)
             if blocked(blockList[blockKey], drawable) then return nil, category.id .. ' blocked' end
 
             write(new, category, value)
-            changes[#changes + 1] = { id = category.id, price = options.prices[category.id] or 0, freeWith = category.freeWith }
-        end
-    end
 
-    local changed = {}
-    for i = 1, #changes do changed[changes[i].id] = true end
-
-    for i = 1, #changes do
-        local change = changes[i]
-        for _, other in ipairs(change.freeWith or {}) do
-            if changed[other] then change.price = 0 end
+            local price = options.prices[category.id] or 0
+            changes[#changes + 1] = { id = category.id, price = price }
+            total = total + price
         end
-        change.freeWith = nil
-        total = total + change.price
     end
 
     return new, changes, total

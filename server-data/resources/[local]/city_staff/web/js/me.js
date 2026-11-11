@@ -4,7 +4,7 @@ import { app, can } from './main.js';
 const TOOLS = ['noclip', 'invisible', 'godmode', 'names', 'blips'];
 
 // city_clothing's photo tool: everything, or one tab and a range of the numbers the shop cards show.
-// Arms forces the arms (shop number) under tops; overwrite takes pictures that exist again.
+// Overwrite takes pictures that exist again.
 function photosForm() {
     const category = el('select', { class: 'field', 'aria-label': L('ui_photos_category') },
         el('option', { value: 'all', text: L('ui_photos_all') }),
@@ -14,7 +14,6 @@ function photosForm() {
     const number = (key) => el('input', { class: 'field', type: 'number', min: '1', max: '2001', placeholder: L(key), 'aria-label': L(key) });
     const from = number('ui_photos_from');
     const to = number('ui_photos_to');
-    const arms = number('ui_photos_arms');
     const overwrite = el('input', { type: 'checkbox' });
 
     const read = (input) => (input.value === '' ? null : Number(input.value));
@@ -24,7 +23,6 @@ function photosForm() {
         sex: sex.value,
         from: read(from),
         to: read(to),
-        arms: read(arms),
         overwrite: overwrite.checked,
     });
 
@@ -32,7 +30,7 @@ function photosForm() {
         el('div', { class: 'tool-top' }, icon('camera', 22), el('strong', { text: L('tool_clothingPhotos') })),
         el('small', { class: 'muted', text: L('tool_clothingPhotos_help') }),
         el('div', { class: 'form-row' }, category, sex),
-        el('div', { class: 'form-row' }, from, to, arms),
+        el('div', { class: 'form-row' }, from, to),
         el('label', { class: 'form-row muted' }, overwrite, L('ui_photos_overwrite')),
         el('button', { class: 'kit-btn accent', text: L('ui_photos_start'), onclick: start }),
     );

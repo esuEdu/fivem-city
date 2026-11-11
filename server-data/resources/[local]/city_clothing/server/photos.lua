@@ -98,8 +98,7 @@ local function readOptions(data)
 
     local from, okFrom = number(data.from)
     local to, okTo = number(data.to)
-    local arms, okArms = number(data.arms)
-    if not okFrom or not okTo or not okArms then return nil, 'bad_range' end
+    if not okFrom or not okTo then return nil, 'bad_range' end
     if from and to and from > to then return nil, 'bad_range' end
 
     return {
@@ -107,7 +106,6 @@ local function readOptions(data)
         sex = sex,
         from = from or 0,
         to = to or MAX_DRAWABLE,
-        arms = arms,
         overwrite = data.overwrite == true,
     }
 end
@@ -125,7 +123,7 @@ end)
 
 ---Starts the tool for a staff member (called by city_staff after its own permission check)
 ---@param src integer
----@param data table? { category, sex, from, to, arms, overwrite } from the Staff app
+---@param data table? { category, sex, from, to, overwrite } from the Staff app
 ---@return boolean ok
 ---@return string? reason
 local function start(src, data)

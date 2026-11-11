@@ -8,11 +8,6 @@ local clothing = {
     { id = 'hats', kind = 'prop', slot = 0 },
 }
 
-local withArms = {
-    { id = 'tops', kind = 'component', slot = 11 },
-    { id = 'arms', kind = 'component', slot = 3, freeWith = { 'tops' } },
-}
-
 local barber = {
     { id = 'hair', kind = 'hair', slot = 2 },
     { id = 'beard', kind = 'overlay', slot = 1, sex = 'm' },
@@ -20,7 +15,7 @@ local barber = {
 }
 
 local options = {
-    prices = { arms = 40, tops = 120, pants = 90, hats = 45, hair = 60, beard = 30, makeup = 35 },
+    prices = { tops = 120, pants = 90, hats = 45, hair = 60, beard = 30, makeup = 35 },
     blocked = { m = { [11] = { 55, { 100, 110 } }, p0 = { 46 } }, f = {} },
 }
 
@@ -63,12 +58,6 @@ check(find(new.components, 'component_id', 11).drawable == 20)
 check(find(new.components, 'component_id', 11).texture == 3)
 check(find(new.props, 'prop_id', 0).drawable == 7)
 check(new.faceFeatures.noseWidth == 0.2, 'the rest of the look is kept')
-
--- Arms fitted under a new top are free; arms alone are not
-new, changes, total = look.buy(skin(), { components = { ['11'] = { drawable = 20, texture = 0 }, ['3'] = { drawable = 4, texture = 0 } } }, withArms, options)
-check(total == 120 and #changes == 2, 'arms free with a top')
-new, changes, total = look.buy(skin(), { components = { ['3'] = { drawable = 4, texture = 0 } } }, withArms, options)
-check(total == 40, 'arms alone are charged')
 
 -- Only a color change still counts as a change
 new, changes, total = look.buy(skin(), { components = { ['4'] = { drawable = 10, texture = 0 } } }, clothing, options)

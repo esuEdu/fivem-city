@@ -1,7 +1,5 @@
 -- The photo tool: one picture of every piece the shops sell, for both sexes. The staff member's own ped is dressed in
 -- underwear and one piece at a time under a scripted camera; the server takes each picture. Their look comes back after.
-local look = require 'client.look'
-
 local photos = Config.Photos
 local STOP_KEY = 194 -- Backspace
 local UP = vector3(0.0, 0.0, 1.0)
@@ -30,8 +28,8 @@ local function shotList(only)
     return list
 end
 
--- Tops and undershirts need the arms made for them, or the bare arms poke through the sleeves
-local NEEDS_ARMS = { [11] = true, [8] = true }
+-- Every picture is taken with the arms of photos.base (0); pictures of arms (gloves) wear photos.armsUndershirt
+local ARMS, UNDERSHIRT = 3, 8
 
 
 local function normalize(v)
@@ -136,12 +134,11 @@ local function waitFor(check)
 end
 
 ---Dresses the ped in one style of a category, waiting for it to stream in
-local function wearPiece(category, drawable, sex, options)
+local function wearPiece(category, drawable)
     local ped, slot = cache.ped, category.slot
 
-    if category.kind == 'component' and NEEDS_ARMS[slot] then
-        local arms = options.arms or look.forcedArms(slot, drawable) or photos.base[sex][3]
-        SetPedComponentVariation(ped, 3, arms, 0, 0)
+    if category.kind == 'component' and slot == ARMS then
+        SetPedComponentVariation(ped, UNDERSHIRT, photos.armsUndershirt, 0, 0)
     end
 
     if category.kind == 'component' then
@@ -175,7 +172,7 @@ local function takeOff(category, sex)
 
     if category.kind == 'component' then
         SetPedComponentVariation(ped, slot, photos.base[sex][slot] or 0, 0, 0)
-        if NEEDS_ARMS[slot] then SetPedComponentVariation(ped, 3, photos.base[sex][3], 0, 0) end
+        if slot == ARMS then SetPedComponentVariation(ped, UNDERSHIRT, photos.base[sex][UNDERSHIRT], 0, 0) end
     elseif category.kind == 'prop' then
         ClearPedProp(ped, slot)
     elseif category.kind == 'hair' then
@@ -197,7 +194,7 @@ local function progress(text)
     lib.showTextUI(('%s  ·  [Backspace] stop'):format(text), { position = 'top-center' })
 end
 
----@param options { category: string, sex: string, from: integer, to: integer, arms: integer?, overwrite: boolean }
+---@param options { category: string, sex: string, from: integer, to: integer, overwrite: boolean }
 local function run(options)
     local index = lib.callback.await('city_clothing:photos:index', false)
     if not index then return end
@@ -235,7 +232,7 @@ local function run(options)
                     local name = ('%s_%s_%d'):format(sex, shot.key, drawable)
                     if options.overwrite or not index[name] then
                         progress(('Photos %s · %s #%d of %d · %d taken'):format(sex == 'm' and 'male' or 'female', category.label, drawable + 1, count, taken))
-                        wearPiece(category, drawable, sex, options)
+                        wearPiece(category, drawable)
                         aim(category.shot)
 
                         -- The progress box is page UI; keep it out of the picture

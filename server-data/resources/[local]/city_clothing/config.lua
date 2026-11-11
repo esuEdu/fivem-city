@@ -47,8 +47,7 @@ Config.Categories = {
     clothing = {
         { id = 'tops', label = 'Tops', kind = 'component', slot = 11, shot = 'torso' },
         { id = 'undershirts', label = 'Undershirts', kind = 'component', slot = 8, shot = 'torso' },
-        -- Free when bought with a top or undershirt: the shop fits the arms made for them by itself
-        { id = 'arms', label = 'Arms & gloves', kind = 'component', slot = 3, shot = 'torso', freeWith = { 'tops', 'undershirts' } },
+        { id = 'arms', label = 'Arms & gloves', kind = 'component', slot = 3, shot = 'torso' },
         { id = 'pants', label = 'Pants', kind = 'component', slot = 4, shot = 'legs' },
         { id = 'shoes', label = 'Shoes', kind = 'component', slot = 6, shot = 'feet' },
         { id = 'neck', label = 'Neck & ties', kind = 'component', slot = 7, shot = 'torso' },
@@ -98,11 +97,13 @@ Config.Photos = {
     -- Capture size: shop cards show the middle square of it
     width = 480,
     height = 270,
-    -- Underwear: what the ped wears around the piece being photographed
+    -- Underwear: what the ped wears around the piece being photographed. Arms (3) stay 0 in every picture
     base = {
-        m = { [1] = 0, [3] = 15, [4] = 61, [5] = 0, [6] = 34, [7] = 0, [8] = 15, [9] = 0, [10] = 0, [11] = 15 },
-        f = { [1] = 0, [3] = 15, [4] = 17, [5] = 0, [6] = 35, [7] = 0, [8] = 14, [9] = 0, [10] = 0, [11] = 15 },
+        m = { [1] = 0, [3] = 0, [4] = 61, [5] = 0, [6] = 34, [7] = 0, [8] = 15, [9] = 0, [10] = 0, [11] = 15 },
+        f = { [1] = 0, [3] = 0, [4] = 17, [5] = 0, [6] = 35, [7] = 0, [8] = 14, [9] = 0, [10] = 0, [11] = 15 },
     },
+    -- Undershirt worn for the pictures of the Arms & gloves tab
+    armsUndershirt = 15,
     -- Hair color for hair, beard, eyebrows and chest hair pictures; makeup color for makeup ones
     hairColor = 0,
     makeupColor = 1,
