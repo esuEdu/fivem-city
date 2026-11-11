@@ -1,0 +1,18 @@
+diff --git a/server-data/resources/[standalone]/illenium-appearance/shared/config.lua b/server-data/resources/[standalone]/illenium-appearance/shared/config.lua
+index 0311bc5..b372fe6 100644
+--- a/server-data/resources/[standalone]/illenium-appearance/shared/config.lua
++++ b/server-data/resources/[standalone]/illenium-appearance/shared/config.lua
+@@ -556,6 +556,13 @@ Config.Stores = {
+     }
+ }
+ 
++-- city_clothing runs the clothing stores and barbers: keep only tattoo parlours and the surgeon here
++for i = #Config.Stores, 1, -1 do
++    local storeType = Config.Stores[i].type
++    if storeType == "clothing" or storeType == "barber" then
++        table.remove(Config.Stores, i)
++    end
++end
+ 
+ Config.ClothingRooms = {
+     {

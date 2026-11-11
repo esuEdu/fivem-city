@@ -34,6 +34,15 @@ export async function renderMe() {
         vehicles.push(model, el('button', { class: 'kit-btn accent', text: L('ui_spawn'), onclick: spawn }));
     }
 
+    // A one-shot tool, not a toggle: the tablet closes and the photos run on this client
+    if (can('clothingPhotos')) {
+        cards.push(el('button', { class: 'tool', onclick: () => run('clothingPhotos') },
+            el('div', { class: 'tool-top' }, icon('camera', 22)),
+            el('strong', { text: L('tool_clothingPhotos') }),
+            el('small', { text: L('tool_clothingPhotos_help') }),
+        ));
+    }
+
     return el('div', { class: 'stack' },
         heading(L('ui_tab_me')),
         cards.length ? el('div', { class: 'tools' }, cards) : null,
