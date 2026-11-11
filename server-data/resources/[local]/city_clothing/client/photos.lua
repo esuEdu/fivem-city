@@ -1,5 +1,7 @@
 -- The photo tool: one picture of every piece the shops sell, for both sexes. The staff member's own ped is dressed in
 -- underwear and one piece at a time under a scripted camera; the server takes each picture. Their look comes back after.
+local catalog = require 'shared.tattoos'
+
 local photos = Config.Photos
 local STOP_KEY = 194 -- Backspace
 local UP = vector3(0.0, 0.0, 1.0)
@@ -8,7 +10,9 @@ local running = false
 local cam
 local target = vector3(0.0, 0.0, 0.0)
 
+-- Picture keys: c<component>, p<prop>, o<overlay>, t<tab id> for tattoos (whose pictures are keyed by tattoo name)
 local function keyOf(category)
+    if category.kind == 'tattoo' then return 't' .. category.id end
     local prefix = (category.kind == 'prop' and 'p') or (category.kind == 'overlay' and 'o') or 'c'
     return prefix .. category.slot
 end
@@ -16,7 +20,7 @@ end
 ---The categories this run shoots (one tab, or every tab once), as the pictures are keyed (hair is component 2)
 local function shotList(only)
     local list, seen = {}, {}
-    for _, storeType in ipairs({ 'clothing', 'barber' }) do
+    for _, storeType in ipairs({ 'clothing', 'barber', 'tattoo' }) do
         for _, category in ipairs(Config.Categories[storeType]) do
             local key = keyOf(category)
             if not seen[key] and (only == 'all' or only == category.id) then
@@ -82,7 +86,7 @@ local function aim(shotName)
     local preset = Config.Shots[shotName] or Config.Shots.body
     local ped = cache.ped
     local heading = GetEntityHeading(ped)
-    local rad = math.rad(preset.side and heading + 70.0 or heading)
+    local rad = math.rad(heading + (preset.angle or (preset.side and 70.0) or 0.0))
     local dir = vector3(-math.sin(rad), math.cos(rad), 0.0)
     if preset.behind then dir = -dir end
 
@@ -180,9 +184,18 @@ local function waitFor(check)
     while not check() and GetGameTimer() < deadline do Wait(0) end
 end
 
----Dresses the ped in one style of a category, waiting for it to stream in
-local function wearPiece(category, drawable)
+---Dresses the ped in one style of a category, waiting for it to stream in. For tattoos, drawable is the catalog entry.
+local function wearPiece(category, drawable, sex)
     local ped, slot = cache.ped, category.slot
+
+    if category.kind == 'tattoo' then
+        ClearPedDecorations(ped)
+        local hash = catalog.hashFor(drawable, sex)
+        -- Drawn ten times: full intensity, as a tattoo at 100% in the shop
+        for _ = 1, 10 do AddPedDecorationFromHashes(ped, joaat(drawable.collection), joaat(hash)) end
+        Wait(photos.settleMs)
+        return
+    end
 
     if category.kind == 'component' and slot == ARMS then
         SetPedComponentVariation(ped, UNDERSHIRT, photos.armsUndershirt, 0, 0)
@@ -217,7 +230,9 @@ end
 local function takeOff(category, sex)
     local ped, slot = cache.ped, category.slot
 
-    if category.kind == 'component' then
+    if category.kind == 'tattoo' then
+        ClearPedDecorations(ped)
+    elseif category.kind == 'component' then
         SetPedComponentVariation(ped, slot, photos.base[sex][slot] or 0, 0, 0)
         if slot == ARMS then SetPedComponentVariation(ped, UNDERSHIRT, photos.base[sex][UNDERSHIRT], 0, 0) end
     elseif category.kind == 'prop' then
@@ -229,8 +244,9 @@ local function takeOff(category, sex)
     end
 end
 
-local function countOf(category)
+local function countOf(category, sex)
     local ped, slot = cache.ped, category.slot
+    if category.kind == 'tattoo' then return #catalog.list(category.zone, sex) end
     if category.kind == 'component' then return GetNumberOfPedDrawableVariations(ped, slot) end
     if category.kind == 'prop' then return GetNumberOfPedPropDrawableVariations(ped, slot) end
     if category.kind == 'hair' then return GetNumberOfPedDrawableVariations(ped, 2) end
@@ -267,7 +283,8 @@ local function run(options)
 
             local category = shot.category
             if not category.sex or category.sex == sex then
-                local count = countOf(category)
+                local count = countOf(category, sex)
+                local tattoos = category.kind == 'tattoo' and catalog.list(category.zone, sex) or nil
                 aim(category.shot)
 
                 local have = {}
@@ -278,16 +295,20 @@ local function run(options)
                 for drawable = options.from, math.min(options.to, count - 1) do
                     if not running then break end
 
-                    if options.overwrite or not have[drawable] then
+                    -- A tattoo's picture is keyed by its name; anything else by its style number
+                    local entry = tattoos and tattoos[drawable + 1]
+                    local id = entry and entry.name or drawable
+
+                    if options.overwrite or not have[id] then
                         progress(('Photos %s · %s #%d of %d · %d taken'):format(sex == 'm' and 'male' or 'female', category.label, drawable + 1, count, taken))
-                        wearPiece(category, drawable)
+                        wearPiece(category, entry or drawable, sex)
                         aim(category.shot)
 
                         -- The progress box is page UI; keep it out of the picture
                         lib.hideTextUI()
                         Wait(60)
 
-                        if lib.callback.await('city_clothing:photos:shot', false, sex, shot.key, drawable) then
+                        if lib.callback.await('city_clothing:photos:shot', false, sex, shot.key, id) then
                             taken = taken + 1
                         else
                             failed = failed + 1

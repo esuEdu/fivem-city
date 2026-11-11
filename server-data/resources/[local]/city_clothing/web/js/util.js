@@ -90,7 +90,7 @@ export function stepper({ label, value, min, max, format, onChange }) {
 /**
  * A 0-1 range with a live value, for overlay opacity
  */
-export function range({ label, value, onInput }) {
+export function range({ label, value, min = 0, step = 1, onInput }) {
     const node = el('div', 'range');
     const head = el('div', 'range__head');
     const valueText = el('span', 'range__value', `${Math.round(value * 100)}%`);
@@ -98,8 +98,9 @@ export function range({ label, value, onInput }) {
 
     const input = document.createElement('input');
     input.type = 'range';
-    input.min = '0';
+    input.min = String(min);
     input.max = '100';
+    input.step = String(step);
     input.value = String(Math.round(value * 100));
     input.addEventListener('input', () => {
         valueText.textContent = `${input.value}%`;

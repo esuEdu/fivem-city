@@ -4,11 +4,13 @@ Config = {}
 Config.Clerks = {
     clothing = { model = `a_f_y_hipster_02`, label = 'Browse clothes', icon = 'fas fa-shirt' },
     barber = { model = `s_f_m_fembarber`, label = 'Get a haircut', icon = 'fas fa-scissors' },
+    tattoo = { model = `u_m_y_tattoo_01`, label = 'Get a tattoo', icon = 'fas fa-pen-nib' },
 }
 
 Config.Blips = {
     clothing = { sprite = 73, color = 47, scale = 0.7, label = 'Clothing Store' },
     barber = { sprite = 71, color = 0, scale = 0.7, label = 'Barber' },
+    tattoo = { sprite = 75, color = 1, scale = 0.7, label = 'Tattoo Parlor' },
 }
 
 -- How far the clerk ped is spawned, and how close the player must stay to buy (also checked on the server)
@@ -39,9 +41,16 @@ Config.Stores = {
     { type = 'barber', coords = vector4(1212.8, -472.9, 65.2, 60.94) },
     { type = 'barber', coords = vector4(-32.9, -152.3, 56.1, 335.22) },
     { type = 'barber', coords = vector4(-278.1, 6228.5, 30.7, 49.32) },
+    { type = 'tattoo', coords = vector4(1322.6, -1651.9, 51.2, 42.47) },
+    { type = 'tattoo', coords = vector4(-1154.01, -1425.31, 4.95, 23.21) },
+    { type = 'tattoo', coords = vector4(322.62, 180.34, 103.59, 156.2) },
+    { type = 'tattoo', coords = vector4(-3169.52, 1074.86, 20.83, 253.29) },
+    { type = 'tattoo', coords = vector4(1864.1, 3747.91, 33.03, 17.23) },
+    { type = 'tattoo', coords = vector4(-294.24, 6200.12, 31.49, 195.72) },
 }
 
--- What each kind of store sells, in tab order. kind: component / prop / hair / overlay (game ids in slot).
+-- What each kind of store sells, in tab order. kind: component / prop / hair / overlay (game ids in slot), or tattoo
+-- (a zone of illenium-appearance's tattoo list; any number of them, each one priced on its own).
 -- shot = camera framing; sex = only shown to that sex. Prices are in server/config.lua.
 Config.Categories = {
     clothing = {
@@ -67,8 +76,20 @@ Config.Categories = {
         { id = 'makeup', label = 'Makeup', kind = 'overlay', slot = 4, shot = 'face', colors = 'makeup' },
         { id = 'blush', label = 'Blush', kind = 'overlay', slot = 5, shot = 'face', colors = 'makeup' },
         { id = 'lipstick', label = 'Lipstick', kind = 'overlay', slot = 8, shot = 'face', colors = 'makeup' },
+        { id = 'hairDetails', label = 'Hair details', kind = 'tattoo', zone = 'ZONE_HAIR', shot = 'face' },
+    },
+    tattoo = {
+        { id = 'torso', label = 'Torso & back', kind = 'tattoo', zone = 'ZONE_TORSO', shot = 'torso' },
+        { id = 'head', label = 'Head & neck', kind = 'tattoo', zone = 'ZONE_HEAD', shot = 'face' },
+        { id = 'leftArm', label = 'Left arm', kind = 'tattoo', zone = 'ZONE_LEFT_ARM', shot = 'leftArm' },
+        { id = 'rightArm', label = 'Right arm', kind = 'tattoo', zone = 'ZONE_RIGHT_ARM', shot = 'rightArm' },
+        { id = 'leftLeg', label = 'Left leg', kind = 'tattoo', zone = 'ZONE_LEFT_LEG', shot = 'leftLeg' },
+        { id = 'rightLeg', label = 'Right leg', kind = 'tattoo', zone = 'ZONE_RIGHT_LEG', shot = 'rightLeg' },
     },
 }
+
+-- Most tattoos one body zone can hold
+Config.MaxTattoosPerZone = 25
 
 -- Shop camera framings: bone to look at, distance in front of the ped, height offset, field of view
 Config.Shots = {
@@ -79,6 +100,11 @@ Config.Shots = {
     feet = { bone = 11816, distance = 1.3, height = -0.85, fov = 34.0 },
     wrist = { bone = 18905, distance = 0.8, height = 0.0, fov = 30.0, side = true },
     body = { bone = 11816, distance = 2.8, height = 0.0, fov = 40.0 },
+    -- Tattoo zones: angle turns the camera around the ped (degrees, + = the ped's left)
+    leftArm = { bone = 61163, distance = 1.1, height = 0.0, fov = 36.0, angle = 90.0 },
+    rightArm = { bone = 28252, distance = 1.1, height = 0.0, fov = 36.0, angle = -90.0 },
+    leftLeg = { bone = 58271, distance = 1.4, height = -0.2, fov = 38.0, angle = 35.0 },
+    rightLeg = { bone = 51826, distance = 1.4, height = -0.2, fov = 38.0, angle = -35.0 },
 }
 
 -- Saved looks per character (illenium-appearance's player_outfits table, so house wardrobes see them too)
