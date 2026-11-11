@@ -1,6 +1,6 @@
 # Work apps (job and gang tablet apps)
 
-The tablet apps for a job or a gang (Mechanic and EMS now; gangs next) share one look with the Staff app and the MDT: a sidebar with the logo, the user's name and grade, the tabs (with red badges) and a footer card, and the content on the right with tiles, cards, tables and list + detail views. The **Mechanic** app (`city_mechanic`) is the first one and the template for the others.
+The tablet apps for a job or a gang (Mechanic, EMS and the city_orgs faction apps) share one look with the Staff app and the MDT: a sidebar with the logo, the user's name and grade, the tabs (with red badges) and a footer card, and the content on the right with tiles, cards, tables and list + detail views. The **Mechanic** app (`city_mechanic`) is the first one and the template for the others.
 
 ## Shared shell: `city_os/web/kit/workapp.*`
 

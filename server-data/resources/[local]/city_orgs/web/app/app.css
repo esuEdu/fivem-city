@@ -1,0 +1,47 @@
+/* Faction app: the WorkApp shell (city_os/web/kit/workapp.css); the accent comes from the server per app type
+   (main.js applyColor), these are only the fallback and this app's own rows. */
+:root {
+    --app-accent: #b91f2e; --app-accent-soft: rgba(185, 31, 46, 0.16); --app-accent-text: #fff;
+    --app-logo: linear-gradient(160deg, #e4556226, #b91f2e 55%, #47070e);
+}
+
+.banner { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 14px; background: var(--app-accent-soft); color: var(--app-accent); font-weight: 600; font-size: 13px; }
+.value { justify-self: end; font-variant-numeric: tabular-nums; }
+.chip.muted { color: var(--muted2); }
+
+/* Dashboard */
+.duty-list { display: flex; flex-direction: column; gap: 12px; max-height: 210px; overflow-y: auto; }
+.log-cols { grid-template-columns: 110px minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1.6fr); }
+
+/* Vault */
+.money-card { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 14px; }
+.money-card .balance { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.money-card .form-row { margin-left: auto; }
+.money-card .form-row input.field { flex: 0 1 140px; }
+.item-cols { grid-template-columns: 52px minmax(0, 2fr) 90px; }
+.item-img { width: 38px; height: 38px; object-fit: contain; }
+
+/* Goals */
+.goal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.goal-items { display: flex; flex-wrap: wrap; gap: 8px; }
+.goal-form { display: flex; flex-direction: column; gap: 10px; }
+.goal-form .form-row input.field { flex: 0 1 110px; }
+.goal-form .item-field { display: flex; align-items: center; gap: 8px; }
+.goal-form .item-field span { min-width: 120px; font-size: 13px; color: var(--fg2); }
+.rank-cols { grid-template-columns: 36px minmax(0, 2fr) 70px 70px 70px minmax(0, 1.6fr) 80px; }
+.rank-pos { font-weight: 700; color: var(--muted2); }
+.gain { color: var(--green, #2f9e5f); font-variant-numeric: tabular-nums; }
+.loss { color: var(--red, #e5484d); font-variant-numeric: tabular-nums; }
+.progress-track { height: 8px; border-radius: 99px; background: var(--field); overflow: hidden; }
+.progress-track i { display: block; height: 100%; border-radius: 99px; background: var(--app-accent); }
+.progress-cell { display: flex; align-items: center; gap: 8px; }
+.progress-cell small { min-width: 38px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Team */
+.team-cols { grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr) 110px 70px 96px; }
+.grade-select { height: 34px; max-width: 170px; }
+.table-row.me { background: var(--row); }
+.grade { display: flex; align-items: center; gap: 6px; color: var(--fg2); }
+.grade svg { color: var(--accent-ink); }
+.row-actions { display: flex; justify-content: flex-end; gap: 6px; }
+.hire .form-row input.field { flex: 0 1 220px; }
