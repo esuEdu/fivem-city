@@ -405,7 +405,7 @@
     "ui_camera_offline": "Offline",
 
     "ui_officer": "Officer",
-    "ui_certs_hint": "Lieutenants and up give certifications.",
+    "ui_certs_hint": "Segundo Tenente and up give certifications.",
     "ui_certs_hint_grant": "Click a box to give or take a certification.",
     "ui_no_members": "Nobody in the department",
 

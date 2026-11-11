@@ -29,10 +29,12 @@ Config.Features = {
     bolos = false, -- the BOLOs tab
 }
 
--- How long a job offer from the chief (MDT Management) stays on the player's screen
+-- How long a job offer from the command (MDT Management) stays on the player's screen
 Config.OfferSeconds = 60
 
--- Lowest job grade for each MDT action (0 Recruit, 1 Officer, 2 Sergeant, 3 Lieutenant, 4 Chief)
+-- Lowest job grade for each MDT action. Military ranks (qbx_core jobs.lua): 0 Recruta, 1 Soldado, 2 Cabo, 3 Terceiro
+-- Sargento, 4 Segundo Sargento, 5 Primeiro Sargento, 6 Subtenente, 7 Aspirante, 8 Segundo Tenente, 9 Primeiro Tenente,
+-- 10 Capitão, 11 Major, 12 Tenente-Coronel, 13 Coronel (the owner)
 Config.Permissions = {
     app = 0,
     dispatch = 0,
@@ -41,28 +43,28 @@ Config.Permissions = {
     flagPlate = 0,
     weapons = 0,
     reports = 0,
-    editAnyReport = 2,
+    editAnyReport = 3,
     warrants = 0,
-    issueWarrant = 2,
+    issueWarrant = 3,
     charge = 0,
     impound = 0,
-    release = 2,
+    release = 3,
     licences = 0,
-    weaponLicence = 2,
+    weaponLicence = 3,
     evidence = 0,
     cameras = 0,
     certs = 0,
-    grantCert = 3,
-    notices = 3,
-    management = 4,
-    uniforms = 4, -- create and delete the station's uniforms (everyone on the job wears them)
+    grantCert = 8,
+    notices = 8,
+    management = 12, -- hire, change ranks (only below one's own) and fire
+    uniforms = 12, -- create and delete the station's uniforms (everyone on the job wears them)
     bolos = 0,
     bodycam = 0,
     map = 0,
     anklet = 0,
 }
 
--- Certifications lieutenants give in the MDT; they unlock vehicles and forensic analysis
+-- Certifications officers from Segundo Tenente up give in the MDT; they unlock vehicles and forensic analysis
 Config.Certs = {
     { id = 'air', label = 'Air unit' },
     { id = 'motor', label = 'Motor unit' },
@@ -123,7 +125,7 @@ Config.Badge = { item = 'police_badge', department = 'Los Santos Police Departme
 -- The other officers on duty on the map: refreshed every `seconds`; sprite on foot, carSprite in a vehicle
 Config.UnitBlips = { seconds = 3, sprite = 1, carSprite = 56, colour = 38, scale = 0.85 }
 
--- Uniforms everyone on the job can put on at a wardrobe; the chief adds more in game (saved in the database). Numbers
+-- Uniforms everyone on the job can put on at a wardrobe; the command adds more in game (saved in the database). Numbers
 -- are GTA freemode drawables { component_id, drawable, texture } (3 arms, 4 legs, 6 shoes, 8 undershirt, 11 jacket;
 -- only clothes count: 1 and 3 to 11)
 -- and the hat as props { prop_id = 0, drawable, texture } (none = the hat comes off). Check them in game.
@@ -158,16 +160,16 @@ Config.Vehicles = {
     car = {
         { model = 'police', label = 'Cruiser', grade = 0 },
         { model = 'police2', label = 'Buffalo', grade = 0 },
-        { model = 'police3', label = 'Interceptor', grade = 1 },
-        { model = 'police4', label = 'Unmarked cruiser', grade = 2 },
-        { model = 'fbi2', label = 'Unmarked SUV', grade = 3 },
+        { model = 'police3', label = 'Interceptor', grade = 2 },
+        { model = 'police4', label = 'Unmarked cruiser', grade = 3 },
+        { model = 'fbi2', label = 'Unmarked SUV', grade = 8 },
         { model = 'policeb', label = 'Motorcycle', grade = 0, cert = 'motor' },
-        { model = 'polgauntlet', label = 'Gauntlet interceptor', grade = 1, cert = 'interceptor' },
-        { model = 'riot', label = 'Riot van', grade = 2, cert = 'tactical' },
+        { model = 'polgauntlet', label = 'Gauntlet interceptor', grade = 2, cert = 'interceptor' },
+        { model = 'riot', label = 'Riot van', grade = 3, cert = 'tactical' },
         { model = 'policet', label = 'Transport van', grade = 0 },
     },
     heli = {
-        { model = 'polmav', label = 'Air unit', grade = 1, cert = 'air' },
+        { model = 'polmav', label = 'Air unit', grade = 2, cert = 'air' },
     },
 }
 Config.PlatePrefix = 'LSPD'
