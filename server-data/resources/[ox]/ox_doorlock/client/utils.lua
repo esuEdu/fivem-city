@@ -249,6 +249,9 @@ local function openUi(id)
 		if ok then SendNUIMessage({ action = 'setTheme', data = theme }) end
 	end
 
+	-- fivem-city: the jobs and gangs for the group picker, fresh on every open (gangs can be added at run time)
+	SendNUIMessage({ action = 'setGroups', data = lib.callback.await('ox_doorlock:getGroups', false) or {} })
+
 	SetNuiFocus(true, true)
 	SendNuiMessage(json.encode({
 		action = 'setVisible',

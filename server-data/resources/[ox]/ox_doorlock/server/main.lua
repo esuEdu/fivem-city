@@ -415,3 +415,29 @@ end)
 
 -- fivem-city: no /doorlock command; staff open the panel from the Staff app (city_staff's doorlock tool), which
 -- triggers ox_doorlock:triggeredCommand. Changes still need the command.doorlock ACE (group.admin has it).
+
+-- fivem-city: every qbx job and gang with its grades, for the panel's group picker (staff who may edit doors only)
+lib.callback.register('ox_doorlock:getGroups', function(source)
+    if not IsPlayerAceAllowed(source, 'command.doorlock') or GetResourceState('qbx_core') ~= 'started' then return {} end
+
+    local list = {}
+
+    local function add(kind, groups)
+        for name, group in pairs(groups or {}) do
+            local grades = {}
+
+            for level, grade in pairs(group.grades or {}) do
+                grades[#grades + 1] = { level = level, name = grade.name }
+            end
+
+            table.sort(grades, function(a, b) return a.level < b.level end)
+            list[#list + 1] = { name = name, label = group.label or name, kind = kind, grades = grades }
+        end
+    end
+
+    add('job', exports.qbx_core:GetJobs())
+    add('gang', exports.qbx_core:GetGangs())
+    table.sort(list, function(a, b) return a.name < b.name end)
+
+    return list
+end)

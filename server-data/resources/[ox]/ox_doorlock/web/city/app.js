@@ -12,6 +12,7 @@ let view = 'list';
 let search = '';
 let draft = null;
 let copied = null;
+let groupList = [];
 
 function post(event, data = {}) {
     return fetch(`https://${RESOURCE}/${event}`, {
@@ -318,6 +319,106 @@ function listSection(title, hint, entries, makeRow, makeEntry) {
     );
 }
 
+// The jobs and gangs that exist, best matches first: names or labels starting with the text, then containing it
+function matchGroups(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return groupList;
+
+    const starts = [];
+    const contains = [];
+
+    for (const group of groupList) {
+        const name = group.name.toLowerCase();
+        const label = String(group.label || '').toLowerCase();
+        if (name.startsWith(q) || label.startsWith(q)) starts.push(group);
+        else if (name.includes(q) || label.includes(q)) contains.push(group);
+    }
+
+    return [...starts, ...contains];
+}
+
+// A group row: a search box with a dropdown of the jobs and gangs, and the grade by its name once the group is known
+function groupPicker(entry) {
+    const box = el('div', { class: 'combo' });
+    const input = el('input', { class: 'field', type: 'text', placeholder: 'Search jobs and gangs', 'aria-label': 'Group', autocomplete: 'off', value: entry.name });
+    const menu = el('div', { class: 'combo-menu hidden', role: 'listbox' });
+    const gradeBox = el('div', { class: 'grade-box' });
+    let active = 0;
+    let shown = [];
+
+    const drawGrade = () => {
+        const group = groupList.find((g) => g.name === entry.name);
+
+        if (group && group.grades && group.grades.length) {
+            const select = el('select', { class: 'field narrow', 'aria-label': 'Lowest grade' },
+                group.grades.map((grade) => el('option', { value: String(grade.level), text: `${grade.level} · ${grade.name}` })));
+            select.value = String(entry.grade ?? 0);
+            if (select.value === '') select.value = String(group.grades[0].level);
+            entry.grade = Number(select.value);
+            select.addEventListener('change', () => { entry.grade = Number(select.value); });
+            gradeBox.replaceChildren(select);
+        } else {
+            gradeBox.replaceChildren(bind(el('input', { class: 'field narrow', type: 'number', min: '0', step: '1', placeholder: 'Grade', 'aria-label': 'Lowest grade' }), 'grade', entry));
+        }
+    };
+
+    const pick = (group) => {
+        entry.name = group.name;
+        entry.grade = group.grades && group.grades.length ? group.grades[0].level : 0;
+        input.value = group.name;
+        menu.classList.add('hidden');
+        drawGrade();
+    };
+
+    const drawMenu = () => {
+        shown = matchGroups(input.value).slice(0, 40);
+        active = Math.min(active, Math.max(shown.length - 1, 0));
+
+        if (!shown.length) {
+            menu.replaceChildren(el('div', { class: 'combo-empty', text: groupList.length ? 'No job or gang matches' : 'No groups loaded' }));
+        } else {
+            menu.replaceChildren(...shown.map((group, index) => {
+                const option = el('div', { class: `combo-option${index === active ? ' active' : ''}`, role: 'option' },
+                    el('span', { class: 'combo-name', text: group.name }),
+                    el('span', { class: 'combo-label', text: group.label !== group.name ? group.label : '' }),
+                    el('span', { class: `combo-kind ${group.kind}`, text: group.kind === 'gang' ? 'Gang' : 'Job' }));
+                option.addEventListener('mousedown', (event) => { event.preventDefault(); pick(group); });
+                return option;
+            }));
+        }
+
+        menu.classList.remove('hidden');
+    };
+
+    input.addEventListener('focus', () => { active = 0; drawMenu(); });
+    input.addEventListener('input', () => {
+        entry.name = input.value.trim();
+        active = 0;
+        drawMenu();
+        drawGrade();
+    });
+    input.addEventListener('blur', () => menu.classList.add('hidden'));
+    input.addEventListener('keydown', (event) => {
+        if (menu.classList.contains('hidden')) return;
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            active = (active + (event.key === 'ArrowDown' ? 1 : -1) + shown.length) % Math.max(shown.length, 1);
+            drawMenu();
+        } else if (event.key === 'Enter' && shown[active]) {
+            event.preventDefault();
+            pick(shown[active]);
+        } else if (event.key === 'Escape') {
+            event.stopPropagation();
+            menu.classList.add('hidden');
+        }
+    });
+
+    box.append(input, menu);
+    drawGrade();
+
+    return [box, gradeBox];
+}
+
 function drawForm() {
     drawHead();
     const isNew = draft.id === undefined;
@@ -344,8 +445,7 @@ function drawForm() {
     );
 
     const groups = listSection('Groups', 'Jobs or gangs, from a grade up', draft.groups,
-        (entry) => [bind(el('input', { class: 'field', type: 'text', placeholder: 'police', 'aria-label': 'Group' }), 'name', entry),
-            bind(el('input', { class: 'field narrow', type: 'number', min: '0', step: '1', placeholder: 'Grade', 'aria-label': 'Grade' }), 'grade', entry)],
+        (entry) => groupPicker(entry),
         () => ({ name: '', grade: 0 }));
 
     const characters = listSection('Characters', 'Citizen IDs that always open it', draft.characters,
@@ -429,6 +529,7 @@ window.addEventListener('message', (event) => {
     switch (message.action) {
     case 'setTheme': applyTheme(message.data); break;
     case 'updateDoorData': setDoors(message.data); break;
+    case 'setGroups': groupList = Array.isArray(message.data) ? message.data : []; break;
     case 'setSoundFiles': sounds = Array.isArray(message.data) ? message.data.map(String) : []; break;
     case 'setVisible': show(message.data); break;
     case 'playSound': {
