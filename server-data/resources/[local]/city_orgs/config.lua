@@ -47,4 +47,18 @@ Config.Apps = {
             muni3 = { label = 'Muni 3', vault = vec4(481.0, -1316.0, 29.2, 270.0) },
         },
     },
+    contraband = {
+        order = 63,
+        color = '#3f9e58',
+        icon = {
+            glyph = 'M4 8l8-4 8 4v9l-8 4-8-4zM4 8l8 4 8-4M12 12v9',
+            colors = { '#1c5a30', '#3f9e58', '#0e3019' },
+        },
+        farmItems = { 'farm_test1', 'farm_test2' },
+        factions = {
+            contra1 = { label = 'Contra 1', vault = vec4(-1159.0, -1520.0, 10.6, 125.0) },
+            contra2 = { label = 'Contra 2', vault = vec4(1133.0, -982.0, 46.4, 280.0) },
+            contra3 = { label = 'Contra 3', vault = vec4(372.0, 328.0, 103.5, 255.0) },
+        },
+    },
 }
