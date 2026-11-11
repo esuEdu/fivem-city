@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'city_police'
-description 'LSPD for fivem-city: the field job (duty, cuffs, vehicles, objects, evidence, cameras, radars) and the MDT tablet app'
+description 'LSPD for fivem-city: the field job (duty, cuffs, vehicles, objects, evidence, cameras) and the MDT tablet app'
 version '0.1.0'
 
 ox_lib 'locale'
@@ -29,7 +29,6 @@ client_scripts {
     'client/cuffed.lua',
     'client/objects.lua',
     'client/evidence.lua',
-    'client/radar.lua',
     'client/dispatch.lua',
     'client/arrest.lua',
     'client/mdt.lua',
@@ -46,7 +45,6 @@ server_scripts {
     'server/tools.lua',
     'server/objects.lua',
     'server/evidence.lua',
-    'server/radar.lua',
     'server/compat.lua',
     'server/radio.lua',
     'server/unitblips.lua',

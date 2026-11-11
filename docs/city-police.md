@@ -1,6 +1,6 @@
 # Police (`city_police`): design
 
-Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuffs, escort, vehicles, armory, lockers, objects, spike strips, evidence, security cameras, ankle monitors, radars) and the **MDT**, the police app on the iFruit tablet (`city_os`). Only the `police` job exists; BCSO and SASP were removed from `qbx_core/shared/jobs.lua`.
+Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuffs, escort, vehicles, armory, lockers, objects, spike strips, evidence, security cameras, ankle monitors) and the **MDT**, the police app on the iFruit tablet (`city_os`). Only the `police` job exists; BCSO and SASP were removed from `qbx_core/shared/jobs.lua`.
 
 ## Who can use it
 
@@ -14,7 +14,7 @@ Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuff
 | Tab | What it does |
 | --- | --- |
 | **Dashboard** | Your shift (time on duty, status, callsign), open calls, units on duty, inmates in Bolingbroke now, today's arrests and fines, the chief's notices. |
-| **Dispatch** | Open calls: 190 calls from the phone (`city_dispatch` forwards them), automatic alerts (robberies, drug selling, car theft, flagged plates on radars, officer panic button). Attach to a call (sets the GPS), detach, add a note, close. A new call shows a banner on the tablet, a blip and a sound. |
+| **Dispatch** | Open calls: 190 calls from the phone (`city_dispatch` forwards them), automatic alerts (robberies, drug selling, car theft, officer panic button). Attach to a call (sets the GPS), detach, add a note, close. A new call shows a banner on the tablet, a blip and a sound. |
 | **Map** | A live map of the city (drawn, not the game's picture) with units, calls and ankle monitors. Clicking one sets the GPS; a button opens the game's own map. |
 | **Units** | Officers on duty: callsign, grade, status (available, busy, en route, on scene, break), the call each is on, how long on duty. Set your own status and callsign. The camera button watches that unit's **bodycam** live: the tablet closes, the viewer's ped hides below the unit (like the Staff app's spectate) and the game camera follows them; Backspace leaves. |
 | **People** | Search by name (A to Z: "João" lists every João, first match on top), phone, citizen ID or fingerprint, or switch to **ID** for the server ID (exact: 5 shows only player 5, online only). The same Name / ID switch is in every person picker. A person's file: photo (last booking), date of birth, phone, job, licences and driving points, ankle monitor, warrants, arrests and fines, cases they're in, vehicles, registered weapons; buttons for a new case and Jail. |
@@ -43,7 +43,6 @@ Our own police for the LSPD. It replaced `qbx_police`: the field job (duty, cuff
 - **Objects** (radial menu): cones, barriers, road signs, lights, tent; spike strips burst the tyres of cars that drive over them (max `Config.MaxSpikes` per officer). Pick them up again from the radial menu.
 - **Evidence**: shooting drops casings (with the weapon's serial), wounds drop blood, robberies leave fingerprints (no gloves). Officers on duty see them when aiming a flashlight, and pick them up with an `empty_evidence_bag`. Evidence on the ground disappears after `Config.Evidence.minutes`.
 - **Ankle monitor**: the person's position shows on the MDT map while it's on.
-- **Radars**: fixed speed cameras (km/h). Speeding gives the driver a bank bill; a flagged plate creates a call.
 - **Arrest**: only with the suspect cuffed or down and the officer at a booking place (`bookingPlaces` in `server/config.lua`: Mission Row, Paleto Bay, Bolingbroke; an empty list allows anywhere). Fines have no such limit. The suspect sees an arrest screen with the months and the crimes, the arrest goes in their record, and `city_prison` takes them straight to Bolingbroke ([city-prison.md](city-prison.md)).
 - **Panic button** (`/p`, `p` in F8, a key the officer binds in the game's key bindings, or radial "Emergency"; `Config.PanicCommand`): a high-priority call with the officer's position.
 - **Call popups**: every new call and radio code shows a card at the top left for `Config.Dispatch.popup.seconds` (10); F10 takes the newest (attaches to the call and sets the GPS), F11 dismisses it; at most `popup.max` (4) at once, the oldest makes room.
@@ -92,7 +91,7 @@ Licences stay in qbx_core's `metadata.licences`; driving points are summed from 
 
 ## Money
 
-Fines, radar tickets and impound fees are **bank bills** (`exports.city_bank:CreateBill`, kind `fine`, split between the treasury and the police account as `city_bank` says). city_police never adds or removes money itself. Cash found on a suspect is taken through the search screen like any item.
+Fines and impound fees are **bank bills** (`exports.city_bank:CreateBill`, kind `fine`, split between the treasury and the police account as `city_bank` says). city_police never adds or removes money itself. Cash found on a suspect is taken through the search screen like any item.
 
 ## Not in v1
 

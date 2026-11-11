@@ -85,9 +85,6 @@
     "impound_on_hold": "Still on hold for %s",
     "impound_bill": "Impound release %s",
 
-    "radar": "Speed camera",
-    "radar_bill": "Speed camera: %s in a %s zone",
-    "radar_ticket": "Speed camera: a $%s ticket was sent to your bank",
     "fine_bill": "Fine by %s: %s",
     "fined_you": "You were fined $%s. The bill is in your bank",
     "licence_suspended": "Your driver licence was suspended (too many points)",
@@ -107,7 +104,6 @@
     "call_kind_phone": "190 call",
     "call_kind_alert": "Alert",
     "call_kind_panic": "Panic",
-    "call_kind_radar": "Speed camera",
     "plate_stolen": "Stolen",
     "plate_wanted": "Wanted",
 

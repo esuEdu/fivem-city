@@ -64,9 +64,6 @@ return {
     -- Booking photos (base64 PNG from MugShotBase64)
     maxPhotoBytes = 200000,
 
-    -- Seconds between two radar tickets for one player
-    radarCooldown = 120,
-
     -- Search results returned at most
     searchLimit = 25,
 

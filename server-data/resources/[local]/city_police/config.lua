@@ -192,26 +192,6 @@ Config.Evidence = {
     casingEvery = 1500, -- ms between two casings from one shooter
 }
 
--- Speed cameras (km/h). A flagged plate passing one creates a call.
-Config.Radars = {
-    enabled = true,
-    kmh = true,
-    tolerance = 10, -- over the limit before a ticket
-    locations = {
-        { coords = vec3(-623.44, -823.08, 25.26), limit = 60 },
-        { coords = vec3(-652.44, -854.08, 24.56), limit = 80 },
-        { coords = vec3(1623.01, 1068.99, 80.9), limit = 110 },
-        { coords = vec3(-2604.9, 2996.34, 27.53), limit = 110 },
-        { coords = vec3(2136.65, -591.81, 94.27), limit = 110 },
-        { coords = vec3(2117.58, -558.51, 95.68), limit = 110 },
-        { coords = vec3(406.9, -969.06, 29.44), limit = 60 },
-        { coords = vec3(657.32, -218.82, 44.06), limit = 110 },
-        { coords = vec3(2118.29, 6040.03, 50.93), limit = 110 },
-        { coords = vec3(-106.3, -1127.55, 30.78), limit = 60 },
-        { coords = vec3(-823.37, -1146.98, 8.0), limit = 60 },
-    },
-}
-
 -- Calls: blip per kind of alert, and how long a call stays
 Config.Dispatch = {
     minutes = 20,
