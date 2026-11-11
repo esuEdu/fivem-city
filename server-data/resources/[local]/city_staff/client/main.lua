@@ -12,7 +12,7 @@ local ACTIONS = {
     warn = true, kick = true, ban = true, bans = true, unban = true,
     reports = true, claimReport = true, replyReport = true, closeReport = true,
     noclip = true, invisible = true, godmode = true, names = true, blips = true,
-    spawnVehicle = true, clothingPhotos = true,
+    spawnVehicle = true, clothingPhotos = true, doorlock = true,
 }
 
 -- Tools that close the tablet first, because the player needs the game view (or the inventory) to use them
