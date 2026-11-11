@@ -189,6 +189,7 @@ local function wearPiece(category, drawable, sex)
     local ped, slot = cache.ped, category.slot
 
     if category.kind == 'tattoo' then
+        for component, value in pairs(photos.tattooBody) do SetPedComponentVariation(ped, component, value, 0, 0) end
         ClearPedDecorations(ped)
         local hash = catalog.hashFor(drawable, sex)
         -- Drawn ten times: full intensity, as a tattoo at 100% in the shop
@@ -232,6 +233,7 @@ local function takeOff(category, sex)
 
     if category.kind == 'tattoo' then
         ClearPedDecorations(ped)
+        for component in pairs(photos.tattooBody) do SetPedComponentVariation(ped, component, photos.base[sex][component] or 0, 0, 0) end
     elseif category.kind == 'component' then
         SetPedComponentVariation(ped, slot, photos.base[sex][slot] or 0, 0, 0)
         if slot == ARMS then SetPedComponentVariation(ped, UNDERSHIRT, photos.base[sex][UNDERSHIRT], 0, 0) end

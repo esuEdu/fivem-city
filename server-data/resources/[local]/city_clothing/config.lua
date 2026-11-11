@@ -130,6 +130,8 @@ Config.Photos = {
     },
     -- Undershirt worn for the pictures of the Arms & gloves tab
     armsUndershirt = 15,
+    -- Tattoo pictures: arms, undershirt and top that leave the skin showing ([component] = drawable)
+    tattooBody = { [3] = 16, [8] = 16, [11] = 16 },
     -- Hair color for hair, beard, eyebrows and chest hair pictures; makeup color for makeup ones
     hairColor = 0,
     makeupColor = 1,
