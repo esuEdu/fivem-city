@@ -98,6 +98,26 @@ local function sideInventory(src, side, putting)
     return nil, 'invalid_slot'
 end
 
+---Tells other resources a player moved items between their pockets and a stash (city_orgs counts farm deliveries).
+---@param src integer
+---@param stash Inventory
+---@param direction 'in' | 'out'
+---@param name string
+---@param count integer
+local function stashMoved(src, stash, direction, name, count)
+    local player = exports.qbx_core:GetPlayer(src)
+    if not player then return end
+
+    TriggerEvent('city_inventory:server:stashMoved', {
+        stash = stash.id,
+        source = src,
+        citizenid = player.PlayerData.citizenid,
+        direction = direction,
+        name = name,
+        count = count,
+    })
+end
+
 ---@param inventory Inventory
 local function syncSide(inventory)
     if inventory.type == 'stash' then
@@ -140,12 +160,27 @@ lib.callback.register('city_inventory:transfer', function(source, fromSide, from
         if not toSlot then return false, 'inventory_full' end
     end
 
+    local targetItem = toSlot ~= nil and to:isSlot(toSlot) and to.items[toSlot] or nil
+
     local success
     success, reason = Inventory.transfer(from, fromSlot, to, toSlot, count)
 
     if success then
         for _, side in ipairs(from == to and { from } or { from, to }) do
             syncSide(side)
+        end
+
+        -- The other side of a cross-inventory move is always the acting player's own pockets
+        local stash = from ~= to and (from.type == 'stash' and from or to.type == 'stash' and to) or nil
+
+        if item and stash then
+            local direction = stash == to and 'in' or 'out'
+            stashMoved(src, stash, direction, item.name, count == nil and item.count or Inventory.toCount(count))
+
+            -- A straight swap: the stack that was in the way went the other way
+            if targetItem and from.items[fromSlot] == targetItem then
+                stashMoved(src, stash, direction == 'in' and 'out' or 'in', targetItem.name, targetItem.count)
+            end
         end
 
         if fromSide == 'offer' or toSide == 'offer' then trades.changed(src) end
