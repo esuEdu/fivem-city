@@ -39,6 +39,7 @@ server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/main.lua',
     'server/stations.lua',
+    'server/doors.lua',
     'server/interactions.lua',
     'server/search.lua',
     'server/restraints.lua',
