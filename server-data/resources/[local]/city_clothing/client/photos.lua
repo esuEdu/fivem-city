@@ -113,19 +113,66 @@ local function undress(sex)
     for overlay = 0, 12 do SetPedHeadOverlay(ped, overlay, 255, 0.0) end
 end
 
+local pinned = 0
+
+---Streams the room in (the same lineup room as city_character) before the ped is put there
+local function loadRoom(spot)
+    local deadline = GetGameTimer() + 10000
+
+    pinned = GetInteriorAtCoords(spot.x, spot.y, spot.z)
+    if pinned ~= 0 then
+        PinInteriorInMemory(pinned)
+        while not IsInteriorReady(pinned) and GetGameTimer() < deadline do Wait(0) end
+    end
+
+    NewLoadSceneStartSphere(spot.x, spot.y, spot.z, 15.0, 0)
+    while not IsNewLoadSceneLoaded() and GetGameTimer() < deadline do Wait(0) end
+    NewLoadSceneStop()
+end
+
+---Lets the ped drop onto the floor and waits until it stops moving
+local function land(ped)
+    local deadline = GetGameTimer() + 2000
+    local last = GetEntityCoords(ped).z
+    local still = 0
+
+    repeat
+        Wait(50)
+        local z = GetEntityCoords(ped).z
+        still = (math.abs(z - last) < 0.005 and not IsPedFalling(ped)) and still + 1 or 0
+        last = z
+    until still >= 3 or GetGameTimer() > deadline
+end
+
+-- Freezing the ped right where it was put left it floating above the floor (as city_character's studio did):
+-- drop it unfrozen once the room is loaded, and freeze it where it lands
 local function placeAtSpot()
     local spot = photos.spot
     local ped = cache.ped
 
-    RequestCollisionAtCoord(spot.x, spot.y, spot.z)
-    SetEntityCoords(ped, spot.x, spot.y, spot.z, false, false, false, false)
+    FreezeEntityPosition(ped, false)
+    if pinned == 0 then loadRoom(spot) end
+
+    for _ = 1, 3 do
+        RequestCollisionAtCoord(spot.x, spot.y, spot.z)
+        SetEntityCoords(ped, spot.x, spot.y, spot.z, false, false, false, false)
+        SetEntityHeading(ped, spot.w)
+
+        local deadline = GetGameTimer() + 3000
+        repeat Wait(0) until HasCollisionLoadedAroundEntity(ped) or GetGameTimer() > deadline
+
+        land(ped)
+        if GetEntityCoords(ped).z >= spot.z - 3.0 then break end
+    end
+
     SetEntityHeading(ped, spot.w)
-
-    local deadline = GetGameTimer() + 3000
-    repeat Wait(0) until HasCollisionLoadedAroundEntity(ped) or GetGameTimer() > deadline
-
     FreezeEntityPosition(ped, true)
     ClearPedTasksImmediately(ped)
+end
+
+local function unloadRoom()
+    if pinned ~= 0 then UnpinInterior(pinned) end
+    pinned = 0
 end
 
 local function waitFor(check)
@@ -258,6 +305,7 @@ local function run(options)
     if cam and DoesCamExist(cam) then DestroyCam(cam, false) end
     cam = nil
 
+    unloadRoom()
     TriggerEvent('illenium-appearance:client:reloadSkin', true)
     Wait(1500)
 
