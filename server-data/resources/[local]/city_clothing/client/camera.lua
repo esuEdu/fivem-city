@@ -1,10 +1,15 @@
--- The shop camera: the player stands still where they are and a scripted camera frames the part being changed
+-- The shop camera: the player stands still where they are and a scripted camera frames the part being changed.
+-- The player can also move it around the ped (orbit) and up or down, e.g. when someone stands in the way.
 local camera = {}
+
+local MAX_LIFT = 0.8
 
 local cam
 local shot = 'body'
 local zoom = 0.0
 local heading = 0.0
+local orbit = 0.0 -- degrees around the ped, kept across tabs
+local lift = 0.0 -- metres up or down, kept across tabs
 
 local function forward(deg)
     local rad = math.rad(deg)
@@ -16,13 +21,14 @@ local function framing(name)
     local ped = cache.ped
     local target = GetPedBoneCoords(ped, preset.bone, 0.0, 0.0, 0.0) + vector3(0.0, 0.0, preset.height)
 
-    -- The camera keeps the heading the shop opened with, so turning the ped spins it on screen
-    local dir = forward(heading)
+    -- The camera keeps the heading the shop opened with (plus the player's orbit), so turning the ped spins it on screen
+    local base = heading + orbit
+    local dir = forward(base)
     if preset.behind then dir = -dir end
-    if preset.side then dir = forward(heading + 70.0) end
+    if preset.side then dir = forward(base + 70.0) end
 
     local distance = math.max(0.35, preset.distance - zoom)
-    return target + dir * distance, target, preset.fov
+    return target + dir * distance + vector3(0.0, 0.0, lift), target, preset.fov
 end
 
 local function point(camera_, name)
@@ -34,7 +40,7 @@ end
 
 function camera.start()
     heading = GetEntityHeading(cache.ped)
-    shot, zoom = 'body', 0.0
+    shot, zoom, orbit, lift = 'body', 0.0, 0.0, 0.0
 
     cam = CreateCam('DEFAULT_SCRIPTED_CAMERA', true)
     point(cam, shot)
@@ -62,6 +68,23 @@ function camera.zoom(delta)
 
     local preset = Config.Shots[shot]
     zoom = math.max(-1.2, math.min(preset.distance - 0.35, zoom + delta))
+    point(cam, shot)
+end
+
+---Moves the camera around the ped (degrees) and up or down (metres)
+function camera.move(degrees, metres)
+    -- NaN never equals itself; one would leave the camera nowhere
+    if not cam or degrees ~= degrees or metres ~= metres then return end
+
+    orbit = (orbit + degrees) % 360.0
+    lift = math.max(-MAX_LIFT, math.min(MAX_LIFT, lift + metres))
+    point(cam, shot)
+end
+
+function camera.reset()
+    if not cam then return end
+
+    orbit, lift, zoom = 0.0, 0.0, 0.0
     point(cam, shot)
 end
 

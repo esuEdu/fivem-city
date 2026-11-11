@@ -43,12 +43,38 @@ local function values()
     return out
 end
 
+-- Other players near the shopper, refreshed every second instead of every frame
+local others = {}
+
+local function othersLoop()
+    CreateThread(function()
+        while open do
+            local list = {}
+            for _, player in ipairs(GetActivePlayers()) do
+                if player ~= cache.playerId then list[#list + 1] = player end
+            end
+            others = list
+            Wait(1000)
+        end
+        others = {}
+    end)
+end
+
 local function controlsLoop()
+    othersLoop()
+
     CreateThread(function()
         while open do
             DisableAllControlActions(0)
             EnableControlAction(0, 249, true) -- push to talk
             HideHudAndRadarThisFrame()
+
+            -- Nobody walks into the shot: other players are hidden on this screen only, while the shop is open
+            for i = 1, #others do
+                local ped = GetPlayerPed(others[i])
+                if ped ~= 0 then SetEntityLocallyInvisible(ped) end
+            end
+
             Wait(0)
         end
     end)
@@ -154,6 +180,17 @@ end)
 RegisterNUICallback('zoom', function(data, cb)
     cb(true)
     if open and type(data) == 'table' and type(data.delta) == 'number' then camera.zoom(data.delta) end
+end)
+
+RegisterNUICallback('moveCamera', function(data, cb)
+    cb(true)
+    if not open or type(data) ~= 'table' or type(data.degrees) ~= 'number' or type(data.metres) ~= 'number' then return end
+    camera.move(data.degrees, data.metres)
+end)
+
+RegisterNUICallback('resetCamera', function(_, cb)
+    cb(true)
+    if open then camera.reset() end
 end)
 
 RegisterNUICallback('rotate', function(data, cb)
