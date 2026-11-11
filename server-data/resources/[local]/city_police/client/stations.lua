@@ -86,8 +86,6 @@ local function openImpoundDesk()
     lib.showContext('city_police_impound')
 end
 
-local armoryIndex = 0
-
 for _, station in ipairs(Config.Stations) do
     if station.duty then
         zone(station.duty, { {
@@ -97,13 +95,10 @@ for _, station in ipairs(Config.Stations) do
     end
 
     if station.armory then
-        armoryIndex = armoryIndex + 1
-        local index = armoryIndex
-
         zone(station.armory, { {
             name = 'city_police:armory', label = locale('target_armory'), icon = 'fas fa-gun',
             canInteract = job.onDuty,
-            onSelect = function() exports.city_inventory:openInventory('shop', { type = 'CityPoliceArmory', id = index }) end,
+            onSelect = function() TriggerEvent('city_police:client:armory') end,
         } })
     end
 

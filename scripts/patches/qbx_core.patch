@@ -864,10 +864,10 @@ index 9fb3dbc..d9aca9c 100644
  
      if player.Offline then
 diff --git a/server-data/resources/[qbx]/qbx_core/shared/jobs.lua b/server-data/resources/[qbx]/qbx_core/shared/jobs.lua
-index d995d19..c3c4ebe 100644
+index d995d19..178ea1b 100644
 --- a/server-data/resources/[qbx]/qbx_core/shared/jobs.lua
 +++ b/server-data/resources/[qbx]/qbx_core/shared/jobs.lua
-@@ -15,67 +15,7 @@ return {
+@@ -15,91 +15,24 @@ return {
      ['police'] = {
          label = 'LSPD',
          type = 'leo',
@@ -932,11 +932,52 @@ index d995d19..c3c4ebe 100644
 -        label = 'SASP',
 -        type = 'leo',
 -        defaultDuty = true,
+-        offDutyPay = false,
+-        grades = {
+-            [0] = {
+-                name = 'Recruit',
+-                payment = 50
+-            },
+-            [1] = {
+-                name = 'Officer',
+-                payment = 75
+-            },
+-            [2] = {
+-                name = 'Sergeant',
+-                payment = 100
+-            },
+-            [3] = {
+-                name = 'Lieutenant',
+-                payment = 125
+-            },
+-            [4] = {
+-                name = 'Chief',
+-                isboss = true,
+-                bankAuth = true,
+-                payment = 150
+-            },
 +        defaultDuty = false, -- fivem-city: officers clock in at a station (city_police); BCSO and SASP removed
-         offDutyPay = false,
-         grades = {
-             [0] = {
-@@ -132,105 +72,6 @@ return {
++        offDutyPay = false,
++        -- fivem-city: military police ranks; the Coronel owns the police, the Tenente-Coronel also manages (city_police)
++        grades = {
++            [0] = { name = 'Recruta', payment = 50 },
++            [1] = { name = 'Soldado', payment = 60 },
++            [2] = { name = 'Cabo', payment = 70 },
++            [3] = { name = 'Terceiro Sargento', payment = 80 },
++            [4] = { name = 'Segundo Sargento', payment = 90 },
++            [5] = { name = 'Primeiro Sargento', payment = 100 },
++            [6] = { name = 'Subtenente', payment = 110 },
++            [7] = { name = 'Aspirante', payment = 120 },
++            [8] = { name = 'Segundo Tenente', payment = 130 },
++            [9] = { name = 'Primeiro Tenente', payment = 140 },
++            [10] = { name = 'Capitão', payment = 150 },
++            [11] = { name = 'Major', payment = 165 },
++            [12] = { name = 'Tenente-Coronel', payment = 180 },
++            [13] = { name = 'Coronel', isboss = true, bankAuth = true, payment = 200 },
+         },
+     },
+     ['ambulance'] = {
+@@ -132,105 +65,6 @@ return {
              },
          },
      },
@@ -1042,7 +1083,7 @@ index d995d19..c3c4ebe 100644
      ['mechanic'] = {
          label = 'Mechanic',
          type = 'mechanic',
-@@ -261,92 +102,4 @@ return {
+@@ -261,92 +95,4 @@ return {
              },
          },
      },

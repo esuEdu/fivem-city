@@ -64,36 +64,89 @@ return {
     -- Booking photos (base64 PNG from MugShotBase64)
     maxPhotoBytes = 200000,
 
-    -- Seconds between two radar tickets for one player
-    radarCooldown = 120,
-
     -- Search results returned at most
     searchLimit = 25,
 
     -- How often (s) unit positions are sent to officers watching the map
     mapSeconds = 3,
 
-    -- Armory (a city_inventory shop; police gear is free, ammo almost)
+    -- Armory (server/armory.lua): everything is free service gear. tiers[n + 1] is what rank n (job grade) unlocks;
+    -- an officer unlocks the tiers one by one up to their own rank, and only takes from tiers at or below their rank.
+    -- The last tier also gets every weapon of city_inventory's data/weapons.lua that no tier lists. A weapon's ammo
+    -- comes with it. `max` is how many one officer may carry (default 1), `count` how many one take gives (default 1).
     armory = {
-        { name = 'handcuffs', price = 0 },
-        { name = 'zipties', price = 0 },
-        { name = 'crowbar', price = 0 },
-        { name = 'radio', price = 0 },
-        { name = 'police_badge', price = 0 },
-        { name = 'empty_evidence_bag', price = 0 },
-        { name = 'armour', price = 0 },
-        { name = 'weapon_flashlight', price = 0 },
-        { name = 'weapon_nightstick', price = 0 },
-        { name = 'weapon_stungun', price = 0, metadata = { registered = true, serial = 'POL' } },
-        { name = 'weapon_pistol', price = 0, metadata = { registered = true, serial = 'POL' } },
-        { name = 'ammo-9', price = 1 },
-        { name = 'weapon_pumpshotgun', price = 0, metadata = { registered = true, serial = 'POL' }, grade = 2 },
-        { name = 'ammo-shotgun', price = 1, grade = 2 },
-        { name = 'weapon_carbinerifle', price = 0, metadata = { registered = true, serial = 'POL' }, grade = 3 },
-        { name = 'ammo-rifle', price = 1, grade = 3 },
+        ammo = { count = 60, max = 250 },
+        takeCooldownMs = 800,
+        tiers = {
+            -- 0 Recruta
+            {
+                { name = 'weapon_stungun' },
+                { name = 'weapon_pistol' },
+                { name = 'weapon_nightstick' },
+                { name = 'weapon_flashlight' },
+                { name = 'handcuffs' },
+                { name = 'zipties', count = 5, max = 10 },
+                { name = 'radio' },
+                { name = 'police_badge' },
+                { name = 'empty_evidence_bag', count = 5, max = 20 },
+                { name = 'armour', max = 2 },
+                { name = 'crowbar' },
+            },
+            -- 1 Soldado
+            { { name = 'weapon_combatpistol' }, { name = 'weapon_pistol_mk2' }, { name = 'weapon_flaregun' } },
+            -- 2 Cabo
+            { { name = 'weapon_smg' }, { name = 'weapon_pumpshotgun' }, { name = 'weapon_heavypistol' } },
+            -- 3 Terceiro Sargento
+            { { name = 'weapon_combatpdw' }, { name = 'weapon_smg_mk2' }, { name = 'weapon_smokegrenade', count = 2, max = 4 } },
+            -- 4 Segundo Sargento
+            { { name = 'weapon_carbinerifle' }, { name = 'weapon_pumpshotgun_mk2' }, { name = 'weapon_teargas', count = 2, max = 4 } },
+            -- 5 Primeiro Sargento
+            { { name = 'weapon_carbinerifle_mk2' }, { name = 'weapon_assaultshotgun' }, { name = 'weapon_pistol50' } },
+            -- 6 Subtenente
+            { { name = 'weapon_specialcarbine' }, { name = 'weapon_bullpuprifle' }, { name = 'weapon_heavyshotgun' } },
+            -- 7 Aspirante
+            { { name = 'weapon_advancedrifle' }, { name = 'weapon_tacticalrifle' }, { name = 'weapon_marksmanrifle' } },
+            -- 8 Segundo Tenente
+            { { name = 'weapon_specialcarbine_mk2' }, { name = 'weapon_bullpuprifle_mk2' }, { name = 'weapon_combatshotgun' }, { name = 'weapon_heavyrifle' } },
+            -- 9 Primeiro Tenente
+            { { name = 'weapon_sniperrifle' }, { name = 'weapon_marksmanrifle_mk2' }, { name = 'weapon_precisionrifle' }, { name = 'weapon_combatmg' } },
+            -- 10 Capitão (and every rank above): every other weapon is added here
+            {},
+        },
     },
 
     locker = { slots = 30, weight = 100000 },
     evidenceLocker = { slots = 200, weight = 2000000 },
     trash = { slots = 50, weight = 1000000 },
+
+    -- Station doors, created in ox_doorlock by name when missing (server/doors.lua); only the police job uses them.
+    -- Coords and models are the standard Mission Row interior (ox_doorlock's sql/default.sql). A double door lists
+    -- both leaves in `doors`. More doors: add them here, or in game with ox_doorlock's /doorlock (admins).
+    doors = {
+        { name = 'mrpd armoury', model = 749848321, heading = 270, coords = vec3(453.0843, -982.5795, 30.8193), autolock = 5 },
+        { name = 'mrpd locker rooms', model = 1557126584, heading = 90, coords = vec3(450.1041, -985.7384, 30.8393) },
+        { name = "mrpd captain's office", model = -1320876379, heading = 180, coords = vec3(446.5728, -980.0106, 30.8393) },
+        {
+            name = 'mrpd cells/briefing',
+            coords = vec3(444.7079, -989.4454, 30.8393),
+            doors = {
+                { model = 185711165, heading = 0, coords = vec3(446.0079, -989.4454, 30.8393) },
+                { model = 185711165, heading = 180, coords = vec3(443.4078, -989.4454, 30.8393) },
+            },
+        },
+        { name = 'mrpd cells main', model = 631614199, heading = 360, coords = vec3(463.9201, -992.6641, 25.0644), lockSound = 'metal-locker', unlockSound = 'metallic-creak' },
+        { name = 'mrpd cell 1', model = 631614199, heading = 270, coords = vec3(461.8065, -993.7586, 25.0644), lockSound = 'metal-locker', unlockSound = 'metallic-creak' },
+        { name = 'mrpd cell 2', model = 631614199, heading = 90, coords = vec3(461.8065, -998.3083, 25.0644), lockSound = 'metal-locker', unlockSound = 'metallic-creak' },
+        { name = 'mrpd cell 3', model = 631614199, heading = 90, coords = vec3(461.8065, -1001.9515, 25.0644), lockSound = 'metal-locker', unlockSound = 'metallic-creak' },
+        { name = 'mrpd cells security door', model = -1033001619, heading = 0, coords = vec3(464.1283, -1003.5387, 25.0060), autolock = 5 },
+        {
+            name = 'mrpd back entrance',
+            coords = vec3(468.6698, -1014.4520, 26.5362),
+            doors = {
+                { model = -2023754432, heading = 0, coords = vec3(467.3716, -1014.4520, 26.5362) },
+                { model = -2023754432, heading = 180, coords = vec3(469.9679, -1014.4520, 26.5362) },
+            },
+        },
+        { name = 'mrpd gate', model = -1603817716, heading = 90, coords = vec3(488.8948, -1017.2103, 27.1471), auto = true, maxDistance = 6.0 },
+    },
 }

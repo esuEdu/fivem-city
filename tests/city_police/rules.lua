@@ -55,9 +55,9 @@ assert(police.clean('  <b>hi</b>\nthere  ', 100) == 'b hi /b there')
 assert(police.clean('abcdef', 3) == 'abc' and police.clean(nil, 10) == '')
 assert(police.cleanLong('line one\r\nline <two>', 100) == 'line one\nline  two')
 
--- Every permission names a real grade
+-- Every permission names a real grade (0 Recruta to 13 Coronel)
 for action, grade in pairs(Config.Permissions) do
-    assert(math.tointeger(grade) and grade >= 0 and grade <= 4, action)
+    assert(math.tointeger(grade) and grade >= 0 and grade <= 13, action)
 end
 
 

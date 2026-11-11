@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'city_police'
-description 'LSPD for fivem-city: the field job (duty, cuffs, vehicles, objects, evidence, cameras, radars) and the MDT tablet app'
+description 'LSPD for fivem-city: the field job (duty, cuffs, vehicles, objects, evidence, cameras) and the MDT tablet app'
 version '0.1.0'
 
 ox_lib 'locale'
@@ -23,13 +23,13 @@ client_scripts {
     'client/unitblips.lua',
     'client/badge.lua',
     'client/wardrobe.lua',
+    'client/armory.lua',
     'client/restraints.lua',
     'client/tools.lua',
     'client/patrol.lua',
     'client/cuffed.lua',
     'client/objects.lua',
     'client/evidence.lua',
-    'client/radar.lua',
     'client/dispatch.lua',
     'client/arrest.lua',
     'client/mdt.lua',
@@ -40,18 +40,19 @@ server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/main.lua',
     'server/stations.lua',
+    'server/doors.lua',
     'server/interactions.lua',
     'server/search.lua',
     'server/restraints.lua',
     'server/tools.lua',
     'server/objects.lua',
     'server/evidence.lua',
-    'server/radar.lua',
     'server/compat.lua',
     'server/radio.lua',
     'server/unitblips.lua',
     'server/badge.lua',
     'server/wardrobe.lua',
+    'server/armory.lua',
     'server/mdt/app.lua',
     'server/mdt/people.lua',
     'server/mdt/vehicles.lua',
@@ -82,6 +83,8 @@ files {
     'web/screen.html',
     'web/screen.css',
     'web/screen.js',
+    'web/armory.js',
+    'web/armory.css',
 }
 
 dependencies {

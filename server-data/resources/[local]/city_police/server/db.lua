@@ -171,6 +171,15 @@ local TABLES = {
             KEY `report_id` (`report_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ]],
+    -- The highest armory tier each officer unlocked (server/armory.lua)
+    [[
+        CREATE TABLE IF NOT EXISTS `city_police_armory` (
+            `citizenid` VARCHAR(50) NOT NULL,
+            `tier` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+            `updated` INT UNSIGNED NOT NULL,
+            PRIMARY KEY (`citizenid`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ]],
     -- Uniforms made in game, and each officer's own clothes kept while they wear one
     [[
         CREATE TABLE IF NOT EXISTS `city_police_uniforms` (

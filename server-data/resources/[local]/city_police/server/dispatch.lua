@@ -10,7 +10,7 @@ local dispatch = {}
 
 ---@class PoliceCall
 ---@field id integer
----@field kind string 'phone' | 'alert' | 'panic' | 'radar'
+---@field kind string 'phone' | 'alert' | 'panic'
 ---@field code string
 ---@field title string
 ---@field text string

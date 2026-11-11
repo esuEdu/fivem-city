@@ -38,9 +38,9 @@ Config.Computer = { coords = vec3(1837.45, 2592.95, 45.85), radius = 0.5 }
 Config.PoliceJob = 'police'
 Config.ComputerGrades = {
     view = 0,
-    setTime = 2,
-    release = 2,
-    clearEscape = 3,
+    setTime = 3, -- Terceiro Sargento (police ranks in qbx_core jobs.lua)
+    release = 3,
+    clearEscape = 8, -- Segundo Tenente
 }
 
 -- Prison clothes, put on when entering; the player's own outfit comes back on release (illenium-appearance)

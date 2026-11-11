@@ -1,4 +1,4 @@
--- Flagged plates (stolen / wanted), kept in memory as well because every radar pass checks them.
+-- Flagged plates (stolen / wanted), kept in memory as well for quick lookups.
 
 local db = require 'server.db'
 
