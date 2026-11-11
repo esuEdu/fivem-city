@@ -50,7 +50,10 @@ function creator.open(options, finish, cancel)
     studio.replacePed()
     studio.setShot('body', true)
 
+    -- The Heritage tab is the first one drawn: its pictures failed (and showed letters) when the dict wasn't loaded yet
     RequestStreamedTextureDict('char_creator_portraits', false)
+    local deadline = GetGameTimer() + 3000
+    while not HasStreamedTextureDictLoaded('char_creator_portraits') and GetGameTimer() < deadline do Wait(0) end
 
     SendNUIMessage({
         action = 'creator',

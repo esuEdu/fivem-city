@@ -32,6 +32,9 @@ end
 
 -- How long to wait for the room's collision around a new ped, and for it to land on the floor, before freezing it anyway
 local COLLISION_WAIT_MS = 1500
+local ROOM_WAIT_MS = 10000
+
+local interior = 0
 local LAND_WAIT_MS = 2000
 
 -- Where the ped stands once it landed; the camera and the lights follow it, not Config.Studio.ped
@@ -52,6 +55,27 @@ local function land(ped)
     until still >= 3 or GetGameTimer() > deadline
 end
 
+---Streams the lineup room in before the camera shows it. Without this, on a fresh join the camera often sat in the
+---grey void under the map: the interior wasn't loaded yet, and the ped had already been frozen with nothing around it
+local function loadRoom()
+    local spot = Config.Studio.ped
+    local deadline = GetGameTimer() + ROOM_WAIT_MS
+
+    SetFocusPosAndVel(spot.x, spot.y, spot.z, 0.0, 0.0, 0.0)
+
+    interior = GetInteriorAtCoords(spot.x, spot.y, spot.z)
+    if interior ~= 0 then
+        PinInteriorInMemory(interior)
+        while not IsInteriorReady(interior) and GetGameTimer() < deadline do Wait(0) end
+    end
+
+    NewLoadSceneStartSphere(spot.x, spot.y, spot.z, 15.0, 0)
+    while not IsNewLoadSceneLoaded() and GetGameTimer() < deadline do Wait(0) end
+    NewLoadSceneStop()
+
+    RequestCollisionAtCoord(spot.x, spot.y, spot.z)
+end
+
 local function placePed()
     -- After SetPlayerModel the player has a new ped; cache.ped only follows it on ox_lib's next tick
     local ped = PlayerPedId()
@@ -65,12 +89,18 @@ local function placePed()
     SetEntityCoords(ped, spot.x, spot.y, spot.z, false, false, false, false)
     SetEntityHeading(ped, spot.w)
 
-    local deadline = GetGameTimer() + COLLISION_WAIT_MS
-    repeat Wait(0) until HasCollisionLoadedAroundEntity(ped) or GetGameTimer() > deadline
+    -- Fell through a floor that wasn't loaded yet: put it back and try again, then give up at the configured spot
+    for _ = 1, 3 do
+        local deadline = GetGameTimer() + COLLISION_WAIT_MS
+        repeat Wait(0) until HasCollisionLoadedAroundEntity(ped) or GetGameTimer() > deadline
 
-    land(ped)
+        land(ped)
+        if GetEntityCoords(ped).z >= spot.z - 3.0 then break end
 
-    -- Fell through a floor that never loaded: back to the configured spot
+        RequestCollisionAtCoord(spot.x, spot.y, spot.z)
+        SetEntityCoords(ped, spot.x, spot.y, spot.z, false, false, false, false)
+    end
+
     if GetEntityCoords(ped).z < spot.z - 3.0 then
         SetEntityCoords(ped, spot.x, spot.y, spot.z, false, false, false, false)
     end
@@ -213,6 +243,7 @@ function studio.start()
     lights = Config.Lights.studio
 
     DisplayRadar(false)
+    loadRoom()
     placePed()
 
     cam = CreateCam('DEFAULT_SCRIPTED_CAMERA', true)
@@ -237,6 +268,12 @@ function studio.stop()
     RenderScriptCams(false, false, 0, true, true)
     if cam and DoesCamExist(cam) then DestroyCam(cam, false) end
     cam = nil
+
+    ClearFocus()
+    if interior ~= 0 then
+        UnpinInterior(interior)
+        interior = 0
+    end
 
     local ped = cache.ped
     ClearPedTasks(ped)
