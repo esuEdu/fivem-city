@@ -6,4 +6,5 @@ name 'city_mrpd_edits'
 description 'Mission Row interior edits: the always-open armory hall door turned closed (v_int_20.ytyp, made in CodeWalker)'
 version '0.1.0'
 
-data_file 'DLC_ITYP_REQUEST' 'stream/v_int_20.ytyp'
+-- stream/v_int_20.ytyp replaces the game's own file of the same name just by being streamed. No DLC_ITYP_REQUEST:
+-- that would load it as an extra ytyp next to the original instead of replacing it.
