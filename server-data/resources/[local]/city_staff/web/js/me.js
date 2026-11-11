@@ -3,6 +3,39 @@ import { app, can } from './main.js';
 
 const TOOLS = ['noclip', 'invisible', 'godmode', 'names', 'blips'];
 
+// city_clothing's photo tool: everything, or one tab and a range of the numbers the shop cards show.
+// Overwrite takes pictures that exist again.
+function photosForm() {
+    const category = el('select', { class: 'field', 'aria-label': L('ui_photos_category') },
+        el('option', { value: 'all', text: L('ui_photos_all') }),
+        app.clothingCategories.map((c) => el('option', { value: c.id, text: c.label })));
+    const sex = el('select', { class: 'field', 'aria-label': L('ui_photos_sex') },
+        ['both', 'm', 'f'].map((value) => el('option', { value, text: L(`ui_photos_sex_${value}`) })));
+    const number = (key) => el('input', { class: 'field', type: 'number', min: '1', max: '2001', placeholder: L(key), 'aria-label': L(key) });
+    const from = number('ui_photos_from');
+    const to = number('ui_photos_to');
+    const overwrite = el('input', { type: 'checkbox' });
+
+    const read = (input) => (input.value === '' ? null : Number(input.value));
+
+    const start = () => run('clothingPhotos', {
+        category: category.value,
+        sex: sex.value,
+        from: read(from),
+        to: read(to),
+        overwrite: overwrite.checked,
+    });
+
+    return el('div', { class: 'card form' },
+        el('div', { class: 'tool-top' }, icon('camera', 22), el('strong', { text: L('tool_clothingPhotos') })),
+        el('small', { class: 'muted', text: L('tool_clothingPhotos_help') }),
+        el('div', { class: 'form-row' }, category, sex),
+        el('div', { class: 'form-row' }, from, to),
+        el('label', { class: 'form-row muted' }, overwrite, L('ui_photos_overwrite')),
+        el('button', { class: 'kit-btn accent', text: L('ui_photos_start'), onclick: start }),
+    );
+}
+
 export async function renderMe() {
     const cards = TOOLS.filter(can).map((tool) => {
         const state = el('small', { class: 'state', text: app.tools[tool] ? L('ui_on') : L('ui_off') });
@@ -34,18 +67,10 @@ export async function renderMe() {
         vehicles.push(model, el('button', { class: 'kit-btn accent', text: L('ui_spawn'), onclick: spawn }));
     }
 
-    // A one-shot tool, not a toggle: the tablet closes and the photos run on this client
-    if (can('clothingPhotos')) {
-        cards.push(el('button', { class: 'tool', onclick: () => run('clothingPhotos') },
-            el('div', { class: 'tool-top' }, icon('camera', 22)),
-            el('strong', { text: L('tool_clothingPhotos') }),
-            el('small', { text: L('tool_clothingPhotos_help') }),
-        ));
-    }
-
     return el('div', { class: 'stack' },
         heading(L('ui_tab_me')),
         cards.length ? el('div', { class: 'tools' }, cards) : null,
+        can('clothingPhotos') && app.clothingCategories ? photosForm() : null,
         vehicles.length ? el('div', { class: 'card form' }, el('strong', { text: L('ui_vehicles') }), el('div', { class: 'form-row' }, vehicles), el('small', { class: 'muted', text: L('ui_vehicles_foot') })) : null,
     );
 }

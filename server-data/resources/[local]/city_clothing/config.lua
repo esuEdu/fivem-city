@@ -97,11 +97,13 @@ Config.Photos = {
     -- Capture size: shop cards show the middle square of it
     width = 480,
     height = 270,
-    -- Underwear: what the ped wears around the piece being photographed
+    -- Underwear: what the ped wears around the piece being photographed. Arms (3) stay 9 in every picture
     base = {
-        m = { [1] = 0, [3] = 15, [4] = 61, [5] = 0, [6] = 34, [7] = 0, [8] = 15, [9] = 0, [10] = 0, [11] = 15 },
-        f = { [1] = 0, [3] = 15, [4] = 17, [5] = 0, [6] = 35, [7] = 0, [8] = 14, [9] = 0, [10] = 0, [11] = 15 },
+        m = { [1] = 0, [3] = 9, [4] = 61, [5] = 0, [6] = 34, [7] = 0, [8] = 15, [9] = 0, [10] = 0, [11] = 15 },
+        f = { [1] = 0, [3] = 9, [4] = 17, [5] = 0, [6] = 35, [7] = 0, [8] = 14, [9] = 0, [10] = 0, [11] = 15 },
     },
+    -- Undershirt worn for the pictures of the Arms & gloves tab
+    armsUndershirt = 15,
     -- Hair color for hair, beard, eyebrows and chest hair pictures; makeup color for makeup ones
     hairColor = 0,
     makeupColor = 1,

@@ -24,7 +24,9 @@ let s = null;
 const same = (a, b) => (a.opacity === 0 && b.opacity === 0)
     || Object.keys({ ...a, ...b }).every((key) => a[key] === b[key]);
 const keyOf = (c) => `${c.kind === 'prop' ? 'p' : c.kind === 'overlay' ? 'o' : 'c'}${c.slot}`;
-const imageUrl = (c, drawable) => `https://cfx-nui-${RESOURCE}/images/${s.sex}_${keyOf(c)}_${drawable}.webp`;
+const imageName = (c, drawable) => `${s.sex}_${keyOf(c)}_${drawable}`;
+// A hand-made .png dropped into images/ wins over the photo tool's .webp
+const imageUrl = (name) => `https://cfx-nui-${RESOURCE}/images/${name}.${s.custom[name] ? 'png' : 'webp'}`;
 
 // The style number a card stands for: -1 / none for props and overlays
 function styleOf(category, value) {
@@ -75,11 +77,11 @@ function card(category, style) {
     const pic = el('div', 'card__pic');
     if (style < 0) {
         pic.append(el('span', 'card__none', 'None'));
-    } else if (s.images[`${s.sex}_${keyOf(category)}_${style}`]) {
+    } else if (s.custom[imageName(category, style)] || s.images[imageName(category, style)]) {
         const img = document.createElement('img');
         img.loading = 'lazy';
         img.alt = '';
-        img.src = imageUrl(category, style);
+        img.src = imageUrl(imageName(category, style));
         img.onerror = () => { img.remove(); pic.append(el('span', 'card__number', String(style + 1))); };
         pic.append(img);
     } else {
@@ -367,6 +369,7 @@ function open(data) {
         outfits: data.outfits || [],
         maxOutfits: data.maxOutfits,
         images: data.images || {},
+        custom: data.custom || {},
         values,
         original: structuredClone(values),
         tab: data.categories[0].id,

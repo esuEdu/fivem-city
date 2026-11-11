@@ -106,6 +106,7 @@ local function openStore(index)
         outfits = info.outfits,
         maxOutfits = info.maxOutfits,
         images = images(),
+        custom = info.custom,
     })
     SetNuiFocus(true, true)
 end

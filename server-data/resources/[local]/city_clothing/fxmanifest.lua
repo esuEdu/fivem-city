@@ -32,6 +32,7 @@ files {
     'web/js/*.js',
     'images/index.json',
     'images/*.webp',
+    'images/*.png',
 }
 
 dependencies {

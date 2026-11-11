@@ -1,6 +1,7 @@
 -- The shops on the server: who is in which store, buying (priced and checked here from the saved look) and outfits
 local look = require 'shared.look'
 local settings = require 'server.config'
+local images = require 'server.images'
 
 local REASONS = { clothing = 'clothing-shop', barber = 'barber-shop' }
 local BUY_COOLDOWN_MS = 1000
@@ -80,6 +81,7 @@ lib.callback.register('city_clothing:open', function(source, index)
         prices = pricesFor(store.type),
         outfits = store.type == 'clothing' and outfits(citizenid, skin.model) or nil,
         maxOutfits = Config.MaxOutfits,
+        custom = images.customFor(look.sexOf(skin)),
     }
 end)
 
