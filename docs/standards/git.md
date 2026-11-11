@@ -27,8 +27,25 @@ docs/docker-guide
 ```
 
 - One topic per branch. If it grows into a second feature, finish or split it.
-- Features and anything that needs an in-game test go on a branch; the user merges it (pull request or merge) after testing.
+- Features and anything that needs an in-game test go on a branch and are tested on `Cidade_Teste` first (below). Only finished, tested branches reach `main`.
 - Small docs or config fixes can go straight to `main` when the user asks.
+
+## Cidade_Teste and main
+
+`main` is locked: only a feature that is 100% done goes there, with nothing left to add or fix. Everything still being tested lives on **`Cidade_Teste`**, the branch the test server runs.
+
+1. Branch from `main` (`feat/app-x`) and do the work.
+2. Merge the branch into `Cidade_Teste` (a pull request with base `Cidade_Teste`, or `git switch Cidade_Teste && git merge feat/app-x && git push`). The feature branch stays open: when the PR closes, don't delete it.
+3. Test on the server. A bug, a missing piece or a "forgot X" is fixed **on `feat/app-x`**, never on `Cidade_Teste`, and merged into `Cidade_Teste` again (only the new commits go in).
+4. When the user has tested it and there is nothing more to add for that feature, the user opens the pull request **`feat/app-x` → `main`** and merges it by hand.
+
+Rules:
+
+- Never merge `Cidade_Teste` into `main` or into a feature branch: everything under test, finished or not, would go with it. `Cidade_Teste` only receives merges.
+- A fix made on `Cidade_Teste` is lost for `main`, because `main` gets the feature branch. Always fix on the feature branch.
+- A conflict between two features is solved on `Cidade_Teste` and again on `main` later; `git config --global rerere.enabled true` lets git reuse the first resolution.
+- A feature that needs another one branches from it (or waits until the other is in `main`); otherwise it works on `Cidade_Teste` and breaks on `main`.
+- Now and then reset `Cidade_Teste` to `main` and merge again only the branches still under test, so abandoned work leaves the test server.
 
 ## Commits
 

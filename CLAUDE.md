@@ -68,7 +68,7 @@ Custom code lives in `server-data/resources/[local]/` (`city_base` is the starte
 
 ## Standards
 
-All code in `[local]/` must follow these, and every branch and commit follows `git.md`. Run through each checklist before calling the work done.
+All code in `[local]/` must follow these, and every branch and commit follows `git.md`. Feature pull requests go to `Cidade_Teste` (the test server's branch), never to `main`; fixes go on the same feature branch, and only the user takes a finished branch to `main`. Run through each checklist before calling the work done.
 
 @docs/standards/security.md
 @docs/standards/performance.md
