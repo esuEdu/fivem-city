@@ -25,6 +25,8 @@ local function categoriesFor(storeType, prices)
                 label = category.label,
                 kind = category.kind,
                 slot = category.slot,
+                zone = category.zone,
+                items = category.kind == 'tattoo' and look.tattooItems(category.zone) or nil,
                 shot = category.shot,
                 colors = category.colors,
                 price = prices[category.id] or 0,
@@ -106,6 +108,7 @@ local function openStore(index)
     if not info then return notify('The store is closed for you right now.', 'error') end
 
     open = { index = index, store = store, original = look.snapshot() }
+    look.loadTattoos(open.original and open.original.tattoos)
     open.categories = categoriesFor(info.type, info.prices)
     open.byId = {}
     for _, category in ipairs(open.categories) do open.byId[category.id] = category end
@@ -139,6 +142,17 @@ end
 local function validValue(category, value)
     if type(value) ~= 'table' then return false end
 
+    if category.kind == 'tattoo' then
+        if #value > Config.MaxTattoosPerZone then return false end
+        for _, item in ipairs(value) do
+            if type(item) ~= 'table' or type(item.name) ~= 'string' or type(item.opacity) ~= 'number'
+                or item.opacity < 0.1 or item.opacity > 1 then
+                return false
+            end
+        end
+        return true
+    end
+
     if category.kind == 'component' then
         return isInt(value.drawable, 0, 2000) and isInt(value.texture, 0, 255)
     elseif category.kind == 'prop' then
@@ -158,7 +172,11 @@ RegisterNUICallback('preview', function(data, cb)
 
     -- Natives want integers; the page's JSON numbers may arrive as floats
     local value = {}
-    for key, v in pairs(data.value) do value[key] = key == 'opacity' and v + 0.0 or math.tointeger(v) end
+    if category.kind == 'tattoo' then
+        for i, item in ipairs(data.value) do value[i] = { name = item.name, opacity = item.opacity + 0.0 } end
+    else
+        for key, v in pairs(data.value) do value[key] = key == 'opacity' and v + 0.0 or math.tointeger(v) end
+    end
 
     look.set(category, value)
     cb(true)
@@ -217,6 +235,12 @@ RegisterNUICallback('buy', function(data, cb)
         return cb({ ok = false })
     end
 
+    -- illenium-appearance keeps its own copy of the tattoos (and draws them again on every look change): update it
+    if result.tattoos then
+        exports['illenium-appearance']:setPedTattoos(cache.ped, result.tattoos)
+        look.loadTattoos(result.tattoos)
+    end
+
     -- Leaving now keeps what was bought (and a uniform worn over it, as the player came in)
     open.original = look.snapshot()
     open.baseline = values()
@@ -226,6 +250,7 @@ end)
 
 local function wear(skin)
     look.restore(skin)
+    look.loadTattoos(skin.tattoos)
     open.original = skin
     open.baseline = values()
 end

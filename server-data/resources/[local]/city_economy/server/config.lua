@@ -85,10 +85,11 @@ return {
         city_staff = {
             { reason = '^staff%-grant$', credit = true, perHour = 1000000 },
         },
-        -- Clothing stores and barbers: the bag paid at the till
+        -- Clothing stores, barbers and tattoo parlours: the bag paid at the till
         city_clothing = {
             { reason = '^clothing%-shop$', debit = true },
             { reason = '^barber%-shop$', debit = true },
+            { reason = '^tattoo%-shop$', debit = true },
         },
         ['illenium-appearance'] = {
             { reason = '^unknown$', debit = true },

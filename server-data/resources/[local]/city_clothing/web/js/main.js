@@ -1,4 +1,6 @@
 import { RESOURCE, post, applyTheme, el, money, confirmModal, stepper, range, swatches } from './util.js';
+import { asList, tattooCards, tattooOptions, tattooBagLines, putBack } from './tattoos.js';
+import { stageControls } from './stage.js';
 
 const shop = document.getElementById('shop');
 const stage = document.getElementById('stage');
@@ -16,14 +18,15 @@ const payCash = document.getElementById('pay-cash');
 const payBank = document.getElementById('pay-bank');
 
 const LOOKS_TAB = 'looks';
-const STORE_NAMES = { clothing: 'Clothing store', barber: 'Barber' };
+const STORE_NAMES = { clothing: 'Clothing store', barber: 'Barber', tattoo: 'Tattoo parlor' };
 
 let s = null;
 
 // Key order differs between Lua's JSON and the page's objects, so compare field by field
 const same = (a, b) => (a.opacity === 0 && b.opacity === 0)
     || Object.keys({ ...a, ...b }).every((key) => a[key] === b[key]);
-const keyOf = (c) => `${c.kind === 'prop' ? 'p' : c.kind === 'overlay' ? 'o' : 'c'}${c.slot}`;
+// Picture keys: c<component>, p<prop>, o<overlay>, t<tab id> for tattoos (pictures keyed by tattoo name)
+const keyOf = (c) => (c.kind === 'tattoo' ? `t${c.id}` : `${c.kind === 'prop' ? 'p' : c.kind === 'overlay' ? 'o' : 'c'}${c.slot}`);
 const imageName = (c, drawable) => `${s.sex}_${keyOf(c)}_${drawable}`;
 
 // A hand-made .png dropped into images/ wins over the photo tool's picture (kept in the tab's pack)
@@ -85,6 +88,23 @@ async function pick(category, style) {
     await renderOptions(category);
 }
 
+function toggleTattoo(category, name) {
+    const list = asList(s.values[category.id]);
+    const next = list.some((t) => t.name === name)
+        ? list.filter((t) => t.name !== name)
+        : [...list, { name, opacity: 1 }];
+
+    setValue(category, next);
+    renderGrid(category);
+    renderOptions(category);
+}
+
+function setTattooOpacity(category, name, opacity) {
+    setValue(category, asList(s.values[category.id]).map((t) => (t.name === name ? { ...t, opacity } : t)));
+}
+
+const tattooContext = () => ({ s, picture: pictureOf, toggle: toggleTattoo, setOpacity: setTattooOpacity });
+
 // ---------- browse panel ----------
 
 function card(category, style) {
@@ -120,6 +140,14 @@ function card(category, style) {
 function renderGrid(category) {
     grid.replaceChildren();
     const filter = search.value.trim();
+
+    if (category.kind === 'tattoo') {
+        const cards = tattooCards(category, filter, tattooContext());
+        if (cards.length) grid.append(...cards);
+        else grid.append(el('p', 'muted empty', filter ? 'No tattoo with that name.' : 'No tattoos here for you.'));
+        return;
+    }
+
     const list = [];
 
     if (hasNone(category) && !filter) list.push(-1);
@@ -139,6 +167,12 @@ function renderGrid(category) {
 async function renderOptions(category) {
     options.replaceChildren();
     const value = s.values[category.id];
+
+    if (category.kind === 'tattoo') {
+        options.append(...tattooOptions(category, tattooContext()));
+        options.classList.toggle('hidden', !options.childElementCount);
+        return;
+    }
 
     if (category.kind === 'component' || category.kind === 'prop' || category.kind === 'hair') {
         const drawable = category.kind === 'hair' ? value.style : value.drawable;
@@ -207,7 +241,7 @@ function renderLooks() {
     });
     form.append(name, save);
 
-    const note = el('p', 'muted look-note', bagItems().length
+    const note = el('p', 'muted look-note', bagLines().length
         ? 'Only what you have paid for is saved: pay for your bag first.'
         : `Saves what you are wearing. ${s.outfits.length} / ${s.maxOutfits} looks.`);
 
@@ -220,7 +254,7 @@ function renderLooks() {
         remove.type = 'button';
 
         wear.addEventListener('click', async () => {
-            if (bagItems().length && !await confirmModal('Wear this look?', 'What is in your bag will be put back.', 'Wear')) return;
+            if (bagLines().length && !await confirmModal('Wear this look?', 'What is in your bag will be put back.', 'Wear')) return;
             const result = await post('wearOutfit', { id: outfit.id });
             if (result?.ok) resetTo(result.values);
         });
@@ -256,8 +290,13 @@ function selectTab(id) {
 
     const category = s.byId[id];
     search.classList.remove('hidden');
+    search.placeholder = category.kind === 'tattoo' ? 'Search by name' : 'Search by number';
+    search.inputMode = category.kind === 'tattoo' ? 'text' : 'numeric';
+    search.maxLength = category.kind === 'tattoo' ? 30 : 4;
     title.textContent = category.label;
-    priceTag.textContent = category.price > 0 ? `${money(category.price)} per change` : 'Free';
+    priceTag.textContent = category.price > 0
+        ? `${money(category.price)} per ${category.kind === 'tattoo' ? 'tattoo' : 'change'}`
+        : 'Free';
     post('shot', { name: category.shot });
     renderGrid(category);
     renderOptions(category);
@@ -287,41 +326,53 @@ function renderTabs() {
 
 // ---------- bag ----------
 
-function bagItems() {
-    return s.categories.filter((c) => !same(s.values[c.id], s.original[c.id]));
+// One line per piece changed, or per tattoo added, removed or made lighter/darker
+function bagLines() {
+    const lines = [];
+
+    s.categories.forEach((category) => {
+        if (category.kind === 'tattoo') {
+            lines.push(...tattooBagLines(category, s));
+        } else if (!same(s.values[category.id], s.original[category.id])) {
+            const style = styleOf(category, s.values[category.id]);
+            lines.push({ category, label: category.label, note: style < 0 ? 'None' : `#${style + 1}`, price: category.price });
+        }
+    });
+
+    return lines;
 }
 
 function renderBag() {
-    const items = bagItems();
+    const lines = bagLines();
     bagList.replaceChildren();
 
-    items.forEach((category) => {
+    lines.forEach((line) => {
+        const { category } = line;
         const row = el('div', 'bag-row');
         const undo = el('button', 'bag-row__undo', '×');
         undo.type = 'button';
         undo.title = 'Put back';
         undo.addEventListener('click', () => {
-            setValue(category, s.original[category.id]);
+            setValue(category, line.name ? putBack(category, line.name, s) : s.original[category.id]);
             if (s.tab === category.id) selectTab(category.id);
         });
 
-        const style = styleOf(category, s.values[category.id]);
         row.append(
-            el('span', 'bag-row__name', category.label),
-            el('span', 'muted bag-row__style', style < 0 ? 'None' : `#${style + 1}`),
-            el('span', 'bag-row__price', money(category.price)),
+            el('span', 'bag-row__name', line.label),
+            el('span', 'muted bag-row__style', line.note),
+            el('span', 'bag-row__price', line.price ? money(line.price) : 'Free'),
             undo,
         );
         bagList.append(row);
     });
 
-    if (!items.length) bagList.append(el('p', 'muted empty', 'Pick something to try it on.'));
+    if (!lines.length) bagList.append(el('p', 'muted empty', 'Pick something to try it on.'));
 
-    const total = items.reduce((sum, c) => sum + c.price, 0);
-    bagCount.textContent = items.length ? `${items.length} item${items.length > 1 ? 's' : ''}` : '';
+    const total = lines.reduce((sum, line) => sum + line.price, 0);
+    bagCount.textContent = lines.length ? `${lines.length} item${lines.length > 1 ? 's' : ''}` : '';
     bagTotal.textContent = money(total);
-    payCash.disabled = !items.length;
-    payBank.disabled = !items.length;
+    payCash.disabled = !lines.length;
+    payBank.disabled = !lines.length;
 }
 
 function resetTo(values) {
@@ -348,7 +399,7 @@ payBank.addEventListener('click', () => pay('bank'));
 // ---------- open / close ----------
 
 async function leave() {
-    if (bagItems().length && !await confirmModal('Leave the store?', 'You will put back what is in your bag.', 'Leave')) return;
+    if (bagLines().length && !await confirmModal('Leave the store?', 'You will put back what is in your bag.', 'Leave')) return;
     shop.classList.add('hidden');
     s = null;
     post('close');
@@ -361,58 +412,18 @@ document.addEventListener('keydown', (event) => {
 });
 
 search.addEventListener('input', () => {
-    search.value = search.value.replace(/\D/g, '');
+    if (s?.byId[s.tab]?.kind !== 'tattoo') search.value = search.value.replace(/\D/g, '');
     if (s?.byId[s.tab]) renderGrid(s.byId[s.tab]);
 });
 
-// On the empty screen: left drag moves the camera around the ped and up or down (to see past someone in the way),
-// right drag turns the ped, the wheel zooms and a double click puts the camera back
-let drag = null;
-let pending = { x: 0, y: 0, turn: 0 };
-let flushing = false;
-
-// Moves pile up and go to the game once per frame
-function flush() {
-    flushing = false;
-    const { x, y, turn } = pending;
-    pending = { x: 0, y: 0, turn: 0 };
-    if (x || y) post('moveCamera', { degrees: x * 0.35, metres: -y * 0.004 });
-    if (turn) post('rotate', { degrees: turn * 0.5 });
-}
-
-stage.addEventListener('contextmenu', (event) => event.preventDefault());
-stage.addEventListener('pointerdown', (event) => {
-    drag = { x: event.clientX, y: event.clientY, turn: event.button === 2 };
-    stage.setPointerCapture(event.pointerId);
-});
-stage.addEventListener('pointermove', (event) => {
-    if (!drag) return;
-    const dx = event.clientX - drag.x;
-    const dy = event.clientY - drag.y;
-    drag.x = event.clientX;
-    drag.y = event.clientY;
-
-    if (drag.turn) {
-        pending.turn += dx;
-    } else {
-        pending.x += dx;
-        pending.y += dy;
-    }
-
-    if (!flushing) {
-        flushing = true;
-        requestAnimationFrame(flush);
-    }
-});
-stage.addEventListener('pointerup', () => { drag = null; });
-stage.addEventListener('dblclick', () => post('resetCamera'));
-stage.addEventListener('wheel', (event) => post('zoom', { delta: event.deltaY < 0 ? 0.15 : -0.15 }), { passive: true });
+stageControls(stage);
 
 function open(data) {
     applyTheme(data.theme);
 
+    // Lua sends an empty tattoo list as {}, not []
     const values = {};
-    data.categories.forEach((c) => { values[c.id] = c.value; });
+    data.categories.forEach((c) => { values[c.id] = c.kind === 'tattoo' ? asList(c.value) : c.value; });
 
     s = {
         store: data.store,

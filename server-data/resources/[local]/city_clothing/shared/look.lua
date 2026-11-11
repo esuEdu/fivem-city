@@ -226,6 +226,80 @@ function look.buy(skin, wanted, categories, options)
     return new, changes, total
 end
 
+---Builds the new saved tattoos from what the shop asked for. Each zone sent replaces that zone's list; a new tattoo
+---costs options.prices.tattoo, removing one or changing its intensity is free.
+---@param skin table the look saved in playerskins
+---@param wanted table? { [zone] = { { name, opacity }, ... } } from the shop
+---@param categories table[] the tattoo categories this shop sells: { id, zone }
+---@param catalog table shared/tattoos.lua (get, hashFor)
+---@param options { prices: table<string, integer>, maxPerZone: integer }
+---@return table? newSkin
+---@return table[]|string changes { id, tattoo, price, removed? } or why it was refused
+---@return integer? total
+function look.buyTattoos(skin, wanted, categories, catalog, options)
+    local sex = look.sexOf(skin)
+    if not sex then return nil, 'model' end
+    if wanted ~= nil and type(wanted) ~= 'table' then return nil, 'tattoos' end
+    wanted = wanted or {}
+
+    local new = copy(skin)
+    new.tattoos = type(new.tattoos) == 'table' and new.tattoos or {}
+
+    local price = options.prices.tattoo or 0
+    local changes, total = {}, 0
+
+    for _, category in ipairs(categories) do
+        local zone = category.zone
+        local list = wanted[zone]
+
+        if list ~= nil then
+            if type(list) ~= 'table' or #list > options.maxPerZone then return nil, category.id end
+
+            local owned = {}
+            for _, tattoo in ipairs(type(new.tattoos[zone]) == 'table' and new.tattoos[zone] or {}) do
+                if type(tattoo) == 'table' and tattoo.name then owned[tattoo.name] = tattoo end
+            end
+
+            local seen, out = {}, {}
+            for _, item in ipairs(list) do
+                if type(item) ~= 'table' or type(item.name) ~= 'string' or seen[item.name] then return nil, category.id end
+
+                local opacity = float(item.opacity, 0.1, 1)
+                if not opacity then return nil, category.id end
+                opacity = math.floor(opacity * 10 + 0.5) / 10
+
+                local had = owned[item.name]
+                local entry = had or catalog.get(item.name)
+                -- A tattoo already owned stays even if the catalog changed; a new one must exist for this sex and zone
+                if not had and (not entry or entry.zone ~= zone or not catalog.hashFor(entry, sex)) then
+                    return nil, category.id
+                end
+
+                seen[item.name] = true
+                out[#out + 1] = {
+                    name = entry.name, label = entry.label, collection = entry.collection, zone = zone,
+                    hashMale = entry.hashMale, hashFemale = entry.hashFemale, opacity = opacity,
+                }
+
+                if not had then
+                    changes[#changes + 1] = { id = category.id, tattoo = item.name, price = price }
+                    total = total + price
+                elseif had.opacity ~= opacity then
+                    changes[#changes + 1] = { id = category.id, tattoo = item.name, price = 0 }
+                end
+            end
+
+            for name in pairs(owned) do
+                if not seen[name] then changes[#changes + 1] = { id = category.id, tattoo = name, price = 0, removed = true } end
+            end
+
+            new.tattoos[zone] = out
+        end
+    end
+
+    return new, changes, total
+end
+
 ---The clothes of a saved look as an illenium outfit (components and props lists), without face and hair
 function look.outfitOf(skin)
     local components, props = {}, {}

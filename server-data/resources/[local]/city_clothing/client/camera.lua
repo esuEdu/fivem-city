@@ -26,6 +26,7 @@ local function framing(name)
     local dir = forward(base)
     if preset.behind then dir = -dir end
     if preset.side then dir = forward(base + 70.0) end
+    if preset.angle then dir = forward(base + preset.angle) end
 
     local distance = math.max(0.35, preset.distance - zoom)
     return target + dir * distance + vector3(0.0, 0.0, lift), target, preset.fov

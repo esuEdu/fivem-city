@@ -2,8 +2,19 @@
 local look = require 'shared.look'
 local settings = require 'server.config'
 local images = require 'server.images'
+local catalog = require 'shared.tattoos'
 
-local REASONS = { clothing = 'clothing-shop', barber = 'barber-shop' }
+local REASONS = { clothing = 'clothing-shop', barber = 'barber-shop', tattoo = 'tattoo-shop' }
+
+-- Each store's categories split in two: single pieces (look.buy) and tattoo zones (look.buyTattoos)
+local PIECES, TATTOOS = {}, {}
+for storeType, list in pairs(Config.Categories) do
+    PIECES[storeType], TATTOOS[storeType] = {}, {}
+    for _, category in ipairs(list) do
+        local target = category.kind == 'tattoo' and TATTOOS[storeType] or PIECES[storeType]
+        target[#target + 1] = category
+    end
+end
 local BUY_COOLDOWN_MS = 1000
 local NAME_PATTERN = "^[%w][%w %-'_%.]*$"
 
@@ -59,7 +70,7 @@ end
 local function pricesFor(storeType)
     local list = {}
     for _, category in ipairs(Config.Categories[storeType]) do
-        list[category.id] = settings.prices[category.id] or 0
+        list[category.id] = (category.kind == 'tattoo' and settings.prices.tattoo or settings.prices[category.id]) or 0
     end
     return list
 end
@@ -106,10 +117,23 @@ lib.callback.register('city_clothing:buy', function(source, wanted, account)
     local skin = loadSkin(citizenid)
     if not skin then return false, 'skin' end
 
-    local newSkin, changes, total = look.buy(skin, wanted, Config.Categories[store.type], {
+    local newSkin, changes, total = look.buy(skin, wanted, PIECES[store.type], {
         prices = settings.prices,
         blocked = settings.blocked,
     })
+
+    if newSkin and #TATTOOS[store.type] > 0 then
+        local tattooChanges, tattooTotal
+        newSkin, tattooChanges, tattooTotal = look.buyTattoos(newSkin, type(wanted) == 'table' and wanted.tattoos or nil,
+            TATTOOS[store.type], catalog, { prices = settings.prices, maxPerZone = Config.MaxTattoosPerZone })
+
+        if newSkin then
+            for _, change in ipairs(tattooChanges) do changes[#changes + 1] = change end
+            total = total + tattooTotal
+        else
+            changes = tattooChanges
+        end
+    end
 
     if not newSkin then
         warn(src, ('buy: %s'):format(changes))
@@ -125,7 +149,8 @@ lib.callback.register('city_clothing:buy', function(source, wanted, account)
 
     saveSkin(citizenid, newSkin)
 
-    return true, { total = total }
+    -- Tattoos go back to the client so illenium-appearance's own copy of them is updated too
+    return true, { total = total, tattoos = #TATTOOS[store.type] > 0 and newSkin.tattoos or nil }
 end)
 
 lib.callback.register('city_clothing:saveOutfit', function(source, name)

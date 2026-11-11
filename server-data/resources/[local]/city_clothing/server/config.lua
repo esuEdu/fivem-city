@@ -23,6 +23,9 @@ return {
         makeup = 35,
         blush = 20,
         lipstick = 20,
+
+        -- Every tattoo (tattoo parlor and the barber's hair details); removing one is free
+        tattoo = 250,
     },
 
     -- Pieces players can't buy (uniforms, job gear). Per sex: [component id or 'p'..prop id] = { drawable, { from, to }, ... }

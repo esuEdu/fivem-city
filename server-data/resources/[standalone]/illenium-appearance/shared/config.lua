@@ -556,10 +556,10 @@ Config.Stores = {
     }
 }
 
--- city_clothing runs the clothing stores and barbers: keep only tattoo parlours and the surgeon here
+-- city_clothing runs the clothing stores, barbers and tattoo parlours: keep only the surgeon here
 for i = #Config.Stores, 1, -1 do
     local storeType = Config.Stores[i].type
-    if storeType == "clothing" or storeType == "barber" then
+    if storeType == "clothing" or storeType == "barber" or storeType == "tattoo" then
         table.remove(Config.Stores, i)
     end
 end

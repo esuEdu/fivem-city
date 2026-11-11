@@ -295,3 +295,9 @@ button, input { font: inherit; color: inherit; }
 @keyframes slide-in-right { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
 @keyframes fade-down { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
 @keyframes pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
+
+/* Tattoos: the card shows the tattoo's name; each one on the zone gets its own intensity slider */
+.card__label--name { font-family: var(--font); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tattoo-row { display: flex; align-items: end; gap: 0.4rem; }
+.tattoo-row .range { flex: 1; }
+.options { max-height: 40%; overflow-y: auto; }

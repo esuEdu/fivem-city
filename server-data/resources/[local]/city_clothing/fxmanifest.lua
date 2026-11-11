@@ -27,6 +27,7 @@ ui_page 'web/index.html'
 files {
     'client/look.lua',
     'client/camera.lua',
+    'shared/tattoos.lua',
     'web/index.html',
     'web/style.css',
     'web/js/*.js',

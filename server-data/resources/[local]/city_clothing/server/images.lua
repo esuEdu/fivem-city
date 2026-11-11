@@ -1,11 +1,12 @@
 -- The pictures of the pieces. The photo tool's pictures are kept in one pack per sex and tab
 -- (images/pack_<sex>_<key>.json: { ["<style>"] = "data:image/webp;base64,..." }): thousands of loose files made the
 -- resource too big a package for the server to build when a player joins. Packs are loaded only when used.
--- .png files dropped into images/ by hand (e.g. m_c11_520.png) are found at start and win over the photo.
+-- .png files dropped into images/ by hand (e.g. m_c11_520.png, or m_ttorso_TAT_AR_000.png for a tattoo) are found at
+-- start and win over the photo.
 local images = {}
 
 local RESOURCE = GetCurrentResourceName()
-local CUSTOM_NAME = '^([mf]_[cpo]%d+_%d+)%.png$'
+local CUSTOM_NAME = '^([mf]_%w+_[%w_]+)%.png$'
 local SAVE_EVERY = 25
 
 images.custom = {}
@@ -35,7 +36,7 @@ end
 ---The styles of a tab that already have a picture, as a set
 function images.have(sex, key)
     local set = {}
-    for style in pairs(pack(sex, key).data) do set[tonumber(style)] = true end
+    for style in pairs(pack(sex, key).data) do set[tonumber(style) or style] = true end
     return set
 end
 

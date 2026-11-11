@@ -2,6 +2,7 @@
 -- for each picture here; the server captures it with screencapture and keeps it in the tab's pack (server/images.lua).
 -- A run can be every piece, or one tab, one sex and a range of numbers (e.g. the 30 new jackets).
 local images = require 'server.images'
+local catalog = require 'shared.tattoos'
 
 local DATA_URI = '^data:image/webp;base64,[%w%+/=]+$'
 local MAX_DATA_LENGTH = 2 * 1024 * 1024
@@ -12,7 +13,7 @@ local BUCKET_BASE = 7700
 local sessions = {}
 
 local CATEGORIES = {}
-for _, storeType in ipairs({ 'clothing', 'barber' }) do
+for _, storeType in ipairs({ 'clothing', 'barber', 'tattoo' }) do
     for _, category in ipairs(Config.Categories[storeType]) do CATEGORIES[category.id] = category end
 end
 
@@ -20,8 +21,12 @@ end
 local KEYS = {}
 for _, list in pairs(Config.Categories) do
     for _, category in ipairs(list) do
-        local prefix = (category.kind == 'prop' and 'p') or (category.kind == 'overlay' and 'o') or 'c'
-        KEYS[prefix .. category.slot] = true
+        if category.kind == 'tattoo' then
+            KEYS['t' .. category.id] = category
+        else
+            local prefix = (category.kind == 'prop' and 'p') or (category.kind == 'overlay' and 'o') or 'c'
+            KEYS[prefix .. category.slot] = category
+        end
     end
 end
 
@@ -82,7 +87,7 @@ end
 ---The tabs the Staff app offers
 exports('PhotoCategories', function()
     local list = {}
-    for _, storeType in ipairs({ 'clothing', 'barber' }) do
+    for _, storeType in ipairs({ 'clothing', 'barber', 'tattoo' }) do
         for _, category in ipairs(Config.Categories[storeType]) do
             list[#list + 1] = { id = category.id, label = category.label }
         end
@@ -130,12 +135,20 @@ lib.callback.register('city_clothing:photos:shot', function(source, sex, key, dr
     if not session then return false end
 
     if (sex ~= 'm' and sex ~= 'f') or not KEYS[key] then return false end
-    drawable = math.tointeger(drawable)
-    if not drawable or drawable < 0 or drawable > MAX_DRAWABLE then return false end
+
+    -- Tattoo pictures are keyed by a tattoo of that zone this sex can get; the rest by style number
+    local category = KEYS[key]
+    if category.kind == 'tattoo' then
+        local entry = type(drawable) == 'string' and catalog.get(drawable)
+        if not entry or entry.zone ~= category.zone or not catalog.hashFor(entry, sex) then return false end
+    else
+        drawable = math.tointeger(drawable)
+        if not drawable or drawable < 0 or drawable > MAX_DRAWABLE then return false end
+    end
 
     local data = capture(src)
     if type(data) ~= 'string' or #data > MAX_DATA_LENGTH or not data:find(DATA_URI) then
-        lib.print.warn(('city_clothing: photo %s_%s_%d from %s failed'):format(sex, key, drawable, src))
+        lib.print.warn(('city_clothing: photo %s_%s_%s from %s failed'):format(sex, key, drawable, src))
         return false
     end
 
