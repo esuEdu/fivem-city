@@ -93,35 +93,4 @@ return {
     locker = { slots = 30, weight = 100000 },
     evidenceLocker = { slots = 200, weight = 2000000 },
     trash = { slots = 50, weight = 1000000 },
-
-    -- Station doors, created in ox_doorlock by name when missing (server/doors.lua); only the police job uses them.
-    -- Coords and models are the standard Mission Row interior (ox_doorlock's sql/default.sql). A double door lists
-    -- both leaves in `doors`. More doors: add them here, or in game with ox_doorlock's /doorlock (admins).
-    doors = {
-        { name = 'mrpd armoury', model = 749848321, heading = 270, coords = vec3(453.0843, -982.5795, 30.8193), autolock = 5 },
-        { name = 'mrpd locker rooms', model = 1557126584, heading = 90, coords = vec3(450.1041, -985.7384, 30.8393) },
-        { name = "mrpd captain's office", model = -1320876379, heading = 180, coords = vec3(446.5728, -980.0106, 30.8393) },
-        {
-            name = 'mrpd cells/briefing',
-            coords = vec3(444.7079, -989.4454, 30.8393),
-            doors = {
-                { model = 185711165, heading = 0, coords = vec3(446.0079, -989.4454, 30.8393) },
-                { model = 185711165, heading = 180, coords = vec3(443.4078, -989.4454, 30.8393) },
-            },
-        },
-        { name = 'mrpd cells main', model = 631614199, heading = 360, coords = vec3(463.9201, -992.6641, 25.0644), lockSound = 'metal-locker', unlockSound = 'metallic-creak' },
-        { name = 'mrpd cell 1', model = 631614199, heading = 270, coords = vec3(461.8065, -993.7586, 25.0644), lockSound = 'metal-locker', unlockSound = 'metallic-creak' },
-        { name = 'mrpd cell 2', model = 631614199, heading = 90, coords = vec3(461.8065, -998.3083, 25.0644), lockSound = 'metal-locker', unlockSound = 'metallic-creak' },
-        { name = 'mrpd cell 3', model = 631614199, heading = 90, coords = vec3(461.8065, -1001.9515, 25.0644), lockSound = 'metal-locker', unlockSound = 'metallic-creak' },
-        { name = 'mrpd cells security door', model = -1033001619, heading = 0, coords = vec3(464.1283, -1003.5387, 25.0060), autolock = 5 },
-        {
-            name = 'mrpd back entrance',
-            coords = vec3(468.6698, -1014.4520, 26.5362),
-            doors = {
-                { model = -2023754432, heading = 0, coords = vec3(467.3716, -1014.4520, 26.5362) },
-                { model = -2023754432, heading = 180, coords = vec3(469.9679, -1014.4520, 26.5362) },
-            },
-        },
-        { name = 'mrpd gate', model = -1603817716, heading = 90, coords = vec3(488.8948, -1017.2103, 27.1471), auto = true, maxDistance = 6.0 },
-    },
 }
