@@ -8,9 +8,10 @@ Config.ShowDistance = 9.0
 Config.UseDistance = 1.5
 
 -- Where the icon floats for a vec4 point (where the player stands, facing the thing): Ahead meters towards the
--- heading and Height meters up. A vec3 point only gets the Height.
-Config.Ahead = 0.35
-Config.Height = 0.45
+-- heading and Height meters up. A vec3 point only gets the Height. Keep Ahead small: a player standing against a wall
+-- is only ~0.3 m from it, and an icon pushed past the wall shows in the next room.
+Config.Ahead = 0.12
+Config.Height = 0.5
 
 -- Badge height as a share of the screen height, close up (it shrinks to 70% at ShowDistance)
 Config.Size = 0.04

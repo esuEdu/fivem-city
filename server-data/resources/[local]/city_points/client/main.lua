@@ -83,8 +83,9 @@ local function check(point, distance)
         -- 1 = still running; anything else is a result (or a lost probe)
         if status ~= 1 then
             point.probe = nil
-            -- A hit right next to the icon is the thing itself (shelf, mirror), not a wall
-            point.clear = not hit or hit == 0 or #(hitCoords - point.coords) < 0.6
+            -- The ray ends at the icon, so anything it hits is in front of it; only a graze at the very end is let
+            -- through. A wall the icon sits right behind (a mirror seen from the next room) still hides it
+            point.clear = not hit or hit == 0 or #(hitCoords - point.coords) < 0.1
         end
     end
 
