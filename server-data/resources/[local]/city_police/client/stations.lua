@@ -1,10 +1,12 @@
--- Station places with ox_target: duty, armory, lockers, evidence locker, trash, garages and the impound desk.
+-- Station places: the armory and lockers are city_points icons (used with E); duty, evidence locker, trash,
+-- garages and the impound desk are ox_target zones.
 -- Options are shown only to who may use them; the server checks again.
 
 local job = require 'client.job'
 
 local RADIUS = 1.5
 local zones = {}
+local points = {}
 
 ---@param coords vector3
 ---@param options table[]
@@ -95,19 +97,19 @@ for _, station in ipairs(Config.Stations) do
     end
 
     if station.armory then
-        zone(station.armory, { {
-            name = 'city_police:armory', label = locale('target_armory'), icon = 'fas fa-gun',
+        points[#points + 1] = exports.city_points:Add({
+            coords = station.armory, icon = 'weapon', label = locale('target_armory'),
             canInteract = job.onDuty,
-            onSelect = function() TriggerEvent('city_police:client:armory') end,
-        } })
+            onUse = function() TriggerEvent('city_police:client:armory') end,
+        })
     end
 
     if station.locker then
-        zone(station.locker, { {
-            name = 'city_police:locker', label = locale('target_locker'), icon = 'fas fa-box-archive',
+        points[#points + 1] = exports.city_points:Add({
+            coords = station.locker, icon = 'locker', label = locale('target_locker'),
             canInteract = job.isCop,
-            onSelect = function() exports.city_inventory:openInventory('stash', 'city_police_locker') end,
-        } })
+            onUse = function() exports.city_inventory:openInventory('stash', 'city_police_locker') end,
+        })
     end
 
     if station.evidence then
@@ -156,4 +158,5 @@ AddEventHandler('onResourceStop', function(resource)
     if resource ~= cache.resource then return end
 
     for _, id in ipairs(zones) do exports.ox_target:removeZone(id) end
+    for _, key in ipairs(points) do exports.city_points:Remove(key) end
 end)

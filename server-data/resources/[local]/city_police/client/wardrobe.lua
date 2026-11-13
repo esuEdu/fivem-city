@@ -1,4 +1,4 @@
--- The station wardrobe (ox_target at Config.Stations[].wardrobe): a panel on the screen page with the uniforms for
+-- The station wardrobe (a city_points icon at Config.Stations[].wardrobe): a panel on the screen page with the uniforms for
 -- this character's body, changing back to their own clothes (and clocking out), and for the chief, designing a new
 -- uniform in illenium-appearance's clothing editor. Clothes are only changed on this ped, never saved as the skin.
 
@@ -8,7 +8,7 @@ local theme = require '@city_ui.theme'
 local appearance = exports['illenium-appearance']
 
 local open = false
-local zones = {}
+local points = {}
 
 ---@return 'male' | 'female'
 local function mySex()
@@ -177,13 +177,9 @@ end)
 
 for _, station in ipairs(Config.Stations) do
     if station.wardrobe then
-        zones[#zones + 1] = exports.ox_target:addSphereZone({
-            coords = station.wardrobe,
-            radius = 1.5,
-            options = { {
-                name = 'city_police:wardrobe', label = locale('target_wardrobe'), icon = 'fas fa-shirt',
-                canInteract = job.isCop, onSelect = show,
-            } },
+        points[#points + 1] = exports.city_points:Add({
+            coords = station.wardrobe, icon = 'shirt', label = locale('target_wardrobe'),
+            canInteract = job.isCop, onUse = show,
         })
     end
 end
@@ -192,5 +188,5 @@ AddEventHandler('onResourceStop', function(resource)
     if resource ~= cache.resource then return end
 
     close()
-    for _, id in ipairs(zones) do exports.ox_target:removeZone(id) end
+    for _, key in ipairs(points) do exports.city_points:Remove(key) end
 end)

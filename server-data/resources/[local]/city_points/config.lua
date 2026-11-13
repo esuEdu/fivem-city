@@ -1,0 +1,22 @@
+Config = {}
+
+-- Default key to use the point the player is at (players can rebind it in GTA's key settings, FiveM section)
+Config.Key = 'E'
+
+-- Meters: the icon fades in within ShowDistance; the key works within UseDistance
+Config.ShowDistance = 9.0
+Config.UseDistance = 1.5
+
+-- Where the icon floats for a vec4 point (where the player stands, facing the thing): Ahead meters towards the
+-- heading and Height meters up. A vec3 point only gets the Height.
+Config.Ahead = 0.35
+Config.Height = 0.45
+
+-- Badge height as a share of the screen height, close up (it shrinks to 70% at ShowDistance)
+Config.Size = 0.04
+
+-- How often (ms) a nearby point checks access and whether a wall is in the way
+Config.CheckMs = 250
+
+-- Icons in icons/<name>.png (white on transparent, 128x128; scripts/point-icons.mjs draws them)
+Config.Icons = { 'weapon', 'locker', 'shirt' }

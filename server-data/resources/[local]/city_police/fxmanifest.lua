@@ -90,6 +90,7 @@ files {
 dependencies {
     'city_os',
     'city_ui',
+    'city_points',
     'city_inventory',
     'city_bank',
     'oxmysql',

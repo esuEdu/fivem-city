@@ -13,7 +13,7 @@ local function placesOf(key)
     local list = {}
 
     for _, station in ipairs(Config.Stations) do
-        if station[key] then list[#list + 1] = station[key] end
+        if station[key] then list[#list + 1] = station[key].xyz end
     end
 
     return list
