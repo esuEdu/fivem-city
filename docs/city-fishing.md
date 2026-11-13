@@ -28,7 +28,7 @@ Fishing, the city's first legal job. Anyone can fish: there is no job, boss or c
 
 ## Gear and the shop
 
-The fishing shop is an NPC (ox_target → ox_lib menu): licence, rods, bait, tackle, crab pots, **repair my rods** and **reset my skills**. Prices come from `shared/gear.lua`, paid cash first, then bank (`fishing-shop`, `fishing-licence`, `fishing-repair`, `fishing-respec`). Each item needs a fishing level; the Merchant branch gives a discount.
+The fishing shop is an NPC (basket icon, E → ox_lib menu): licence, rods, bait, tackle, crab pots, **repair my rods** and **reset my skills**. Prices come from `shared/gear.lua`, paid cash first, then bank (`fishing-shop`, `fishing-licence`, `fishing-repair`, `fishing-respec`). Each item needs a fishing level; the Merchant branch gives a discount.
 
 | Rod | Level | Price | Bait | Tackle slots | Durability |
 |---|---|---|---|---|---|

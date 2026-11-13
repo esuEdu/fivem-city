@@ -5,9 +5,10 @@ local gear = require 'shared.gear'
 local peds = {}
 local points = {}
 local blips = {}
+local icons = {}
 
 ---@param coords vector4
----@param options table[] ox_target options
+---@param options table[]? ox_target options (nil = the ped has a city_points icon instead)
 ---@return integer ped
 local function spawnPed(coords, options)
     lib.requestModel(Config.Ped)
@@ -18,7 +19,7 @@ local function spawnPed(coords, options)
     SetEntityInvincible(ped, true)
     SetBlockingOfNonTemporaryEvents(ped, true)
     TaskStartScenarioInPlace(ped, Config.PedScenario, 0, true)
-    exports.ox_target:addLocalEntity(ped, options)
+    if options then exports.ox_target:addLocalEntity(ped, options) end
 
     return ped
 end
@@ -27,7 +28,7 @@ end
 ---@param coords vector4
 ---@param blip table
 ---@param label string
----@param options table[]
+---@param options table[]?
 local function addPlace(key, coords, blip, label, options)
     local handle = AddBlipForCoord(coords.x, coords.y, coords.z)
     SetBlipSprite(handle, blip.sprite)
@@ -224,9 +225,13 @@ local function marina()
     lib.showContext('city_fishing_marina')
 end
 
+-- The shop is a basket icon over the shopkeeper (city_points, used with E)
 for index, shop in ipairs(Config.Shops) do
-    addPlace(('shop%d'):format(index), shop.coords, shop.blip, locale('blip_shop'), {
-        { name = 'city_fishing:shop', icon = 'fa-solid fa-fish', label = locale('target_shop'), onSelect = openShop },
+    addPlace(('shop%d'):format(index), shop.coords, shop.blip, locale('blip_shop'))
+
+    icons[#icons + 1] = exports.city_points:Add({
+        coords = shop.coords.xyz, ped = true, icon = 'basket', label = locale('target_shop'),
+        onUse = function() CreateThread(openShop) end,
     })
 end
 
@@ -259,4 +264,5 @@ AddEventHandler('onResourceStop', function(resource)
 
     for _, point in pairs(points) do point:remove() end
     for _, blip in ipairs(blips) do RemoveBlip(blip) end
+    for _, key in ipairs(icons) do exports.city_points:Remove(key) end
 end)

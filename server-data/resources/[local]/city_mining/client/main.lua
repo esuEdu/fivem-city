@@ -116,8 +116,8 @@ local function openShop()
 end
 
 places.blip(Config.Shop.coords, Config.Shop.blip, locale('blip_shop'))
-places.add('shop', Config.Ped, Config.Shop.coords, {
-    { name = 'city_mining:shop', icon = 'fa-solid fa-helmet-safety', label = locale('target_shop'), onSelect = openShop },
+places.add('shop', Config.Ped, Config.Shop.coords, nil, {
+    icon = 'basket', label = locale('target_shop'), onUse = function() CreateThread(openShop) end,
 })
 
 -- Region blips, from the areas the server works out from the placed points

@@ -116,6 +116,33 @@ const icons = {
     ]]],
 };
 
+// Clocking in: a clock face with its hands
+icons.clock = [
+    [circle(64, 64, 50), circle(64, 64, 40)],
+    [rect(60, 34, 68, 68)],
+    [[[60, 60], [66, 58], [88, 78], [82, 84]]],
+    [circle(64, 64, 7)],
+];
+
+// Garages: a car from the side, with wheel arches cut out and the wheels drawn in them
+icons.car = [
+    [[
+        [10, 84], [10, 66], [20, 60], [36, 58], [48, 40], [86, 40], [100, 58], [112, 62], [118, 70], [118, 84],
+        [104, 84], [102, 76], [94, 70], [84, 70], [76, 76], [74, 84], [52, 84], [50, 76], [42, 70], [32, 70],
+        [24, 76], [22, 84],
+    ], [[54, 46], [64, 46], [64, 58], [44, 58]], [[70, 46], [83, 46], [92, 58], [70, 58]]],
+    [circle(37, 85, 11)],
+    [circle(89, 85, 11)],
+];
+
+// Shops: a shopping basket
+icons.basket = [
+    [[[14, 52], [114, 52], [114, 62], [14, 62]]],
+    [[[20, 64], [108, 64], [98, 108], [30, 108]], rect(36, 72, 42, 100), rect(50, 72, 56, 100), rect(64, 72, 70, 100), rect(78, 72, 84, 100), rect(92, 72, 96, 100)],
+    [[[30, 50], [52, 18], [58, 22], [40, 50]]],
+    [[[98, 50], [76, 18], [70, 22], [88, 50]]],
+];
+
 mkdirSync(OUT, { recursive: true });
 for (const [name, shapes] of Object.entries(icons)) {
     writeFileSync(join(OUT, `${name}.png`), png(render(shapes)));

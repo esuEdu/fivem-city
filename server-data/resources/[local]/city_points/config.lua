@@ -20,4 +20,11 @@ Config.Size = 0.04
 Config.CheckMs = 250
 
 -- Icons in icons/<name>.png (white on transparent, 128x128; scripts/point-icons.mjs draws them)
-Config.Icons = { 'weapon', 'locker', 'shirt' }
+Config.Icons = { 'weapon', 'locker', 'shirt', 'clock', 'car', 'basket' }
+
+-- Height of the icon for a point added with ped = true (garage keepers, shop clerks), over the ped's coords
+Config.PedHeight = 1.15
+
+-- Ped points: players stand a little away from a ped (and the icon is higher), so both distances are longer
+Config.PedShowDistance = 4.5
+Config.PedUseDistance = 2.5

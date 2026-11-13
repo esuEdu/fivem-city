@@ -48,14 +48,15 @@ local keyLabel = Config.Key
 local keybind
 
 ---@param coords vector3 | vector4
+---@param height number
 ---@return vector3
-local function iconSpot(coords)
+local function iconSpot(coords, height)
     if type(coords) == 'vector4' then
         local heading = math.rad(coords.w)
-        return vec3(coords.x - math.sin(heading) * Config.Ahead, coords.y + math.cos(heading) * Config.Ahead, coords.z + Config.Height)
+        return vec3(coords.x - math.sin(heading) * Config.Ahead, coords.y + math.cos(heading) * Config.Ahead, coords.z + height)
     end
 
-    return vec3(coords.x, coords.y, coords.z + Config.Height)
+    return vec3(coords.x, coords.y, coords.z + height)
 end
 
 ---@param text string
@@ -169,8 +170,9 @@ local function remove(key)
 end
 
 ---Adds a point. coords: vec4 = where the player stands, facing the thing (the icon floats a little ahead), vec3 = the
----spot itself. canInteract (optional) decides who sees and uses it; onUse runs when the key is pressed there.
----@param data { coords: vector3 | vector4, icon: string, label: string, onUse: function, canInteract?: function, distance?: number, useDistance?: number }
+---spot itself. canInteract (optional) decides who sees and uses it; onUse runs when the key is pressed there. ped = true:
+---coords are where a ped stands (pass a vec3) and the icon floats over its head; height: meters above coords otherwise.
+---@param data { coords: vector3 | vector4, icon: string, label: string, onUse: function, canInteract?: function, distance?: number, useDistance?: number, height?: number, ped?: boolean }
 ---@return integer? key for Remove
 local function add(data)
     local kind = type(data) == 'table' and type(data.coords)
@@ -182,16 +184,16 @@ local function add(data)
     lastKey = lastKey + 1
 
     local point = lib.points.new({
-        coords = iconSpot(data.coords),
+        coords = iconSpot(data.coords, data.ped and Config.PedHeight or tonumber(data.height) or Config.Height),
         -- The wall check aims here, at chest height where the player stands, not at the icon: the icon floats against
         -- the shelf or mirror and a ray to it hits that thing first
         stand = vec3(data.coords.x, data.coords.y, data.coords.z + 0.3),
-        distance = data.distance or Config.ShowDistance,
+        distance = data.distance or (data.ped and Config.PedShowDistance) or Config.ShowDistance,
         key = lastKey,
         resource = GetInvokingResource() or cache.resource,
         icon = data.icon,
         label = data.label,
-        useDistance = data.useDistance or Config.UseDistance,
+        useDistance = data.useDistance or (data.ped and Config.PedUseDistance) or Config.UseDistance,
         canInteract = data.canInteract,
         onUse = data.onUse,
         alpha = 0.0,

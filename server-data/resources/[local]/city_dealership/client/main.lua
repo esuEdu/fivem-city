@@ -163,24 +163,17 @@ local function addComputers()
     for i = 1, #Config.Computers do
         local computer = Config.Computers[i]
 
-        zones[i] = exports.ox_target:addBoxZone({
+        zones[i] = exports.city_points:Add({
             coords = computer.coords,
-            size = computer.size,
-            rotation = computer.rotation,
-            options = {
-                {
-                    name = ('city_dealership:computer:%d'):format(i),
-                    label = locale('target_computer'),
-                    icon = 'fas fa-desktop',
-                    distance = Config.UseDistance,
-                    canInteract = function()
-                        return not cache.vehicle and not testDrive.active()
-                    end,
-                    onSelect = function()
-                        CreateThread(open)
-                    end,
-                },
-            },
+            icon = 'basket',
+            label = locale('target_computer'),
+            useDistance = Config.UseDistance,
+            canInteract = function()
+                return not testDrive.active()
+            end,
+            onUse = function()
+                CreateThread(open)
+            end,
         })
     end
 end
@@ -194,7 +187,7 @@ AddEventHandler('onResourceStop', function(resource)
     close()
 
     for i = 1, #zones do
-        exports.ox_target:removeZone(zones[i])
+        exports.city_points:Remove(zones[i])
     end
 
     if blip then RemoveBlip(blip) end

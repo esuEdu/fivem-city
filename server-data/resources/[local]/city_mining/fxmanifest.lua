@@ -63,5 +63,6 @@ dependencies {
     'oxmysql',
     'ox_lib',
     'ox_target',
+    'city_points',
     'qbx_core',
 }

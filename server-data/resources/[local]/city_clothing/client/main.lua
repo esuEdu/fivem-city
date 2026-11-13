@@ -306,16 +306,6 @@ local function spawnClerk(index)
     FreezeEntityPosition(ped, true)
     TaskStartScenarioInPlace(ped, 'WORLD_HUMAN_STAND_IMPATIENT', 0, true)
 
-    exports.ox_target:addLocalEntity(ped, {
-        {
-            name = 'city_clothing:open',
-            label = clerk.label,
-            icon = clerk.icon,
-            distance = 2.5,
-            onSelect = function() openStore(index) end,
-        },
-    })
-
     clerks[index] = ped
 end
 
@@ -323,12 +313,22 @@ local function removeClerk(index)
     local ped = clerks[index]
     if not ped then return end
 
-    exports.ox_target:removeLocalEntity(ped, 'city_clothing:open')
     if DoesEntityExist(ped) then DeleteEntity(ped) end
     clerks[index] = nil
 end
 
+-- The basket icon over each clerk (city_points, used with E)
+local icons = {}
+
 for index, store in ipairs(Config.Stores) do
+    icons[#icons + 1] = exports.city_points:Add({
+        coords = store.coords.xyz,
+        ped = true,
+        icon = 'basket',
+        label = Config.Clerks[store.type].label,
+        onUse = function() CreateThread(function() openStore(index) end) end,
+    })
+
     lib.points.new({
         coords = store.coords.xyz,
         distance = Config.SpawnDistance,
@@ -356,4 +356,5 @@ AddEventHandler('onResourceStop', function(resource)
     close(true)
     for index in pairs(clerks) do removeClerk(index) end
     for _, handle in ipairs(blips) do RemoveBlip(handle) end
+    for _, key in ipairs(icons) do exports.city_points:Remove(key) end
 end)

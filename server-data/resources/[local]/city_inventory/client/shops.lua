@@ -1,15 +1,14 @@
--- Blips and ox_target options for the shops in data/shops.lua. Opening asks the server, which checks everything again.
+-- Blips, shopkeepers and the basket icons (city_points, used with E) for the shops in data/shops.lua; shops opened from
+-- props (vending machines) stay on ox_target. Opening asks the server, which checks everything again.
 
 local shopData = require 'data.shops'
 local other = require 'client.other'
 
-local TARGET_RADIUS = 1.5
-
 ---@type integer[]
 local blips = {}
 
----@type integer[]
-local zones = {}
+---@type integer[] city_points keys
+local icons = {}
 
 ---@type { models: integer[], name: string }[]
 local models = {}
@@ -87,18 +86,13 @@ local function addTargets()
         local label = locale('target_shop', shop.name)
 
         for id, coords in ipairs(shop.locations or {}) do
-            zones[#zones + 1] = exports.ox_target:addSphereZone({
+            icons[#icons + 1] = exports.city_points:Add({
                 coords = coords.xyz,
-                radius = TARGET_RADIUS,
-                options = {
-                    {
-                        name = ('city_inventory:%s:%s'):format(shopType, id),
-                        label = label,
-                        icon = 'fas fa-basket-shopping',
-                        groups = shop.groups,
-                        onSelect = function() other.openShop(shopType, id) end,
-                    },
-                },
+                ped = shop.ped ~= nil,
+                icon = 'basket',
+                label = label,
+                canInteract = shop.groups and function() return exports.qbx_core:HasGroup(shop.groups) end or nil,
+                onUse = function() other.openShop(shopType, id) end,
             })
         end
 
@@ -119,9 +113,9 @@ local function addTargets()
     end
 end
 
--- city_inventory starts before ox_target (server.cfg order), so wait for its exports
+-- city_inventory starts before ox_target and city_points (server.cfg order), so wait for their exports
 CreateThread(function()
-    while GetResourceState('ox_target') ~= 'started' do Wait(500) end
+    while GetResourceState('ox_target') ~= 'started' or GetResourceState('city_points') ~= 'started' do Wait(500) end
     addTargets()
 end)
 
@@ -130,6 +124,6 @@ AddEventHandler('onResourceStop', function(resource)
 
     for _, blip in ipairs(blips) do RemoveBlip(blip) end
     for point in pairs(peds) do removePed(point) end
-    for _, zone in ipairs(zones) do exports.ox_target:removeZone(zone) end
+    for _, key in ipairs(icons) do exports.city_points:Remove(key) end
     for _, entry in ipairs(models) do exports.ox_target:removeModel(entry.models, entry.name) end
 end)

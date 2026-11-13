@@ -57,6 +57,7 @@ dependencies {
     'qbx_core',
     'qbx_medical',
     'ox_target',
+    'city_points',
     'city_ui',
     'city_economy',
     'city_bank',

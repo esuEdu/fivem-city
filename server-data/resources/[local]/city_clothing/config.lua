@@ -1,10 +1,10 @@
 Config = {}
 
--- Who serves the shop: a local ped at each store's coords, with ox_target on it
+-- Who serves the shop: a local ped at each store's coords, with a city_points basket icon over it (label = its text)
 Config.Clerks = {
-    clothing = { model = `a_f_y_hipster_02`, label = 'Browse clothes', icon = 'fas fa-shirt' },
-    barber = { model = `s_f_m_fembarber`, label = 'Get a haircut', icon = 'fas fa-scissors' },
-    tattoo = { model = `u_m_y_tattoo_01`, label = 'Get a tattoo', icon = 'fas fa-pen-nib' },
+    clothing = { model = `a_f_y_hipster_02`, label = 'Browse clothes' },
+    barber = { model = `s_f_m_fembarber`, label = 'Get a haircut' },
+    tattoo = { model = `u_m_y_tattoo_01`, label = 'Get a tattoo' },
 }
 
 Config.Blips = {

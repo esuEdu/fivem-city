@@ -37,7 +37,7 @@ files {
 dependencies {
     'ox_lib',
     'qbx_core',
-    'ox_target',
+    'city_points',
     'city_ui',
     'city_economy',
     'city_bank',
