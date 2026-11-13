@@ -150,17 +150,20 @@ for _, coords in ipairs(Config.Lockers) do
     } })
 end
 
+local icons = {}
+
 for index, garage in ipairs(Config.Garages) do
-    zone(garage.menu, {
-        {
-            name = 'city_hospital:garage', label = locale('target_garage'), icon = 'fas fa-warehouse',
-            canInteract = onDuty, onSelect = function() openGarage(index) end,
-        },
-        {
-            name = 'city_hospital:store', label = locale('target_store'), icon = 'fas fa-square-parking',
-            canInteract = onDuty, onSelect = storeVehicle,
-        },
+    -- Taking a vehicle out is the car icon (E); putting it back stays on ox_target, done from beside the car
+    icons[#icons + 1] = exports.city_points:Add({
+        coords = garage.menu, icon = 'car', label = locale('target_garage'),
+        useDistance = 3.0, canInteract = onDuty,
+        onUse = function() CreateThread(function() openGarage(index) end) end,
     })
+
+    zone(garage.menu, { {
+        name = 'city_hospital:store', label = locale('target_store'), icon = 'fas fa-square-parking',
+        canInteract = onDuty, onSelect = storeVehicle,
+    } })
 end
 
 for _, elevator in ipairs(Config.Elevators) do
@@ -178,5 +181,6 @@ AddEventHandler('onResourceStop', function(resource)
     if resource ~= cache.resource then return end
 
     for _, id in ipairs(zones) do exports.ox_target:removeZone(id) end
+    for _, key in ipairs(icons) do exports.city_points:Remove(key) end
     for _, blip in pairs(callBlips) do RemoveBlip(blip) end
 end)

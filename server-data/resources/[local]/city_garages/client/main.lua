@@ -5,7 +5,7 @@ local garages = {}
 local blips = {}
 local points = {}
 local peds = {}
-local zones = {}
+local icons = {}
 local current
 local currentLot
 
@@ -84,21 +84,22 @@ local function open(garage)
     })
 end
 
+-- The car icon over the garage keeper (or the garage point), used with E
 ---@param garage table
----@return table
-local function targetOption(garage)
-    return {
-        name = ('city_garages:%s'):format(garage.id),
+---@return integer?
+local function addIcon(garage)
+    return exports.city_points:Add({
+        coords = garage.coords.xyz,
+        ped = garage.ped and true or false,
+        icon = 'car',
         label = locale(garage.depot and 'target_depot' or 'target_garage'),
-        icon = garage.depot and 'fas fa-truck-ramp-box' or 'fas fa-warehouse',
-        distance = Config.UseDistance,
         canInteract = function()
-            return not cache.vehicle and allowed(garage)
+            return allowed(garage)
         end,
-        onSelect = function()
+        onUse = function()
             CreateThread(function() open(garage) end)
         end,
-    }
+    })
 end
 
 ---@param garage table
@@ -115,7 +116,6 @@ local function spawnPed(garage)
     SetBlockingOfNonTemporaryEvents(ped, true)
     TaskStartScenarioInPlace(ped, Config.PedScenario, 0, true)
 
-    exports.ox_target:addLocalEntity(ped, targetOption(garage))
     peds[garage.id] = ped
 end
 
@@ -124,7 +124,6 @@ local function removePed(id)
     local ped = peds[id]
     if not ped then return end
 
-    exports.ox_target:removeLocalEntity(ped)
     DeleteEntity(ped)
     peds[id] = nil
 end
@@ -153,9 +152,9 @@ local function removeGarage(id)
 
     if blips[id] then RemoveBlip(blips[id]) end
     if points[id] then points[id]:remove() end
-    if zones[id] then exports.ox_target:removeZone(zones[id]) end
+    if icons[id] then exports.city_points:Remove(icons[id]) end
 
-    blips[id], points[id], zones[id], garages[id] = nil, nil, nil, nil
+    blips[id], points[id], icons[id], garages[id] = nil, nil, nil, nil
 end
 
 ---@param garage table
@@ -166,14 +165,8 @@ local function addGarage(garage)
 
     if not garage.depot then park.add(garage) end
 
-    if not garage.ped then
-        zones[garage.id] = exports.ox_target:addSphereZone({
-            coords = garage.coords.xyz,
-            radius = 1.5,
-            options = { targetOption(garage) },
-        })
-        return
-    end
+    icons[garage.id] = addIcon(garage)
+    if not garage.ped then return end
 
     points[garage.id] = lib.points.new({
         coords = garage.coords.xyz,

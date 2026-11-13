@@ -5,10 +5,11 @@ local places = {}
 local peds = {}
 local points = {}
 local blips = {}
+local icons = {}
 
 ---@param model integer
 ---@param coords vector4
----@param options table[]
+---@param options table[]?
 ---@return integer ped
 local function spawnPed(model, coords, options)
     lib.requestModel(model)
@@ -19,7 +20,7 @@ local function spawnPed(model, coords, options)
     SetEntityInvincible(ped, true)
     SetBlockingOfNonTemporaryEvents(ped, true)
     TaskStartScenarioInPlace(ped, Config.PedScenario, 0, true)
-    exports.ox_target:addLocalEntity(ped, options)
+    if options then exports.ox_target:addLocalEntity(ped, options) end
 
     return ped
 end
@@ -45,9 +46,16 @@ end
 ---@param key string
 ---@param model integer
 ---@param coords vector4
----@param options table[]
-function places.add(key, model, coords, options)
+---@param options table[]? ox_target options on the ped
+---@param icon? { icon: string, label: string, onUse: function } a city_points icon over the ped instead (used with E)
+function places.add(key, model, coords, options, icon)
     places.remove(key)
+
+    if icon then
+        icons[key] = exports.city_points:Add({
+            coords = coords.xyz, ped = true, icon = icon.icon, label = icon.label, onUse = icon.onUse,
+        })
+    end
 
     points[key] = lib.points.new({
         coords = coords.xyz,
@@ -68,6 +76,11 @@ end
 
 ---@param key string
 function places.remove(key)
+    if icons[key] then
+        exports.city_points:Remove(icons[key])
+        icons[key] = nil
+    end
+
     local ped = peds[key]
     if ped then
         exports.ox_target:removeLocalEntity(ped)

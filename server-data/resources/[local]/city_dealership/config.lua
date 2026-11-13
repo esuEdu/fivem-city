@@ -4,9 +4,9 @@ Config.Label = 'Premium Deluxe Motorsport'
 
 Config.Blip = { coords = vec3(-45.67, -1098.34, 26.42), sprite = 326, color = 3, scale = 0.7 }
 
--- Computers players use to open the catalogue (ox_target box zones on the desks)
+-- Computers players use to open the catalogue (a city_points basket icon, used with E)
 Config.Computers = {
-    { coords = vec3(-29.53, -1103.67, 26.42), size = vec3(1.4, 1.4, 2.4), rotation = 0.0 },
+    { coords = vec3(-29.53, -1103.67, 26.42) },
 }
 
 Config.UseDistance = 2.5 -- how close to a computer the player must be

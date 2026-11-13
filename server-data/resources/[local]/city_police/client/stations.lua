@@ -1,5 +1,5 @@
--- Station places: the armory and lockers are city_points icons (used with E); duty, evidence locker, trash,
--- garages and the impound desk are ox_target zones.
+-- Station places: duty, the armory, lockers and taking out vehicles are city_points icons (used with E); evidence locker,
+-- trash, storing vehicles and the impound desk are ox_target zones.
 -- Options are shown only to who may use them; the server checks again.
 
 local job = require 'client.job'
@@ -90,10 +90,10 @@ end
 
 for _, station in ipairs(Config.Stations) do
     if station.duty then
-        zone(station.duty, { {
-            name = 'city_police:duty', label = locale('target_duty'), icon = 'fas fa-clipboard-user',
-            canInteract = job.isCop, onSelect = toggleDuty,
-        } })
+        points[#points + 1] = exports.city_points:Add({
+            coords = station.duty, icon = 'clock', label = locale('target_duty'),
+            canInteract = job.isCop, onUse = function() CreateThread(toggleDuty) end,
+        })
     end
 
     if station.armory then
@@ -136,17 +136,17 @@ for _, station in ipairs(Config.Stations) do
         local garage = station[kind == 'heli' and 'heli' or 'garage']
 
         if garage then
-            zone(garage.menu, {
-                {
-                    name = 'city_police:garage', label = locale(kind == 'heli' and 'target_heli' or 'target_garage'),
-                    icon = kind == 'heli' and 'fas fa-helicopter' or 'fas fa-warehouse',
-                    canInteract = job.onDuty, onSelect = function() openGarage(kind) end,
-                },
-                {
-                    name = 'city_police:store', label = locale('target_store'), icon = 'fas fa-square-parking',
-                    canInteract = job.onDuty, onSelect = storeVehicle,
-                },
-            }, 3.0)
+            -- Taking a vehicle out is the icon (E); putting it back stays on ox_target, as it is done from beside the car
+            points[#points + 1] = exports.city_points:Add({
+                coords = garage.menu, icon = 'car', label = locale(kind == 'heli' and 'target_heli' or 'target_garage'),
+                useDistance = 3.0, canInteract = job.onDuty,
+                onUse = function() CreateThread(function() openGarage(kind) end) end,
+            })
+
+            zone(garage.menu, { {
+                name = 'city_police:store', label = locale('target_store'), icon = 'fas fa-square-parking',
+                canInteract = job.onDuty, onSelect = storeVehicle,
+            } }, 3.0)
         end
     end
 

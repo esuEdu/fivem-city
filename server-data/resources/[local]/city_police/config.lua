@@ -96,7 +96,7 @@ Config.Stations = {
     {
         label = 'Mission Row Police Station',
         blip = vec3(434.0, -983.0, 30.7),
-        duty = vec3(440.09, -974.92, 30.69),
+        duty = vec4(440.20, -975.80, 30.69, 9.26),
         -- armory, locker and wardrobe show a city_points icon: vec4 = where the officer stands, facing it
         armory = vec4(458.34, -979.63, 30.69, 3.37),
         locker = vec4(452.37, -980.02, 30.69, 276.94),

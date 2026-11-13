@@ -51,6 +51,7 @@ dependencies {
     'oxmysql',
     'qbx_core',
     'ox_target',
+    'city_points',
     'city_ui',
     'city_os',
     'city_inventory',

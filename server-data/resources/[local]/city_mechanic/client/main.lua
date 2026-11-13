@@ -4,6 +4,7 @@ local tuning = require 'client.tuning'
 
 local targets = {}
 local zones = {}
+local garageIcon
 local blip
 local inBay, inGarage = false, false
 -- Staff may use the tuning bay without the job (Config.StaffAce); asked once from the server, which checks again
@@ -122,20 +123,15 @@ local function addTargets()
         },
     })
 
-    targets[#targets + 1] = exports.ox_target:addBoxZone({
+    -- The work vehicles: a car icon over the bay where they appear (city_points, used with E)
+    garageIcon = exports.city_points:Add({
         coords = Config.Garage.coords,
-        size = Config.Garage.size,
-        rotation = Config.Garage.rotation,
-        options = {
-            {
-                name = 'city_mechanic:garage',
-                label = locale('target_garage'),
-                icon = 'fas fa-truck-pickup',
-                distance = 6.0,
-                canInteract = function() return not cache.vehicle and onDuty() end,
-                onSelect = openGarage,
-            },
-        },
+        icon = 'car',
+        label = locale('target_garage'),
+        distance = 6.0,
+        useDistance = 4.0,
+        canInteract = onDuty,
+        onUse = function() CreateThread(openGarage) end,
     })
 end
 
@@ -213,6 +209,7 @@ AddEventHandler('onResourceStop', function(resource)
     if resource ~= cache.resource then return end
 
     for i = 1, #targets do exports.ox_target:removeZone(targets[i]) end
+    if garageIcon then exports.city_points:Remove(garageIcon) end
     for i = 1, #zones do zones[i]:remove() end
     if blip then RemoveBlip(blip) end
     if prompt then lib.hideTextUI() end

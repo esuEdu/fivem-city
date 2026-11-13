@@ -40,5 +40,6 @@ dependencies {
     'qbx_core',
     'ox_target',
     'city_ui',
+    'city_points',
     'city_economy',
 }
