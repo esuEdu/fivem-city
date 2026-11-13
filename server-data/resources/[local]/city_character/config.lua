@@ -4,12 +4,10 @@ Config = {}
 -- out of everyone's way (players are also in a solo session until they spawn)
 Config.Studio = {
     ped = vector4(402.87, -996.55, -99.0, 180.0),
-    -- Plain standing idles. The GTA Online creator's own (mp_character_creation@customise) are made for a scene placed
-    -- on the floor and lift the body about a metre when played on the ped, putting its head in the ceiling.
-    idle = {
-        m = { dict = 'anim@heists@heist_corona@team_idles@male_a', anim = 'idle' },
-        f = { dict = 'anim@heists@heist_corona@team_idles@female_a', anim = 'idle' },
-    },
+    -- Animation played on the ped, per sex ({ dict, anim }); empty = the game's own standing pose. Scene animations lift
+    -- the body off the floor when played on a ped: the GTA Online creator's (mp_character_creation@customise) by about a
+    -- metre, and the heist corona team idles by about half that, leaving the ped floating above the camera's framing.
+    idle = {},
 }
 
 -- Camera shots, relative to the ped: distance in front, height above the ped's origin, field of view
