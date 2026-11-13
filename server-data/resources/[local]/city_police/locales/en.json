@@ -140,6 +140,7 @@
     "error_invalid": "Check the fields",
     "error_not_found": "Not found",
     "error_off_duty": "Clock in at a station to use the MDT",
+    "error_armory_off_duty": "Clock in to use the armory",
     "error_no_permission": "Your rank can't do that",
     "error_feature_off": "Not available yet",
     "error_no_player": "Player not found",

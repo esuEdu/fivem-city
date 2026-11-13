@@ -83,15 +83,16 @@ local function check(point, distance)
         -- 1 = still running; anything else is a result (or a lost probe)
         if status ~= 1 then
             point.probe = nil
-            -- The ray ends at the icon, so anything it hits is in front of it; only a graze at the very end is let
-            -- through. A wall the icon sits right behind (a mirror seen from the next room) still hides it
-            point.clear = not hit or hit == 0 or #(hitCoords - point.coords) < 0.1
+            -- Anything between the camera and the standing spot is a wall (the spot itself is open air: a player
+            -- stands there), so a hit hides the icon; only a graze at the very end is let through
+            point.clear = not hit or hit == 0 or #(hitCoords - point.stand) < 0.1
         end
     end
 
     if not point.probe then
         local cam = GetFinalRenderedCamCoord()
-        point.probe = StartShapeTestLosProbe(cam.x, cam.y, cam.z, point.coords.x, point.coords.y, point.coords.z, 1, cache.ped, 7)
+        local stand = point.stand
+        point.probe = StartShapeTestLosProbe(cam.x, cam.y, cam.z, stand.x, stand.y, stand.z, 1, cache.ped, 7)
     end
 
     point.allowed = not point.canInteract or point.canInteract() == true
@@ -123,8 +124,8 @@ local function nearby(point)
     local target = (point.allowed and point.clear) and 1.0 or 0.0
     point.alpha = point.alpha + (target - point.alpha) * math.min(1.0, GetFrameTime() * 8.0)
 
-    -- Fades out over the last 1.5 m of the radius too
-    local alpha = point.alpha * math.min(1.0, math.max(0.0, (point.distance - distance) / 1.5))
+    -- Fades out over the last quarter of the radius too (at most 1.5 m)
+    local alpha = point.alpha * math.min(1.0, math.max(0.0, (point.distance - distance) / math.min(1.5, point.distance * 0.25)))
     if alpha < 0.02 then return end
 
     local close = 1.0 - math.min(distance / point.distance, 1.0)
@@ -182,6 +183,9 @@ local function add(data)
 
     local point = lib.points.new({
         coords = iconSpot(data.coords),
+        -- The wall check aims here, at chest height where the player stands, not at the icon: the icon floats against
+        -- the shelf or mirror and a ray to it hits that thing first
+        stand = vec3(data.coords.x, data.coords.y, data.coords.z + 0.3),
         distance = data.distance or Config.ShowDistance,
         key = lastKey,
         resource = GetInvokingResource() or cache.resource,

@@ -98,9 +98,13 @@ for _, station in ipairs(Config.Stations) do
 
     if station.armory then
         points[#points + 1] = exports.city_points:Add({
+            -- Every officer sees it, so off duty they learn why it won't open instead of finding nothing there
             coords = station.armory, icon = 'weapon', label = locale('target_armory'),
-            canInteract = job.onDuty,
-            onUse = function() TriggerEvent('city_police:client:armory') end,
+            canInteract = job.isCop,
+            onUse = function()
+                if not job.onDuty() then return job.fail('armory_off_duty') end
+                TriggerEvent('city_police:client:armory')
+            end,
         })
     end
 
