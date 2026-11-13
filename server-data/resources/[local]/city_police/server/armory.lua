@@ -121,7 +121,7 @@ end
 ---@return boolean
 local function atArmory(src)
     for _, station in ipairs(Config.Stations) do
-        if station.armory and police.near(src, station.armory, RANGE) then return true end
+        if station.armory and police.near(src, station.armory.xyz, RANGE) then return true end
     end
 
     return false

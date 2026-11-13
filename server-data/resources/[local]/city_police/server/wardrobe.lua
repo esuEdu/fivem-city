@@ -12,7 +12,7 @@ local LABEL_MAX = 40
 ---@return boolean
 local function atWardrobe(src)
     for _, station in ipairs(Config.Stations) do
-        if station.wardrobe and police.near(src, station.wardrobe, RANGE) then return true end
+        if station.wardrobe and police.near(src, station.wardrobe.xyz, RANGE) then return true end
     end
 
     return false
