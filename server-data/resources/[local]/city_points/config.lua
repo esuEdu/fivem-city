@@ -4,7 +4,7 @@ Config = {}
 Config.Key = 'E'
 
 -- Meters: the icon fades in within ShowDistance; the key works within UseDistance
-Config.ShowDistance = 5.0
+Config.ShowDistance = 3.0
 Config.UseDistance = 1.5
 
 -- Where the icon floats for a vec4 point (where the player stands, facing the thing): Ahead meters towards the

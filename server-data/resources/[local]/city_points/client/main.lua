@@ -124,8 +124,8 @@ local function nearby(point)
     local target = (point.allowed and point.clear) and 1.0 or 0.0
     point.alpha = point.alpha + (target - point.alpha) * math.min(1.0, GetFrameTime() * 8.0)
 
-    -- Fades out over the last 1.5 m of the radius too
-    local alpha = point.alpha * math.min(1.0, math.max(0.0, (point.distance - distance) / 1.5))
+    -- Fades out over the last quarter of the radius too (at most 1.5 m)
+    local alpha = point.alpha * math.min(1.0, math.max(0.0, (point.distance - distance) / math.min(1.5, point.distance * 0.25)))
     if alpha < 0.02 then return end
 
     local close = 1.0 - math.min(distance / point.distance, 1.0)
